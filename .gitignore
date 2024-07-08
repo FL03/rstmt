@@ -1,0 +1,107 @@
+# Artifacts
+
+**/.artifacts/data/
+**/.docker/data/
+
+
+## Caches
+
+**/.cache/
+
+# Configuration Files
+**/*.config.*
+
+**/*.env
+**/*.env.*
+
+### Exceptions
+!**/default.config.*
+!**/*.config.cjs
+!**/*.config.js
+!**/*.config.mjs
+!**/config.py
+!**/config.rs
+
+!**/example.env.*
+!**/*.env.example
+!**/*.env.default
+
+# Dev
+
+### Idea
+
+**/.idea/
+
+### vscode
+
+**/.vscode/
+
+# File Extensions
+
+**/*.lock
+**/*.lock.*
+
+**/*-lock.*
+
+**/*.log
+**/*.log.*
+
+### Data Files
+
+**/*.csv
+**/*.csv.*
+
+**/*.db
+**/*.db.*
+
+**/*.db-*.*
+
+**/*.zip
+**/*.zip.*
+
+
+
+## Rust
+**/debug/
+**/target/
+
+**/*.bk
+**/*.bk.*
+
+**/Cargo.lock
+
+## Node
+**/build/
+**/debug/
+**/dist/
+**/node_modules/
+
+### SvelteKit
+**/__sapper__/
+**/.DS_STORE/
+**/.svelte-kit/
+
+## Python
+**/__pycache__/
+**/.pytest_cache/
+**/venv/
+
+**/*.egg
+**/*.egg.*
+
+**/*.egg-info
+
+**/*.pyc
+**/*.pyc.*
+
+**/*.pyo
+**/*.pyo.*
+
+**/*.pyz
+**/*.pyz.*
+
+**/*.pyzw
+**/*.pyzw.*
+
+**/*.whl
+**/*.whl.*

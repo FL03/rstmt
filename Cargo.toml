@@ -1,0 +1,50 @@
+[workspace.package]
+authors = ["Joe McCain III <jo3mccain@icloud.com>",]
+categories = [ ]
+description = "This project focuses on providing concrete abstractions of musical objects discussed within the neo-Riemannian theory."
+edition = "2021"
+homepage = "https://github.com/username/triad/wiki"
+keywords = [ ]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/username/triad.git"
+version = "0.0.0"
+
+[workspace.dependencies]
+
+[workspace]
+default-members = [
+    "triad"
+]
+
+exclude = [
+
+]
+
+members = [
+    "triad",
+]
+
+resolver = "2"
+
+[profile.dev]
+opt-level = 0
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+[profile.release]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = false
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false

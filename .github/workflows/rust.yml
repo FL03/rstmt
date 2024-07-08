@@ -1,0 +1,69 @@
+name: rust
+
+concurrency: 
+  cancel-in-progress: false
+  group: ${{ github.event.repository.name }}-rust
+
+env:
+  CARGO_TERM_COLOR: always
+  CRATE_BASENAME: ${{ github.event.repository.name }}
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+    tags: [ v*.*.* ]
+  release:
+    types: [ created ]
+  repository_dispatch:
+    types: [ rust ]
+  schedule:
+    - cron: "30 21 * * 0" # Every Sunday at 9:30pm UTC
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        toolchain: [ stable, nightly ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup (rustup)
+        run: |
+          rustup default ${{ matrix.toolchain }}
+          rustup update
+      - name: build (workspace)
+        run: cargo build --all-features -r -v --workspace
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/release
+  bench:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup (rustup)
+        run: rustup default nightly && rustup update
+      - name: cargo (bench)
+        run: cargo bench --features full -v --workspace
+  test:
+    name: Test
+    strategy:
+      matrix:
+        toolchain: [ stable, nightly ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup default ${{ matrix.toolchain }} && rustup update
+      - run: cargo test --features full -v --workspace
