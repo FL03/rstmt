@@ -7,14 +7,14 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "triad"
+name = "triad-core"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
 default = [
-
+    "std",
 ]
 
 full = [
@@ -24,22 +24,26 @@ full = [
 ]
 
 # [FF] Dependencies
+alloc = [
+    "num/alloc",
+    "serde?/alloc",
+]
+
 rand = [
     "num/rand",
 ]
 
 serde = [
     "dep:serde",
-    "petgraph/serde",
-    "triad-core/serde",
 ]
 
 # ********* [FF] Environments *********
-
-
-wasm = []
-
-wasi = []
+std = [
+    "alloc",
+    "num/std",
+    "serde?/std",
+    "strum/std",
+]
 
 [lib]
 bench = true
@@ -50,18 +54,22 @@ test = true
 [build-dependencies]
 
 [dependencies]
-num = "0.4"
-petgraph = "0.6"
-strum.workspace = true
+smart-default.workspace = true
+
+[dependencies.num]
+default-features = false
+version = "0.4"
 
 [dependencies.serde]
+default-features = false
 features = ["derive"]
 optional = true
 version = "1"
 
-[dependencies.triad-core]
-path = "../core"
-version = "0.0.1"
+[dependencies.strum]
+default-features = false
+features = ["derive"]
+version = "0.26"
 
 [dev-dependencies]
 lazy_static.workspace = true

@@ -5,11 +5,16 @@
 //! # triad
 //!
 //! This project focuses on providing concrete abstractions of musical objects discussed within the neo-Riemannian theory.
-#![cfg_attr(not(feature = "std"), no_std)]
 #![crate_name = "triad"]
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
+#[doc(inline)]
+pub use triad_core::*;
 
+pub use self::triad::Triad;
 
-pub mod prelude {}
+pub mod triad;
+
+pub mod prelude {
+    pub use crate::triad::{ChordFactor, Triad};
+    pub use triad_core::prelude::*;
+}
