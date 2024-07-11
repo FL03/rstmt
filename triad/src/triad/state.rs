@@ -4,12 +4,10 @@
 */
 use crate::triad::Triads;
 
-
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TriadState {
     pub(crate) class: Triads,
     pub(crate) hash: String,
-    
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

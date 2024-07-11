@@ -15,7 +15,6 @@ pub trait PitchClass {
     fn pitch(&self) -> PitchTy;
 }
 
-
 pub trait Pitched {
     /// Classify the pitch into a pitch class
     fn class(&self) -> Pitches {
@@ -26,8 +25,8 @@ pub trait Pitched {
 }
 
 pub(crate) mod prelude {
-    pub use super::{PitchTy, PitchClass};
     pub use super::kinds::*;
+    pub use super::{PitchClass, PitchTy};
 }
 
 pub(crate) mod utils {

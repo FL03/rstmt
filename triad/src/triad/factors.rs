@@ -71,11 +71,9 @@ impl<T> ChordFactor<T> {
     }
 }
 
-
-
 mod impl_factors {
     use super::*;
-    
+
     impl Factors {
         pub fn root() -> Self {
             Self::Root
@@ -93,18 +91,18 @@ mod impl_factors {
             use Factors::*;
             [Root, Third, Fifth]
         }
-    
+
         pub fn others(&self) -> Vec<Self> {
             Self::iter().filter(|x| x != self).collect()
         }
     }
-    
+
     impl Default for Factors {
         fn default() -> Self {
             Factors::Root
         }
     }
-    
+
     impl From<usize> for Factors {
         fn from(x: usize) -> Self {
             match x % 3 {
@@ -114,22 +112,22 @@ mod impl_factors {
             }
         }
     }
-    
+
     impl From<Factors> for usize {
         fn from(x: Factors) -> Self {
             x as usize
         }
     }
-    
+
     unsafe impl petgraph::graph::IndexType for Factors {
         fn new(x: usize) -> Self {
             Self::from(x)
         }
-    
+
         fn index(&self) -> usize {
             *self as usize
         }
-    
+
         fn max() -> Self {
             Self::Fifth
         }

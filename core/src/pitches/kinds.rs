@@ -48,15 +48,34 @@ impl AccidentalPitch for Flat {
     seal!();
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, smart_default::SmartDefault, strum::AsRefStr, strum::Display, strum::EnumCount, strum::EnumIs, strum::VariantNames)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    smart_default::SmartDefault,
+    strum::AsRefStr,
+    strum::Display,
+    strum::EnumCount,
+    strum::EnumIs,
+    strum::VariantNames,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
 #[repr(i8)]
 #[strum(serialize_all = "lowercase")]
 pub enum Pitches {
     Flat(Flat),
     #[default]
     Natural(Natural),
-    Sharp(Sharp)
+    Sharp(Sharp),
 }
 
 impl Pitches {

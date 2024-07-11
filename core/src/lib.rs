@@ -12,7 +12,7 @@ extern crate alloc;
 
 pub use self::errors::{Error, Result};
 pub use self::pitches::{Pitch, PitchClass};
-pub use self::{types::prelude::*, primitives::*};
+pub use self::{primitives::*, types::prelude::*};
 
 #[macro_use]
 pub(crate) mod macros;

@@ -75,8 +75,6 @@ impl Intervals {
     }
 }
 
-
-
 impl From<Third> for Intervals {
     fn from(third: Third) -> Self {
         Intervals::Thirds(third)
@@ -101,7 +99,6 @@ impl From<Seventh> for Intervals {
     }
 }
 
-
 interval! {
     pub enum Third {
         Minor = 3,
@@ -122,7 +119,6 @@ interval! {
         Diminished = 6,
     }
 }
-
 
 interval! {
     pub enum Seventh {

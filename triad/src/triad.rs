@@ -13,9 +13,6 @@ pub type TriadGraph = petgraph::Graph<String, u8, petgraph::Directed>;
 
 pub type TriadId = String;
 
-
-
-
 #[derive(Clone)]
 pub struct Triad {
     pub(crate) id: TriadId,

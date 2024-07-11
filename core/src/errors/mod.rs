@@ -10,6 +10,6 @@ pub(crate) mod err;
 pub type Result<T = ()> = core::result::Result<T, Error>;
 
 pub(crate) mod prelude {
-    pub use super::Result;
     pub use super::err::*;
+    pub use super::Result;
 }

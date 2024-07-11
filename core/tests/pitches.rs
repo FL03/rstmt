@@ -4,7 +4,10 @@
 */
 use triad_core::pitches::*;
 
-fn assert_ok<T, E>(result: Result<T, E>) -> T where E: core::fmt::Debug + core::fmt::Display {
+fn assert_ok<T, E>(result: Result<T, E>) -> T
+where
+    E: core::fmt::Debug + core::fmt::Display,
+{
     assert!(result.is_ok());
     result.unwrap()
 }

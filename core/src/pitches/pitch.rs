@@ -8,7 +8,6 @@ use super::PitchTy;
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Pitch(pub PitchTy);
 
-
 impl AsRef<PitchTy> for Pitch {
     fn as_ref(&self) -> &PitchTy {
         &self.0
@@ -40,5 +39,3 @@ impl core::ops::DerefMut for Pitch {
         self.as_mut()
     }
 }
-
-
