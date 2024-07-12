@@ -17,15 +17,18 @@ pub type TriadId = String;
 pub struct Triad {
     pub(crate) id: TriadId,
     pub(crate) state: BinaryState<TriadState>,
-    pub(crate) store: TriadGraph,
+    pub(crate) shape: TriadGraph,
 }
 
 impl Triad {
     pub fn new(id: TriadId) -> Self {
+        let shape = TriadGraph::new();
+        let state = BinaryState::default();
         Self {
             id,
-            state: BinaryState::default(),
-            store: TriadGraph::new(),
+            shape,
+            state,
+            
         }
     }
 }
