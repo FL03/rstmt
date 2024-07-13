@@ -12,5 +12,5 @@ pub use self::triad::Triad;
 pub mod triad;
 
 pub mod prelude {
-    pub use crate::triad::{ChordFactor, Triad};
+    pub use crate::triad::prelude::*;
 }

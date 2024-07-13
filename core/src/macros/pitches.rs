@@ -4,6 +4,9 @@
 */
 
 macro_rules! pitch {
+    ($name:ident: $($class:ident = $val:expr),* $(,)?) => {
+
+    };
     ($vis:vis enum $class:ident {$($name:ident = $value:expr),* $(,)?}) => {
 
         #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::AsRefStr, strum::Display, strum::EnumIs, strum::EnumString, strum::VariantNames)]
