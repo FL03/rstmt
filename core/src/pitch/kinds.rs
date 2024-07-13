@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PitchClass, PitchTy};
+use crate::Octave;
 
 pitch! {
     pub enum Natural {
@@ -18,11 +19,11 @@ pitch! {
 
 pitch! {
     pub enum Sharp {
-        A = 10,
         C = 1,
         D = 3,
         F = 6,
         G = 8,
+        A = 10,
     }
 }
 
@@ -34,6 +35,31 @@ pitch! {
         A = 8,
         B = 10,
     }
+}
+
+pub struct A {
+    pub(crate) octave: Octave,
+    pub(crate) pitch: PitchTy,
+}
+
+pub trait SharpPitch {
+    private!();
+}
+
+pub trait FlatPitch {
+    private!();
+}
+
+impl FlatPitch for A {
+    seal!();
+}
+
+impl FlatPitch for Flat {
+    seal!();
+}
+
+impl SharpPitch for Sharp {
+    seal!();
 }
 
 pub trait AccidentalPitch: PitchClass {
@@ -79,12 +105,12 @@ pub enum Pitches {
 }
 
 impl Pitches {
-    pub fn from_value(value: PitchTy) -> crate::Result<Self> {
-        if let Ok(n) = Natural::new(value) {
+    pub fn try_from_value(value: PitchTy) -> crate::Result<Self> {
+        if let Ok(n) = Natural::try_from_value(value) {
             Ok(n.as_class())
-        } else if let Ok(s) = Sharp::new(value) {
+        } else if let Ok(s) = Sharp::try_from_value(value) {
             Ok(s.as_class())
-        } else if let Ok(f) = Flat::new(value) {
+        } else if let Ok(f) = Flat::try_from_value(value) {
             Ok(f.as_class())
         } else {
             Err(crate::Error::invalid_pitch("Invalid pitch value."))
@@ -114,7 +140,7 @@ impl From<Pitches> for PitchTy {
 
 impl From<PitchTy> for Pitches {
     fn from(value: PitchTy) -> Pitches {
-        Self::from_value(value).unwrap()
+        Self::try_from_value(value).unwrap()
     }
 }
 

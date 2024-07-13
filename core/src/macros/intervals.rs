@@ -4,46 +4,58 @@
 */
 
 macro_rules! interval {
-    ($vis:vis enum $name:ident {$($key:ident = $val:literal),* $(,)?}) => {
-        #[derive(
-            Clone,
-            Copy,
-            Debug,
-            Eq,
-            Hash,
-            Ord,
-            PartialEq,
-            PartialOrd,
-            strum::AsRefStr,
-            strum::Display,
-            strum::EnumCount,
-            strum::EnumIs,
-            strum::EnumIter,
-            strum::EnumString,
-            strum::VariantArray,
-            strum::VariantNames,
-        )]
-        #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
-        #[repr(u8)]
-        #[strum(serialize_all = "lowercase")]
-        $vis enum $name {
-            $($key = $val),*
-        }
-
-        impl From<$name> for u8 {
-            fn from(interval: $name) -> u8 {
-                interval as u8
+    ($(default: $variant:ident$(,)?)?; $vis:vis enum $name:ident {$($key:ident = $val:literal),* $(,)?}) => {
+        unit_enum! {
+            $vis enum $name {
+                $($key = $val),*
             }
         }
 
-        impl From<u8> for $name {
-            fn from(interval: u8) -> $name {
+        enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
+
+        impl From<i8> for $name where {
+            fn from(interval: i8) -> $name {
                 use strum::EnumCount;
-                match interval % Self::COUNT as u8 {
+                match interval % Self::COUNT as i8 {
                     $($val => $name::$key),*,
                     _ => panic!("Invalid interval value: {}", interval),
                 }
             }
         }
+        enum_from_value!(u8 => $name {$($key: $val),*});
+        $(
+            impl Default for $name {
+                fn default() -> Self {
+                    $name::$variant
+                }
+            }
+        )?
+    };
+}
+
+macro_rules! enum_from_value {
+    ($T:ty => $name:ident {$($key:ident: $val:expr),* $(,)?}) => {
+
+        impl From<$T> for $name {
+            fn from(value: $T) -> Self {
+                use strum::EnumCount;
+                match value % Self::COUNT as $T {
+                    $(x if x == $val => Self::$key,)*
+                    _ => panic!("Invalid value {}", value),
+                }
+            }
+        }
+    };
+}
+
+macro_rules! enum_as {
+    ($name:ident: $($T:ty),* $(,)?) => {
+        $(
+            impl From<$name> for $T {
+                fn from(interval: $name) -> $T {
+                    interval as $T
+                }
+            }
+        )*
     };
 }

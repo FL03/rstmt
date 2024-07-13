@@ -11,7 +11,7 @@
 extern crate alloc;
 
 pub use self::errors::{Error, Result};
-pub use self::pitches::{Pitch, PitchClass};
+pub use self::pitch::{Pitch, PitchClass, PitchTy};
 pub use self::{primitives::*, types::prelude::*};
 
 #[macro_use]
@@ -20,14 +20,14 @@ pub(crate) mod primitives;
 
 pub mod errors;
 pub mod notes;
-pub mod pitches;
+pub mod pitch;
 pub mod traits;
 pub mod types;
 
 pub mod prelude {
     pub use super::errors::prelude::*;
     pub use super::notes::prelude::*;
-    pub use super::pitches::prelude::*;
+    pub use super::pitch::prelude::*;
     pub use super::primitives::prelude::*;
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;

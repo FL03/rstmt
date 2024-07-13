@@ -2,39 +2,39 @@
     Appellation: intervals <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::PitchTy;
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    strum::AsRefStr,
-    strum::Display,
-    strum::EnumCount,
-    strum::EnumIs,
-    strum::VariantNames,
-)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase")
-)]
-#[repr(u8)]
-#[strum(serialize_all = "lowercase")]
-pub enum Intervals {
-    Semitone = 1,
-    Tone = 2,
-    Thirds(Third),
-    Fourths(Fourth),
-    Fifths(Fifth),
-    Sevenths(Seventh),
+use num::traits::NumOps;
+
+pub trait IntervalOps<Rhs = Self>: NumOps<Rhs, PitchTy> {}
+
+unit_enum! {
+    rename: "lowercase";
+    #[derive(Default)]
+    pub enum Intervals {
+        #[default]
+        Semitone = 1,
+        Tone = 2,
+        Thirds(Third),
+        Fourths(Fourth),
+        Fifths(Fifth),
+        Sevenths(Seventh),
+    }
 }
 
 impl Intervals {
+    pub fn from_value(value: PitchTy) -> Self {
+        use Intervals::*;
+        match value {
+            1 => Semitone,
+            2 => Tone,
+            3..=4 => Thirds(Third::from(value)),
+            5 => Fourths(Fourth::from(value)),
+            6..=8 => Fifths(Fifth::from(value)),
+            9..=12 => Sevenths(Seventh::from(value)),
+            _ => panic!("Invalid interval value: {}", value),
+        }
+    }
     pub fn from_semitone() -> Self {
         Intervals::Semitone
     }
@@ -63,7 +63,7 @@ impl Intervals {
         self.as_ref()
     }
 
-    pub fn value(&self) -> i8 {
+    pub fn value(&self) -> PitchTy {
         match *self {
             Intervals::Semitone => 1,
             Intervals::Tone => 2,
@@ -100,6 +100,7 @@ impl From<Seventh> for Intervals {
 }
 
 interval! {
+    default: Major;
     pub enum Third {
         Minor = 3,
         Major = 4,
@@ -107,24 +108,27 @@ interval! {
 }
 
 interval! {
+    default: Perfect;
     pub enum Fourth {
         Perfect = 5,
     }
 }
 
 interval! {
+    default: Perfect;
     pub enum Fifth {
-        Augmented = 8,
-        Perfect = 7,
         Diminished = 6,
+        Perfect = 7,
+        Augmented = 8,
     }
 }
 
 interval! {
+    default: Diminished;
     pub enum Seventh {
-        Augmented = 12,
         Diminished = 9,
-        Major = 11,
         Minor = 10,
+        Major = 11,
+        Augmented = 12,
     }
 }

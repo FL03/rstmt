@@ -29,8 +29,9 @@ impl<T> ErrorKind for T where T: Clone + core::str::FromStr + core::fmt::Debug +
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "TitleCase")
+    serde(rename_all = "PascalCase")
 )]
+#[strum(serialize_all = "PascalCase")]
 pub enum MusicalError {
     InvalidInterval,
     InvalidPitch,
@@ -41,6 +42,7 @@ impl std::error::Error for MusicalError {}
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+
 pub struct Error<K = MusicalError> {
     pub kind: K,
     pub msg: String,

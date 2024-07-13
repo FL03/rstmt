@@ -2,7 +2,7 @@
     Appellation: pitches <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use triad_core::pitches::*;
+use triad_core::pitch::*;
 
 fn assert_ok<T, E>(result: Result<T, E>) -> T
 where
@@ -14,7 +14,7 @@ where
 
 #[test]
 fn test_pitch() {
-    let pitch = assert_ok(Pitches::from_value(12));
+    let pitch = assert_ok(Pitches::try_from_value(12));
     let rhs = Natural::C;
     assert_eq!(pitch, rhs.as_class());
 }
