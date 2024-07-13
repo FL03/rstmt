@@ -3,10 +3,16 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::{kinds::*, pitch::Pitch, utils::*};
+pub use self::{kinds::*, pitch::Pitch};
 
 pub(crate) mod kinds;
 pub(crate) mod pitch;
+
+pub(crate) mod prelude {
+    pub use super::kinds::*;
+    pub use super::{PitchClass, PitchTy};
+}
+
 
 /// A type alias for an integer representing a particular pitch of a note
 pub type PitchTy = i8;
@@ -22,6 +28,35 @@ pub trait PitchT: Copy + Sized + core::fmt::Display {
     }
     /// Find the modular index of the given pitch
     fn value(&self) -> PitchTy;
+}
+
+
+pub trait SharpPitch {
+    private!();
+}
+
+pub trait FlatPitch {
+    private!();
+}
+
+pub trait AccidentalPitch: PitchClass {
+    private!();
+}
+
+
+impl FlatPitch for Flat {
+    seal!();
+}
+
+impl SharpPitch for Sharp {
+    seal!();
+}
+impl AccidentalPitch for Sharp {
+    seal!();
+}
+
+impl AccidentalPitch for Flat {
+    seal!();
 }
 
 mod impl_pitches {
@@ -55,17 +90,5 @@ mod impl_pitches {
         fn value(&self) -> PitchTy {
             *self
         }
-    }
-}
-pub(crate) mod prelude {
-    pub use super::kinds::*;
-    pub use super::{PitchClass, PitchTy};
-}
-
-pub(crate) mod utils {
-
-    /// [absmod] is short for the absolute value of a modular number;
-    pub fn absmod(a: i64, m: i64) -> i64 {
-        (((a % m) + m) % m).abs()
     }
 }

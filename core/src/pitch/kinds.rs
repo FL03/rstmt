@@ -3,9 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PitchClass, PitchTy};
-use crate::Octave;
 
-pitch! {
+pitch_class! {
+    #[default(C)]
+    #[rename("lowercase")]
     pub enum Natural {
         C = 0,
         D = 2,
@@ -17,7 +18,8 @@ pitch! {
     }
 }
 
-pitch! {
+pitch_class! {
+    #[default(C)]
     pub enum Sharp {
         C = 1,
         D = 3,
@@ -27,7 +29,8 @@ pitch! {
     }
 }
 
-pitch! {
+pitch_class! {
+    #[default(D)]
     pub enum Flat {
         D = 1,
         E = 3,
@@ -37,42 +40,7 @@ pitch! {
     }
 }
 
-pub struct A {
-    pub(crate) octave: Octave,
-    pub(crate) pitch: PitchTy,
-}
 
-pub trait SharpPitch {
-    private!();
-}
-
-pub trait FlatPitch {
-    private!();
-}
-
-impl FlatPitch for A {
-    seal!();
-}
-
-impl FlatPitch for Flat {
-    seal!();
-}
-
-impl SharpPitch for Sharp {
-    seal!();
-}
-
-pub trait AccidentalPitch: PitchClass {
-    private!();
-}
-
-impl AccidentalPitch for Sharp {
-    seal!();
-}
-
-impl AccidentalPitch for Flat {
-    seal!();
-}
 
 #[derive(
     Clone,
@@ -140,28 +108,7 @@ impl From<Pitches> for PitchTy {
 
 impl From<PitchTy> for Pitches {
     fn from(value: PitchTy) -> Pitches {
-        Self::try_from_value(value).unwrap()
+        Self::try_from_value(value).unwrap_or_default()
     }
 }
 
-mod impl_kinds {
-    use super::*;
-
-    impl Default for Natural {
-        fn default() -> Self {
-            Natural::C
-        }
-    }
-
-    impl Default for Sharp {
-        fn default() -> Self {
-            Sharp::C
-        }
-    }
-
-    impl Default for Flat {
-        fn default() -> Self {
-            Flat::D
-        }
-    }
-}
