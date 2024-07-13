@@ -69,33 +69,57 @@ impl core::fmt::Display for Pitch {
 }
 
 macro_rules! impl_ops {
-    (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?$(=> $out:ty)? $(where $($rest:tt)*)?) => {
-        impl_ops!(@impl $name impls $trait.$call($name)$(<$T>)? $(=> $out)? $(where $($rest)*)?);
+    
+    (@base $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?($rhs:ident) -> $out:ty $(where $($w:tt)*)? {$($rest:tt)*}) => {
+        impl$(<$T>)? core::ops::$trait<$rhs> for $name $(where $($w)*)? {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
     };
-    (@impl $name:ident impls $trait:ident.$call:ident($rhs:ident)$(<$T:ident>)? $(where $($rest:tt)*)?) => {
-        impl_ops!(@impl $name impls $trait.$call($name)$(<$T>)? => Self $(where $($rest)*)?);
-    };
-    (@impl $name:ident impls $trait:ident.$call:ident($rhs:ident)$(<$T:ident>)? => $out:ty $(where $($rest:tt)*)?) => {
+    
+    (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?($rhs:ident) -> $out:ty $(where $($rest:tt)*)?) => {
         impl$(<$T>)? core::ops::$trait<$rhs> for $name $(where $($rest)*)? {
             type Output = $out;
 
             fn $call(self, rhs: $rhs) -> Self::Output {
-                ::core::ops::$trait::$call(self.0, rhs.0)
+                ::core::ops::$trait::$call(self.0, rhs.0).into()
             }
         }
+    };
+    (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)? -> $out:ty $(where $($rest:tt)*)?) => {
+        impl_ops!(@impl $name impls $trait.$call$(<$T>)?($name) -> $out $(where $($rest)*)?);
+    };
+    (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?$(($rhs:ident))? $(where $($rest:tt)*)?) => {
+        impl_ops!(@impl $name impls $trait.$call$(<$T>)?$(($rhs))? -> Self $(where $($rest)*)?);
     };
     ($name:ident impls $($rest:tt)*) => {
         impl_ops!(@impl $name impls $($rest)*);
     };
-    (numops: $($name:ident$(<$T:ident>)? $(=> $out:ty)?),* $(,)?) => {
+    
+}
+
+macro_rules! impl_pitch_ops {
+    ($name:ident -> $($out:ty),* $(,)?) => {
         $(
-            impl_ops!(@impl $name impls Add.add$(<$T>)? $(=> $out)?);
-            impl_ops!(@impl $name impls Div.div$(<$T>)? $(=> $out)?);
-            impl_ops!(@impl $name impls Mul.mul$(<$T>)? $(=> $out)?);
-            impl_ops!(@impl $name impls Rem.rem$(<$T>)? $(=> $out)?);
-            impl_ops!(@impl $name impls Sub.sub$(<$T>)? $(=> $out)?);
+            impl_ops!($name impls Add.add -> $out);
+            impl_ops!($name impls Div.div -> $out);
+            impl_ops!($name impls Mul.mul -> $out);
+            impl_ops!($name impls Rem.rem -> $out);
+            impl_ops!($name impls Sub.sub -> $out);
+        )*
+    };
+    ($name:ident<T> =>  -> $($out:ty $(where $(rest:tt)*)?),* $(,)?) => {
+        $(
+            impl_ops!($name impls Add.add<T> -> $out $(where $(rest)*)?);
+            impl_ops!($name impls Div.div<T> -> $out $(where $(rest)*)?);
+            impl_ops!($name impls Mul.mul<T> -> $out $(where $(rest)*)?);
+            impl_ops!($name impls Rem.rem<T> -> $out $(where $(rest)*)?);
+            impl_ops!($name impls Sub.sub<T> -> $out $(where $(rest)*)?);
         )*
     };
 }
 
-impl_ops!(numops: Pitch => i8);
+impl_pitch_ops!(Pitch -> i8);
