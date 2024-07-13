@@ -67,3 +67,35 @@ impl core::fmt::Display for Pitch {
         write!(f, "{}", self.0)
     }
 }
+
+macro_rules! impl_ops {
+    (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?$(=> $out:ty)? $(where $($rest:tt)*)?) => {
+        impl_ops!(@impl $name impls $trait.$call($name)$(<$T>)? $(=> $out)? $(where $($rest)*)?);
+    };
+    (@impl $name:ident impls $trait:ident.$call:ident($rhs:ident)$(<$T:ident>)? $(where $($rest:tt)*)?) => {
+        impl_ops!(@impl $name impls $trait.$call($name)$(<$T>)? => Self $(where $($rest)*)?);
+    };
+    (@impl $name:ident impls $trait:ident.$call:ident($rhs:ident)$(<$T:ident>)? => $out:ty $(where $($rest:tt)*)?) => {
+        impl$(<$T>)? core::ops::$trait<$rhs> for $name $(where $($rest)*)? {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                ::core::ops::$trait::$call(self.0, rhs.0)
+            }
+        }
+    };
+    ($name:ident impls $($rest:tt)*) => {
+        impl_ops!(@impl $name impls $($rest)*);
+    };
+    (numops: $($name:ident$(<$T:ident>)? $(=> $out:ty)?),* $(,)?) => {
+        $(
+            impl_ops!(@impl $name impls Add.add$(<$T>)? $(=> $out)?);
+            impl_ops!(@impl $name impls Div.div$(<$T>)? $(=> $out)?);
+            impl_ops!(@impl $name impls Mul.mul$(<$T>)? $(=> $out)?);
+            impl_ops!(@impl $name impls Rem.rem$(<$T>)? $(=> $out)?);
+            impl_ops!(@impl $name impls Sub.sub$(<$T>)? $(=> $out)?);
+        )*
+    };
+}
+
+impl_ops!(numops: Pitch => i8);

@@ -2,11 +2,22 @@
     Appellation: intervals <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::PitchTy;
+use crate::{notes::Note, PitchTy};
 
 use num::traits::NumOps;
 
 pub trait IntervalOps<Rhs = Self>: NumOps<Rhs, PitchTy> {}
+
+pub struct Interval<A, B> {
+    pub lhs: A,
+    pub rhs: B,
+}
+
+impl<A, B> Interval<A, B> {
+    pub fn new(lhs: A, rhs: B) -> Self {
+        Self { lhs, rhs }
+    }
+}
 
 unit_enum! {
     rename: "lowercase";

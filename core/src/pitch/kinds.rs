@@ -40,8 +40,6 @@ pitch_class! {
     }
 }
 
-
-
 #[derive(
     Clone,
     Copy,
@@ -111,4 +109,3 @@ impl From<PitchTy> for Pitches {
         Self::try_from_value(value).unwrap_or_default()
     }
 }
-

@@ -11,7 +11,7 @@ macro_rules! pitch_class {
         pitch_class!($(#[derive($($derive),*)])? $(#[default($default)])? #[rename("UPPERCASE")] $vis enum $name $($rest)*);
     };
     (@impl $(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? #[rename($rename:literal)] $vis:vis enum $name:ident $($rest:tt)*) => {
-        
+
         #[derive(
             Clone,
             Copy,
@@ -52,7 +52,7 @@ macro_rules! impl_pitch {
                 $group::try_from(value).ok()
             }
             pub fn try_from_value(value: $crate::PitchTy) -> $crate::Result<Self> {
-                match $crate::traits::PitchMod::pitchmod(&value) {
+                match $crate::PitchMod::pitchmod(&value) {
                     $(x if x == $value => Ok(Self::$class),)*
                     _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
                 }
@@ -83,7 +83,7 @@ macro_rules! impl_pitch {
             type Error = $crate::Error;
 
             fn try_from(value: $crate::PitchTy) -> Result<Self, Self::Error> {
-                match $crate::traits::PitchMod::pitchmod(&value) {
+                match $crate::PitchMod::pitchmod(&value) {
                     $(x if x == $value => Ok(Self::$class),)*
                     _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
                 }

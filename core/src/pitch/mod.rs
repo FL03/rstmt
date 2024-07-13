@@ -13,23 +13,12 @@ pub(crate) mod prelude {
     pub use super::{PitchClass, PitchTy};
 }
 
-
 /// A type alias for an integer representing a particular pitch of a note
 pub type PitchTy = i8;
 
 pub trait PitchClass {
     fn pitch(&self) -> PitchTy;
 }
-
-pub trait PitchT: Copy + Sized + core::fmt::Display {
-    /// Classify the pitch into a pitch class
-    fn class(&self) -> Pitches {
-        self.value().into()
-    }
-    /// Find the modular index of the given pitch
-    fn value(&self) -> PitchTy;
-}
-
 
 pub trait SharpPitch {
     private!();
@@ -42,7 +31,6 @@ pub trait FlatPitch {
 pub trait AccidentalPitch: PitchClass {
     private!();
 }
-
 
 impl FlatPitch for Flat {
     seal!();
@@ -61,34 +49,31 @@ impl AccidentalPitch for Flat {
 
 mod impl_pitches {
     use super::*;
+    use crate::Notable;
 
-    impl PitchT for Pitch {
+    impl Notable for Pitch {
         fn class(&self) -> Pitches {
             self.class()
         }
 
-        fn value(&self) -> PitchTy {
-            self.value()
-        }
-    }
-
-    impl PitchT for Pitches {
-        fn class(&self) -> Pitches {
-            self.clone()
-        }
-
-        fn value(&self) -> PitchTy {
-            self.class().into()
-        }
-    }
-
-    impl PitchT for PitchTy {
-        fn class(&self) -> Pitches {
-            Pitches::try_from_value(*self).unwrap()
-        }
-
-        fn value(&self) -> PitchTy {
+        fn pitch(&self) -> Pitch {
             *self
+        }
+    }
+
+    impl Notable for Pitches {
+        fn class(&self) -> Pitches {
+            *self
+        }
+
+        fn pitch(&self) -> Pitch {
+            Pitch(self.class().pitch())
+        }
+    }
+
+    impl Notable for PitchTy {
+        fn pitch(&self) -> Pitch {
+            Pitch(*self)
         }
     }
 }
