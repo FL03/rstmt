@@ -2,7 +2,9 @@
     Appellation: pitches <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use triad_core::pitch::*;
+extern crate rstmt_core as rstmt;
+
+use rstmt::pitch::*;
 
 fn assert_ok<T, E>(result: Result<T, E>) -> T
 where

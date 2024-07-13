@@ -1,6 +1,6 @@
 [workspace]
 default-members = [
-    "triad"
+    "rstmt"
 ]
 
 exclude = [
@@ -9,7 +9,8 @@ exclude = [
 
 members = [
     "core",
-    "triad",
+    "neo",
+    "rstmt",
 ]
 
 resolver = "2"

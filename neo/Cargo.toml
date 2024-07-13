@@ -7,15 +7,13 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "rstmt-core"
+name = "rstmt-neo"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "std",
-]
+default = []
 
 full = [
     "default",
@@ -24,25 +22,15 @@ full = [
 ]
 
 # [FF] Dependencies
-alloc = [
-    "num/alloc",
-    "serde?/alloc",
-]
-
 rand = [
     "num/rand",
+    "rstmt-core/rand",
 ]
 
 serde = [
     "dep:serde",
-]
-
-# ********* [FF] Environments *********
-std = [
-    "alloc",
-    "num/std",
-    "serde?/std",
-    "strum/std",
+    "petgraph/serde",
+    "rstmt-core/serde",
 ]
 
 [lib]
@@ -54,22 +42,18 @@ test = true
 [build-dependencies]
 
 [dependencies]
-smart-default.workspace = true
-
-[dependencies.num]
-default-features = false
-version = "0.4"
+num = "0.4"
+petgraph = "0.6"
+strum.workspace = true
 
 [dependencies.serde]
-default-features = false
 features = ["derive"]
 optional = true
 version = "1"
 
-[dependencies.strum]
-default-features = false
-features = ["derive"]
-version = "0.26"
+[dependencies.rstmt-core]
+path = "../core"
+version = "0.0.1"
 
 [dev-dependencies]
 lazy_static.workspace = true

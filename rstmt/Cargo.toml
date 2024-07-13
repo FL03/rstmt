@@ -7,39 +7,47 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "triad"
+name = "rstmt"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
 default = [
-
+    "std",
 ]
 
 full = [
     "default",
+    "neo",
     "rand",
     "serde",
 ]
 
-# [FF] Dependencies
+# ********* [FF] Features *********
+neo = [
+    "dep:rstmt-neo",
+]
+
+# ********* [FF] Dependencies *********
+alloc = [
+    "rstmt-core/alloc",
+]
+
 rand = [
-    "num/rand",
+    "rstmt-core/rand",
+    "rstmt-neo?/rand",
 ]
 
 serde = [
-    "dep:serde",
-    "petgraph/serde",
-    "triad-core/serde",
+    "rstmt-core/serde",
+    "rstmt-neo?/serde",
 ]
 
 # ********* [FF] Environments *********
-
-
-wasm = []
-
-wasi = []
+std = [
+    "rstmt-core/std",
+]
 
 [lib]
 bench = true
@@ -47,29 +55,17 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
-[build-dependencies]
-
-[dependencies]
-num = "0.4"
-petgraph = "0.6"
-strum.workspace = true
-
-[dependencies.serde]
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.triad-core]
+[dependencies.rstmt-core]
+default-features = false
 path = "../core"
 version = "0.0.1"
 
-[dev-dependencies]
-lazy_static.workspace = true
+[dependencies.rstmt-neo]
+default-features = false
+optional = true
+path = "../neo"
+version = "0.0.1"
 
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
-
-[target.wasm32-unknown-unknown.dependencies]
-
-[target.wasm32-wasi]
