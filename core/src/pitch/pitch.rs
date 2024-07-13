@@ -13,7 +13,7 @@ impl Pitch {
         Self(pitch)
     }
     /// Returns a new instance of the class representing the given pitch.
-    pub fn as_class(&self) -> Pitches {
+    pub fn class(&self) -> Pitches {
         Pitches::try_from_value(self.0).unwrap()
     }
     /// Consumes the pitch; returns a new instance of the class representing the given pitch.

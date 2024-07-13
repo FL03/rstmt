@@ -64,7 +64,7 @@ mod impl_pitches {
 
     impl PitchT for Pitch {
         fn class(&self) -> Pitches {
-            self.as_class()
+            self.class()
         }
 
         fn value(&self) -> PitchTy {
