@@ -16,7 +16,8 @@ where
 
 #[test]
 fn test_pitch() {
-    let pitch = Pitch::new(12);
+    let pitch = Pitch::new(0);
+    assert_eq!(pitch.class(), Pitch::new(12).class());
     let b = pitch + 1;
 
     assert_ne!(pitch, b);

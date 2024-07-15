@@ -55,6 +55,10 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
+[dev-dependencies]
+anyhow.workspace = true
+num = "0.4"
+
 [dependencies.rstmt-core]
 default-features = false
 path = "../core"

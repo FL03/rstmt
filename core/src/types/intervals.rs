@@ -144,3 +144,10 @@ interval! {
         Augmented = 12,
     }
 }
+
+impl Fifth {
+    pub fn from_thirds(lhs: Third, rhs: Third) -> Self {
+        let value = lhs as i8 + rhs as i8;
+        Self::from(value)
+    }
+}

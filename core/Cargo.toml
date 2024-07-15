@@ -54,6 +54,8 @@ test = true
 [build-dependencies]
 
 [dependencies]
+lazy_static.workspace = true
+paste.workspace = true
 smart-default.workspace = true
 
 [dependencies.num]
