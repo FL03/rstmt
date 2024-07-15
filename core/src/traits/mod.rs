@@ -5,6 +5,7 @@
 #[doc(inline)]
 pub use self::notable::Notable;
 
+#[doc(hidden)]
 pub mod harmonic;
 pub mod notable;
 pub mod symbols;

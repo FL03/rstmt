@@ -2,7 +2,7 @@
     Appellation: note <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{IntoPitch, Octave, Pitch};
+use crate::{IntoPitch, Octave, Pitch, Pitches};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -24,6 +24,10 @@ impl Note {
             pitch: pitch.into_pitch(),
         }
     }
+    pub fn class(&self) -> Pitches {
+        self.pitch.class()
+    }
+
     /// Returns an instance of the note's octave
     pub fn octave(&self) -> Octave {
         self.octave
@@ -63,7 +67,7 @@ impl Note {
 
 impl core::fmt::Display for Note {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}.{}", self.pitch, self.octave)
+        write!(f, "{}.{}", self.class(), self.octave)
     }
 }
 

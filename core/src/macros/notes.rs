@@ -2,9 +2,10 @@
     Appellation: notes <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![allow(unused)]
 
 macro_rules! notes {
-    ($($suffix:literal)? $name:ident {$($cls:ident($value:expr)),* $(,)?} ) => {
+    ($(suffix: $suffix:literal;)? $name:ident {$($cls:ident($value:expr)),* $(,)?} ) => {
 
         paste::paste! {
             #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

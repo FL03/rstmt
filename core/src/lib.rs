@@ -15,7 +15,7 @@ pub use self::{
     error::{Error, MusicalError, Result},
     intervals::*, 
     notes::Note,
-    pitch::{IntoPitch, Pitch, PitchClass, PitchTy},
+    pitch::{IntoPitch, Pitch, Pitches, PitchTy},
     primitives::*,
     utils::*,
 };
@@ -37,6 +37,7 @@ pub mod types;
 
 pub mod prelude {
     pub use super::error::prelude::*;
+    pub use super::intervals::prelude::*;
     pub use super::notes::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::pitch::prelude::*;
