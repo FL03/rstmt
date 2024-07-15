@@ -16,7 +16,17 @@ where
 
 #[test]
 fn test_pitch() {
+    let pitch = Pitch::new(12);
+    let b = pitch + 1;
+
+    assert_ne!(pitch, b);
+    assert_eq!(b, Pitch::new(1));
+}
+
+#[test]
+fn test_pitch_class() {
     let pitch = assert_ok(Pitches::try_from_value(12));
     let rhs = Natural::C;
     assert_eq!(pitch, rhs.as_class());
+    assert_eq!(pitch.pitch(), 0);
 }

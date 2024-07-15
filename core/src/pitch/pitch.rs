@@ -122,4 +122,39 @@ macro_rules! impl_pitch_ops {
     };
 }
 
+macro_rules! impl_std_ops {
+    (@impl $trait:ident.$call:ident) => {
+        impl<P> core::ops::$trait<P> for Pitch
+        where
+            PitchTy: core::ops::$trait<P, Output = PitchTy>,
+        {
+            type Output = Pitch;
+
+            fn $call(self, rhs: P) -> Self::Output {
+                let p = ::core::ops::$trait::$call(self.0, rhs);
+                Pitch(p)
+            }
+        }
+
+        impl<'a, P> core::ops::$trait<P> for &'a Pitch
+        where
+            PitchTy: core::ops::$trait<P, Output = PitchTy>,
+        {
+            type Output = Pitch;
+
+            fn $call(self, rhs: P) -> Self::Output {
+                let p = ::core::ops::$trait::$call(self.0, rhs);
+                Pitch(p)
+            }
+        }
+    };
+    ($($trait:ident.$call:ident),* $(,)?) => {
+        $(
+            impl_std_ops!(@impl $trait.$call);
+        )*
+    };
+}
+
+impl_std_ops!(Add.add, Div.div, Mul.mul, Rem.rem, Sub.sub);
+
 impl_pitch_ops!(Pitch -> i8);
