@@ -2,21 +2,7 @@
     Appellation: intervals <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Notable, Pitch};
-use num::traits::NumOps;
-
-pub trait IntervalOps<Rhs = Self>: NumOps<Rhs, Pitch> {}
-
-pub struct Interval<A, B> {
-    pub lhs: A,
-    pub rhs: B,
-}
-
-impl<A, B> Interval<A, B> {
-    pub fn new(lhs: A, rhs: B) -> Self {
-        Self { lhs, rhs }
-    }
-}
+use crate::{IntoPitch, Pitch};
 
 unit_enum! {
     rename: "lowercase";
@@ -33,57 +19,67 @@ unit_enum! {
 }
 
 impl Intervals {
-    pub fn from_value(value: impl Notable) -> Self {
+    pub fn from_value(value: impl IntoPitch) -> Self {
         use Intervals::*;
-        let pitch = value.pitch();
+        let pitch = value.into_pitch();
         match *pitch {
             1 => Semitone,
             2 => Tone,
-            3..=4 => Thirds(Third::from(pitch.value())),
-            5 => Fourths(Fourth::from(pitch.value())),
-            6..=8 => Fifths(Fifth::from(pitch.value())),
-            9..=12 => Sevenths(Seventh::from(pitch.value())),
+            3 => Thirds(Third::Minor),
+            4 => Thirds(Third::Major),
+            5 => Fourths(Fourth::Perfect),
+            6 => Fifths(Fifth::Diminished),
+            7 => Fifths(Fifth::Perfect),
+            8 => Fifths(Fifth::Augmented),
+            9 => Sevenths(Seventh::Diminished),
+            10 => Sevenths(Seventh::Minor),
+            11 => Sevenths(Seventh::Major),
+            12 => Sevenths(Seventh::Augmented),
+
             _ => panic!("Invalid interval value: {}", pitch.value()),
         }
     }
-    pub fn from_semitone() -> Self {
+    pub fn semitone() -> Self {
         Intervals::Semitone
     }
 
-    pub fn from_tone() -> Self {
+    pub fn tone() -> Self {
         Intervals::Tone
     }
 
-    pub fn from_thirds(third: Third) -> Self {
+    pub fn third(third: Third) -> Self {
         Intervals::Thirds(third)
     }
 
-    pub fn from_fourths(fourth: Fourth) -> Self {
+    pub fn fourth(fourth: Fourth) -> Self {
         Intervals::Fourths(fourth)
     }
 
-    pub fn from_fifths(fifth: Fifth) -> Self {
+    pub fn fifth(fifth: Fifth) -> Self {
         Intervals::Fifths(fifth)
     }
 
-    pub fn from_sevenths(seventh: Seventh) -> Self {
+    pub fn seventh(seventh: Seventh) -> Self {
         Intervals::Sevenths(seventh)
+    }
+    /// Interpret the current interval as a pitch.
+    pub fn as_pitch(&self) -> Pitch {
+        Pitch::from(self.value())
     }
 
     pub fn name(&self) -> &str {
         self.as_ref()
     }
 
-    pub fn value(&self) -> Pitch {
-        let p = match *self {
+    pub fn value(&self) -> i8 {
+        match *self {
             Intervals::Semitone => 1,
             Intervals::Tone => 2,
             Intervals::Thirds(third) => third as i8,
             Intervals::Fourths(fourth) => fourth as i8,
             Intervals::Fifths(fifth) => fifth as i8,
             Intervals::Sevenths(seventh) => seventh as i8,
-        };
-        Pitch(p)
+        }
     }
 }
 
@@ -148,6 +144,11 @@ interval! {
 impl Fifth {
     pub fn from_thirds(lhs: Third, rhs: Third) -> Self {
         let value = lhs as i8 + rhs as i8;
-        Self::from(value)
+        match value {
+            6 => Fifth::Diminished,
+            7 => Fifth::Perfect,
+            8 => Fifth::Augmented,
+            _ => panic!("Invalid fifth value: {}", value),
+        }
     }
 }

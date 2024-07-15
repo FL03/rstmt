@@ -95,7 +95,7 @@ impl Pitches {
 
 impl PitchClass for Pitches {
     seal!();
-    
+
     fn pitch(&self) -> PitchTy {
         self.pitch()
     }

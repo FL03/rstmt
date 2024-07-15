@@ -6,8 +6,6 @@
 macro_rules! pitch {
     (@impl $class:ident($mud:expr, flat: $flat:expr, sharp: $sharp:expr) ) => {
         pub struct $class;
-
-        
     };
 }
 

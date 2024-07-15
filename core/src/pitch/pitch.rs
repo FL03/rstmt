@@ -33,6 +33,14 @@ impl Pitch {
     pub fn value(&self) -> PitchTy {
         self.0
     }
+
+    impl_binop_method! {
+        Add.add -> Self,
+        Sub.sub -> Self,
+        Mul.mul -> Self,
+        Div.div -> Self,
+        Rem.rem -> Self
+    }
 }
 
 impl AsRef<PitchTy> for Pitch {
@@ -161,4 +169,3 @@ impl From<Pitch> for Pitches {
         Pitches::try_from_value(pitch.0).unwrap()
     }
 }
-

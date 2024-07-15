@@ -20,7 +20,7 @@ pub mod consts {
 pub mod statics {
     use lazy_static::lazy_static;
     use regex::Regex;
-    
+
     lazy_static! {
         static ref REGEX_PITCH: Regex = Regex::new("^[ABCDEFGabcdefg][b♭♯#s𝄪x]*").unwrap();
     }

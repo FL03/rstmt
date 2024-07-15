@@ -87,8 +87,6 @@ where
         }
     }
 
-
-
     pub fn kind(&self) -> &K {
         &self.kind
     }

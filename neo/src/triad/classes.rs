@@ -2,7 +2,7 @@
     Appellation: classes <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use rstmt::{Fifth, Third};
+use rstmt::{Fifth, Note, Third};
 
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
@@ -10,7 +10,7 @@ use rstmt::{Fifth, Third};
 pub trait TriadKind {
     private!();
 
-    fn is_valid(notes: &[u8; 3]) -> bool {
+    fn is_valid(notes: &[Note; 3]) -> bool {
         Self::class().validate(notes)
     }
 
@@ -23,7 +23,7 @@ pub trait TriadKind {
             Triads::Augmented
         } else {
             Triads::Diminished
-        } 
+        }
     }
 
     fn thirds() -> (Third, Third) {
@@ -150,13 +150,13 @@ impl Triads {
         Triads::Minor
     }
 
-    pub fn validate(&self, notes: &[u8; 3]) -> bool {
+    pub fn validate(&self, notes: &[Note; 3]) -> bool {
         // the interval between the root and the third must be a third
         let rt = notes[1] - notes[0];
         // the interval between the third and the fifth must be a third
         let tf = notes[2] - notes[1];
-        
-        Third::try_from(rt).is_ok() && Third::try_from(tf).is_ok()
+
+        Third::try_from(rt.pitch()).is_ok() && Third::try_from(tf.pitch()).is_ok()
     }
 
     pub fn thirds(&self) -> (Third, Third) {

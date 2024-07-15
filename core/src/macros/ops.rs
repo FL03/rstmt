@@ -3,6 +3,22 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+macro_rules! impl_binop_method {
+    (@impl $trait:ident.$call:ident -> $out:ty) => {
+        paste::paste! {
+            pub fn [<$call _interval>](&self, interval: $crate::Intervals) -> $out {
+                let p = core::ops::$trait::$call(self.value(), interval.value());
+                Self::new(p)
+            }
+        }
+    };
+    ($($trait:ident.$call:ident -> $out:ty),* $(,)?) => {
+        $(
+            impl_binop_method!(@impl $trait.$call -> $out);
+        )*
+    };
+}
+
 macro_rules! wrapper_ops {
     (@impl $name:ident::<$type:ty>::$trait:ident.$call:ident) => {
         impl core::ops::$trait<$name> for $name {

@@ -2,36 +2,36 @@
     Appellation: note <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Notable, Octave, Pitch};
+use crate::{IntoPitch, Octave, Pitch};
 
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Note<P = Pitch> {
+pub struct Note {
     pub(crate) octave: Octave,
-    pub(crate) pitch: P,
+    pub(crate) pitch: Pitch,
 }
 
-impl<P> Note<P>
-where
-    P: Notable,
-{
-    pub fn new(octave: Octave, pitch: P) -> Self {
-        Self { octave, pitch }
+impl Note {
+    pub fn new(pitch: Pitch) -> Self {
+        Self {
+            octave: Octave::default(),
+            pitch,
+        }
     }
-    /// Returns an owned instance of the note's octave
-    pub const fn octave(&self) -> &Octave {
-        &self.octave
+    /// Returns an instance of the note's octave
+    pub fn octave(&self) -> Octave {
+        self.octave
     }
     /// Returns a mutable reference to the note's octave
     pub fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
     }
     /// Returns an owned instance of the note's pitch
-    pub const fn pitch(&self) -> &P {
-        &self.pitch
+    pub fn pitch(&self) -> Pitch {
+        self.pitch
     }
     /// Returns a mutable reference to the note's pitch
-    pub fn pitch_mut(&mut self) -> &mut P {
+    pub fn pitch_mut(&mut self) -> &mut Pitch {
         &mut self.pitch
     }
     /// Sets the note's octave
@@ -39,7 +39,7 @@ where
         self.octave = octave;
     }
     /// Sets the note's pitch
-    pub fn set_pitch(&mut self, pitch: P) {
+    pub fn set_pitch(&mut self, pitch: Pitch) {
         self.pitch = pitch;
     }
     /// Returns a new instance of the note with the given octave
@@ -47,36 +47,27 @@ where
         Self { octave, ..self }
     }
     /// Returns a new instance of the note with the given pitch
-    pub fn with_pitch<P2>(self, pitch: P2) -> Note<P2>
-    where
-        P2: Notable,
-    {
+    pub fn with_pitch(self, pitch: impl IntoPitch) -> Note {
         Note {
             octave: self.octave,
-            pitch,
+            pitch: pitch.into_pitch(),
         }
     }
 }
 
-impl<P> core::fmt::Display for Note<P>
-where
-    P: Notable,
-{
+impl core::fmt::Display for Note {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.pitch, self.octave)
     }
 }
 
-unsafe impl<P> Send for Note<P> where P: Send {}
+unsafe impl Send for Note {}
 
-unsafe impl<P> Sync for Note<P> where P: Sync {}
+unsafe impl Sync for Note {}
 
 macro_rules! impl_std_ops {
     (@impl $trait:ident.$call:ident($rhs:ty) -> $out:ty) => {
-        impl<P> core::ops::$trait<$rhs> for Note<P>
-        where
-            P: $crate::Notable + core::ops::$trait<Output = P>,
-        {
+        impl core::ops::$trait<$rhs> for Note {
             type Output = $out;
 
             fn $call(self, rhs: $rhs) -> Self::Output {
@@ -87,10 +78,7 @@ macro_rules! impl_std_ops {
             }
         }
 
-        impl<'a, P> core::ops::$trait<&'a $rhs> for Note<P>
-        where
-            P: $crate::Notable + core::ops::$trait<Output = P>,
-        {
+        impl<'a> core::ops::$trait<&'a $rhs> for Note {
             type Output = $out;
 
             fn $call(self, rhs: &'a $rhs) -> Self::Output {
@@ -101,10 +89,7 @@ macro_rules! impl_std_ops {
             }
         }
 
-        impl<'a, P> core::ops::$trait<$rhs> for &'a Note<P>
-        where
-            P: $crate::Notable + core::ops::$trait<Output = P>,
-        {
+        impl<'a> core::ops::$trait<$rhs> for &'a Note {
             type Output = $out;
 
             fn $call(self, rhs: $rhs) -> Self::Output {
@@ -115,10 +100,7 @@ macro_rules! impl_std_ops {
             }
         }
 
-        impl<'a, P> core::ops::$trait<&'a $rhs> for &'a Note<P>
-        where
-            P: $crate::Notable + core::ops::$trait<Output = P>,
-        {
+        impl<'a> core::ops::$trait<&'a $rhs> for &'a Note {
             type Output = $out;
 
             fn $call(self, rhs: &'a $rhs) -> Self::Output {
@@ -129,11 +111,12 @@ macro_rules! impl_std_ops {
             }
         }
     };
+
     (@impl $trait:ident.$call:ident($rhs:ty)) => {
-        impl_std_ops!(@impl $trait.$call($rhs) -> Note<P>);
+        impl_std_ops!(@impl $trait.$call($rhs) -> Note);
     };
     (@impl $trait:ident.$call:ident $(-> $out:ty)?) => {
-        impl_std_ops!(@impl $trait.$call(Note<P>) $(-> $out)?);
+        impl_std_ops!(@impl $trait.$call(Note) $(-> $out)?);
     };
     ($($trait:ident.$call:ident$(($rhs:ty))? $(-> $out:ty)?),* $(,)?) => {
         $(
@@ -143,3 +126,61 @@ macro_rules! impl_std_ops {
 }
 
 impl_std_ops!(Add.add, Div.div, Mul.mul, Rem.rem, Sub.sub);
+
+macro_rules! impl_binop_assign {
+    (@impl $name:ident::$trait:ident.$call:ident) => {};
+}
+
+macro_rules! operator {
+    (@base $trait:ident.$call:ident($lhs:ty, $rhs:ty) -> $out:ty {$($rest:tt)*}) => {
+        impl core::ops::$trait<$rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+    };
+    (@a $trait:ident.$call:ident($lhs:ty, $rhs:ty) -> $out:ty {$e:expr}) => {
+        operator!(@base $trait.$call($lhs, $rhs) -> $out {$e($lhs, $rhs)});
+    };
+
+    (@impl $trait:ident.$call:ident($lhs:ty, $rhs:ty) -> $out:ty {$e:expr}) => {
+        impl core::ops::$trait<$rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $e(self, rhs)
+            }
+        }
+
+        impl<'a> core::ops::$trait<&'a $rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output {
+                $e(self, *rhs)
+            }
+        }
+
+        impl<'a> core::ops::$trait<$rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $e(*self, rhs)
+            }
+        }
+
+        impl<'a> core::ops::$trait<&'a $rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output {
+                $e(*self, *rhs)
+            }
+        }
+    };
+    ($($trait:ident.$call:ident(self: $lhs:ty, rhs: $rhs:ty) -> $out:ty {$e:expr}),* $(,)?) => {
+        $(
+            operator!(@impl $trait.$call($lhs, $rhs) -> $out {$e});
+        )*
+    };
+}

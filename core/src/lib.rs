@@ -12,9 +12,9 @@ extern crate alloc;
 
 #[doc(inline)]
 pub use self::{
-    error::{Error, Result},
+    error::{Error, MusicalError, Result},
     notes::Note,
-    pitch::{Pitch, PitchClass, PitchTy},
+    pitch::{IntoPitch, Pitch, PitchClass, PitchTy},
     primitives::*,
 };
 #[doc(inline)]

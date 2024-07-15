@@ -19,22 +19,35 @@ macro_rules! interval {
             pub fn validate(value: i8) -> bool {
                 Self::try_from(value).is_ok()
             }
-
-
         }
 
         enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
-        impl From<i8> for $name where {
-            fn from(interval: i8) -> $name {
-                use strum::EnumCount;
-                match interval % Self::COUNT as i8 {
-                    $($val => $name::$key),*,
-                    _ => panic!("Invalid interval value: {}", interval),
+        impl $crate::Interval for $name {
+            fn value(&self) -> i8 {
+                *self as i8
+            }
+        }
+
+        impl TryFrom<i8> for $name where {
+            type Error = $crate::error::MusicalError;
+
+            fn try_from(interval: i8) -> Result<$name, Self::Error> {
+                match interval {
+                    $($val => Ok($name::$key)),*,
+                    _ => Err($crate::error::MusicalError::InvalidInterval),
                 }
             }
         }
-        enum_from_value!(u8 => $name {$($key: $val),*});
+
+        impl TryFrom<$crate::Pitch> for $name where {
+            type Error = $crate::error::MusicalError;
+
+            fn try_from(interval: $crate::Pitch) -> Result<$name, Self::Error> {
+                Self::try_from(interval.0)
+            }
+        }
+
         $(
             impl Default for $name {
                 fn default() -> Self {

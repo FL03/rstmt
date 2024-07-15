@@ -54,14 +54,8 @@ pub trait TriadData {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
-impl<K: TriadKind> IntoTriad<K> for [u8; 3] {
-    fn into_triad(self) -> Triad<K> {
-        Triad::from_slice(self).unwrap()
-    }
-}
-
 impl<T> TriadData for [T; 3] {
     type Elem = T;
 

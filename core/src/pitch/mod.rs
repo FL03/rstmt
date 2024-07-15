@@ -44,7 +44,10 @@ pub trait Accidentals: PitchClass {
 /*
  ************* Implementations *************
 */
-impl<S> IntoPitch for S where S: Into<Pitch> {
+impl<S> IntoPitch for S
+where
+    S: Into<Pitch>,
+{
     fn into_pitch(self) -> Pitch {
         self.into()
     }

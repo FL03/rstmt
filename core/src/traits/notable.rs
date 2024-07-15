@@ -2,7 +2,10 @@
     Appellation: notable <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::pitch::{Pitch, PitchTy, Pitches};
+use crate::{
+    pitch::{Pitch, PitchTy, Pitches},
+    Intervals,
+};
 
 pub trait Notable: Copy + Sized + core::fmt::Display {
     /// Classify the pitch into a pitch class
@@ -13,9 +16,19 @@ pub trait Notable: Copy + Sized + core::fmt::Display {
     fn pitch(&self) -> Pitch;
 }
 
+pub trait Interval {
+    fn value(&self) -> i8;
+}
+
 /*
  ************* Implementations *************
 */
+impl Interval for Intervals {
+    fn value(&self) -> i8 {
+        self.value()
+    }
+}
+
 impl Notable for Pitch {
     fn class(&self) -> Pitches {
         self.class()
