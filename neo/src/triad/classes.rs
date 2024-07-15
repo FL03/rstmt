@@ -9,6 +9,12 @@ use rstmt::{Fifth, Note, Third};
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
 pub trait TriadKind {
     private!();
+    /// Returns a new instance of [PhantomData](core::marker::PhantomData);
+    /// This method is the only possible constructor for these objects,
+    /// a charecteristic enfored with 0-variant enum declarations.
+    fn phantom() -> core::marker::PhantomData<Self> {
+        core::marker::PhantomData::<Self>
+    }
 
     fn is_valid(notes: &[Note; 3]) -> bool {
         Self::class().validate(notes)

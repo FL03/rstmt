@@ -46,6 +46,7 @@ num = "0.4"
 paste.workspace = true
 petgraph = "0.6"
 strum.workspace = true
+thiserror = "1"
 
 [dependencies.serde]
 features = ["derive"]

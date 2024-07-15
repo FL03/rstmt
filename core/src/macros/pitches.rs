@@ -3,11 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-macro_rules! pitch {
-    (@impl $class:ident($mud:expr, flat: $flat:expr, sharp: $sharp:expr) ) => {
-        pub struct $class;
-    };
-}
+
 
 macro_rules! pitch_class {
     ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {

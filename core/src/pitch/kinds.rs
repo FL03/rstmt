@@ -7,7 +7,6 @@ use crate::error::{Error, MusicalError};
 
 pitch_class! {
     #[default(C)]
-    #[rename("lowercase")]
     pub enum Natural {
         C = 0,
         D = 2,

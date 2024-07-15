@@ -16,13 +16,15 @@ pub use self::{
     notes::Note,
     pitch::{IntoPitch, Pitch, PitchClass, PitchTy},
     primitives::*,
+    utils::*,
 };
 #[doc(inline)]
-pub use self::{ops::prelude::*, traits::prelude::*, types::prelude::*};
+pub use self::{ops::prelude::*, traits::prelude::*, types::prelude::*,};
 
 #[macro_use]
 pub(crate) mod macros;
 pub(crate) mod primitives;
+pub(crate) mod utils;
 
 pub mod error;
 pub mod notes;
@@ -39,4 +41,5 @@ pub mod prelude {
     pub use super::primitives::prelude::*;
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
+    pub use super::utils::*;
 }

@@ -12,10 +12,16 @@ pub struct Note {
 }
 
 impl Note {
-    pub fn new(pitch: Pitch) -> Self {
+    pub fn new(octave: Octave, pitch: impl IntoPitch) -> Self {
+        Self {
+            octave,
+            pitch: pitch.into_pitch(),
+        }
+    }
+    pub fn from_pitch(pitch: impl IntoPitch) -> Self {
         Self {
             octave: Octave::default(),
-            pitch,
+            pitch: pitch.into_pitch(),
         }
     }
     /// Returns an instance of the note's octave

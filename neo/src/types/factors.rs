@@ -46,7 +46,7 @@ use strum::IntoEnumIterator;
         strum::VariantNames
     )
 )]
-#[repr(u8)]
+#[repr(usize)]
 #[strum(serialize_all = "lowercase")]
 pub enum ChordFactor<T = ()> {
     #[strum(serialize = "r", serialize = "root")]
@@ -105,7 +105,8 @@ mod impl_factors {
 
     impl From<usize> for Factors {
         fn from(x: usize) -> Self {
-            match x % 3 {
+            use strum::EnumCount;
+            match x % Self::COUNT {
                 0 => Factors::Root,
                 1 => Factors::Third,
                 _ => Factors::Fifth,

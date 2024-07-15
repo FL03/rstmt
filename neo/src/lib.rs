@@ -9,6 +9,7 @@ extern crate rstmt_core as rstmt;
 
 #[doc(inline)]
 pub use self::{
+    error::{TriadError, TriadResult},
     triad::{Triad, TriadBuilder},
     types::*,
     utils::*,
@@ -18,6 +19,7 @@ pub use self::{
 pub(crate) mod macros;
 pub(crate) mod utils;
 
+pub mod error;
 pub mod space;
 pub mod tonnetz;
 pub mod transform;
@@ -25,6 +27,7 @@ pub mod triad;
 pub mod types;
 
 pub mod prelude {
+    pub use crate::error::{TriadError, TriadResult};
     pub use crate::space::prelude::*;
     pub use crate::tonnetz::prelude::*;
     pub use crate::transform::prelude::*;
