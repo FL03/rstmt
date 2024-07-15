@@ -5,8 +5,12 @@
 #[doc(inline)]
 pub use self::notable::Notable;
 
+pub mod harmonic;
 pub mod notable;
+pub mod symbols;
 
 pub(crate) mod prelude {
+    pub use super::harmonic::*;
     pub use super::notable::*;
+    pub use super::symbols::*;
 }

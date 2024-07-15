@@ -5,8 +5,8 @@
 extern crate rstmt_core as rstmt;
 extern crate rstmt_neo as neo;
 
+use neo::triad::{Major, Triad};
 use rstmt::Note;
-use neo::triad::{Triad, Major};
 
 #[test]
 fn test_traid() {

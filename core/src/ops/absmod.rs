@@ -3,8 +3,32 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::pitch::PitchTy;
-use num::traits::Signed;
 
+/// The [`PyMod`] trait, inpired by pythons `%` operator, describes a method for finding
+/// the modulo between two numbers which, rather uniquely, preserves the sign of the
+/// _denominator_.
+///
+/// ### Example
+///
+/// ```rust
+/// use rstmt_core::PyMod;
+///
+/// let m = 12;
+/// assert_eq!(22.pymod(m), 10);
+/// assert_eq!(-17.pymod(m), -5);
+///
+/// ```
+pub trait PyMod<Rhs = Self> {
+    type Output;
+
+    fn pymod(&self, rhs: Rhs) -> Self::Output;
+}
+
+/// This trait further generalizes [PyMod] by returning the absolute value of the result;
+/// dropping all signs in the process. This method is particularly useful when working
+/// in environments where the magnitude of the result is more important than the sign.
+///
+/// ### Example
 pub trait AbsMod<Rhs = Self> {
     type Output;
 
@@ -20,24 +44,95 @@ pub trait PitchMod {
 
 impl<S> PitchMod for S
 where
-    S: AbsMod<PitchTy>,
+    S: PyMod<PitchTy>,
 {
-    type Output = <S as AbsMod<PitchTy>>::Output;
+    type Output = <S as PyMod<PitchTy>>::Output;
 
     fn pitchmod(&self) -> Self::Output {
-        self.absmod(Self::MOD)
+        self.pymod(Self::MOD)
     }
 }
 
 /*
  ************* Implementations *************
 */
+use core::ops::{Add, Rem};
+use num::traits::{Num, Signed};
+
+pub trait Floor {
+    type Output;
+
+    fn floor(self) -> Self::Output;
+}
+
+pub trait FloorDiv<Rhs = Self> {
+    type Output;
+
+    fn floor_div(self, rhs: Rhs) -> Self::Output;
+}
+
+macro_rules! impl_floor_div {
+    (@float $t:ty) => {
+        impl<T, O> FloorDiv<T> for $t where $t: ::core::ops::Div<T, Output = O> {
+            type Output = O;
+
+            fn floor_div(self, rhs: T) -> Self::Output {
+                (self / rhs).floor()
+            }
+        }
+    };
+    (@impl f32) => {
+        impl_floor_div!(@float f32);
+    };
+    (@impl f64) => {
+        impl_floor_div!(@float f64);
+    };
+    (@impl $t:ty) => {
+        impl<T, O> FloorDiv<T> for $t where $t: ::core::ops::Div<T, Output = O> {
+            type Output = O;
+
+            fn floor_div(self, rhs: T) -> Self::Output {
+                self / rhs
+            }
+        }
+    };
+    ($($t:ty),*) => {
+        $(
+            impl_floor_div!(@impl $t);
+        )*
+    };
+}
+
+impl_floor_div!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64);
+
+impl<T> PyMod<T> for T
+where
+    T: Copy + Num + PartialOrd + Signed
+{
+    type Output = T;
+
+    fn pymod(&self, y: T) -> Self::Output {
+        crate::pymod(*self, y)
+    }
+}
+
+// impl<A, B, C> AbsMod<B> for A
+// where
+//     A: PyMod<B, Output = C>,
+//     C: Signed,
+// {
+//     type Output = C;
+
+//     fn absmod(&self, rhs: B) -> Self::Output {
+//         self.pymod(rhs).abs()
+//     }
+// }
 
 impl<A, B, C> AbsMod<B> for A
 where
-    A: Copy + core::ops::Rem<B, Output = C> + core::ops::Add<C, Output = C>,
+    A: Copy + Add<C, Output = C> + Rem<B, Output = C>,
     B: Copy,
-    C: core::ops::Add<B, Output = C> + core::ops::Rem<B, Output = C> + Signed,
+    C: Add<B, Output = C> + Rem<B, Output = C> + Signed,
 {
     type Output = C;
 

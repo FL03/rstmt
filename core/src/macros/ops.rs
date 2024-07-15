@@ -4,18 +4,20 @@
 */
 
 macro_rules! impl_binop_method {
-    (@impl $trait:ident.$call:ident -> $out:ty) => {
+    (@impl $trait:ident.$call:ident($rhs:ty) -> $out:ty) => {
         paste::paste! {
-            pub fn [<$call _interval>](&self, interval: $crate::Intervals) -> $out {
-                let p = core::ops::$trait::$call(self.value(), interval.value());
+            pub fn $call(&self, rhs: $rhs) -> $out {
+                let p = core::ops::$trait::$call(self.value(), rhs.value());
                 Self::new(p)
             }
         }
     };
-    ($($trait:ident.$call:ident -> $out:ty),* $(,)?) => {
-        $(
-            impl_binop_method!(@impl $trait.$call -> $out);
-        )*
+    (suffix: $s:ident; $($trait:ident.$call:ident($rhs:ty) -> $out:ty),* $(,)?) => {
+        paste::paste! {
+            $(
+                impl_binop_method!(@impl $trait.[<$call $s>]($rhs) -> $out);
+            )*
+        }
     };
 }
 

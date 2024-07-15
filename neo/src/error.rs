@@ -9,8 +9,24 @@ pub type TriadResult<T = ()> = core::result::Result<T, TriadError>;
 
 use rstmt::{Intervals, Note, Pitch, Tuple3};
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::AsRefStr, strum::EnumIs, strum::VariantNames, thiserror::Error)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "PascalCase"))]
+#[derive(
+    Clone,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    strum::AsRefStr,
+    strum::EnumIs,
+    strum::VariantNames,
+    thiserror::Error,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "PascalCase")
+)]
 #[repr(C)]
 #[strum(serialize_all = "PascalCase")]
 pub enum TriadError {
@@ -21,7 +37,7 @@ pub enum TriadError {
     #[error("Invalid Triad: {0:?}")]
     InvalidTriad(Tuple3<Note>),
     #[error("{0}")]
-    Music(#[from]rstmt::MusicalError),
+    Music(#[from] rstmt::MusicalError),
     #[error("{0}")]
     Unknown(String),
 }
@@ -42,9 +58,7 @@ impl TriadError {
     pub fn unknown(message: impl Into<String>) -> Self {
         Self::Unknown(message.into())
     }
-
 }
-
 
 impl From<Pitch> for TriadError {
     fn from(err: Pitch) -> Self {
@@ -57,7 +71,6 @@ impl From<(Note, Note, Note)> for TriadError {
         TriadError::InvalidTriad(err)
     }
 }
-
 
 mod res {
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]

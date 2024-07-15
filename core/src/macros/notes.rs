@@ -5,9 +5,18 @@
 
 macro_rules! notes {
     ($($suffix:literal)? $name:ident {$($cls:ident($value:expr)),* $(,)?} ) => {
-        pub enum $name {
-            $($cls = $value),*
+
+        paste::paste! {
+            #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+            #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize),)]
+            pub enum $name {
+                $(
+                    #[cfg_attr(feature = "serde", serde(rename = $cls))]
+                    $cls = $value
+                ),*
+            }
         }
+
 
         impl AsRef<str> for $name {
             fn as_ref(&self) -> &str {
@@ -31,7 +40,6 @@ macro_rules! pitches {
         pub struct $class;
     };
 }
-
 
 macro_rules! impl_pitch {
     ($class:ident($mud:expr, flat: $flat:expr, sharp: $sharp:expr) ) => {

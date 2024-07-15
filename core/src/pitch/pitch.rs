@@ -5,8 +5,11 @@
 use super::{PitchTy, Pitches};
 use crate::PitchMod;
 
+/// A [pitch](Pitch) is a discrete tone with an individual frequency that may be
+/// classified as a [pitch class](Pitches).
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[repr(transparent)]
 pub struct Pitch(pub(crate) PitchTy);
 
 impl Pitch {
@@ -14,7 +17,7 @@ impl Pitch {
         Self(pitch.into().pitchmod())
     }
     /// Returns the absolute value of the remainder of the pitch divided by the modulus.
-    pub fn modulo(&self) -> Self {
+    pub fn abs(&self) -> Self {
         self.pitchmod()
     }
     /// Returns a new instance of the class representing the given pitch.
@@ -32,14 +35,6 @@ impl Pitch {
     /// A functional accessor for the pitch value.
     pub fn value(&self) -> PitchTy {
         self.0
-    }
-
-    impl_binop_method! {
-        Add.add -> Self,
-        Sub.sub -> Self,
-        Mul.mul -> Self,
-        Div.div -> Self,
-        Rem.rem -> Self
     }
 }
 
@@ -108,41 +103,6 @@ impl core::fmt::Octal for Pitch {
 impl core::fmt::UpperExp for Pitch {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         core::fmt::UpperExp::fmt(&self.0, f)
-    }
-}
-
-impl PitchMod for Pitch {
-    type Output = Self;
-
-    fn pitchmod(&self) -> Self::Output {
-        Self(self.0.pitchmod())
-    }
-}
-
-wrapper_ops!(Pitch::<PitchTy>: Add.add, Div.div, Mul.mul, Rem.rem, Sub.sub);
-wrapper_unop!(Pitch impls Neg.neg, Not.not);
-
-impl num::One for Pitch {
-    fn one() -> Self {
-        Self(PitchTy::one())
-    }
-}
-
-impl num::Zero for Pitch {
-    fn zero() -> Self {
-        Self(PitchTy::zero())
-    }
-
-    fn is_zero(&self) -> bool {
-        self.0.is_zero()
-    }
-}
-
-impl num::Num for Pitch {
-    type FromStrRadixErr = <PitchTy as num::Num>::FromStrRadixErr;
-
-    fn from_str_radix(s: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
-        PitchTy::from_str_radix(s, radix).map(Self)
     }
 }
 

@@ -4,9 +4,9 @@
 */
 /// Musically speaking, an [interval quality](Quality) is used to identify the different versions of various musical
 /// objects.
-/// 
+///
 /// There are five primary qualities:
-///     - [augmented](Augmented) 
+///     - [augmented](Augmented)
 ///     - [diminished](Diminished)
 ///     - [major](Major)
 ///     - [minor](Minor)
@@ -25,7 +25,7 @@ pub trait Quality {
             "Major" => IntervalQuality::major(),
             "Minor" => IntervalQuality::minor(),
             "Perfect" => IntervalQuality::perfect(),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -61,8 +61,12 @@ macro_rules! quality {
         impl Quality for $name {
             seal!();
 
+            fn kind() -> IntervalQuality {
+                IntervalQuality::$call()
+            }
+
             fn name() -> &'static str {
-                stringify!($name)
+                stringify!($call)
             }
 
             paste::paste! {
@@ -93,8 +97,30 @@ quality!(
 
 use core::marker::PhantomData;
 
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::AsRefStr, strum::Display, strum::EnumCount, strum::EnumIs, strum::EnumIter, strum::EnumString, strum::VariantNames)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
+/// This enum provides a more streamlined means of working with the implemented [Quality] types.
+/// Primarily, it provides simple creation routines for otherwise unitializable types.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    strum::AsRefStr,
+    strum::Display,
+    strum::EnumCount,
+    strum::EnumIs,
+    strum::EnumIter,
+    strum::EnumString,
+    strum::VariantNames,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
 #[non_exhaustive]
 #[strum(serialize_all = "lowercase")]
 pub enum IntervalQuality {
@@ -102,10 +128,13 @@ pub enum IntervalQuality {
     Diminished(PhantomData<Diminished>),
     Major(PhantomData<Major>),
     Minor(PhantomData<Minor>),
-    Perfect(PhantomData<Perfect>)
+    Perfect(PhantomData<Perfect>),
 }
 
 impl IntervalQuality {
+    pub fn new<Q: Quality>() -> Self {
+        Q::kind()
+    }
     pub fn augmented() -> Self {
         IntervalQuality::Augmented(PhantomData)
     }
@@ -133,7 +162,7 @@ impl IntervalQuality {
             "Major" | "major" => Some(IntervalQuality::major()),
             "Minor" | "minor" => Some(IntervalQuality::minor()),
             "Perfect" | "perfect" => Some(IntervalQuality::perfect()),
-            _ => None
+            _ => None,
         }
     }
 }

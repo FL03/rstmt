@@ -9,6 +9,8 @@ pub(crate) mod prelude {
 }
 
 pub mod consts {
+    pub const FLAT_SUFFIX: &str = "♭";
+    pub const SHARP_SUFFIX: &str = "♯";
     /// Used to describe the total number of notes considered
     pub const MODULUS: i8 = 12;
     /// A semitone is half of a tone

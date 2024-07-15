@@ -23,9 +23,9 @@ macro_rules! interval {
 
         enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
-        impl $crate::Interval for $name {
+        impl $crate::IntervalKind for $name {
             fn value(&self) -> i8 {
-                *self as i8
+                $name::value(self)
             }
         }
 

@@ -13,13 +13,14 @@ extern crate alloc;
 #[doc(inline)]
 pub use self::{
     error::{Error, MusicalError, Result},
+    intervals::*, 
     notes::Note,
     pitch::{IntoPitch, Pitch, PitchClass, PitchTy},
     primitives::*,
     utils::*,
 };
 #[doc(inline)]
-pub use self::{ops::prelude::*, traits::prelude::*, types::prelude::*,};
+pub use self::{ops::prelude::*, traits::prelude::*, types::prelude::*};
 
 #[macro_use]
 pub(crate) mod macros;
@@ -27,6 +28,7 @@ pub(crate) mod primitives;
 pub(crate) mod utils;
 
 pub mod error;
+pub mod intervals;
 pub mod notes;
 pub mod ops;
 pub mod pitch;

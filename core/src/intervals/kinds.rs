@@ -1,21 +1,38 @@
 /*
-    Appellation: intervals <module>
+    Appellation: kinds <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{IntoPitch, Pitch};
 
-unit_enum! {
-    rename: "lowercase";
-    #[derive(Default)]
-    pub enum Intervals {
-        #[default]
-        Semitone = 1,
-        Tone = 2,
-        Thirds(Third),
-        Fourths(Fourth),
-        Fifths(Fifth),
-        Sevenths(Seventh),
-    }
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    strum::AsRefStr,
+    strum::Display,
+    strum::EnumIs,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
+#[repr(i8)]
+#[strum(serialize_all = "lowercase")]
+pub enum Intervals {
+    #[default]
+    Semitone = 1,
+    Tone = 2,
+    Thirds(Third),
+    Fourths(Fourth),
+    Fifths(Fifth),
+    Sevenths(Seventh),
 }
 
 impl Intervals {
@@ -35,7 +52,6 @@ impl Intervals {
             10 => Sevenths(Seventh::Minor),
             11 => Sevenths(Seventh::Major),
             12 => Sevenths(Seventh::Augmented),
-
             _ => panic!("Invalid interval value: {}", pitch.value()),
         }
     }
@@ -83,28 +99,26 @@ impl Intervals {
     }
 }
 
-impl From<Third> for Intervals {
-    fn from(third: Third) -> Self {
-        Intervals::Thirds(third)
-    }
+macro_rules! impl_from_value {
+    (@impl $name:ident::$variant:ident($T:ty)) => {
+        impl From<$T> for $name {
+            fn from(value: $T) -> Self {
+                $name::$variant(value)
+            }
+        }
+    };
+    ($($name:ident::$variant:ident($T:ty)),* $(,)?) => {
+        $(
+            impl_from_value!(@impl $name::$variant($T));
+        )*
+    };
 }
 
-impl From<Fourth> for Intervals {
-    fn from(fourth: Fourth) -> Self {
-        Intervals::Fourths(fourth)
-    }
-}
-
-impl From<Fifth> for Intervals {
-    fn from(fifth: Fifth) -> Self {
-        Intervals::Fifths(fifth)
-    }
-}
-
-impl From<Seventh> for Intervals {
-    fn from(seventh: Seventh) -> Self {
-        Intervals::Sevenths(seventh)
-    }
+impl_from_value! {
+    Intervals::Thirds(Third),
+    Intervals::Fourths(Fourth),
+    Intervals::Fifths(Fifth),
+    Intervals::Sevenths(Seventh),
 }
 
 interval! {

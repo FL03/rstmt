@@ -16,7 +16,7 @@ pub trait Notable: Copy + Sized + core::fmt::Display {
     fn pitch(&self) -> Pitch;
 }
 
-pub trait Interval {
+pub trait IntervalKind {
     /// Returns the interval associated with the value
     fn kind(&self) -> Intervals {
         Intervals::from_value(self.value())
@@ -28,18 +28,16 @@ pub trait Interval {
 /*
  ************* Implementations *************
 */
-impl Interval for Intervals {
+impl IntervalKind for Intervals {
     fn value(&self) -> i8 {
         self.value()
     }
 }
 
 impl Notable for crate::Note {
-
     fn pitch(&self) -> Pitch {
         self.pitch()
     }
-
 }
 
 impl Notable for Pitch {
