@@ -69,7 +69,7 @@ impl core::fmt::Display for Pitch {
 }
 
 macro_rules! impl_ops {
-    
+
     (@base $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?($rhs:ident) -> $out:ty $(where $($w:tt)*)? {$($rest:tt)*}) => {
         impl$(<$T>)? core::ops::$trait<$rhs> for $name $(where $($w)*)? {
             type Output = $out;
@@ -79,7 +79,7 @@ macro_rules! impl_ops {
             }
         }
     };
-    
+
     (@impl $name:ident impls $trait:ident.$call:ident$(<$T:ident>)?($rhs:ident) -> $out:ty $(where $($rest:tt)*)?) => {
         impl$(<$T>)? core::ops::$trait<$rhs> for $name $(where $($rest)*)? {
             type Output = $out;
@@ -98,7 +98,7 @@ macro_rules! impl_ops {
     ($name:ident impls $($rest:tt)*) => {
         impl_ops!(@impl $name impls $($rest)*);
     };
-    
+
 }
 
 macro_rules! impl_pitch_ops {
@@ -111,7 +111,7 @@ macro_rules! impl_pitch_ops {
             impl_ops!($name impls Sub.sub -> $out);
         )*
     };
-    ($name:ident<T> =>  -> $($out:ty $(where $(rest:tt)*)?),* $(,)?) => {
+    ($name:ident<T> -> $($out:ty $(where $(rest:tt)*)?),* $(,)?) => {
         $(
             impl_ops!($name impls Add.add<T> -> $out $(where $(rest)*)?);
             impl_ops!($name impls Div.div<T> -> $out $(where $(rest)*)?);

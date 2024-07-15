@@ -79,14 +79,28 @@ macro_rules! impl_pitch {
             }
         }
 
-        impl TryFrom<$crate::PitchTy> for $group {
+        impl From<$group> for $crate::pitch::Pitch {
+            fn from(pitch: $group) -> $crate::pitch::Pitch {
+                $crate::pitch::Pitch::new(pitch as $crate::PitchTy)
+            }
+        }
+
+        impl TryFrom<$crate::pitch::PitchTy> for $group {
             type Error = $crate::Error;
 
-            fn try_from(value: $crate::PitchTy) -> Result<Self, Self::Error> {
-                match $crate::PitchMod::pitchmod(&value) {
+            fn try_from(p: $crate::pitch::PitchTy) -> Result<Self, Self::Error> {
+                match $crate::PitchMod::pitchmod(&p) {
                     $(x if x == $value => Ok(Self::$class),)*
                     _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
                 }
+            }
+        }
+
+        impl TryFrom<$crate::pitch::Pitch> for $group {
+            type Error = $crate::Error;
+
+            fn try_from(p: $crate::pitch::Pitch) -> Result<Self, Self::Error> {
+                Self::try_from(p.value())
             }
         }
     };

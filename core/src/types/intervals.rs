@@ -2,11 +2,10 @@
     Appellation: intervals <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{notes::Note, PitchTy};
-
+use crate::{Notable, Pitch};
 use num::traits::NumOps;
 
-pub trait IntervalOps<Rhs = Self>: NumOps<Rhs, PitchTy> {}
+pub trait IntervalOps<Rhs = Self>: NumOps<Rhs, Pitch> {}
 
 pub struct Interval<A, B> {
     pub lhs: A,
@@ -34,16 +33,17 @@ unit_enum! {
 }
 
 impl Intervals {
-    pub fn from_value(value: PitchTy) -> Self {
+    pub fn from_value(value: impl Notable) -> Self {
         use Intervals::*;
-        match value {
+        let pitch = value.pitch();
+        match *pitch {
             1 => Semitone,
             2 => Tone,
-            3..=4 => Thirds(Third::from(value)),
-            5 => Fourths(Fourth::from(value)),
-            6..=8 => Fifths(Fifth::from(value)),
-            9..=12 => Sevenths(Seventh::from(value)),
-            _ => panic!("Invalid interval value: {}", value),
+            3..=4 => Thirds(Third::from(pitch.value())),
+            5 => Fourths(Fourth::from(pitch.value())),
+            6..=8 => Fifths(Fifth::from(pitch.value())),
+            9..=12 => Sevenths(Seventh::from(pitch.value())),
+            _ => panic!("Invalid interval value: {}", pitch.value()),
         }
     }
     pub fn from_semitone() -> Self {
@@ -74,15 +74,16 @@ impl Intervals {
         self.as_ref()
     }
 
-    pub fn value(&self) -> PitchTy {
-        match *self {
+    pub fn value(&self) -> Pitch {
+        let p = match *self {
             Intervals::Semitone => 1,
             Intervals::Tone => 2,
             Intervals::Thirds(third) => third as i8,
             Intervals::Fourths(fourth) => fourth as i8,
             Intervals::Fifths(fifth) => fifth as i8,
             Intervals::Sevenths(seventh) => seventh as i8,
-        }
+        };
+        Pitch(p)
     }
 }
 

@@ -11,13 +11,23 @@ pub trait AbsMod<Rhs = Self> {
     fn absmod(&self, rhs: Rhs) -> Self::Output;
 }
 
-pub trait PitchMod: AbsMod<PitchTy> {
-    fn pitchmod(&self) -> Self::Output {
-        self.absmod(crate::MODULUS as PitchTy)
-    }
+pub trait PitchMod {
+    const MOD: PitchTy = crate::MODULUS;
+    type Output;
+
+    fn pitchmod(&self) -> Self::Output;
 }
 
-impl<S> PitchMod for S where S: AbsMod<PitchTy> {}
+impl<S> PitchMod for S
+where
+    S: AbsMod<PitchTy>,
+{
+    type Output = <S as AbsMod<PitchTy>>::Output;
+
+    fn pitchmod(&self) -> Self::Output {
+        self.absmod(Self::MOD)
+    }
+}
 
 /*
  ************* Implementations *************
