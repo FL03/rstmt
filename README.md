@@ -1,10 +1,10 @@
-# triad
+# rstmt
 
-[![crates.io](https://img.shields.io/crates/v/concision.svg)](https://crates.io/crates/triad)
-[![docs.rs](https://docs.rs/concision/badge.svg)](https://docs.rs/triad)
+[![crates.io](https://img.shields.io/crates/v/rstmt.svg)](https://crates.io/crates/rstmt)
+[![docs.rs](https://docs.rs/rstmt/badge.svg)](https://docs.rs/rstmt)
 
-[![clippy](https://github.com/FL03/triad/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/triad/actions/workflows/clippy.yml)
-[![rust](https://github.com/FL03/triad/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/triad/actions/workflows/rust.yml)
+[![clippy](https://github.com/FL03/rstmt/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/rstmt/actions/workflows/clippy.yml)
+[![rust](https://github.com/FL03/rstmt/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/rstmt/actions/workflows/rust.yml)
 
 ***
 
@@ -14,7 +14,7 @@ This project focuses on providing concrete abstractions of musical objects discu
 
 ## Features
 
-
+- [] The Neo-Riemannian Theory
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ This project focuses on providing concrete abstractions of musical objects discu
 Start by cloning the repository
 
 ```bash
-git clone https://github.com/FL03/triad.git
+git clone https://github.com/FL03/rstmt.git
 cd triad
 ```
 
@@ -33,18 +33,11 @@ cargo build --features full -r --workspace
 
 ## Usage
 
-### Example: Linear Model (biased)
+### Example
 
 ```rust
-    extern crate triad;
+    extern crate rstmt;
 
-    fn main() -> anyhow::Result<()> {
-        tracing_subscriber::fmt::init();
-        tracing::info!("Starting linear model example");
-
-
-        Ok(())
-    }
 ```
 
 ## Contributing

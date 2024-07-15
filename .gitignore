@@ -1,6 +1,7 @@
 # Artifacts
 
-**/.artifacts/data/
+**/.artifacts/data/*
+**/.artifacts/examples/*
 **/.docker/data/
 
 

@@ -6,6 +6,7 @@ concurrency:
 
 env:
   BASENAME: ${{ github.event.repository.name }}
+  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   CARGO_TERM_COLOR: always
 
 on:
@@ -16,9 +17,32 @@ on:
   workflow_dispatch:
 
 jobs:
+  core:
+    name: Publish (${{ github.event.repository.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features: [ core ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish (${{ matrix.features }})
+        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}-${{ matrix.features }}
+  features:
+    name: Publish (${{ github.event.repository.name }})
+    needs: [ core ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features: [ neo ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish (${{ matrix.features }})
+        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}-${{ matrix.features }}
   publish:
     name: Publish (${{ github.event.repository.name }})
+    needs: [ features ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cargo publish --all-features -v -p ${{ github.event.repository.name }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Publish (${{ github.event.repository.name }})
+        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}
