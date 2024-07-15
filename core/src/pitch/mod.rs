@@ -11,42 +11,56 @@ pub(crate) mod pitch;
 pub(crate) mod prelude {
     pub use super::kinds::{Flat, Natural, Pitches, Sharp};
     pub use super::pitch::Pitch;
-    pub use super::{AccidentalPitch, PitchClass, PitchTy};
+    pub use super::{Accidentals, PitchClass, PitchTy};
 }
 
 /// A type alias for an integer representing a particular pitch of a note
 pub type PitchTy = i8;
 
+pub trait IntoPitch {
+    fn into_pitch(self) -> Pitch;
+}
+
+/// Used to denote a particular pitch class; pitch classes are symbolic
+/// representations of pre-defined frequencies.
 pub trait PitchClass {
+    private!();
+
     fn pitch(&self) -> PitchTy;
 }
 
-pub trait SharpPitch {
+pub trait Sharps {
     private!();
 }
 
-pub trait FlatPitch {
+pub trait Flats {
     private!();
 }
 
-pub trait AccidentalPitch: PitchClass {
+pub trait Accidentals: PitchClass {
     private!();
 }
 
 /*
  ************* Implementations *************
 */
-impl FlatPitch for Flat {
+impl<S> IntoPitch for S where S: Into<Pitch> {
+    fn into_pitch(self) -> Pitch {
+        self.into()
+    }
+}
+
+impl Flats for Flat {
     seal!();
 }
 
-impl SharpPitch for Sharp {
+impl Sharps for Sharp {
     seal!();
 }
-impl AccidentalPitch for Sharp {
+impl Accidentals for Sharp {
     seal!();
 }
 
-impl AccidentalPitch for Flat {
+impl Accidentals for Flat {
     seal!();
 }

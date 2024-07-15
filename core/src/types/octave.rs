@@ -63,9 +63,39 @@ impl core::ops::DerefMut for Octave {
     }
 }
 
+impl core::fmt::Binary for Octave {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::Binary::fmt(&self.0, f)
+    }
+}
+
 impl core::fmt::Display for Octave {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl core::fmt::LowerExp for Octave {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::LowerExp::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::LowerHex for Octave {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::LowerHex::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::Octal for Octave {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::Octal::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::UpperExp for Octave {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::UpperExp::fmt(&self.0, f)
     }
 }
 

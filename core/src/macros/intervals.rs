@@ -11,6 +11,18 @@ macro_rules! interval {
             }
         }
 
+        impl $name {
+            pub fn value(&self) -> i8 {
+                *self as i8
+            }
+
+            pub fn validate(value: i8) -> bool {
+                Self::try_from(value).is_ok()
+            }
+
+
+        }
+
         enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
         impl From<i8> for $name where {

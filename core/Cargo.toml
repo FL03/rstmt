@@ -41,6 +41,7 @@ serde = [
 std = [
     "alloc",
     "num/std",
+    "regex/std",
     "serde?/std",
     "strum/std",
 ]
@@ -61,6 +62,14 @@ smart-default.workspace = true
 [dependencies.num]
 default-features = false
 version = "0.4"
+
+[dependencies.regex]
+default-features = false
+features = [
+    "perf",
+    "unicode",
+]
+version = "1"
 
 [dependencies.serde]
 default-features = false

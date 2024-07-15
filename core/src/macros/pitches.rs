@@ -3,6 +3,14 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+macro_rules! pitch {
+    (@impl $class:ident($mud:expr, flat: $flat:expr, sharp: $sharp:expr) ) => {
+        pub struct $class;
+
+        
+    };
+}
+
 macro_rules! pitch_class {
     ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {
         pitch_class!(@impl $(#[derive($($derive),*)])? $(#[default($default)])? $(#[rename($rename)])? $vis enum $name $($rest)*);
@@ -51,9 +59,10 @@ macro_rules! impl_pitch {
             pub fn new(value: $crate::PitchTy) -> Option<Self> {
                 $group::try_from(value).ok()
             }
-            pub fn try_from_value(value: $crate::PitchTy) -> $crate::Result<Self> {
-                match $crate::PitchMod::pitchmod(&value) {
-                    $(x if x == $value => Ok(Self::$class),)*
+
+            pub fn try_from_value(value: impl $crate::pitch::IntoPitch) -> Result<Self, $crate::Error<$crate::error::MusicalError>> {
+                match $crate::PitchMod::pitchmod(&value.into_pitch()) {
+                    $(x if *x == $value => Ok(Self::$class),)*
                     _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
                 }
             }
@@ -68,6 +77,8 @@ macro_rules! impl_pitch {
         }
 
         impl $crate::pitch::PitchClass for $group {
+            seal!();
+
             fn pitch(&self) -> $crate::PitchTy {
                 *self as $crate::PitchTy
             }
@@ -89,10 +100,7 @@ macro_rules! impl_pitch {
             type Error = $crate::Error;
 
             fn try_from(p: $crate::pitch::PitchTy) -> Result<Self, Self::Error> {
-                match $crate::PitchMod::pitchmod(&p) {
-                    $(x if x == $value => Ok(Self::$class),)*
-                    _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
-                }
+                Self::try_from_value(p)
             }
         }
 
@@ -100,7 +108,7 @@ macro_rules! impl_pitch {
             type Error = $crate::Error;
 
             fn try_from(p: $crate::pitch::Pitch) -> Result<Self, Self::Error> {
-                Self::try_from(p.value())
+                Self::try_from_value(p)
             }
         }
     };

@@ -67,9 +67,39 @@ impl core::ops::DerefMut for Pitch {
     }
 }
 
+impl core::fmt::Binary for Pitch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::Binary::fmt(&self.0, f)
+    }
+}
+
 impl core::fmt::Display for Pitch {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl core::fmt::LowerExp for Pitch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::LowerExp::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::LowerHex for Pitch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::LowerHex::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::Octal for Pitch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::Octal::fmt(&self.0, f)
+    }
+}
+
+impl core::fmt::UpperExp for Pitch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        core::fmt::UpperExp::fmt(&self.0, f)
     }
 }
 
@@ -107,3 +137,28 @@ impl num::Num for Pitch {
         PitchTy::from_str_radix(s, radix).map(Self)
     }
 }
+
+impl From<PitchTy> for Pitch {
+    fn from(pitch: PitchTy) -> Self {
+        Self(pitch)
+    }
+}
+
+impl From<Pitch> for PitchTy {
+    fn from(pitch: Pitch) -> Self {
+        pitch.0
+    }
+}
+
+impl From<Pitches> for Pitch {
+    fn from(pitch: Pitches) -> Self {
+        Self(pitch.pitch())
+    }
+}
+
+impl From<Pitch> for Pitches {
+    fn from(pitch: Pitch) -> Self {
+        Pitches::try_from_value(pitch.0).unwrap()
+    }
+}
+

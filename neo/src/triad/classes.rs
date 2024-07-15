@@ -10,60 +10,53 @@ use rstmt::{Fifth, Third};
 pub trait TriadKind {
     private!();
 
-    fn class(&self) -> Triads {
-        if self.is_augmented() {
-            Triads::Augmented
-        } else if self.is_diminished() {
-            Triads::Diminished
-        } else if self.is_major() {
+    fn is_valid(notes: &[u8; 3]) -> bool {
+        Self::class().validate(notes)
+    }
+
+    fn class() -> Triads {
+        if Self::is_major() {
             Triads::Major
-        } else {
+        } else if Self::is_minor() {
             Triads::Minor
-        }
+        } else if Self::is_augmented() {
+            Triads::Augmented
+        } else {
+            Triads::Diminished
+        } 
     }
 
-    fn thirds(&self) -> (Third, Third) {
-        use Third::*;
-        match self.class() {
-            Triads::Augmented => (Major, Major),
-            Triads::Diminished => (Minor, Minor),
-            Triads::Major => (Major, Minor),
-            Triads::Minor => (Minor, Major),
-        }
+    fn thirds() -> (Third, Third) {
+        Self::class().thirds()
     }
 
-    fn root_to_third(&self) -> Third {
-        self.thirds().0
+    fn root_to_third() -> Third {
+        Self::thirds().0
     }
 
-    fn third_to_fifth(&self) -> Third {
-        self.thirds().1
+    fn third_to_fifth() -> Third {
+        Self::thirds().1
     }
 
-    fn root_to_fifth(&self) -> Fifth {
-        use Fifth::*;
-        match self.class() {
-            Triads::Augmented => Augmented,
-            Triads::Diminished => Diminished,
-            Triads::Major | Triads::Minor => Perfect,
-        }
+    fn root_to_fifth() -> Fifth {
+        Self::class().root_to_fifth()
     }
 
-    fn name(&self) -> &str;
+    fn name() -> &'static str;
 
-    fn is_augmented(&self) -> bool {
+    fn is_augmented() -> bool {
         false
     }
 
-    fn is_diminished(&self) -> bool {
+    fn is_diminished() -> bool {
         false
     }
 
-    fn is_major(&self) -> bool {
+    fn is_major() -> bool {
         false
     }
 
-    fn is_minor(&self) -> bool {
+    fn is_minor() -> bool {
         false
     }
 }
@@ -77,12 +70,12 @@ macro_rules! class {
         impl TriadKind for $name {
             seal!();
 
-            fn name(&self) -> &str {
-                stringify!($call)
+            fn name() -> &'static str {
+                stringify!($name)
             }
 
             paste::paste! {
-                fn [<is_ $call>](&self) -> bool {
+                fn [<is_ $call>]() -> bool {
                     true
                 }
             }
@@ -155,6 +148,15 @@ impl Triads {
 
     pub fn minor() -> Self {
         Triads::Minor
+    }
+
+    pub fn validate(&self, notes: &[u8; 3]) -> bool {
+        // the interval between the root and the third must be a third
+        let rt = notes[1] - notes[0];
+        // the interval between the third and the fifth must be a third
+        let tf = notes[2] - notes[1];
+        
+        Third::try_from(rt).is_ok() && Third::try_from(tf).is_ok()
     }
 
     pub fn thirds(&self) -> (Third, Third) {
