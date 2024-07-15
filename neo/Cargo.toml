@@ -55,7 +55,7 @@ version = "1"
 
 [dependencies.rstmt-core]
 path = "../core"
-version = "0.0.1"
+version = "0.0.2"
 
 [dev-dependencies]
 lazy_static.workspace = true

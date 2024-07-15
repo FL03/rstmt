@@ -62,13 +62,13 @@ num = "0.4"
 [dependencies.rstmt-core]
 default-features = false
 path = "../core"
-version = "0.0.1"
+version = "0.0.2"
 
 [dependencies.rstmt-neo]
 default-features = false
 optional = true
 path = "../neo"
-version = "0.0.1"
+version = "0.0.2"
 
 [package.metadata.docs.rs]
 all-features = true
