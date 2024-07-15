@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PitchTy, Pitches};
-use crate::PitchMod;
+use crate::PyMod;
 
 /// A [pitch](Pitch) is a discrete tone with an individual frequency that may be
 /// classified as a [pitch class](Pitches).
@@ -13,12 +13,15 @@ use crate::PitchMod;
 pub struct Pitch(pub(crate) PitchTy);
 
 impl Pitch {
+    const MOD: PitchTy = crate::MODULUS;
+
     pub fn new(pitch: impl Into<PitchTy>) -> Self {
-        Self(pitch.into().pitchmod())
+        let val: PitchTy = pitch.into();
+        Self(val.pymod(Self::MOD))
     }
     /// Returns the absolute value of the remainder of the pitch divided by the modulus.
     pub fn abs(&self) -> Self {
-        self.pitchmod()
+        Self(self.0.pymod(Self::MOD).abs())
     }
     /// Returns a new instance of the class representing the given pitch.
     pub fn class(&self) -> Pitches {

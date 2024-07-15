@@ -2,7 +2,7 @@
     Appellation: pitch_ops <impl>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Pitch, PitchMod, PitchTy};
+use crate::{Pitch, PitchMod, PitchTy, PyMod};
 use num::{Num, One, Zero};
 
 macro_rules! impl_interval_method {
@@ -33,7 +33,7 @@ impl PitchMod for Pitch {
     type Output = Self;
 
     fn pitchmod(&self) -> Self::Output {
-        Self(self.0.pitchmod())
+        Self(self.0.pymod(Self::MOD))
     }
 }
 
