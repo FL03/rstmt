@@ -29,7 +29,7 @@ impl Note {
     /// Returns an instance of the note's [PitchClass](crate::pitch::PitchCalss).
     /// Each pitch class is a synmoblic representation of a group of frequencies,
     /// which are separated by a factor of 2^(1/12).
-    /// 
+    ///
     pub fn class(&self) -> Pitches {
         self.pitch.class()
     }
@@ -72,7 +72,7 @@ impl Note {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 
 impl core::fmt::Display for Note {
@@ -90,7 +90,6 @@ impl From<(Octave, Pitch)> for Note {
         Self { octave, pitch }
     }
 }
-
 
 impl From<Note> for (Octave, Pitch) {
     fn from(note: Note) -> Self {

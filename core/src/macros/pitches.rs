@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-
 macro_rules! pitch_class {
     ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {
         pitch_class!(@impl $(#[derive($($derive),*)])? $(#[default($default)])? $(#[rename($rename)])? $vis enum $name $($rest)*);

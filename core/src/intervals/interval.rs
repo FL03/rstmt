@@ -43,8 +43,6 @@ pub enum IntervalLevel {
     Octave = 12,
 }
 
-
-
 #[allow(dead_code)]
 #[doc(hidden)]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

@@ -2,27 +2,7 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::traits::{FromPrimitive, Num, Signed};
-
-pub fn amod<T>(value: T, m: T) -> T
-where
-    T: Copy + Num + PartialOrd + Signed,
-{
-    let val = value % m;
-    if val >= T::zero() {
-        return val;
-    }
-    val + m
-}
-
-pub fn pymod<T>(lhs: T, rhs: T) -> T where T: Copy + Num + PartialOrd {
-    let r = lhs % rhs;
-    if (r < T::zero() && rhs > T::zero()) || (r > T::zero() && rhs < T::zero()) {
-        r + rhs
-    } else {
-        r
-    }
-}
+use num::traits::{Num, Signed};
 
 /// Computes the `absmod` of the value given a modulus.
 /// The modulo is calculated before determining if
@@ -49,11 +29,17 @@ where
     }
     ((val + m) % m).abs()
 }
-/// A utilitarian function computing the absolute value of the remainder between
-/// the gvien value and the number of notes in the chromatic scale.
-pub fn pmodulo<T>(value: T) -> T
+/// A functional implementation of python's `%` operator. The implementation
+/// is unique in its handling of negative values, uniquely preseving the sign
+/// of the _denominator_.
+pub fn pymod<T>(lhs: T, rhs: T) -> T
 where
-    T: Copy + FromPrimitive + Num + PartialOrd + Signed,
+    T: Copy + Num + PartialOrd,
 {
-    absmod(value, T::from_i8(crate::MODULUS).unwrap())
+    let r = lhs % rhs;
+    if (r < T::zero() && rhs > T::zero()) || (r > T::zero() && rhs < T::zero()) {
+        r + rhs
+    } else {
+        r
+    }
 }

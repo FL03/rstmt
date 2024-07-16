@@ -21,7 +21,10 @@ pub trait IntoTriad<K> {
     fn into_triad(self) -> Triad<K>;
 }
 
-pub trait Triadic<N> where N: Notable {
+pub trait Triadic<N>
+where
+    N: Notable,
+{
     type Data: TriadData<Elem = N>;
 
     fn intervals(&self) -> impl Iterator<Item = Intervals>;

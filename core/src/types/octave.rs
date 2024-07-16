@@ -105,7 +105,6 @@ impl Default for Octave {
     fn default() -> Self {
         Self(DEFAULT_OCTAVE)
     }
-
 }
 
 wrapper_ops!(Octave::<i8>: Add.add, Div.div, Mul.mul, Rem.rem, Sub.sub);

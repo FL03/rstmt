@@ -4,15 +4,15 @@
 */
 use crate::{
     pitch::{Pitch, PitchTy, Pitches},
-    Octave, Intervals,
+    Intervals, Octave,
 };
 
 /// The American Standard Pitch Notation (ASPN) is a system popularized for its
-/// ability to simplify the representation of musical notes, combining the 
+/// ability to simplify the representation of musical notes, combining the
 /// traditional symbols or pitch classes used to describe a particular pitch
-/// as well as leverging a subscript to denote the octave of the given pitch. 
-/// 
-/// 
+/// as well as leverging a subscript to denote the octave of the given pitch.
+///
+///
 /// the existing symbolic framework described by the [Pitch](crate::Pitch) and
 /// [Octave](crate::Octave) types.
 pub trait ASPN {
