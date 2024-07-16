@@ -18,27 +18,33 @@ impl Note {
             pitch: pitch.into_pitch(),
         }
     }
+    /// Returns a new instance of the note with the given pitch;
+    /// the note's octave is set to the default octave (4).
     pub fn from_pitch(pitch: impl IntoPitch) -> Self {
         Self {
             octave: Octave::default(),
             pitch: pitch.into_pitch(),
         }
     }
+    /// Returns an instance of the note's [PitchClass](crate::pitch::PitchCalss).
+    /// Each pitch class is a synmoblic representation of a group of frequencies,
+    /// which are separated by a factor of 2^(1/12).
+    /// 
     pub fn class(&self) -> Pitches {
         self.pitch.class()
     }
 
-    /// Returns an instance of the note's octave
-    pub fn octave(&self) -> Octave {
-        self.octave
+    /// Returns an owned instance of the note's octave
+    pub const fn octave(&self) -> &Octave {
+        &self.octave
     }
     /// Returns a mutable reference to the note's octave
     pub fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
     }
     /// Returns an owned instance of the note's pitch
-    pub fn pitch(&self) -> Pitch {
-        self.pitch
+    pub const fn pitch(&self) -> &Pitch {
+        &self.pitch
     }
     /// Returns a mutable reference to the note's pitch
     pub fn pitch_mut(&mut self) -> &mut Pitch {
@@ -65,6 +71,10 @@ impl Note {
     }
 }
 
+/*
+    ************* Implementations *************
+*/
+
 impl core::fmt::Display for Note {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class(), self.octave)
@@ -74,6 +84,34 @@ impl core::fmt::Display for Note {
 unsafe impl Send for Note {}
 
 unsafe impl Sync for Note {}
+
+impl From<(Octave, Pitch)> for Note {
+    fn from((octave, pitch): (Octave, Pitch)) -> Self {
+        Self { octave, pitch }
+    }
+}
+
+
+impl From<Note> for (Octave, Pitch) {
+    fn from(note: Note) -> Self {
+        (note.octave, note.pitch)
+    }
+}
+
+impl From<Note> for Pitch {
+    fn from(note: Note) -> Self {
+        note.pitch
+    }
+}
+
+impl From<Pitch> for Note {
+    fn from(pitch: Pitch) -> Self {
+        Self {
+            octave: Octave::default(),
+            pitch,
+        }
+    }
+}
 
 macro_rules! impl_std_ops {
     (@impl $trait:ident.$call:ident($rhs:ty) -> $out:ty) => {

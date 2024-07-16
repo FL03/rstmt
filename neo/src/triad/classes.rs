@@ -162,7 +162,7 @@ impl Triads {
         // the interval between the third and the fifth must be a third
         let tf = notes[2] - notes[1];
 
-        Third::try_from(rt.pitch()).is_ok() && Third::try_from(tf.pitch()).is_ok()
+        Third::try_from(*rt.pitch()).is_ok() && Third::try_from(*tf.pitch()).is_ok()
     }
 
     pub fn thirds(&self) -> (Third, Third) {

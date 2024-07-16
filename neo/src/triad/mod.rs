@@ -15,13 +15,13 @@ pub(crate) mod prelude {
     pub use super::triad::Triad;
 }
 
-use rstmt::Intervals;
+use rstmt::{Intervals, Notable};
 
 pub trait IntoTriad<K> {
     fn into_triad(self) -> Triad<K>;
 }
 
-pub trait Triadic<N> {
+pub trait Triadic<N> where N: Notable {
     type Data: TriadData<Elem = N>;
 
     fn intervals(&self) -> impl Iterator<Item = Intervals>;
@@ -40,6 +40,14 @@ pub trait Triadic<N> {
 
     fn fifth(&self) -> &N {
         self.notes().fifth()
+    }
+
+    fn root_to_third(&self) -> Intervals {
+        Intervals::from_value(self.third().pitch() - self.root().pitch())
+    }
+
+    fn third_to_fifth(&self) -> Intervals {
+        Intervals::from_value(self.fifth().pitch() - self.third().pitch())
     }
 }
 

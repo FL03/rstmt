@@ -21,7 +21,7 @@ where
 {
     pub fn new(root: Note) -> Self {
         let (rt, tf) = K::thirds();
-        let octave = root.octave();
+        let octave = *root.octave();
         let t = Note::from_pitch(root.pitch() + rt.value()).with_octave(octave);
         let f = Note::from_pitch(t.pitch() + tf.value()).with_octave(octave);
         Self {
@@ -79,6 +79,14 @@ where
             kind: PhantomData::<K>,
             notes: [self.notes[2], self.notes[1], self.notes[0]],
         }
+    }
+
+    pub fn root_to_third(&self) -> Third {
+        K::root_to_third()
+    }
+
+    pub fn third_to_fifth(&self) -> Third {
+        K::third_to_fifth()
     }
 }
 
