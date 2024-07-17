@@ -36,6 +36,13 @@ pub enum Intervals {
 }
 
 impl Intervals {
+    pub fn interval<A, B, C>(lhs: A, rhs: B) -> Self
+    where
+        A: core::ops::Sub<B, Output = C>,
+        C: Into<Intervals>,
+    {
+        (lhs - rhs).into()
+    }
     pub fn from_value(value: impl IntoPitch) -> Self {
         use Intervals::*;
         let pitch = value.into_pitch();
@@ -112,6 +119,15 @@ macro_rules! impl_from_value {
             impl_from_value!(@impl $name::$variant($T));
         )*
     };
+}
+
+impl<P> From<P> for Intervals
+where
+    P: IntoPitch,
+{
+    fn from(value: P) -> Self {
+        Intervals::from_value(value)
+    }
 }
 
 impl_from_value! {

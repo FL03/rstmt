@@ -18,14 +18,16 @@ pub(crate) mod prelude {
     pub use super::{IntoPitch, PitchClass, PitchTy};
 }
 
+lazy_static::lazy_static! {
+    static ref FLAT_SYMBOLS: [char; 3] = ['♭', 'f', 'F'];
+    static ref SHARP_SYMBOLS: [char; 3] = ['#', 's', 'S'];
+}
 /// A type alias for an integer representing a particular pitch of a note
 pub type PitchTy = i8;
-
 /// A trait for converting a type into a [Pitch](Pitch) instance.
 pub trait IntoPitch {
     fn into_pitch(self) -> Pitch;
 }
-
 /// Used to denote a particular pitch class; pitch classes are symbolic
 /// representations of pre-defined frequencies.
 pub trait PitchClass {

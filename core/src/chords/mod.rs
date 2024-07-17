@@ -1,9 +1,16 @@
-pub use self::chord::*;
+/*
+    Appellation: chord <module>
+    Contrib: FL03 <jo3mccain@icloud.com>
+*/
+#[doc(inline)]
+pub use self::{chord::Chord, dyad::Dyad};
 
 pub(crate) mod chord;
+pub(crate) mod dyad;
 
 pub(crate) mod prelude {
     pub use super::chord::*;
+    pub use super::dyad::*;
 }
 
 pub trait Container {
