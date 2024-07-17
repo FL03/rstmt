@@ -10,4 +10,3 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{}", pymod(17, -12));
     Ok(())
 }
-

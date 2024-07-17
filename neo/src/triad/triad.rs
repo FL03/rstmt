@@ -2,30 +2,69 @@
     Appellation: triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Major, TriadKind};
+use super::{Major, TriadKind, Triads};
+use crate::transform::LPR;
 use crate::{Factors, TriadError};
 use core::marker::PhantomData;
+use itertools::Itertools;
 use rstmt::{Note, Third};
+
+fn _constructor(data: &[Note; 3]) -> Result<Triad, TriadError> {
+    for (&a, &b, &c) in data.iter().circular_tuple_windows() {
+        if let Ok(_) = Triads::try_from_notes(a, b, c) {
+            return Ok(Triad::new(a));
+        }
+    }
+    Err(TriadError::InvalidInterval(
+        "Failed to find the required relationships within the given notes...".into(),
+    ))
+}
+
+fn _transform(triad: &Triad, lpr: LPR) -> Result<Triad, TriadError> {
+    use rstmt::{
+        Intervals::{Semitone, Tone},
+        Third,
+    };
+    use Factors::*;
+
+    let (rt, _tf, _rf) = triad.class().intervals();
+    // match rt {
+    //     Third::Major => match lpr {
+    //         LPR::L => triad[Root] -= Semitone,
+    //         LPR::P => triad[Third] -= Semitone,
+    //         LPR::R => triad[Fifth] += Tone,
+    //     },
+    //     Third::Minor => match lpr {
+    //         LPR::L => triad[Fifth] += Semitone,
+    //         LPR::P => triad[Third] += Semitone,
+    //         LPR::R => triad[Root] -= Tone,
+    //     },
+    // };
+
+    unimplemented!();
+}
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
 pub struct Triad<K = Major> {
-    pub(crate) kind: PhantomData<K>,
     pub notes: [Note; 3],
+    pub(crate) _class: PhantomData<K>,
 }
 
 impl<K> Triad<K>
 where
     K: TriadKind,
 {
+    const LEN: usize = 3;
+    /// Create a new triad from a root note.
     pub fn new(root: Note) -> Self {
         let (rt, tf) = K::thirds();
         let octave = *root.octave();
-        let t = Note::from_pitch(root.pitch() + rt.value()).with_octave(octave);
-        let f = Note::from_pitch(t.pitch() + tf.value()).with_octave(octave);
+        let t = Note::new(octave, root.pitch() + rt.value());
+        let f = Note::new(octave, t.pitch() + tf.value());
         Self {
-            kind: PhantomData::<K>,
+            _class: PhantomData::<K>,
             notes: [root, t, f],
         }
     }
@@ -38,55 +77,78 @@ where
         let b = Third::try_from(*(f - t).pitch())?;
         if a == K::root_to_third() && b == K::third_to_fifth() {
             Ok(Self {
-                kind: PhantomData::<K>,
+                _class: PhantomData::<K>,
                 notes,
             })
         } else {
-            Err(TriadError::invalid_triad(r, t, f))
+            Err(TriadError::invalid_triad(
+                "The given notes do not form a valid triad...",
+            ))
         }
     }
-
-    pub fn as_slice(&self) -> &[Note; 3] {
+    /// Returns the notes as an array
+    pub fn as_array(&self) -> &[Note; 3] {
         &self.notes
     }
-
+    /// Returns a slice containing the notes of the triad
+    pub fn as_slice(&self) -> &[Note] {
+        &self.notes
+    }
+    /// Returns the notes as a three-tuple
     pub fn as_tuple(&self) -> (Note, Note, Note) {
         (self.notes[0], self.notes[1], self.notes[2])
     }
 
+    /// Consumes and returns an array of notes
+    pub fn into_array(self) -> [Note; 3] {
+        self.notes
+    }
+    /// Consumes and returns a tuple of notes
     pub fn into_tuple(self) -> (Note, Note, Note) {
         (self.notes[0], self.notes[1], self.notes[2])
     }
-
-    pub fn into_slice(self) -> [Note; 3] {
-        self.notes
+    /// Returns the [class](Triads) of the triad
+    pub fn class(&self) -> Triads {
+        K::class()
     }
-
+    /// Returns the root note of the triad
     pub fn root(&self) -> Note {
         self.notes[0]
     }
-
+    /// Returns the third note of the triad
     pub fn third(&self) -> Note {
         self.notes[1]
     }
-
+    /// Returns the final note of the triad
     pub fn fifth(&self) -> Note {
         self.notes[2]
     }
-
+    /// Returns a new instance of [Triad] with the notes in reverse order
     pub fn reversed(&self) -> Self {
         Self {
-            kind: PhantomData::<K>,
             notes: [self.notes[2], self.notes[1], self.notes[0]],
+            _class: PhantomData::<K>,
         }
     }
-
+    /// Returns the distance (interval) between the root and the third
     pub fn root_to_third(&self) -> Third {
         K::root_to_third()
     }
-
+    /// Returns the distance (interval) between the third and the fifth
     pub fn third_to_fifth(&self) -> Third {
         K::third_to_fifth()
+    }
+    /// Returns an iterator over the notes of the triad
+    pub fn iter(&self) -> core::slice::Iter<Note> {
+        self.notes.iter()
+    }
+    /// Returns a mutable iterator over the notes of the triad
+    pub fn iter_mut(&mut self) -> core::slice::IterMut<Note> {
+        self.notes.iter_mut()
+    }
+
+    pub fn transform(&self, lpr: LPR) -> Self {
+        unimplemented!();
     }
 }
 
@@ -95,48 +157,7 @@ where
     K: TriadKind,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.write_str(&self.notes[0].to_string())?;
-        f.write_str(&self.notes[1].to_string())?;
-        f.write_str(&self.notes[2].to_string())
-    }
-}
-
-impl<K> core::ops::Index<Factors> for Triad<K>
-where
-    K: TriadKind,
-{
-    type Output = Note;
-
-    fn index(&self, index: Factors) -> &Self::Output {
-        &self.notes[index as usize]
-    }
-}
-
-impl<K> core::ops::IndexMut<Factors> for Triad<K>
-where
-    K: TriadKind,
-{
-    fn index_mut(&mut self, index: Factors) -> &mut Self::Output {
-        &mut self.notes[index as usize]
-    }
-}
-
-impl<K> core::ops::Index<core::ops::Range<Factors>> for Triad<K>
-where
-    K: TriadKind,
-{
-    type Output = [Note];
-
-    fn index(&self, index: core::ops::Range<Factors>) -> &Self::Output {
-        &self.notes[index.start as usize..index.end as usize]
-    }
-}
-
-impl<K> core::ops::IndexMut<core::ops::Range<Factors>> for Triad<K>
-where
-    K: TriadKind,
-{
-    fn index_mut(&mut self, index: core::ops::Range<Factors>) -> &mut Self::Output {
-        &mut self.notes[index.start as usize..index.end as usize]
+        let (root, third, fifth) = (self.notes[0], self.notes[1], self.notes[2]);
+        write!(f, "({}, {}, {})", root, third, fifth)
     }
 }

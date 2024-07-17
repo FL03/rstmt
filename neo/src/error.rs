@@ -7,7 +7,7 @@ pub use res::EResult;
 /// A type alias for a [`Result`](core::result::Result) that uses the [`TriadError`](TriadError) type.
 pub type TriadResult<T = ()> = core::result::Result<T, TriadError>;
 
-use rstmt::{Intervals, Note, Pitch, Tuple3};
+use rstmt::{Note, Pitch};
 
 #[derive(
     Clone,
@@ -31,11 +31,11 @@ use rstmt::{Intervals, Note, Pitch, Tuple3};
 #[strum(serialize_all = "PascalCase")]
 pub enum TriadError {
     #[error("InvalidPitch: {0}")]
-    InvalidPitch(Pitch),
+    InvalidPitch(String),
     #[error("Invalid Interval: {0}")]
-    InvalidInterval(Intervals),
+    InvalidInterval(String),
     #[error("Invalid Triad: {0:?}")]
-    InvalidTriad(Tuple3<Note>),
+    InvalidTriad(String),
     #[error("{0}")]
     Music(#[from] rstmt::MusicalError),
     #[error("{0}")]
@@ -43,32 +43,32 @@ pub enum TriadError {
 }
 
 impl TriadError {
-    pub fn invalid_pitch(value: Pitch) -> Self {
-        Self::InvalidPitch(value)
+    pub fn invalid_pitch(msg: impl ToString) -> Self {
+        Self::InvalidPitch(msg.to_string())
     }
 
-    pub fn invalid_interval(value: Intervals) -> Self {
-        Self::InvalidInterval(value)
+    pub fn invalid_interval(msg: impl ToString) -> Self {
+        Self::InvalidInterval(msg.to_string())
     }
 
-    pub fn invalid_triad(root: Note, third: Note, fifth: Note) -> Self {
-        Self::InvalidTriad((root, third, fifth))
+    pub fn invalid_triad(msg: impl ToString) -> Self {
+        Self::InvalidTriad(msg.to_string())
     }
 
-    pub fn unknown(message: impl Into<String>) -> Self {
-        Self::Unknown(message.into())
+    pub fn unknown(msg: impl Into<String>) -> Self {
+        Self::Unknown(msg.into())
     }
 }
 
 impl From<Pitch> for TriadError {
     fn from(err: Pitch) -> Self {
-        TriadError::InvalidPitch(err)
+        TriadError::InvalidPitch(err.to_string())
     }
 }
 
 impl From<(Note, Note, Note)> for TriadError {
-    fn from(err: (Note, Note, Note)) -> Self {
-        TriadError::InvalidTriad(err)
+    fn from((r, t, f): (Note, Note, Note)) -> Self {
+        TriadError::InvalidTriad(format!("({}, {}, {})", r, t, f))
     }
 }
 

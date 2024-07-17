@@ -26,6 +26,11 @@ pub mod transform;
 pub mod triad;
 pub mod types;
 
+mod impls {
+    pub mod impl_iter;
+    pub mod impl_triad;
+}
+
 pub mod prelude {
     pub use crate::error::{TriadError, TriadResult};
     pub use crate::space::prelude::*;

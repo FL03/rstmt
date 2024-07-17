@@ -2,6 +2,7 @@
     Appellation: interval <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::IntervalTy;
 use crate::Step;
 
 /// The number of an interval.
@@ -48,8 +49,10 @@ pub enum IntervalLevel {
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Interval<T = crate::Note> {
-    pub(crate) distance: i8,
+    pub(crate) distance: IntervalTy,
     pub(crate) level: IntervalLevel,
     pub(crate) source: T,
     pub(crate) step: Step,
 }
+
+impl<T> Interval<T> {}

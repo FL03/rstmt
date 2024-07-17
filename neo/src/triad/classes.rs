@@ -2,12 +2,15 @@
     Appellation: classes <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::TriadError;
+use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
+use strum::IntoEnumIterator;
 
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
-pub trait TriadKind {
+pub trait TriadKind: Sized {
     private!();
     /// Returns a new instance of [PhantomData](core::marker::PhantomData);
     /// This method is the only possible constructor for these objects,
@@ -22,13 +25,13 @@ pub trait TriadKind {
 
     fn class() -> Triads {
         if Self::is_major() {
-            Triads::Major
+            Triads::major()
         } else if Self::is_minor() {
-            Triads::Minor
+            Triads::minor()
         } else if Self::is_augmented() {
-            Triads::Augmented
+            Triads::augmented()
         } else {
-            Triads::Diminished
+            Triads::diminished()
         }
     }
 
@@ -46,6 +49,11 @@ pub trait TriadKind {
 
     fn root_to_fifth() -> Fifth {
         Self::class().root_to_fifth()
+    }
+
+    fn intervals() -> (Third, Third, Fifth) {
+        let (a, b) = Self::thirds();
+        (a, b, Self::root_to_fifth())
     }
 
     fn name() -> &'static str;
@@ -140,20 +148,64 @@ pub enum Triads {
 }
 
 impl Triads {
+    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
+        for i in Self::iter() {
+            if i.is_valid(root, third, fifth) {
+                return Ok(i);
+            }
+        }
+        Err(TriadError::invalid_triad(
+            "The given notes do not form a valid triad...",
+        ))
+    }
+    /// A functional constructor for the [Augmented](Triads::Augmented) class.
     pub fn augmented() -> Self {
         Triads::Augmented
     }
-
+    /// A functional constructor for the [Diminished](Triads::Diminished) class.
     pub fn diminished() -> Self {
         Triads::Diminished
     }
-
+    /// A functional constructor for the [Major](Triads::Major) class.
     pub fn major() -> Self {
         Triads::Major
     }
-
+    /// A functional constructor for the [Minor](Triads::Minor) class.
     pub fn minor() -> Self {
         Triads::Minor
+    }
+
+    pub fn intervals(&self) -> (Third, Third, Fifth) {
+        use Fifth::*;
+        use Third::*;
+        match self {
+            Triads::Augmented => (Major, Major, Augmented),
+            Triads::Diminished => (Minor, Minor, Diminished),
+            Triads::Major => (Major, Minor, Perfect),
+            Triads::Minor => (Minor, Major, Perfect),
+        }
+    }
+
+    pub fn is_valid(&self, root: Note, third: Note, fifth: Note) -> bool {
+        let (a, b) = self.thirds();
+        let c = self.root_to_fifth();
+        // compute the interval between the root and third
+        let rt = {
+            let interval = third - root;
+            Third::try_from(*interval.pitch())
+        };
+        // compute the interval between the third and fifth
+        let tf = {
+            let interval = fifth - third;
+            Third::try_from(*interval.pitch())
+        };
+        // compute the interval between the root and fifth
+        let rf = {
+            let interval = fifth - root;
+            Fifth::try_from(*interval.pitch())
+        };
+
+        rt == Ok(a) && tf == Ok(b) && rf == Ok(c)
     }
 
     pub fn validate(&self, notes: &[Note; 3]) -> bool {
@@ -190,5 +242,23 @@ impl Triads {
             Triads::Diminished => Diminished,
             Triads::Major | Triads::Minor => Perfect,
         }
+    }
+}
+
+impl<K> From<PhantomData<K>> for Triads
+where
+    K: TriadKind,
+{
+    fn from(_: PhantomData<K>) -> Self {
+        K::class()
+    }
+}
+
+impl<K> From<Triads> for PhantomData<K>
+where
+    K: TriadKind,
+{
+    fn from(_: Triads) -> Self {
+        PhantomData::<K>
     }
 }

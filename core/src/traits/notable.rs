@@ -2,10 +2,8 @@
     Appellation: notable <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{
-    pitch::{Pitch, PitchTy, Pitches},
-    Intervals, Octave,
-};
+use crate::pitch::{Pitch, Pitches};
+use crate::Octave;
 
 /// The American Standard Pitch Notation (ASPN) is a system popularized for its
 /// ability to simplify the representation of musical notes, combining the
@@ -39,31 +37,9 @@ pub trait Notable: Copy + Sized + core::fmt::Display {
     }
 }
 
-/// [IntervalKind] denotes objects used to explicitly define the various
-/// intervals in music theory.
-pub trait IntervalKind {
-    /// Returns the interval associated with the value
-    fn kind(&self) -> Intervals {
-        Intervals::from_value(self.value())
-    }
-    /// Returns the value associated with the interval
-    fn value(&self) -> i8;
-}
-
 /*
  ************* Implementations *************
 */
-impl IntervalKind for Intervals {
-    fn value(&self) -> i8 {
-        self.value()
-    }
-}
-
-impl Notable for crate::Note {
-    fn pitch(&self) -> Pitch {
-        *self.pitch()
-    }
-}
 
 impl Notable for Pitch {
     fn pitch_class(&self) -> Pitches {
@@ -85,7 +61,13 @@ impl Notable for Pitches {
     }
 }
 
-impl Notable for PitchTy {
+impl Notable for crate::Note {
+    fn pitch(&self) -> Pitch {
+        *self.pitch()
+    }
+}
+
+impl Notable for crate::PitchTy {
     fn pitch(&self) -> Pitch {
         Pitch(*self)
     }
