@@ -28,6 +28,7 @@ pub mod types;
 
 mod impls {
     pub mod impl_iter;
+    pub mod impl_ops;
     pub mod impl_triad;
 }
 

@@ -56,7 +56,7 @@ impl<K> Triad<K>
 where
     K: TriadKind,
 {
-    const LEN: usize = 3;
+    pub const LEN: usize = 3;
     /// Create a new triad from a root note.
     pub fn new(root: Note) -> Self {
         let (rt, tf) = K::thirds();
@@ -157,7 +157,7 @@ where
     K: TriadKind,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        let (root, third, fifth) = (self.notes[0], self.notes[1], self.notes[2]);
+        let (root, third, fifth) = self.as_tuple();
         write!(f, "({}, {}, {})", root, third, fifth)
     }
 }

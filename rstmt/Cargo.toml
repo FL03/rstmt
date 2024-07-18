@@ -55,6 +55,12 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
+[[example]]
+name = "triads"
+required-features = ["neo", "std"]
+
+
+
 [dev-dependencies]
 anyhow.workspace = true
 num = "0.4"
