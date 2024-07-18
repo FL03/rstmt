@@ -9,7 +9,7 @@ exclude = [
 
 members = [
     "core",
-    "neo",
+    "neo", "rstm",
     "rstmt",
 ]
 

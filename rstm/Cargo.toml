@@ -1,4 +1,5 @@
 [package]
+name = "rstm"
 authors.workspace = true
 build = "build.rs"
 categories.workspace = true
@@ -7,7 +8,6 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "rstmt-core"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
@@ -19,18 +19,12 @@ default = [
 
 full = [
     "default",
-    "rand",
     "serde",
 ]
 
 # [FF] Dependencies
 alloc = [
-    "num/alloc",
     "serde?/alloc",
-]
-
-rand = [
-    "num/rand",
 ]
 
 serde = [
@@ -40,8 +34,6 @@ serde = [
 # ********* [FF] Environments *********
 std = [
     "alloc",
-    "num/std",
-    "regex/std",
     "serde?/std",
     "strum/std",
 ]
@@ -51,25 +43,6 @@ bench = true
 crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
-
-[build-dependencies]
-
-[dependencies]
-lazy_static.workspace = true
-paste.workspace = true
-smart-default.workspace = true
-
-[dependencies.num]
-default-features = false
-version = "0.4"
-
-[dependencies.regex]
-default-features = false
-features = [
-    "perf",
-    "unicode",
-]
-version = "1"
 
 [dependencies.serde]
 default-features = false
@@ -85,7 +58,3 @@ version = "0.26"
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
-
-[target.wasm32-unknown-unknown.dependencies]
-
-[target.wasm32-wasi]
