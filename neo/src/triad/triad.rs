@@ -102,7 +102,6 @@ where
     pub fn as_tuple(&self) -> (Note, Note, Note) {
         (self.notes[0], self.notes[1], self.notes[2])
     }
-
     /// Consumes and returns an array of notes
     pub fn into_array(self) -> [Note; 3] {
         self.notes
