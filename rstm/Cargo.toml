@@ -44,6 +44,9 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
+[dependencies]
+thiserror = "1"
+
 [dependencies.serde]
 default-features = false
 features = ["derive"]

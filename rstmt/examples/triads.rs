@@ -2,7 +2,7 @@
     Appellation: triads <example>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use rstmt::neo::{Major, Triad};
+use rstmt::neo::triad::{Major, Triad};
 use rstmt::Note;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

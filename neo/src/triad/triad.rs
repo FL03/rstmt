@@ -44,6 +44,10 @@ fn _transform(triad: &Triad, lpr: LPR) -> Result<Triad, TriadError> {
     unimplemented!();
 }
 
+/// Traditionally, a triad is composed of three notes
+///
+///
+/// /// [Wolfram [2, 3] UTM](https://www.wolframscience.com/prizes/tm23/technicaldetails.html)'s.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 

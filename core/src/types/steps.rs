@@ -28,7 +28,7 @@
     serde(rename_all = "lowercase")
 )]
 #[non_exhaustive]
-#[repr(i8)]
+#[repr(usize)]
 #[strum(serialize_all = "lowercase")]
 pub enum Step {
     #[default]
@@ -38,4 +38,29 @@ pub enum Step {
     Whole = 2,
     /// A tritone step.
     Tritone = 3,
+}
+
+impl Step {
+    /// A functional constructor for [Step::Half].
+    pub fn half() -> Self {
+        Self::Half
+    }
+    /// A functional constructor for [Step::Whole].
+    pub fn whole() -> Self {
+        Self::Whole
+    }
+    /// A functional constructor for [Step::Tritone].
+    pub fn tritone() -> Self {
+        Self::Tritone
+    }
+    /// Converts an [i8] value into a [Step] by taking the modulus of the value.
+    /// The function uses a modulator of 3 to determine the step since there are
+    /// only three actionable steps ([half](Step::Half), [whole](Step::Whole), and [tritone](Step::Tritone)).
+    pub fn from_usize(value: impl Into<usize>) -> Self {
+        match value.into() % 3 {
+            1 => Self::Half,
+            2 => Self::Whole,
+            _ => Self::Tritone,
+        }
+    }
 }
