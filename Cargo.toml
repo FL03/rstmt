@@ -9,7 +9,7 @@ exclude = [
 
 members = [
     "core",
-    "neo", "rstm",
+    "neo",
     "rstmt",
 ]
 
@@ -27,13 +27,13 @@ thiserror = "1"
 [workspace.package]
 authors = ["Joe McCain III <jo3mccain@icloud.com>",]
 categories = [ ]
-description = "This project focuses on providing concrete abstractions of musical objects discussed within the neo-Riemannian theory."
+description = "This crate focuses on building a music theory library that can be used to generate music theory data structures and algorithms."
 edition = "2021"
-homepage = "https://github.com/FL03/triad/wiki"
+homepage = "https://github.com/FL03/rstmt/wiki"
 keywords = [ "music" ]
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/FL03/triad.git"
+repository = "https://github.com/FL03/rstmt.git"
 version = "0.0.2"
 
 [profile.dev]

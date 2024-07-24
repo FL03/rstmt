@@ -44,15 +44,21 @@ fn _transform(triad: &Triad, lpr: LPR) -> Result<Triad, TriadError> {
     unimplemented!();
 }
 
-/// Traditionally, a triad is composed of three notes
-///
-///
-/// /// [Wolfram [2, 3] UTM](https://www.wolframscience.com/prizes/tm23/technicaldetails.html)'s.
+/// A triad speaks to any chord composed of three notes, each of which maintain
+/// particular relationships to one another. The most common triad is the major
+/// triad, which is composed of a root note, a major third, and a perfect fifth.
+/// The minor triad is composed of a root note, a minor third, and a perfect fifth.
+/// 
+/// Triads can be created either by specifying the root note and providing the 
+/// classifying type, or by providing an array of notes. When providing an array
+/// of notes, the system works to ensure the final configuration of notes is valid.
+/// This is done by iterating over the notes and checking if the intervals satisfy
+/// the requirements of the given triad class.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
 pub struct Triad<K = Major> {
-    pub notes: [Note; 3],
+    pub(crate) notes: [Note; 3],
     pub(crate) _class: PhantomData<K>,
 }
 
