@@ -48,8 +48,8 @@ fn _transform(triad: &Triad, lpr: LPR) -> Result<Triad, TriadError> {
 /// particular relationships to one another. The most common triad is the major
 /// triad, which is composed of a root note, a major third, and a perfect fifth.
 /// The minor triad is composed of a root note, a minor third, and a perfect fifth.
-/// 
-/// Triads can be created either by specifying the root note and providing the 
+///
+/// Triads can be created either by specifying the root note and providing the
 /// classifying type, or by providing an array of notes. When providing an array
 /// of notes, the system works to ensure the final configuration of notes is valid.
 /// This is done by iterating over the notes and checking if the intervals satisfy
@@ -155,7 +155,7 @@ where
     pub fn iter_mut(&mut self) -> core::slice::IterMut<Note> {
         self.notes.iter_mut()
     }
-
+    // #
     pub fn transform(&self, lpr: LPR) -> Self {
         unimplemented!();
     }

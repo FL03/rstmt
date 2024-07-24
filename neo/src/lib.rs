@@ -20,7 +20,6 @@ pub(crate) mod macros;
 pub(crate) mod utils;
 
 pub mod error;
-pub mod space;
 pub mod tonnetz;
 pub mod transform;
 pub mod triad;
@@ -34,7 +33,6 @@ mod impls {
 
 pub mod prelude {
     pub use crate::error::{TriadError, TriadResult};
-    pub use crate::space::prelude::*;
     pub use crate::tonnetz::prelude::*;
     pub use crate::transform::prelude::*;
     pub use crate::triad::prelude::*;
