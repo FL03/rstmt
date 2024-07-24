@@ -43,6 +43,7 @@ impl Intervals {
     {
         (lhs - rhs).into()
     }
+    
     pub fn from_value(value: impl IntoPitch) -> Self {
         use Intervals::*;
         let pitch = value.into_pitch();

@@ -27,43 +27,43 @@ impl<K: TriadKind> Triad<K> {
 }
 
 impl Triad<Triads> {
-    pub fn determinate<K: TriadKind>(&self) -> Triad<K> {
-        for i in Triads::iter() {
-            if i.is::<K>() {
-                return Triad {
-                    notes: self.notes,
-                    _class: core::marker::PhantomData::<K>,
-                };
-            }
+    /// Consumes the instance to classify it as a specific kind of triad;
+    /// essentially, a safe way to cast
+    pub fn cast<K: TriadKind>(self) -> Triad<K> {
+        if let Some(_) = Triads::iter().filter(|i| i.is::<K>()).next() {
+            return Triad {
+                notes: self.notes,
+                _class: core::marker::PhantomData::<K>,
+            };
         }
-        unimplemented!()
+        panic!("Impossible! The given triad does not match the specified kind...");
     }
 }
 
 impl Triad<Augmented> {
     /// Create a new [augmented](Augmented) triad.
     pub fn augmented(root: Note) -> Self {
-        Self::new(root)
+        Self::from_root(root)
     }
 }
 
 impl Triad<Diminished> {
     /// Create a new [diminished](Diminished) triad.
     pub fn diminished(root: Note) -> Self {
-        Self::new(root)
+        Self::from_root(root)
     }
 }
 
 impl Triad<Major> {
     /// Create a new [major](Major) triad.
     pub fn major(root: Note) -> Self {
-        Self::new(root)
+        Self::from_root(root)
     }
 }
 
 impl Triad<Minor> {
     /// Create a new [minor](Minor) triad.
     pub fn minor(root: Note) -> Self {
-        Self::new(root)
+        Self::from_root(root)
     }
 }

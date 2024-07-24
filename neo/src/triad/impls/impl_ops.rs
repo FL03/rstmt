@@ -2,9 +2,21 @@
     Appellation: impl_triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::{Triad, TriadKind};
+use crate::transform::{Transform, LPR};
+use crate::triad::{Triad, TriadCls, TriadKind, Triads};
 use crate::Factors;
 use rstmt::Note;
+
+impl<K> Transform<LPR> for Triad<K>
+where
+    K: TriadCls,
+{
+    type Output = Result<Triad<Triads>, crate::TriadError>;
+
+    fn transform(self, lpr: LPR) -> Self::Output {
+        crate::transform::utils::_transform(self, lpr)
+    }
+}
 
 impl<K> core::ops::Index<Factors> for Triad<K>
 where

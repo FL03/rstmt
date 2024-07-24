@@ -2,6 +2,7 @@
     Appellation: harmonic <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![allow(unused)]
 use num::traits::{Num, NumOps};
 
 pub trait Frequency<T> {
