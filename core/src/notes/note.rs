@@ -2,7 +2,7 @@
     Appellation: note <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{IntoPitch, Octave, Pitch, Pitches};
+use crate::{IntoInterval, IntoPitch, Octave, Pitch, Pitches};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -69,6 +69,34 @@ impl Note {
             pitch: pitch.into_pitch(),
         }
     }
+
+    pub fn add_interval<I>(&self, interval: I) -> Self
+    where
+        I: IntoInterval,
+    {
+        self + interval.into_interval()
+    }
+
+    pub fn sub_interval<I>(&self, interval: I) -> Self
+    where
+        I: IntoInterval,
+    {
+        self - interval.into_interval()
+    }
+
+    pub fn add_octave(&self, octave: Octave) -> Self {
+        Self {
+            octave: self.octave + octave,
+            pitch: self.pitch,
+        }
+    }
+
+    pub fn sub_octave(&self, octave: Octave) -> Self {
+        Self {
+            octave: self.octave - octave,
+            pitch: self.pitch,
+        }
+    }
 }
 
 /*
@@ -111,65 +139,3 @@ impl From<Pitch> for Note {
         }
     }
 }
-
-macro_rules! impl_std_ops {
-    (@impl $trait:ident.$call:ident($rhs:ty) -> $out:ty) => {
-        impl core::ops::$trait<$rhs> for Note {
-            type Output = $out;
-
-            fn $call(self, rhs: $rhs) -> Self::Output {
-                Note {
-                    octave: ::core::ops::$trait::$call(self.octave, rhs.octave),
-                    pitch: ::core::ops::$trait::$call(self.pitch, rhs.pitch)
-                }
-            }
-        }
-
-        impl<'a> core::ops::$trait<&'a $rhs> for Note {
-            type Output = $out;
-
-            fn $call(self, rhs: &'a $rhs) -> Self::Output {
-                Note {
-                    octave: ::core::ops::$trait::$call(self.octave, rhs.octave),
-                    pitch: ::core::ops::$trait::$call(self.pitch, rhs.pitch)
-                }
-            }
-        }
-
-        impl<'a> core::ops::$trait<$rhs> for &'a Note {
-            type Output = $out;
-
-            fn $call(self, rhs: $rhs) -> Self::Output {
-                Note {
-                    octave: ::core::ops::$trait::$call(self.octave, rhs.octave),
-                    pitch: ::core::ops::$trait::$call(self.pitch, rhs.pitch)
-                }
-            }
-        }
-
-        impl<'a> core::ops::$trait<&'a $rhs> for &'a Note {
-            type Output = $out;
-
-            fn $call(self, rhs: &'a $rhs) -> Self::Output {
-                Note {
-                    octave: ::core::ops::$trait::$call(self.octave, rhs.octave),
-                    pitch: ::core::ops::$trait::$call(self.pitch, rhs.pitch)
-                }
-            }
-        }
-    };
-
-    (@impl $trait:ident.$call:ident($rhs:ty)) => {
-        impl_std_ops!(@impl $trait.$call($rhs) -> Note);
-    };
-    (@impl $trait:ident.$call:ident $(-> $out:ty)?) => {
-        impl_std_ops!(@impl $trait.$call(Note) $(-> $out)?);
-    };
-    ($($trait:ident.$call:ident$(($rhs:ty))? $(-> $out:ty)?),* $(,)?) => {
-        $(
-            impl_std_ops!(@impl $trait.$call$(($rhs))? $(-> $out)?);
-        )*
-    };
-}
-
-impl_std_ops!(Add.add, Div.div, Mul.mul, Rem.rem, Sub.sub);

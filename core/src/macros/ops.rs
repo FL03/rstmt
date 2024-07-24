@@ -21,6 +21,76 @@ macro_rules! impl_binop_method {
     };
 }
 
+macro_rules! opper {
+    ($($trait:ident)::*$call:ident($a:ident: $lhs:ty, $b:ident: $rhs:ty) -> $out:ty $blk:block) => {
+        impl $trait<$rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output $blk
+        }
+
+        impl<'a> $trait<&'a $rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output $blk
+        }
+
+        impl<'a> $trait<&'a $rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output $blk
+        }
+
+        impl<'a> $trait<$rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output $blk
+        }
+    };
+    (@impl $($trait:ident)::*$call:ident($a:ident: $lhs:ty, $b:ident: $rhs:ty) -> $out:ty {$($rest:tt)*}) => {
+        impl $trait<$rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+
+        impl<'a> $trait<&'a $rhs> for $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+
+        impl<'a> $trait<&'a $rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: &'a $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+
+        impl<'a> $trait<$rhs> for &'a $lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+    };
+    (@base $trait:ident::$call:ident($(&$lt:lifetime)? $lhs:ty, $(&$rt:lifetime)?$rhs:ty) -> $out:ty {$($rest:tt)*}) => {
+        impl $trait<$(&$rt)? $rhs> for $(&$lt)?$lhs {
+            type Output = $out;
+
+            fn $call(self, rhs: $rhs) -> Self::Output {
+                $($rest)*
+            }
+        }
+    };
+}
+
 macro_rules! wrapper_ops {
     (@impl $name:ident::<$type:ty>::$trait:ident.$call:ident) => {
         impl core::ops::$trait<$name> for $name {

@@ -12,6 +12,14 @@ macro_rules! interval {
         }
 
         impl $name {
+            pub fn from_i8(value: i8) -> Result<Self, $crate::error::MusicalError> {
+                Self::try_from(value)
+            }
+
+            pub fn interval(src: $crate::Note, tgt: $crate::Note) -> Result<Self, $crate::error::MusicalError> {
+                Self::try_from((tgt - src).pitch).map_err(|_| $crate::error::MusicalError::InvalidInterval)
+            }
+
             pub fn value(&self) -> i8 {
                 *self as i8
             }
@@ -24,6 +32,8 @@ macro_rules! interval {
         enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
         impl $crate::IntervalKind for $name {
+            seal!();
+
             fn value(&self) -> i8 {
                 $name::value(self)
             }

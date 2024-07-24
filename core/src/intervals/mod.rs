@@ -4,12 +4,11 @@
 */
 #[doc(inline)]
 pub use self::{
-    interval::*,
     kinds::*,
     qualities::{IntervalQuality, Quality},
 };
 
-pub(crate) mod interval;
+pub mod interval;
 pub(crate) mod kinds;
 
 pub mod qualities;
@@ -23,9 +22,18 @@ pub(crate) mod prelude {
 
 pub(crate) type IntervalTy = i8;
 
+pub trait MusicalInterval {
+    fn as_i8(&self) -> i8;
+}
+
+pub trait IntoInterval {
+    fn into_interval(self) -> Intervals;
+}
+
 /// [IntervalKind] denotes objects used to explicitly define the various
 /// intervals in music theory.
 pub trait IntervalKind {
+    private!();
     /// Returns the interval associated with the value
     fn kind(&self) -> Intervals {
         Intervals::from_value(self.value())
@@ -37,7 +45,18 @@ pub trait IntervalKind {
 /*
  ************* Implementations *************
 */
+
+impl<I> IntoInterval for I
+where
+    I: Into<Intervals>,
+{
+    fn into_interval(self) -> Intervals {
+        self.into()
+    }
+}
+
 impl IntervalKind for Intervals {
+    seal!();
     fn value(&self) -> IntervalTy {
         self.value()
     }

@@ -30,6 +30,7 @@ pub(crate) mod utils;
 pub mod chords;
 pub mod error;
 pub mod intervals;
+#[macro_use]
 pub mod notes;
 pub mod ops;
 pub mod pitch;

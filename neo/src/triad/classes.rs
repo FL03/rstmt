@@ -10,15 +10,20 @@ use strum::IntoEnumIterator;
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
-pub trait TriadKind: Sized {
+pub trait TriadCls {
     private!();
+}
+
+pub trait TriadKind: TriadCls
+where
+    Self: Copy + Sized,
+{
     /// Returns a new instance of [PhantomData](core::marker::PhantomData);
     /// This method is the only possible constructor for these objects,
     /// a charecteristic enfored with 0-variant enum declarations.
     fn phantom() -> core::marker::PhantomData<Self> {
         core::marker::PhantomData::<Self>
     }
-
     fn is_valid(notes: &[Note; 3]) -> bool {
         Self::class().validate(notes)
     }
@@ -81,8 +86,11 @@ macro_rules! class {
         #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize),)]
         pub enum $name {}
 
-        impl TriadKind for $name {
+        impl TriadCls for $name {
             seal!();
+        }
+
+        impl TriadKind for $name {
 
             fn name() -> &'static str {
                 stringify!($name)
@@ -112,6 +120,56 @@ class!(
     Major::major,
     Minor::minor
 );
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum Class {
+    Augmented(PhantomData<Augmented>),
+    Diminished(PhantomData<Diminished>),
+    Major(PhantomData<Major>),
+    Minor(PhantomData<Minor>),
+}
+
+impl Class {
+    pub fn augmented() -> Self {
+        Class::Augmented(PhantomData::<Augmented>)
+    }
+
+    pub fn diminished() -> Self {
+        Class::Diminished(PhantomData::<Diminished>)
+    }
+
+    pub fn major() -> Self {
+        Class::Major(PhantomData::<Major>)
+    }
+
+    pub fn minor() -> Self {
+        Class::Minor(PhantomData::<Minor>)
+    }
+
+    pub fn is<K: TriadKind>(&self) -> bool {
+        match self {
+            Class::Augmented(_) => K::is_augmented(),
+            Class::Diminished(_) => K::is_diminished(),
+            Class::Major(_) => K::is_major(),
+            Class::Minor(_) => K::is_minor(),
+        }
+    }
+
+    // pub fn into_kind<K>(self) -> PhantomData<K> {
+    //     match self {
+    //         Class::Augmented(cls) => cls,
+    //         Class::Diminished(cls) => cls,
+    //         Class::Major(cls) => cls,
+    //         Class::Minor(cls) => cls,
+    //     }
+    // }
+}
+
+impl Default for Class {
+    fn default() -> Self {
+        Class::Major(PhantomData::<Major>)
+    }
+}
 
 #[derive(
     Clone,
@@ -148,10 +206,18 @@ pub enum Triads {
 }
 
 impl Triads {
-    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
+    pub fn try_from_notes(
+        root: Note,
+        third: Note,
+        fifth: Note,
+    ) -> Result<super::Triad<Self>, TriadError> {
         for i in Self::iter() {
             if i.is_valid(root, third, fifth) {
-                return Ok(i);
+                let triad = super::Triad {
+                    notes: [root, third, fifth],
+                    _class: PhantomData::<Self>,
+                };
+                return Ok(triad);
             }
         }
         Err(TriadError::invalid_triad(
@@ -173,6 +239,14 @@ impl Triads {
     /// A functional constructor for the [Minor](Triads::Minor) class.
     pub fn minor() -> Self {
         Triads::Minor
+    }
+
+    pub fn is<K: TriadKind>(&self) -> bool {
+        K::class() == *self
+    }
+
+    pub fn of<K: TriadKind>() -> Self {
+        K::class()
     }
 
     pub fn intervals(&self) -> (Third, Third, Fifth) {
@@ -207,7 +281,7 @@ impl Triads {
 
         rt == Ok(a) && tf == Ok(b) && rf == Ok(c)
     }
-
+    /// Returns the [class](Triads) of the triad
     pub fn validate(&self, notes: &[Note; 3]) -> bool {
         // the interval between the root and the third must be a third
         let rt = notes[1] - notes[0];
@@ -243,6 +317,10 @@ impl Triads {
             Triads::Major | Triads::Minor => Perfect,
         }
     }
+}
+
+impl TriadCls for Triads {
+    seal!();
 }
 
 impl<K> From<PhantomData<K>> for Triads

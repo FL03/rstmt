@@ -9,6 +9,13 @@ pub(crate) mod builder;
 pub(crate) mod classes;
 pub(crate) mod triad;
 
+pub(crate) mod impls {
+    pub mod impl_iter;
+    pub mod impl_ops;
+    pub mod impl_triad;
+    pub mod impl_variants;
+}
+
 pub(crate) mod prelude {
     pub use super::builder::TriadBuilder;
     pub use super::classes::*;

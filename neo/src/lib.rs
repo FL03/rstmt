@@ -17,6 +17,8 @@ pub use self::{
 
 #[macro_use]
 pub(crate) mod macros;
+#[macro_use]
+pub(crate) mod seal;
 pub(crate) mod utils;
 
 pub mod error;
@@ -25,11 +27,8 @@ pub mod transform;
 pub mod triad;
 pub mod types;
 
-mod impls {
-    pub mod impl_iter;
-    pub mod impl_ops;
-    pub mod impl_triad;
-}
+#[doc(hidden)]
+mod impls {}
 
 pub mod prelude {
     pub use crate::error::{TriadError, TriadResult};
