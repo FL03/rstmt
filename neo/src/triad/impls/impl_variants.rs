@@ -28,7 +28,7 @@ impl<K: TriadKind> Triad<K> {
 
 impl Triad<Triads> {
     /// Consumes the instance to classify it as a specific kind of triad;
-    /// essentially, a safe way to cast
+    /// essentially, a safe way to cast "dynamic" instances to "static" ones.
     pub fn cast<K: TriadKind>(self) -> Triad<K> {
         if let Some(_) = Triads::iter().filter(|i| i.is::<K>()).next() {
             return Triad {

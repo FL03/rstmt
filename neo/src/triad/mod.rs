@@ -3,10 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::{builder::TriadBuilder, classes::*, triad::Triad};
+pub use self::{builder::TriadBuilder, classes::*, store::TriadStore, triad::Triad};
 
 pub(crate) mod builder;
 pub(crate) mod classes;
+pub(crate) mod store;
 pub(crate) mod triad;
 
 pub(crate) mod impls {

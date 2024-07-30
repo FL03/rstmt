@@ -18,16 +18,15 @@ fn test_parallel() {
     assert_ne!(c_major.third(), next.third());
     assert_eq!(c_major.root(), next.root());
     assert_eq!(c_major.fifth(), next.fifth());
-  
+
     // Compare the intervals between the two triads
     assert_ne!(c_major.root_to_third(), next.root_to_third());
 }
 
-
 #[test]
 fn test_parallel_invert() {
     use LPR::P;
-        
+
     let triad = Triad::<Major>::from_root(Note::from_pitch(0));
     // Validate the transformations invertability
     let pp = triad.chain([P, P]).unwrap();
@@ -44,7 +43,7 @@ fn test_leading() {
     assert_eq!(c_major.third(), next.third());
     assert_ne!(c_major.root(), next.root());
     assert_eq!(c_major.fifth(), next.fifth());
-  
+
     // Compare the intervals between the two triads
     assert_ne!(c_major.third_to_fifth(), next.third_to_fifth());
 }
@@ -52,10 +51,9 @@ fn test_leading() {
 #[test]
 fn test_leading_invert() {
     use LPR::L;
-        
+
     let triad = Triad::<Major>::from_root(Note::from_pitch(0));
     let ll = triad.chain([L, L]).unwrap();
     assert_eq!(triad.as_dyn(), ll);
     assert_eq!(triad, ll.cast());
 }
-

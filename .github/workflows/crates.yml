@@ -17,7 +17,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  core:
+  base:
+    env:
+      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
     name: Publish (${{ github.event.repository.name }})
     runs-on: ubuntu-latest
     strategy:
@@ -26,21 +28,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Publish (${{ matrix.features }})
-        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}-${{ matrix.features }}
+        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
   features:
-    name: Publish (${{ github.event.repository.name }})
-    needs: [ core ]
+    env:
+      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
+    name: Publish (features)
+    needs: base
     runs-on: ubuntu-latest
     strategy:
       matrix:
         features: [ neo ]
     steps:
       - uses: actions/checkout@v4
-      - name: Publish (${{ matrix.features }})
-        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}-${{ matrix.features }}
+      - name: Publish (${{ env.CRATENAME }})
+        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
   publish:
     name: Publish (${{ github.event.repository.name }})
-    needs: [ features ]
+    needs: features
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

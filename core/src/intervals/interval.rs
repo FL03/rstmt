@@ -29,7 +29,6 @@ use crate::Step;
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "lowercase")
 )]
-#[non_exhaustive]
 #[repr(i8)]
 #[strum(serialize_all = "lowercase")]
 pub enum IntervalLevel {

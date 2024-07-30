@@ -20,13 +20,15 @@ pub struct Dyad {
 }
 
 impl Dyad {
-    pub fn new(chord: Pair<Note>, interval: Intervals) -> Self {
+    pub fn new(src: Note, tgt: Note) -> Self {
+        let chord = Pair::new(src, tgt);
+        let interval = Intervals::new(src, tgt);
         Self { chord, interval }
     }
 
     pub fn from_tuple((lhs, rhs): (Note, Note)) -> Self {
         let chord = Pair::new(lhs, rhs);
-        let interval = Intervals::interval(lhs, rhs);
+        let interval = Intervals::new(lhs, rhs);
         Self { chord, interval }
     }
 

@@ -13,12 +13,13 @@ pub(crate) mod prelude {
     pub use super::lpr::LPR;
 }
 
+/// [Apply] is an overloadable operator enabling implementations to define how
+/// they should react to certain transformations.
 pub trait Apply<T> {
     type Output;
 
     fn apply(self, apply: T) -> Self::Output;
 }
-
 
 /// [Transform] describes objects capable of transformation. Specifically,
 /// the [transform](Transform::transform) method is an overloadable operator
@@ -64,7 +65,7 @@ pub(crate) mod utils {
                 LPR::R => f -= Tone,
             },
         };
-        
+
         Triad::try_from_arr([r, t, f])
     }
 }

@@ -2,7 +2,7 @@
     Appellation: impl_triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::{Triad, Triads, TriadKind};
+use crate::triad::{Triad, TriadKind, Triads};
 use rstmt::Note;
 
 impl<K: TriadKind> Triad<K> {

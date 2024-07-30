@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Major, TriadCls, TriadKind, Triads};
-use crate::transform::{LPR, Transform};
+use crate::transform::{Transform, LPR};
 use crate::TriadError;
 use core::marker::PhantomData;
 use itertools::Itertools;
@@ -23,10 +23,22 @@ where
     ))
 }
 
-/// A triad speaks to any chord composed of three notes, each of which maintain
-/// particular relationships to one another. The most common triad is the major
-/// triad, which is composed of a root note, a major third, and a perfect fifth.
-/// The minor triad is composed of a root note, a minor third, and a perfect fifth.
+/// # Triad
+///
+/// A triad is a 3-note chord that is built and referenced with chord factors:
+/// the root, the third, and the fifth. Each of these notes is required to
+/// satisfy a particular intervalic relationship with the others. These
+/// relationships are used, primarily, as the basis for classifying the triad.
+/// However, knowledge of the relationships between the notes is useful
+/// for building out the various creation routines and understanding the nature
+/// of the triad.
+///
+/// For example, a C-Major triad is composed of the notes C, E, and G.
+/// The interval between C and E is a major third, while the interval between
+/// E and G is a minor third, leaving the final interval between C and G as a
+/// perfect fifth.
+///
+/// ### Creation Routines
 ///
 /// Triads can be created either by specifying the root note and providing the
 /// classifying type, or by providing an array of notes. When providing an array
@@ -109,11 +121,11 @@ impl<K: TriadCls> Triad<K> {
             _class: PhantomData::<Triads>,
         }
     }
-    /// Returns the notes as an array
+    /// Returns an owned reference to the array of notes
     pub fn as_array(&self) -> &[Note; 3] {
         &self.notes
     }
-
+    /// Returns a mutable reference to the notes as an array
     pub fn as_mut_array(&mut self) -> &mut [Note; 3] {
         &mut self.notes
     }
@@ -137,12 +149,12 @@ impl<K: TriadCls> Triad<K> {
     pub fn into_tuple(self) -> (Note, Note, Note) {
         (self.notes[0], self.notes[1], self.notes[2])
     }
-    ///
+    /// Checks if the triad is valid; computes the intervals between the notes
+    /// interpreting any errors as invalid configurations.
     pub fn is_valid(&self) -> bool {
-        let (r, t, f) = (self.notes[0], self.notes[1], self.notes[2]);
-        let a = Third::try_from(*(t - r).pitch()).unwrap();
-        let b = Third::try_from(*(f - t).pitch()).unwrap();
-        Ok(a) == self.root_to_third() && Ok(b) == self.third_to_fifth()
+        self.root_to_third().is_ok()
+            && self.third_to_fifth().is_ok()
+            && self.root_to_fifth().is_ok()
     }
     /// Returns an iterator over the notes of the triad
     pub fn iter(&self) -> core::slice::Iter<Note> {
@@ -222,7 +234,7 @@ impl<K: TriadCls> Triad<K> {
     where
         K: Clone,
     {
-        Transform::transform(self, lpr).unwrap()
+        crate::transform::_transform(self, lpr).unwrap()
     }
 
     pub fn chain<I>(self, steps: I) -> Result<Triad<Triads>, TriadError>
@@ -237,4 +249,3 @@ impl<K: TriadCls> Triad<K> {
         Ok(triad)
     }
 }
-

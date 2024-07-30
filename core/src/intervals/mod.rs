@@ -8,9 +8,9 @@ pub use self::{
     qualities::{IntervalQuality, Quality},
 };
 
-pub mod interval;
 pub(crate) mod kinds;
 
+pub mod interval;
 pub mod qualities;
 
 pub(crate) mod prelude {
