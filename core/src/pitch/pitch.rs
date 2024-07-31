@@ -7,7 +7,7 @@ use crate::PyMod;
 
 /// A [pitch](Pitch) is a discrete tone with an individual frequency that may be
 /// classified as a [pitch class](Pitches).
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
 pub struct Pitch(pub(crate) PitchTy);
@@ -18,8 +18,12 @@ impl Pitch {
     pub fn new(pitch: PitchTy) -> Self {
         Self(pitch)
     }
-    /// Returns the absolute value of the remainder of the pitch divided by the modulus.
+
     pub fn abs(self) -> Self {
+        Self(self.0.abs())
+    }
+    /// Returns the absolute value of the remainder of the pitch divided by the modulus.
+    pub fn absmod(self) -> Self {
         Self(self.0.pymod(Self::MOD).abs())
     }
     /// Returns a new instance of the class representing the given pitch.
@@ -72,41 +76,35 @@ impl core::ops::DerefMut for Pitch {
     }
 }
 
-impl core::fmt::Binary for Pitch {
+impl core::fmt::Debug for Pitch {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        core::fmt::Binary::fmt(&self.0, f)
+        f.debug_tuple(&self.class().to_string())
+            .field(&self.0)
+            .finish()
     }
 }
 
 impl core::fmt::Display for Pitch {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "{}({})", self.class(), self.0)
     }
+}
+macro_rules! impl_fmt {
+    (@impl $trait:ident) => {
+        impl ::core::fmt::$trait for Pitch {
+            fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+                ::core::fmt::$trait::fmt(&self.0, f)
+            }
+        }
+    };
+    ($($trait:ident),* $(,)?) => {
+        $(
+            impl_fmt!(@impl $trait);
+        )*
+    };
 }
 
-impl core::fmt::LowerExp for Pitch {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        core::fmt::LowerExp::fmt(&self.0, f)
-    }
-}
-
-impl core::fmt::LowerHex for Pitch {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        core::fmt::LowerHex::fmt(&self.0, f)
-    }
-}
-
-impl core::fmt::Octal for Pitch {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        core::fmt::Octal::fmt(&self.0, f)
-    }
-}
-
-impl core::fmt::UpperExp for Pitch {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        core::fmt::UpperExp::fmt(&self.0, f)
-    }
-}
+impl_fmt!(Binary, LowerHex, Octal, UpperHex);
 
 impl From<PitchTy> for Pitch {
     fn from(pitch: PitchTy) -> Self {

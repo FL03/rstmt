@@ -43,7 +43,6 @@ pitch_class! {
 #[derive(
     Clone,
     Copy,
-    Debug,
     Eq,
     Hash,
     Ord,
@@ -51,7 +50,6 @@ pitch_class! {
     PartialOrd,
     smart_default::SmartDefault,
     strum::AsRefStr,
-    strum::Display,
     strum::EnumCount,
     strum::EnumIs,
     strum::VariantNames,
@@ -88,6 +86,28 @@ impl Pitches {
             Pitches::Flat(f) => f.pitch(),
             Pitches::Natural(n) => n.pitch(),
             Pitches::Sharp(s) => s.pitch(),
+        }
+    }
+}
+
+impl core::fmt::Debug for Pitches {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use Pitches::*;
+        match self {
+            Flat(cls) => write!(f, "{}♭", cls.as_ref()),
+            Natural(cls) => write!(f, "{}", cls.as_ref()),
+            Sharp(cls) => write!(f, "{}#", cls.as_ref()),
+        }
+    }
+}
+
+impl core::fmt::Display for Pitches {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use Pitches::*;
+        match self {
+            Flat(cls) => write!(f, "{}♭", cls.as_ref()),
+            Natural(cls) => write!(f, "{}", cls.as_ref()),
+            Sharp(cls) => write!(f, "{}#", cls.as_ref()),
         }
     }
 }

@@ -51,7 +51,7 @@ impl Interval {
     pub fn from_value(value: impl IntoPitch) -> Self {
         use Interval::*;
         let pitch = value.into_pitch();
-        match *pitch.abs() {
+        match *pitch.absmod() {
             1 => Semitone,
             2 => Tone,
             3 => Thirds(Third::Minor),
