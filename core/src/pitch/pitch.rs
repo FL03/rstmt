@@ -15,12 +15,11 @@ pub struct Pitch(pub(crate) PitchTy);
 impl Pitch {
     const MOD: PitchTy = crate::MODULUS;
 
-    pub fn new(pitch: impl Into<PitchTy>) -> Self {
-        let val: PitchTy = pitch.into();
-        Self(val.pymod(Self::MOD))
+    pub fn new(pitch: PitchTy) -> Self {
+        Self(pitch)
     }
     /// Returns the absolute value of the remainder of the pitch divided by the modulus.
-    pub fn abs(&self) -> Self {
+    pub fn abs(self) -> Self {
         Self(self.0.pymod(Self::MOD).abs())
     }
     /// Returns a new instance of the class representing the given pitch.

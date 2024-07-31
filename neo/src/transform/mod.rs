@@ -51,7 +51,7 @@ pub(crate) mod utils {
     where
         K: Clone + TriadCls,
     {
-        use rstmt::Intervals::{Semitone, Tone};
+        use rstmt::Interval::{Semitone, Tone};
         let (mut r, mut t, mut f) = triad.clone().into_tuple();
         match triad.root_to_third()? {
             Third::Major => match lpr {

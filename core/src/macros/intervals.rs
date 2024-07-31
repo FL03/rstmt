@@ -20,7 +20,7 @@ macro_rules! interval {
                 Self::try_from(value)
             }
 
-            pub fn interval(&self) -> $crate::intervals::Intervals {
+            pub fn interval(&self) -> $crate::Interval {
                 (*self).into()
             }
 
