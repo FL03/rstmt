@@ -3,10 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::{builder::TriadBuilder, classes::*, store::TriadStore, triad::Triad};
+pub use self::{builder::TriadBuilder, kinds::*, store::BaseTriad, triad::Triad};
 
 pub(crate) mod builder;
-pub(crate) mod classes;
+pub(crate) mod kinds;
 pub(crate) mod store;
 pub(crate) mod triad;
 
@@ -19,7 +19,7 @@ pub(crate) mod impls {
 
 pub(crate) mod prelude {
     pub use super::builder::TriadBuilder;
-    pub use super::classes::*;
+    pub use super::kinds::*;
     pub use super::triad::Triad;
 }
 
@@ -75,6 +75,21 @@ pub trait TriadData {
 /*
  ************* Implementations *************
 */
+impl TriadData for store::BaseTriad {
+    type Elem = rstmt::Note;
+
+    fn root(&self) -> &Self::Elem {
+        &self.root
+    }
+
+    fn third(&self) -> &Self::Elem {
+        &self.third
+    }
+
+    fn fifth(&self) -> &Self::Elem {
+        &self.fifth
+    }
+}
 impl<T> TriadData for [T; 3] {
     type Elem = T;
 
@@ -104,5 +119,25 @@ impl<T> TriadData for (T, T, T) {
 
     fn fifth(&self) -> &Self::Elem {
         &self.2
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::store::BaseTriad;
+    use crate::transform::LPR;
+    use rstmt::Note;
+
+    #[test]
+    fn test_triad_store() {
+        let root = Note::from_pitch(0);
+        let triad = BaseTriad::major(root);
+        assert_eq!(triad.root(), root);
+        assert_eq!(triad.third(), root.add_major_third());
+        assert_eq!(triad.fifth(), root.add_perfect_fifth());
+
+        let next = triad.transform(LPR::L);
+        let ll = next.transform(LPR::L);
+        assert_eq!(ll, triad);
     }
 }

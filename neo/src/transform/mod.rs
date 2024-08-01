@@ -50,12 +50,11 @@ pub(crate) mod utils {
     ///
     ///
     /// should result in a [Minor](crate::triad::Minor) triad.
-    pub fn _leading<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
+    pub fn _leading<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
     where
         K: TriadKind,
-        K2: TriadKind,
     {
-        use rstmt::Interval::Semitone;
+        use rstmt::Intervals::Semitone;
         let rt = triad.root_to_third()?;
         let (mut r, t, mut f) = triad.into_tuple();
         match rt {
@@ -70,12 +69,11 @@ pub(crate) mod utils {
         }
     }
 
-    pub fn _parallel<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
+    pub fn _parallel<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
     where
         K: TriadKind,
-        K2: TriadKind,
     {
-        use rstmt::Interval::Semitone;
+        use rstmt::Intervals::Semitone;
         let rt = triad.root_to_third()?;
         let (r, mut t, mut f) = triad.into_tuple();
         match rt {
@@ -90,12 +88,11 @@ pub(crate) mod utils {
         }
     }
 
-    pub fn _relative<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
+    pub fn _relative<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
     where
         K: TriadKind,
-        K2: TriadKind,
     {
-        use rstmt::Interval::Tone;
+        use rstmt::Intervals::Tone;
         let rt = triad.root_to_third()?;
         let (mut r, t, mut f) = triad.into_tuple();
         match rt {
@@ -110,10 +107,9 @@ pub(crate) mod utils {
         }
     }
 
-    pub(crate) fn _transform<K, K2>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K2>, TriadError>
+    pub(crate) fn _transform<K>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K::Rel>, TriadError>
     where
         K: TriadKind,
-        K2: TriadKind,
     {
         match lpr {
             LPR::L => _leading(triad),

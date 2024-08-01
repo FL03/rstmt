@@ -3,11 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::notes::Note;
-use crate::{Interval, Pair};
+use crate::{Intervals, Pair};
 
-fn _interval<A, B>(lhs: A, rhs: B) -> Interval
+fn _interval<A, B>(lhs: A, rhs: B) -> Intervals
 where
-    A: core::ops::Sub<B, Output = Interval>,
+    A: core::ops::Sub<B, Output = Intervals>,
 {
     lhs - rhs
 }
@@ -16,19 +16,19 @@ where
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Dyad {
     chord: Pair<Note>,
-    interval: Interval,
+    interval: Intervals,
 }
 
 impl Dyad {
     pub fn new(src: Note, tgt: Note) -> Self {
         let chord = Pair::new(src, tgt);
-        let interval = Interval::new(src, tgt);
+        let interval = Intervals::new(src, tgt);
         Self { chord, interval }
     }
 
     pub fn from_tuple((lhs, rhs): (Note, Note)) -> Self {
         let chord = Pair::new(lhs, rhs);
-        let interval = Interval::new(lhs, rhs);
+        let interval = Intervals::new(lhs, rhs);
         Self { chord, interval }
     }
 
@@ -40,11 +40,11 @@ impl Dyad {
         &mut self.chord
     }
 
-    pub const fn interval(&self) -> &Interval {
+    pub const fn interval(&self) -> &Intervals {
         &self.interval
     }
 
-    pub fn interval_mut(&mut self) -> &mut Interval {
+    pub fn interval_mut(&mut self) -> &mut Intervals {
         &mut self.interval
     }
 }

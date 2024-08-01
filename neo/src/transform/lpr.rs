@@ -2,6 +2,7 @@
     Appellation: lpr <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::triad::store::BaseTriad;
 use crate::Triad;
 
 ///
@@ -69,7 +70,7 @@ impl LPR {
     /// returns a [Triad] with the new notes and classification
     pub fn apply<K>(self, triad: &mut Triad<K>) -> Triad<crate::triad::Triads> {
         use rstmt::{
-            Interval::{Semitone, Tone},
+            Intervals::{Semitone, Tone},
             Third::*,
         };
         let rt = triad
@@ -94,22 +95,30 @@ impl LPR {
         )
     }
 
-    pub fn dyna(&self) -> Box<dyn A> {
-        match self {
-            LPR::L => Box::new(0),
-            LPR::P => Box::new(0),
-            LPR::R => Box::new(0),
-        }
+    pub fn transform(self, triad: &mut BaseTriad) -> BaseTriad {
+        use rstmt::{
+            Intervals::{Semitone, Tone},
+            Third::*,
+        };
+        let rt = triad
+            .root_to_third()
+            .expect("The given triad contained an invalid interval between the root and third!");
+        let [r, t, f] = triad.as_mut_array();
+        match rt {
+            Major => match self {
+                LPR::L => *r -= Semitone,
+                LPR::P => *t -= Semitone,
+                LPR::R => *f += Tone,
+            },
+            Minor => match self {
+                LPR::L => *f += Semitone,
+                LPR::P => *t += Semitone,
+                LPR::R => *r -= Tone,
+            },
+        };
+
+        BaseTriad::try_from_arr(dbg!([*r, *t, *f])).expect(
+            "Transformation Error: the triad could not be constructed from the given notes.",
+        )
     }
 }
-
-pub trait A {
-    fn a() -> bool
-    where
-        Self: Sized,
-    {
-        false
-    }
-}
-
-impl<T> A for T {}

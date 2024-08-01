@@ -57,7 +57,7 @@ impl Notable for Pitches {
     }
 
     fn pitch(&self) -> Pitch {
-        Pitch(self.pitch_class().pitch())
+        Pitch(self.pitch_class().value())
     }
 }
 

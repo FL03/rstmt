@@ -13,12 +13,12 @@ use crate::PyMod;
 pub struct Pitch(pub(crate) PitchTy);
 
 impl Pitch {
-    const MOD: PitchTy = crate::MODULUS;
+    pub const MOD: PitchTy = crate::MODULUS;
 
     pub fn new(pitch: PitchTy) -> Self {
         Self(pitch)
     }
-
+    /// Returns the pitch value as a signed integer.
     pub fn abs(self) -> Self {
         Self(self.0.abs())
     }
@@ -28,19 +28,27 @@ impl Pitch {
     }
     /// Returns a new instance of the class representing the given pitch.
     pub fn class(&self) -> Pitches {
-        Pitches::try_from_value(self.0).unwrap()
+        Pitches::try_from_value(self.0.pymod(Pitch::MOD)).unwrap()
     }
     /// Consumes the pitch; returns a new instance of the class representing the given pitch.
     pub fn into_class(self) -> Pitches {
-        Pitches::try_from_value(self.0).unwrap()
+        Pitches::try_from_value(self.0.pymod(Pitch::MOD)).unwrap()
     }
     /// Consumes the object, returning the assigned pitch value.
     pub fn into_inner(self) -> PitchTy {
         self.0
     }
     /// A functional accessor for the pitch value.
-    pub fn value(&self) -> PitchTy {
+    pub fn get(&self) -> PitchTy {
         self.0
+    }
+    /// returns a mutable reference to the inner value of the pitch;
+    pub fn get_mut(&mut self) -> &mut PitchTy {
+        &mut self.0
+    }
+    /// A functional mutator for the pitch value.
+    pub fn set(&mut self, pitch: PitchTy) {
+        self.0 = pitch;
     }
 }
 
@@ -120,12 +128,12 @@ impl From<Pitch> for PitchTy {
 
 impl From<Pitches> for Pitch {
     fn from(pitch: Pitches) -> Self {
-        Self(pitch.pitch())
+        Self(pitch.value())
     }
 }
 
 impl From<Pitch> for Pitches {
     fn from(pitch: Pitch) -> Self {
-        Pitches::try_from_value(pitch.0).unwrap()
+        pitch.class()
     }
 }

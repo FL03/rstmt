@@ -2,7 +2,7 @@
     Appellation: note <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{IntoInterval, IntoPitch, Octave, Pitch, Pitches};
+use crate::{IntoPitch, Octave, Pitch, Pitches};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -67,34 +67,6 @@ impl Note {
         Note {
             octave: self.octave,
             pitch: pitch.into_pitch(),
-        }
-    }
-
-    pub fn add_interval<I>(&self, interval: I) -> Self
-    where
-        I: IntoInterval,
-    {
-        self + interval.into_interval()
-    }
-
-    pub fn sub_interval<I>(&self, interval: I) -> Self
-    where
-        I: IntoInterval,
-    {
-        self - interval.into_interval()
-    }
-
-    pub fn add_octave(&self, octave: Octave) -> Self {
-        Self {
-            octave: self.octave + octave,
-            pitch: self.pitch,
-        }
-    }
-
-    pub fn sub_octave(&self, octave: Octave) -> Self {
-        Self {
-            octave: self.octave - octave,
-            pitch: self.pitch,
         }
     }
 }

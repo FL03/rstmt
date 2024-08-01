@@ -28,7 +28,7 @@ use crate::{IntoPitch, Pitch};
 )]
 #[repr(u8)]
 #[strum(serialize_all = "lowercase")]
-pub enum Interval {
+pub enum Intervals {
     #[default]
     Semitone = 1,
     Tone = 2,
@@ -39,17 +39,17 @@ pub enum Interval {
     Octave = 12,
 }
 
-impl Interval {
+impl Intervals {
     pub fn new<A, B, C>(lhs: A, rhs: B) -> Self
     where
         A: core::ops::Sub<B, Output = C>,
-        C: Into<Interval>,
+        C: Into<Intervals>,
     {
         (lhs - rhs).into()
     }
     /// Use the difference between two pitches to determine the interval.
     pub fn from_value(value: impl IntoPitch) -> Self {
-        use Interval::*;
+        use Intervals::*;
         let pitch = value.into_pitch();
         match *pitch.absmod() {
             1 => Semitone,
@@ -63,38 +63,77 @@ impl Interval {
             9 => Sevenths(Seventh::Diminished),
             10 => Sevenths(Seventh::Minor),
             11 => Sevenths(Seventh::Major),
-            12 => Sevenths(Seventh::Augmented),
-            _ => panic!("Invalid interval value: {}", pitch.value()),
+            12 => Octave,
+            _ => panic!("Invalid interval value: {}", pitch.get()),
         }
     }
     /// A convenience method for constructing a new instance of the [Octave](Intervals::Octave) variant.
     pub fn octave() -> Self {
-        Interval::Octave
+        Intervals::Octave
     }
     /// A convenience method for constructing a new instance of the [Semitone](Intervals::Semitone) variant.
     pub fn semitone() -> Self {
-        Interval::Semitone
+        Intervals::Semitone
     }
     /// A convenience method for constructing a new instance of the [Tone](Intervals::Tone) variant.
     pub fn tone() -> Self {
-        Interval::Tone
+        Intervals::Tone
     }
     /// A convenience method for constructing a new variant, [`Thirds`](Intervals::Thirds).
     pub fn third(third: Third) -> Self {
-        Interval::Thirds(third)
+        Intervals::Thirds(third)
+    }
+
+    pub fn major_third() -> Self {
+        Intervals::Thirds(Third::Major)
+    }
+
+    pub fn minor_third() -> Self {
+        Intervals::Thirds(Third::Minor)
     }
 
     /// A convenience method for constructing a new variant, [`Fourths`](Intervals::Fourths).
     pub fn fourth(fourth: Fourth) -> Self {
-        Interval::Fourths(fourth)
+        Intervals::Fourths(fourth)
+    }
+
+    pub fn perfect_fourth() -> Self {
+        Intervals::Fourths(Fourth::Perfect)
     }
     /// A convenience method for constructing a new variant, [`Fifths`](Intervals::Fifths).
     pub fn fifth(fifth: Fifth) -> Self {
-        Interval::Fifths(fifth)
+        Intervals::Fifths(fifth)
+    }
+    pub fn augmented_fifth() -> Self {
+        Intervals::Fifths(Fifth::Augmented)
+    }
+
+    pub fn diminished_fifth() -> Self {
+        Intervals::Fifths(Fifth::Diminished)
+    }
+
+    pub fn perfect_fifth() -> Self {
+        Intervals::Fifths(Fifth::Perfect)
     }
     /// A convenience method for constructing a new variant, [`Sevenths`](Intervals::Sevenths).
     pub fn seventh(seventh: Seventh) -> Self {
-        Interval::Sevenths(seventh)
+        Intervals::Sevenths(seventh)
+    }
+
+    pub fn augmented_seventh() -> Self {
+        Intervals::Sevenths(Seventh::Augmented)
+    }
+
+    pub fn diminished_seventh() -> Self {
+        Intervals::Sevenths(Seventh::Diminished)
+    }
+
+    pub fn major_seventh() -> Self {
+        Intervals::Sevenths(Seventh::Major)
+    }
+
+    pub fn minor_seventh() -> Self {
+        Intervals::Sevenths(Seventh::Minor)
     }
     /// Interpret the current interval as a pitch.
     pub fn as_pitch(&self) -> Pitch {
@@ -107,13 +146,13 @@ impl Interval {
     /// Returns the value of the selected interval.
     pub fn value(&self) -> i8 {
         match *self {
-            Interval::Semitone => 1,
-            Interval::Tone => 2,
-            Interval::Thirds(third) => third as i8,
-            Interval::Fourths(fourth) => fourth as i8,
-            Interval::Fifths(fifth) => fifth as i8,
-            Interval::Sevenths(seventh) => seventh as i8,
-            Interval::Octave => 12,
+            Intervals::Semitone => 1,
+            Intervals::Tone => 2,
+            Intervals::Thirds(third) => third as i8,
+            Intervals::Fourths(fourth) => fourth as i8,
+            Intervals::Fifths(fifth) => fifth as i8,
+            Intervals::Sevenths(seventh) => seventh as i8,
+            Intervals::Octave => 12,
         }
     }
 }
@@ -133,20 +172,20 @@ macro_rules! impl_from_value {
     };
 }
 
-impl<P> From<P> for Interval
+impl<P> From<P> for Intervals
 where
     P: IntoPitch,
 {
     fn from(value: P) -> Self {
-        Interval::from_value(value)
+        Intervals::from_value(value)
     }
 }
 
 impl_from_value! {
-    Interval::Thirds(Third),
-    Interval::Fourths(Fourth),
-    Interval::Fifths(Fifth),
-    Interval::Sevenths(Seventh),
+    Intervals::Thirds(Third),
+    Intervals::Fourths(Fourth),
+    Intervals::Fifths(Fifth),
+    Intervals::Sevenths(Seventh),
 }
 
 interval! {

@@ -14,7 +14,7 @@ pub(crate) mod prelude {
     pub use super::tone::*;
 }
 
-use crate::{Frequency, Pitch};
+use crate::Pitch;
 
 /// A tone is defined to be the pitch, quality, and strength of a particular
 /// sound. Tone's are fundamental to the study of music and sound, providing
@@ -30,3 +30,11 @@ pub trait MusicTone {
 
     fn strength(&self) -> f64;
 }
+
+pub trait Frequency<T> {
+    fn freq(self) -> T;
+
+    fn period(self) -> T;
+}
+
+pub trait Timbre {}

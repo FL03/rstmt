@@ -24,7 +24,7 @@ pub trait MusicalInterval {
 /// [IntoInterval] is a trait describing a method which consumes the current type,
 /// converting it into an [Intervals]
 pub trait IntoInterval {
-    fn into_interval(self) -> Interval;
+    fn into_interval(self) -> Intervals;
 }
 
 /// [IntervalKind] denotes objects used to explicitly define the various
@@ -32,8 +32,8 @@ pub trait IntoInterval {
 pub trait IntervalKind {
     private!();
     /// Returns the interval associated with the value
-    fn kind(&self) -> Interval {
-        Interval::from_value(self.value())
+    fn kind(&self) -> Intervals {
+        Intervals::from_value(self.value())
     }
     /// Returns the value associated with the interval
     fn value(&self) -> IntervalTy;
@@ -45,14 +45,14 @@ pub trait IntervalKind {
 
 impl<I> IntoInterval for I
 where
-    I: Into<Interval>,
+    I: Into<Intervals>,
 {
-    fn into_interval(self) -> Interval {
+    fn into_interval(self) -> Intervals {
         self.into()
     }
 }
 
-impl IntervalKind for Interval {
+impl IntervalKind for Intervals {
     seal!();
     fn value(&self) -> IntervalTy {
         self.value()

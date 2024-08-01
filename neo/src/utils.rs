@@ -3,11 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use num::traits::NumOps;
-use rstmt::Interval;
+use rstmt::Intervals;
 
-pub fn interval<A, B>(lhs: A, rhs: B) -> Interval
+pub fn interval<A, B>(lhs: A, rhs: B) -> Intervals
 where
     A: NumOps<B, i8>,
 {
-    Interval::from_value(lhs - rhs)
+    Intervals::from_value(lhs - rhs)
 }

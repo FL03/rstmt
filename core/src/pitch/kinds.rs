@@ -81,7 +81,7 @@ impl Pitches {
         }
     }
 
-    pub fn pitch(&self) -> PitchTy {
+    pub fn value(&self) -> PitchTy {
         match self {
             Pitches::Flat(f) => f.pitch(),
             Pitches::Natural(n) => n.pitch(),
@@ -116,13 +116,13 @@ impl PitchClass for Pitches {
     seal!();
 
     fn pitch(&self) -> PitchTy {
-        self.pitch()
+        self.value()
     }
 }
 
 impl From<Pitches> for PitchTy {
     fn from(pitch: Pitches) -> PitchTy {
-        pitch.pitch()
+        pitch.value()
     }
 }
 
