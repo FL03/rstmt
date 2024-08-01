@@ -2,94 +2,25 @@
     Appellation: macros <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::intervals::{Fifth, Intervals, IntoInterval, Seventh, Third};
-use crate::{Note, Octave};
+use crate::{Intervals, Note};
 
-impl Note {
-    pub fn add_major_third(&self) -> Self {
-        self.add_interval(Third::Major)
-    }
 
-    pub fn sub_major_third(&self) -> Self {
-        self.sub_interval(Third::Major)
-    }
-
-    pub fn add_minor_third(&self) -> Self {
-        self.add_interval(Third::Minor)
-    }
-
-    pub fn sub_minor_third(&self) -> Self {
-        self.sub_interval(Third::Minor)
-    }
-
-    pub fn add_perfect_fifth(&self) -> Self {
-        self.add_interval(Fifth::Perfect)
-    }
-
-    pub fn sub_perfect_fifth(&self) -> Self {
-        self.sub_interval(Fifth::Perfect)
-    }
-
-    pub fn add_augmented_fifth(&self) -> Self {
-        self.add_interval(Fifth::Augmented)
-    }
-
-    pub fn sub_augmented_fifth(&self) -> Self {
-        self.sub_interval(Fifth::Augmented)
-    }
-
-    pub fn add_diminished_fifth(&self) -> Self {
-        self.add_interval(Fifth::Diminished)
-    }
-
-    pub fn sub_diminished_fifth(&self) -> Self {
-        self.sub_interval(Fifth::Diminished)
-    }
-
-    pub fn add_interval<I>(&self, interval: I) -> Self
-    where
-        I: IntoInterval,
-    {
-        self + interval.into_interval()
-    }
-
-    pub fn sub_interval<I>(&self, interval: I) -> Self
-    where
-        I: IntoInterval,
-    {
-        self - interval.into_interval()
-    }
-
-    pub fn add_octave(&self, octave: Octave) -> Self {
-        Self {
-            octave: self.octave + octave,
-            pitch: self.pitch,
-        }
-    }
-
-    pub fn sub_octave(&self, octave: Octave) -> Self {
-        Self {
-            octave: self.octave - octave,
-            pitch: self.pitch,
-        }
-    }
-}
 
 macro_rules! impl_interval_ops {
     (@assign $trait:ident.$call:ident) => {
         paste::paste! {
-            impl core::ops::[<$trait Assign>]<$crate::Intervasl> for $crate::Interval {
-                fn [<$call _assign>](&mut self, rhs: $crate::Intervals) {
-                    self = $crate::Interval::from(::core::ops::$trait::$call(self.pitch, rhs.value()));
+            impl core::ops::[<$trait Assign>]<Intervals> for $crate::Interval {
+                fn [<$call _assign>](&mut self, rhs: Intervals) {
+                    self = Intervals::from(::core::ops::$trait::$call(self.pitch, rhs.value()));
                 }
             }
         }
     };
     (@note $trait:ident.$call:ident) => {
-        impl core::ops::$trait<$crate::Intervals> for Note {
+        impl core::ops::$trait<Intervals> for Note {
             type Output = Note;
 
-            fn $call(self, rhs: $crate::Intervals) -> Self::Output {
+            fn $call(self, rhs: Intervals) -> Self::Output {
                 Note {
                     octave: self.octave,
                     pitch: core::ops::$trait::$call(self.pitch, rhs.value())
@@ -97,10 +28,10 @@ macro_rules! impl_interval_ops {
             }
         }
 
-        impl<'a> core::ops::$trait<$crate::Intervals> for &'a Note {
+        impl<'a> core::ops::$trait<Intervals> for &'a Note {
             type Output = Note;
 
-            fn $call(self, rhs: $crate::Intervals) -> Self::Output {
+            fn $call(self, rhs: Intervals) -> Self::Output {
                 Note {
                     octave: self.octave,
                     pitch: ::core::ops::$trait::$call(self.pitch, rhs.value())
@@ -109,7 +40,7 @@ macro_rules! impl_interval_ops {
         }
     };
     (@inter $trait:ident.$call:ident) => {
-        impl core::ops::$trait<Note> for $crate::Intervals {
+        impl core::ops::$trait<Note> for Intervals {
             type Output = Note;
 
             fn $call(self, rhs: Note) -> Self::Output {
@@ -120,7 +51,7 @@ macro_rules! impl_interval_ops {
             }
         }
 
-        impl<'a> core::ops::$trait<&'a Note> for $crate::Intervals {
+        impl<'a> core::ops::$trait<&'a Note> for Intervals {
             type Output = Note;
 
             fn $call(self, rhs: &'a Note) -> Self::Output {
@@ -131,7 +62,7 @@ macro_rules! impl_interval_ops {
             }
         }
 
-        impl<'a> core::ops::$trait<Note> for &'a $crate::Intervals {
+        impl<'a> core::ops::$trait<Note> for &'a Intervals {
             type Output = Note;
 
             fn $call(self, rhs: Note) -> Self::Output {
@@ -142,7 +73,7 @@ macro_rules! impl_interval_ops {
             }
         }
 
-        impl<'a> core::ops::$trait<&'a Note> for &'a $crate::Intervals {
+        impl<'a> core::ops::$trait<&'a Note> for &'a Intervals {
             type Output = Note;
 
             fn $call(self, rhs: &'a Note) -> Self::Output {
@@ -170,8 +101,8 @@ macro_rules! impl_std_ops {
                 }
             }
 
-            impl core::ops::[<$trait Assign>]<$crate::Intervals> for Note {
-                fn [<$call _assign>](&mut self, rhs: $crate::Intervals) {
+            impl core::ops::[<$trait Assign>]<Intervals> for Note {
+                fn [<$call _assign>](&mut self, rhs: Intervals) {
                     self.pitch = ::core::ops::$trait::$call(self.pitch, rhs.as_pitch());
                 }
             }

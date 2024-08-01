@@ -3,25 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Major, TriadCls, TriadKind, Triads};
-use crate::transform::{Transform, LPR};
+use crate::transform::LPR;
 use crate::TriadError;
 use core::marker::PhantomData;
 use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
-
-fn _constructor<K>(data: &[Note; 3]) -> Result<Triad<K>, TriadError>
-where
-    K: TriadKind,
-{
-    for (&a, &b, &c) in data.iter().circular_tuple_windows() {
-        if let Ok(_cls) = Triads::try_from_notes(a, b, c) {
-            return Ok(Triad::from_root(a));
-        }
-    }
-    Err(TriadError::InvalidInterval(
-        "Failed to find the required relationships within the given notes...".into(),
-    ))
-}
 
 /// # Triad
 ///
@@ -75,9 +61,11 @@ impl<K> Triad<K> {
     /// that is valid. If no valid configuration is found, an error is returned.
     pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, TriadError> {
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
-            println!("{} {} {}", a, b, c);
+            println!("{a} {b} {c}");
             if let Ok(triad) = Triad::try_from_notes(a, b, c) {
                 return Ok(triad);
+            } else {
+                continue;
             }
         }
         Err(TriadError::InvalidInterval(
@@ -99,6 +87,7 @@ impl<K> Triad<K> {
                 notes: [root, third, fifth],
             })
         } else {
+
             Err(TriadError::InvalidInterval(
                 "Failed to compute the required intervals...".into(),
             ))

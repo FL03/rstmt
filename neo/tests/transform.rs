@@ -6,13 +6,28 @@ extern crate rstmt_core as rstmt;
 extern crate rstmt_neo as neo;
 
 use neo::transform::LPR;
-use neo::triad::{Major, Triad};
-use rstmt::Note;
+use neo::Triad;
+use rstmt::{IntervalOps, Note};
+
+#[test]
+fn test_leading() {
+    use LPR::L;
+    let c_major = Triad::major(Note::from_pitch(0));
+    let next = c_major.apply(L);
+    // Validate the resulting triad
+    assert_eq!(c_major.third(), next.third());
+    assert_ne!(c_major.root(), next.root());
+    assert_eq!(c_major.fifth(), next.fifth());
+
+    // Compare the intervals between the two triads
+    assert_ne!(c_major.third_to_fifth(), next.third_to_fifth());
+}
+
 
 #[test]
 fn test_parallel() {
     use LPR::P;
-    let c_major = Triad::<Major>::from_root(Note::from_pitch(0));
+    let c_major = Triad::major(Note::from_pitch(0));
     let next = c_major.apply(P);
     // Validate the resulting triad
     assert_ne!(c_major.third(), next.third());
@@ -23,16 +38,19 @@ fn test_parallel() {
     assert_ne!(c_major.root_to_third(), next.root_to_third());
 }
 
+
+#[ignore]
 #[test]
-fn test_leading() {
-    use LPR::L;
-    let c_major = Triad::<Major>::from_root(Note::from_pitch(0));
-    let next = c_major.apply(L);
+fn test_relative() {
+    use LPR::R;
+    let c_major = Triad::major(Note::from_pitch(0));
+    let next = c_major.apply(R);
     // Validate the resulting triad
-    assert_eq!(c_major.third(), next.third());
-    assert_ne!(c_major.root(), next.root());
-    assert_eq!(c_major.fifth(), next.fifth());
+    assert_eq!(c_major.root(), next.third());
+    assert_eq!(c_major.third(), next.fifth());
+    assert_eq!(c_major.fifth(), next.root().add_tone());
 
     // Compare the intervals between the two triads
-    assert_ne!(c_major.third_to_fifth(), next.third_to_fifth());
+    assert_ne!(c_major.root_to_fifth(), next.root_to_fifth());
 }
+
