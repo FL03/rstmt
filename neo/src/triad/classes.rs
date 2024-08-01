@@ -7,65 +7,164 @@ use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 use strum::IntoEnumIterator;
 
+pub trait Named {
+    fn named(&self) -> &'static str;
+}
+
+pub trait Relative {
+    type Rel;
+
+    fn relative(&self) -> Self::Rel;
+}
+
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
-pub trait TriadCls: Clone + Sized {
+pub trait TriadCls {
     private!();
 
-    #[doc(hidden)]
-    fn name() -> &'static str {
-        core::any::type_name::<Self>()
-    }
+    fn named(&self) -> &'static str;
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub enum Kinds {
-    Augmented(PhantomData<Augmented>),
-    Diminished(PhantomData<Diminished>),
-    Major(PhantomData<Major>),
-    Minor(PhantomData<Minor>),
-}
+impl TriadCls for Triads {
+    seal!();
 
-impl Kinds {
-    pub fn augmented() -> Self {
-        Kinds::Augmented(PhantomData::<Augmented>)
-    }
-
-    pub fn diminished() -> Self {
-        Kinds::Diminished(PhantomData::<Diminished>)
-    }
-
-    pub fn major() -> Self {
-        Kinds::Major(PhantomData::<Major>)
-    }
-
-    pub fn minor() -> Self {
-        Kinds::Minor(PhantomData::<Minor>)
-    }
-
-    pub fn is<K: TriadKind>(&self) -> bool {
+    fn named(&self) -> &'static str {
         match self {
-            Kinds::Augmented(_) => K::is_augmented(),
-            Kinds::Diminished(_) => K::is_diminished(),
-            Kinds::Major(_) => K::is_major(),
-            Kinds::Minor(_) => K::is_minor(),
+            Triads::Augmented => "augmented",
+            Triads::Diminished => "diminished",
+            Triads::Major => "major",
+            Triads::Minor => "minor",
         }
     }
-
-    // pub fn into_kind<K>(self) -> PhantomData<K> {
-    //     match self {
-    //         Class::Augmented(cls) => cls,
-    //         Class::Diminished(cls) => cls,
-    //         Class::Major(cls) => cls,
-    //         Class::Minor(cls) => cls,
-    //     }
-    // }
 }
 
-impl Default for Kinds {
-    fn default() -> Self {
-        Kinds::Major(PhantomData::<Major>)
+impl<K> TriadCls for PhantomData<K>
+where
+    K: TriadKind,
+{
+    seal!();
+
+    fn named(&self) -> &'static str {
+        K::name()
+    }
+}
+
+impl<K> Relative for PhantomData<K>
+where
+    K: TriadKind,
+{
+    type Rel = Triads;
+
+    fn relative(&self) -> Self::Rel {
+        K::class()
+    }
+}
+
+impl<K> TriadKind for PhantomData<K>
+where
+    K: TriadKind,
+{
+    seal!();
+
+    fn class() -> Triads {
+        K::class()
+    }
+
+    fn name() -> &'static str {
+        K::name()
+    }
+}
+
+pub trait TriadKind: Relative + TriadCls {
+    private!();
+
+    fn class() -> Triads
+    where
+        Self: Sized;
+
+    fn name() -> &'static str
+    where
+        Self: Sized;
+    /// Returns a new instance of [PhantomData](core::marker::PhantomData);
+    /// This method is the only possible constructor for these objects,
+    /// a charecteristic enfored with 0-variant enum declarations.
+    fn phantom() -> core::marker::PhantomData<Self>
+    where
+        Self: Sized,
+    {
+        core::marker::PhantomData::<Self>
+    }
+
+    fn is_valid(notes: &[Note; 3]) -> bool
+    where
+        Self: Sized,
+    {
+        Self::class().validate(notes)
+    }
+
+    fn thirds() -> (Third, Third)
+    where
+        Self: Sized,
+    {
+        Self::class().thirds()
+    }
+
+    fn root_to_third() -> Third
+    where
+        Self: Sized,
+    {
+        Self::thirds().0
+    }
+
+    fn third_to_fifth() -> Third
+    where
+        Self: Sized,
+    {
+        Self::thirds().1
+    }
+
+    fn root_to_fifth() -> Fifth
+    where
+        Self: Sized,
+    {
+        Self::class().root_to_fifth()
+    }
+
+    fn intervals() -> (Third, Third, Fifth)
+    where
+        Self: Sized,
+    {
+        let (a, b) = Self::thirds();
+        (a, b, Self::root_to_fifth())
+    }
+
+    fn is_augmented() -> bool
+    where
+        Self: Sized,
+    {
+        Self::class().is_augmented()
+    }
+
+    fn is_diminished() -> bool
+    where
+        Self: Sized,
+    {
+        Self::class().is_diminished()
+    }
+
+    fn is_major() -> bool
+    where
+        Self: Sized,
+    {
+        Self::class().is_major()
+    }
+
+    fn is_minor() -> bool
+    where
+        Self: Sized,
+    {
+        Self::class().is_minor()
     }
 }
 
@@ -229,10 +328,6 @@ impl Triads {
     }
 }
 
-impl TriadCls for Triads {
-    seal!();
-}
-
 impl<K> From<PhantomData<K>> for Triads
 where
     K: TriadKind,
@@ -251,86 +346,47 @@ where
     }
 }
 
-pub trait TriadKind: TriadCls
-where
-    Self: Copy + Sized,
-{
-    /// Returns a new instance of [PhantomData](core::marker::PhantomData);
-    /// This method is the only possible constructor for these objects,
-    /// a charecteristic enfored with 0-variant enum declarations.
-    fn phantom() -> core::marker::PhantomData<Self> {
-        core::marker::PhantomData::<Self>
-    }
-    fn is_valid(notes: &[Note; 3]) -> bool {
-        Self::class().validate(notes)
-    }
-
-    fn class() -> Triads {
-        if Self::is_major() {
-            Triads::major()
-        } else if Self::is_minor() {
-            Triads::minor()
-        } else if Self::is_augmented() {
-            Triads::augmented()
-        } else {
-            Triads::diminished()
-        }
-    }
-
-    fn thirds() -> (Third, Third) {
-        Self::class().thirds()
-    }
-
-    fn root_to_third() -> Third {
-        Self::thirds().0
-    }
-
-    fn third_to_fifth() -> Third {
-        Self::thirds().1
-    }
-
-    fn root_to_fifth() -> Fifth {
-        Self::class().root_to_fifth()
-    }
-
-    fn intervals() -> (Third, Third, Fifth) {
-        let (a, b) = Self::thirds();
-        (a, b, Self::root_to_fifth())
-    }
-
-    fn name() -> &'static str;
-
-    fn is_augmented() -> bool {
-        false
-    }
-
-    fn is_diminished() -> bool {
-        false
-    }
-
-    fn is_major() -> bool {
-        false
-    }
-
-    fn is_minor() -> bool {
-        false
-    }
-}
-
 macro_rules! class {
-    (@impl $name:ident::$call:ident) => {
+    (@impl $name:ident::$call:ident -> $relative:ident) => {
         #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize),)]
-        pub enum $name {}
+        pub struct $name;
+
+        impl $name {
+            pub fn class() -> Triads {
+                Triads::$name
+            }
+
+            pub fn name(&self) -> &'static str {
+                stringify!($call)
+            }
+        }
+
+        impl Relative for $name {
+            type Rel = Triads;
+
+            fn relative(&self) -> Self::Rel {
+                Triads::$relative
+            }
+        }
 
         impl TriadCls for $name {
             seal!();
+
+            fn named(&self) -> &'static str {
+                stringify!($call)
+            }
         }
 
         impl TriadKind for $name {
+            seal!();
 
-            fn name() -> &'static str {
-                stringify!($name)
+            fn class() -> Triads where Self: Sized {
+                Triads::$name
+            }
+
+            fn name() -> &'static str where Self: Sized {
+                stringify!($call)
             }
 
             paste::paste! {
@@ -344,16 +400,16 @@ macro_rules! class {
 
         unsafe impl Sync for $name {}
     };
-    ($($name:ident::$call:ident),* $(,)?) => {
+    ($($name:ident::$call:ident -> $rel:ident),* $(,)?) => {
         $(
-            class!(@impl $name::$call);
+            class!(@impl $name::$call -> $rel);
         )*
     };
 }
 
 class!(
-    Augmented::augmented,
-    Diminished::diminished,
-    Major::major,
-    Minor::minor
+    Augmented::augmented -> Diminished,
+    Diminished::diminished -> Augmented,
+    Major::major -> Minor,
+    Minor::minor -> Major
 );

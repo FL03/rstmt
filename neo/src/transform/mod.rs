@@ -43,29 +43,82 @@ where
 
 pub(crate) mod utils {
     use super::LPR;
-    use crate::error::TriadError;
-    use crate::triad::{Triad, TriadCls, Triads};
+    use crate::prelude::TriadError;
+    use crate::triad::*;
     use rstmt::Third;
 
-    pub(crate) fn _transform<K>(triad: Triad<K>, lpr: LPR) -> Result<Triad<Triads>, TriadError>
+    ///
+    ///
+    /// should result in a [Minor](crate::triad::Minor) triad.
+    pub fn _leading<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
     where
-        K: Clone + TriadCls,
+        K: TriadKind,
+        K2: TriadKind,
     {
-        use rstmt::Intervals::{Semitone, Tone};
-        let (mut r, mut t, mut f) = triad.clone().into_tuple();
-        match triad.root_to_third()? {
-            Third::Major => match lpr {
-                LPR::L => r -= Semitone,
-                LPR::P => t -= Semitone,
-                LPR::R => f += Tone,
-            },
-            Third::Minor => match lpr {
-                LPR::L => r += Semitone,
-                LPR::P => t += Semitone,
-                LPR::R => f -= Tone,
-            },
-        };
+        use rstmt::Interval::Semitone;
+        let rt = triad.root_to_third()?;
+        let (mut r, t, mut f) = triad.into_tuple();
+        match rt {
+            Third::Major => {
+                r -= Semitone;
+                Triad::try_from_notes(t, f, r)
+            }
+            Third::Minor => {
+                f += Semitone;
+                Triad::try_from_notes(f, r, t)
+            }
+        }
+    }
 
-        Triad::try_from_arr([r, t, f])
+    pub fn _parallel<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
+    where
+        K: TriadKind,
+        K2: TriadKind,
+    {
+        use rstmt::Interval::Semitone;
+        let rt = triad.root_to_third()?;
+        let (r, mut t, mut f) = triad.into_tuple();
+        match rt {
+            Third::Major => {
+                t -= Semitone;
+                Triad::try_from_notes(f, r, t)
+            }
+            Third::Minor => {
+                f += Semitone;
+                Triad::try_from_notes(t, f, r)
+            }
+        }
+    }
+
+    pub fn _relative<K, K2>(triad: Triad<K>) -> Result<Triad<K2>, TriadError>
+    where
+        K: TriadKind,
+        K2: TriadKind,
+    {
+        use rstmt::Interval::Tone;
+        let rt = triad.root_to_third()?;
+        let (mut r, t, mut f) = triad.into_tuple();
+        match rt {
+            Third::Major => {
+                f += Tone;
+                Triad::try_from_notes(f, r, t)
+            }
+            Third::Minor => {
+                r -= Tone;
+                Triad::try_from_notes(t, f, r)
+            }
+        }
+    }
+
+    pub(crate) fn _transform<K, K2>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K2>, TriadError>
+    where
+        K: TriadKind,
+        K2: TriadKind,
+    {
+        match lpr {
+            LPR::L => _leading(triad),
+            LPR::P => _parallel(triad),
+            LPR::R => _relative(triad),
+        }
     }
 }

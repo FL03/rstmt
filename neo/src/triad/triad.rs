@@ -53,19 +53,8 @@ pub struct Triad<K = Major> {
     pub(crate) _class: PhantomData<K>,
 }
 
-impl<K: TriadCls> Triad<K> {
+impl<K> Triad<K> {
     pub const LEN: usize = 3;
-    /// Create a new triad from a root note.
-    pub fn new(class: Triads, root: Note) -> Self {
-        let (rt, tf) = class.thirds();
-        let octave = *root.octave();
-        let t = Note::new(octave, root.pitch() + rt.value());
-        let f = Note::new(octave, t.pitch() + tf.value());
-        Self {
-            _class: PhantomData::<K>,
-            notes: [root, t, f],
-        }
-    }
     /// Create a new triad from a root note.
     pub fn from_root(root: Note) -> Self
     where
@@ -86,6 +75,7 @@ impl<K: TriadCls> Triad<K> {
     /// that is valid. If no valid configuration is found, an error is returned.
     pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, TriadError> {
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
+            println!("{} {} {}", a, b, c);
             if let Ok(triad) = Triad::try_from_notes(a, b, c) {
                 return Ok(triad);
             }
@@ -121,6 +111,32 @@ impl<K: TriadCls> Triad<K> {
             _class: PhantomData::<Triads>,
         }
     }
+    /// Returns the name of the class
+    pub fn class_name(&self) -> &str
+    where
+        K: TriadKind,
+    {
+        TriadCls::named(&self._class)
+    }
+    /// Swaps the classifying type of the triad;
+    /// useful for converting from dynamically typed triads to statically typed triads.
+    pub fn swap_kind<J: TriadKind>(&self) -> Triad<J> {
+        Triad {
+            notes: self.notes,
+            _class: PhantomData::<J>,
+        }
+    }
+    /// Transforms the triad using one of the [LPR] transformations;
+    /// see [LPR::apply] for more information.
+    pub fn apply(mut self, lpr: LPR) -> Triad<Triads>
+    where
+        K: TriadKind,
+    {
+        lpr.apply(&mut self)
+    }
+}
+
+impl<K> Triad<K> {
     /// Returns an owned reference to the array of notes
     pub fn as_array(&self) -> &[Note; 3] {
         &self.notes
@@ -136,10 +152,6 @@ impl<K: TriadCls> Triad<K> {
     /// Returns the notes as a three-tuple
     pub fn as_tuple(&self) -> (Note, Note, Note) {
         (self.notes[0], self.notes[1], self.notes[2])
-    }
-    /// Returns the name of the class
-    pub fn class_name(&self) -> &str {
-        K::name()
     }
     /// Consumes and returns an array of notes
     pub fn into_array(self) -> [Note; 3] {
@@ -164,15 +176,6 @@ impl<K: TriadCls> Triad<K> {
     pub fn iter_mut(&mut self) -> core::slice::IterMut<Note> {
         self.notes.iter_mut()
     }
-    /// Swaps the classifying type of the triad;
-    /// useful for converting from dynamically typed triads to statically typed triads.
-    pub fn swap_kind<J: TriadKind>(&self) -> Triad<J> {
-        Triad {
-            notes: self.notes,
-            _class: PhantomData::<J>,
-        }
-    }
-
     /// Returns the root note of the triad
     pub fn root(&self) -> Note {
         self.notes[0]
@@ -180,6 +183,22 @@ impl<K: TriadCls> Triad<K> {
     /// Returns a mutable reference to the root note of the triad
     pub fn root_mut(&mut self) -> &mut Note {
         &mut self.notes[0]
+    }
+    /// Returns the third note of the triad
+    pub fn third(&self) -> Note {
+        self.notes[1]
+    }
+    /// Returns a mutable reference to the third note of the triad
+    pub fn third_mut(&mut self) -> &mut Note {
+        &mut self.notes[1]
+    }
+    /// Returns the final note of the triad
+    pub fn fifth(&self) -> Note {
+        self.notes[2]
+    }
+    /// Returns a mutable reference to the final note of the triad
+    pub fn fifth_mut(&mut self) -> &mut Note {
+        &mut self.notes[2]
     }
     /// Returns the distance (interval) between the root and the third
     pub fn root_to_third(&self) -> Result<Third, TriadError> {
@@ -197,14 +216,6 @@ impl<K: TriadCls> Triad<K> {
             )
         })
     }
-    /// Returns the third note of the triad
-    pub fn third(&self) -> Note {
-        self.notes[1]
-    }
-    /// Returns a mutable reference to the third note of the triad
-    pub fn third_mut(&mut self) -> &mut Note {
-        &mut self.notes[1]
-    }
     /// Returns the distance (interval) between the third and the fifth
     pub fn third_to_fifth(&self) -> Result<Third, TriadError> {
         Third::new(self.notes[1], self.notes[2]).map_err(|_| {
@@ -213,39 +224,11 @@ impl<K: TriadCls> Triad<K> {
             )
         })
     }
-    /// Returns the final note of the triad
-    pub fn fifth(&self) -> Note {
-        self.notes[2]
-    }
-    /// Returns a mutable reference to the final note of the triad
-    pub fn fifth_mut(&mut self) -> &mut Note {
-        &mut self.notes[2]
-    }
     /// Returns a new instance of [Triad] with the notes in reverse order
     pub fn reversed(&self) -> Self {
         Self {
             notes: [self.notes[2], self.notes[1], self.notes[0]],
             _class: PhantomData::<K>,
         }
-    }
-    /// Transforms the triad using one of the [LPR] transformations.
-    /// Each transformation
-    pub fn apply(self, lpr: LPR) -> Triad<Triads>
-    where
-        K: Clone,
-    {
-        crate::transform::_transform(self, lpr).unwrap()
-    }
-
-    pub fn chain<I>(self, steps: I) -> Result<Triad<Triads>, TriadError>
-    where
-        I: IntoIterator<Item = LPR>,
-        K: Clone,
-    {
-        let mut triad = self.as_dyn();
-        for i in steps {
-            triad = triad.transform(i)?
-        }
-        Ok(triad)
     }
 }

@@ -25,6 +25,35 @@ pub(crate) mod prelude {
 
 use crate::TriadError;
 
+pub trait Kind<T> {
+    type Class: Classifier<T>;
+
+    fn phantom() -> core::marker::PhantomData<T>
+    where
+        Self: Sized,
+    {
+        core::marker::PhantomData::<T>
+    }
+
+    fn name() -> &'static str
+    where
+        Self: Sized;
+}
+
+pub trait Classifier<T> {
+    fn name(&self) -> &'static str;
+}
+
+impl<T> Classifier<T> for core::marker::PhantomData<T>
+where
+    T: Kind<T>,
+{
+    fn name(&self) -> &'static str {
+        T::name()
+    }
+}
+
+/// [IntoTriad] converts a type into a [Triad].
 pub trait IntoTriad<K> {
     fn into_triad(self) -> Triad<K>;
 }
