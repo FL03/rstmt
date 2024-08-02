@@ -28,6 +28,10 @@ macro_rules! interval {
                 (*self).into()
             }
 
+            pub fn get(&self) -> $crate::intervals::IntervalTy {
+                *self as i8
+            }
+
             pub fn value(&self) -> i8 {
                 *self as i8
             }

@@ -201,6 +201,14 @@ impl<K> Triad<K> {
     pub fn fifth_mut(&mut self) -> &mut Note {
         &mut self.notes[2]
     }
+    ///
+    pub fn edges(&self) -> Result<(Third, Third, Fifth), TriadError> {
+        Ok((
+            self.root_to_third()?,
+            self.third_to_fifth()?,
+            self.root_to_fifth()?,
+        ))
+    }
     /// Returns the distance (interval) between the root and the third
     pub fn root_to_third(&self) -> Result<Third, TriadError> {
         Third::new(self.notes[0], self.notes[1]).map_err(|_| {
