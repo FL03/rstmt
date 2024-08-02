@@ -87,7 +87,6 @@ impl<K> Triad<K> {
                 notes: [root, third, fifth],
             })
         } else {
-
             Err(TriadError::InvalidInterval(
                 "Failed to compute the required intervals...".into(),
             ))
@@ -99,6 +98,12 @@ impl<K> Triad<K> {
             notes: self.notes,
             _class: PhantomData::<Triads>,
         }
+    }
+    pub fn class(&self) -> Triads
+    where
+        K: TriadKind,
+    {
+        K::class()
     }
     /// Returns the name of the class
     pub fn class_name(&self) -> &str
@@ -121,7 +126,14 @@ impl<K> Triad<K> {
     where
         K: TriadKind,
     {
-        lpr.apply(&mut self)
+        lpr._apply(&mut self)
+    }
+
+    pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        lpr.apply(self)
     }
 }
 

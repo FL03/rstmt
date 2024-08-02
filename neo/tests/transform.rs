@@ -13,7 +13,7 @@ use rstmt::{IntervalOps, Note};
 fn test_leading() {
     use LPR::L;
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.apply(L);
+    let next = c_major.transform(L);
     // Validate the resulting triad
     assert_eq!(c_major.third(), next.third());
     assert_ne!(c_major.root(), next.root());
@@ -23,12 +23,11 @@ fn test_leading() {
     assert_ne!(c_major.third_to_fifth(), next.third_to_fifth());
 }
 
-
 #[test]
 fn test_parallel() {
     use LPR::P;
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.apply(P);
+    let next = c_major.transform(P);
     // Validate the resulting triad
     assert_ne!(c_major.third(), next.third());
     assert_eq!(c_major.root(), next.root());
@@ -38,13 +37,12 @@ fn test_parallel() {
     assert_ne!(c_major.root_to_third(), next.root_to_third());
 }
 
-
 #[ignore]
 #[test]
 fn test_relative() {
     use LPR::R;
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.apply(R);
+    let next = c_major.transform(R);
     // Validate the resulting triad
     assert_eq!(c_major.root(), next.third());
     assert_eq!(c_major.third(), next.fifth());
@@ -53,4 +51,3 @@ fn test_relative() {
     // Compare the intervals between the two triads
     assert_ne!(c_major.root_to_fifth(), next.root_to_fifth());
 }
-

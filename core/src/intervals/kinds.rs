@@ -40,6 +40,9 @@ pub enum Intervals {
 }
 
 impl Intervals {
+    pub fn dist(a: impl IntoPitch, b: impl IntoPitch) -> Self {
+        Self::new(a.into_pitch().absmod(), b.into_pitch().absmod())
+    }
     pub fn new<A, B, C>(lhs: A, rhs: B) -> Self
     where
         A: core::ops::Sub<B, Output = C>,
@@ -50,8 +53,9 @@ impl Intervals {
     /// Use the difference between two pitches to determine the interval.
     pub fn from_value(value: impl IntoPitch) -> Self {
         use Intervals::*;
-        let pitch = value.into_pitch();
-        match *pitch.absmod() {
+        let Pitch(pitch) = value.into_pitch();
+        match pitch.abs() % 12 {
+            0 => Octave,
             1 => Semitone,
             2 => Tone,
             3 => Thirds(Third::Minor),
@@ -63,8 +67,7 @@ impl Intervals {
             9 => Sevenths(Seventh::Diminished),
             10 => Sevenths(Seventh::Minor),
             11 => Sevenths(Seventh::Major),
-            12 => Octave,
-            _ => panic!("Invalid interval value: {}", pitch.get()),
+            _ => panic!("Invalid interval value: {}", pitch),
         }
     }
     /// A convenience method for constructing a new instance of the [Octave](Intervals::Octave) variant.

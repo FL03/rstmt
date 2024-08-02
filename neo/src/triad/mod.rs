@@ -126,7 +126,7 @@ impl<T> TriadData for (T, T, T) {
 mod tests {
     use super::store::BaseTriad;
     use crate::transform::LPR;
-    use rstmt::{Note, IntervalOps};
+    use rstmt::{IntervalOps, Note};
 
     #[test]
     fn test_triad_store() {

@@ -4,8 +4,6 @@
 */
 use crate::{Intervals, Note};
 
-
-
 macro_rules! impl_interval_ops {
     (@assign $trait:ident.$call:ident) => {
         paste::paste! {

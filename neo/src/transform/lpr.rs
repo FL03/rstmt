@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::triad::store::BaseTriad;
+use crate::triad::TriadKind;
 use crate::Triad;
 
 ///
@@ -68,7 +69,11 @@ impl LPR {
     }
     /// Apply the current transformation to the given triad;
     /// returns a [Triad] with the new notes and classification
-    pub fn apply<K>(self, triad: &mut Triad<K>) -> Triad<crate::triad::Triads> {
+    pub fn apply<K: TriadKind>(self, triad: Triad<K>) -> Triad<K::Rel> {
+        super::_transform(triad, self).expect("Transformation Error")
+    }
+
+    pub fn _apply<K>(self, triad: &mut Triad<K>) -> Triad<crate::triad::Triads> {
         use rstmt::{
             Intervals::{Semitone, Tone},
             Third::*,

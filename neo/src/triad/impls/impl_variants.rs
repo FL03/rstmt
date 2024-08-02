@@ -11,19 +11,19 @@ use crate::triad::{Triad, Triads};
 impl<K: TriadKind> Triad<K> {
     /// Checks if the triad is [augmented](Augmented).
     pub fn is_augmented(&self) -> bool {
-        <K>::class().is_augmented()
+        self.class().is_augmented()
     }
     /// Checks if the triad is [diminished](Diminished).
     pub fn is_diminished(&self) -> bool {
-        <K>::class().is_diminished()
+        self.class().is_diminished()
     }
     /// Checks if the triad is [major](Major).
     pub fn is_major(&self) -> bool {
-        <K>::class().is_major()
+        self.class().is_major()
     }
     /// Checks if the triad is [minor](Minor).
     pub fn is_minor(&self) -> bool {
-        <K>::class().is_minor()
+        self.class().is_minor()
     }
 }
 
