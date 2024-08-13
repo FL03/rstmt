@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PitchClass, PitchTy};
-use crate::error::{Error, MusicalError};
 
 pitch_class! {
     #[default(C)]
@@ -69,7 +68,7 @@ pub enum Pitches {
 }
 
 impl Pitches {
-    pub fn try_from_value(value: PitchTy) -> Result<Self, Error<MusicalError>> {
+    pub fn try_from_value(value: PitchTy) -> Result<Self, crate::Error> {
         if let Ok(n) = Natural::try_from_value(value) {
             Ok(n.as_class())
         } else if let Ok(s) = Sharp::try_from_value(value) {
@@ -77,7 +76,7 @@ impl Pitches {
         } else if let Ok(f) = Flat::try_from_value(value) {
             Ok(f.as_class())
         } else {
-            Err(crate::Error::invalid_pitch("Invalid pitch value."))
+            Err(crate::Error::music_error("Invalid pitch value."))
         }
     }
 

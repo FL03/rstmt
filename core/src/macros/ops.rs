@@ -168,7 +168,7 @@ macro_rules! wrapper_unop {
             type Output = $name;
 
             fn $call(self) -> Self::Output {
-                $name::new(::core::ops::$trait::$call(self.0))
+                $name(::core::ops::$trait::$call(self.0))
             }
         }
 
@@ -176,7 +176,7 @@ macro_rules! wrapper_unop {
             type Output = $name;
 
             fn $call(self) -> Self::Output {
-                $name::new(::core::ops::$trait::$call(self.0))
+                $name(::core::ops::$trait::$call(self.0))
             }
         }
     };

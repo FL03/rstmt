@@ -13,6 +13,10 @@ pub(crate) mod prelude {
     pub use super::lpr::LPR;
 }
 
+pub trait Link<T> {
+    type Dest;
+}
+
 /// [Apply] is an overloadable operator enabling implementations to define how
 /// they should react to certain transformations.
 pub trait Apply<T> {
@@ -21,100 +25,44 @@ pub trait Apply<T> {
     fn apply(self, apply: T) -> Self::Output;
 }
 
-/// [Transform] describes objects capable of transformation. Specifically,
-/// the [transform](Transform::transform) method is an overloadable operator
-/// that enables implementations to define how they react to transformation(s).
-pub trait Transform<T> {
-    type Output;
-
-    fn transform(self, apply: T) -> Self::Output;
-}
-
-impl<T, K> Apply<T> for K
-where
-    K: Transform<T>,
-{
-    type Output = K::Output;
-
-    fn apply(self, apply: T) -> Self::Output {
-        self.transform(apply)
-    }
-}
-
 pub(crate) mod utils {
     use super::LPR;
     use crate::prelude::TriadError;
     use crate::triad::*;
-    use rstmt::Third;
+    use rstmt::{IntervalOps, Note, Third};
 
-    ///
-    ///
-    /// should result in a [Minor](crate::triad::Minor) triad.
-    pub fn _leading<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
-    where
-        K: TriadKind,
-    {
-        use rstmt::Intervals::Semitone;
-        let rt = triad.root_to_third()?;
-        let (mut r, t, mut f) = triad.into_tuple();
+    fn _leading((r, t, f): (Note, Note, Note), rt: Third) -> (Note, Note, Note) {
         match rt {
-            Third::Major => {
-                r -= Semitone;
-                Triad::try_from_notes(t, f, r)
-            }
-            Third::Minor => {
-                f += Semitone;
-                Triad::try_from_notes(f, r, t)
-            }
+            Third::Major => (t, f, r.sub_semitone()),
+            Third::Minor => (f.add_semitone(), r, t),
         }
     }
 
-    pub fn _parallel<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
-    where
-        K: TriadKind,
-    {
-        use rstmt::Intervals::Semitone;
-        let rt = triad.root_to_third()?;
-        let (r, mut t, mut f) = triad.into_tuple();
+    fn _parallel((r, t, f): (Note, Note, Note), rt: Third) -> (Note, Note, Note) {
         match rt {
-            Third::Major => {
-                t -= Semitone;
-                Triad::try_from_notes(f, r, t)
-            }
-            Third::Minor => {
-                f += Semitone;
-                Triad::try_from_notes(t, f, r)
-            }
+            Third::Major => (r, t.sub_semitone(), f),
+            Third::Minor => (r, t.add_semitone(), f),
         }
     }
 
-    pub fn _relative<K>(triad: Triad<K>) -> Result<Triad<K::Rel>, TriadError>
-    where
-        K: TriadKind,
-    {
-        use rstmt::Intervals::Tone;
-        let rt = triad.root_to_third()?;
-        let (mut r, t, mut f) = triad.into_tuple();
+    fn _relative((r, t, f): (Note, Note, Note), rt: Third) -> (Note, Note, Note) {
         match rt {
-            Third::Major => {
-                f += Tone;
-                Triad::try_from_notes(f, r, t)
-            }
-            Third::Minor => {
-                r -= Tone;
-                Triad::try_from_notes(t, f, r)
-            }
+            Third::Major => (f.add_tone(), r, t),
+            Third::Minor => (t, f, r.sub_tone()),
         }
     }
-
     pub(crate) fn _transform<K>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K::Rel>, TriadError>
     where
         K: TriadKind,
     {
-        match lpr {
-            LPR::L => _leading(triad),
-            LPR::P => _parallel(triad),
-            LPR::R => _relative(triad),
-        }
+        let rt = triad.root_to_third()?;
+        let chord = triad.into_tuple();
+        let (r, t, f) = match lpr {
+            LPR::L => _leading(chord, rt),
+            LPR::P => _parallel(chord, rt),
+            LPR::R => _relative(chord, rt),
+        };
+
+        Triad::try_from_notes(r, t, f)
     }
 }

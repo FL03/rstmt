@@ -52,10 +52,10 @@ macro_rules! impl_pitch {
                 $group::try_from(value).ok()
             }
 
-            pub fn try_from_value(value: impl $crate::pitch::IntoPitch) -> Result<Self, $crate::Error<$crate::error::MusicalError>> {
+            pub fn try_from_value(value: impl $crate::pitch::IntoPitch) -> Result<Self, $crate::Error> {
                 match $crate::PitchMod::pitchmod(&*value.into_pitch()) {
                     $(x if x == $value => Ok(Self::$class),)*
-                    _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
+                    _ => Err($crate::Error::MusicError("Invalid pitch value.".to_string()))
                 }
             }
 

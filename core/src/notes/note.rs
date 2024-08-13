@@ -55,18 +55,18 @@ impl Note {
         self.octave = octave;
     }
     /// Sets the note's pitch
-    pub fn set_pitch(&mut self, pitch: impl IntoPitch) {
-        self.pitch = pitch.into_pitch();
+    pub fn set_pitch(&mut self, Pitch(pitch): Pitch) {
+        self.pitch.set(pitch);
     }
     /// Returns a new instance of the note with the given octave
     pub fn with_octave(self, octave: Octave) -> Self {
         Self { octave, ..self }
     }
     /// Returns a new instance of the note with the given pitch
-    pub fn with_pitch(self, pitch: impl IntoPitch) -> Note {
+    pub fn with_pitch(self, Pitch(pitch): Pitch) -> Note {
         Note {
             octave: self.octave,
-            pitch: pitch.into_pitch(),
+            pitch: Pitch(pitch),
         }
     }
 }

@@ -5,7 +5,6 @@
 
 #[derive(
     Clone,
-    Copy,
     Debug,
     Eq,
     Hash,
@@ -13,10 +12,9 @@
     PartialEq,
     PartialOrd,
     strum::AsRefStr,
-    strum::Display,
     strum::EnumIs,
-    strum::EnumString,
     strum::VariantNames,
+    thiserror::Error,
 )]
 #[cfg_attr(
     feature = "serde",
@@ -24,14 +22,15 @@
     serde(rename_all = "PascalCase")
 )]
 #[strum(serialize_all = "PascalCase")]
-pub enum MusicalError {
+pub enum MusicErr {
+    #[error("Invalid Interval")]
     InvalidInterval,
-    InvalidPitch,
+    #[error("Invalid Pitch: {0}")]
+    InvalidPitch(String),
+    #[error("Parse Error: {0}")]
+    ParseError(String),
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for MusicalError {}
+unsafe impl Send for MusicErr {}
 
-unsafe impl Send for MusicalError {}
-
-unsafe impl Sync for MusicalError {}
+unsafe impl Sync for MusicErr {}

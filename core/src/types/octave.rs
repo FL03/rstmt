@@ -11,17 +11,33 @@ pub(crate) type OctaveTy = i8;
 /// Any changes made to a notes octave simply translates the same pitch class to another register.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Octave(pub(crate) OctaveTy);
+pub struct Octave(pub OctaveTy);
 
 impl Octave {
-    pub fn new(octave: OctaveTy) -> Self {
+    pub fn new(Octave(octave): Octave) -> Self {
         Self(octave)
     }
 
+    pub fn from_value(value: OctaveTy) -> Self {
+        Self(value)
+    }
+    /// Returns an immutable reference to the wrapped value.
+    pub const fn get(&self) -> &OctaveTy {
+        &self.0
+    }
+    /// Returns a mutable reference to the wrapped value.
+    pub fn get_mut(&mut self) -> &mut OctaveTy {
+        &mut self.0
+    }
+    /// Sets the octave value.
+    pub fn set(&mut self, octave: OctaveTy) {
+        self.0 = octave;
+    }
+    /// Consumes the octave and returns the wrapped value.
     pub fn into_inner(self) -> OctaveTy {
         self.0
     }
-
+    
     pub fn value(&self) -> OctaveTy {
         self.0
     }

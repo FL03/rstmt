@@ -37,7 +37,7 @@ pub enum TriadError {
     #[error("Invalid Triad: {0:?}")]
     InvalidTriad(String),
     #[error("{0}")]
-    Music(#[from] rstmt::MusicalError),
+    Music(#[from] rstmt::error::MusicErr),
     #[error("{0}")]
     Unknown(String),
 }

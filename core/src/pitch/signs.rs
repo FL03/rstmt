@@ -2,6 +2,7 @@
     Appellation: signs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::Error;
 
 #[derive(
     Clone,
@@ -23,34 +24,72 @@ pub enum SymbolCount {
     #[default]
     Single = 1,
 }
-pub struct FlatSymbol {
-    pub(crate) count: SymbolCount,
-}
+pub struct FlatSymbol(pub SymbolCount);
 
-pub struct SharpSym {
-    pub(crate) count: SymbolCount,
+pub struct SharpSym(pub SymbolCount);
+
+pub enum Sign {
+    Flat(FlatSymbol),
+    Sharp(SharpSym),
 }
 
 impl SharpSym {
     pub const REPR: char = '#';
-    pub const SYMBOLS: [&'static str; 2] = ["♯", "♯♯"];
+    pub const SYMBOLS: [&'static str; 6] = ["♯", "♯♯", "s", "S", "ss", "SS"];
 
     pub fn symbol(&self) -> &str {
-        match self.count {
-            SymbolCount::Double => "♯♯",
-            SymbolCount::Single => "♯",
+        match self.0 {
+            SymbolCount::Double => Self::SYMBOLS[1],
+            SymbolCount::Single => Self::SYMBOLS[0],
         }
     }
 }
 
 impl FlatSymbol {
     pub const REPR: char = '♭';
-    pub const SYMBOLS: [&'static str; 2] = ["♭", "♭♭"];
+    pub const SYMBOLS: [&'static str; 8] = ["♭", "♭♭", "b", "bb", "f", "ff", "F", "FF"];
 
     pub fn symbol(&self) -> &str {
-        match self.count {
-            SymbolCount::Double => "♭♭",
-            SymbolCount::Single => "♭",
+        match self.0 {
+            SymbolCount::Double => Self::SYMBOLS[1],
+            SymbolCount::Single => Self::SYMBOLS[0],
+        }
+    }
+}
+
+impl Sign {
+    pub fn symbol(&self) -> &str {
+        match self {
+            Sign::Flat(flat) => flat.symbol(),
+            Sign::Sharp(sharp) => sharp.symbol(),
+        }
+    }
+}
+
+impl core::str::FromStr for SharpSym {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "♯" | "s" | "S" => Ok(Self(SymbolCount::Single)),
+            "♯♯" | "ss" | "SS" => Ok(Self(SymbolCount::Double)),
+            _ => Err(Error::parse_error(
+                "No accepted representation of the sharp symbol was found.",
+            )),
+        }
+    }
+}
+
+impl core::str::FromStr for FlatSymbol {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "♭" | "b" | "f" | "F" => Ok(Self(SymbolCount::Single)),
+            "♭♭" | "bb" | "ff" | "FF" => Ok(Self(SymbolCount::Double)),
+            _ => Err(Error::parse_error(
+                "No accepted representation of the flat symbol was found.",
+            )),
         }
     }
 }

@@ -58,7 +58,7 @@ test = true
 lazy_static.workspace = true
 paste.workspace = true
 smart-default.workspace = true
-
+thiserror.workspace = true
 [dependencies.num]
 default-features = false
 version = "0.4"
