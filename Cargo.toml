@@ -34,7 +34,7 @@ keywords = [ "music" ]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/rstmt.git"
-version = "0.0.2"
+version = "0.0.3"
 
 [profile.dev]
 opt-level = 0
