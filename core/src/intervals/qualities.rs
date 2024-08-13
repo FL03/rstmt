@@ -5,7 +5,7 @@
 /// Musically speaking, an [interval quality](Quality) is used to identify the different versions of various musical
 /// objects.
 ///
-/// There are five primary qualities:
+/// With respect to intervals, the quality is used to identify the different versions of the interval.
 ///     - [augmented](Augmented)
 ///     - [diminished](Diminished)
 ///     - [major](Major)
@@ -29,7 +29,9 @@ pub trait Quality {
         }
     }
 
-    fn name() -> &'static str;
+    fn name() -> &'static str {
+        core::any::type_name::<Self>()
+    }
 
     fn is_augmented() -> bool {
         false

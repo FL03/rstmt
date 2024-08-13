@@ -9,7 +9,7 @@ macro_rules! impl_interval_method {
     (@impl $trait:ident.$call:ident) => {
         paste::paste! {
             pub fn [<$call _interval>]<T>(&self, rhs: T) -> Self where i8: ::core::ops::$trait<T, Output = PitchTy> {
-                let p = ::core::ops::$trait::$call(self.value(), rhs);
+                let p = ::core::ops::$trait::$call(*self.get(), rhs);
                 Self::new(p)
             }
         }

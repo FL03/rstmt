@@ -2,24 +2,42 @@
     Appellation: octave <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-
-/// A type alias for an `octave`; Musically speaking, an octave is the interval (distance) between one musical pitch and another
-/// with either half or double its frequency.
+/// The default octave value.
+pub(crate) const DEFAULT_OCTAVE: OctaveTy = 4;
+/// A type alias indiciating the wrapped type within an [octave](crate::Octave).
 pub(crate) type OctaveTy = i8;
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+/// An octave describes the interval between one musical pitch and another with either half or double its frequency.
+/// Any changes made to a notes octave simply translates the same pitch class to another register.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Octave(pub(crate) OctaveTy);
+pub struct Octave(pub OctaveTy);
 
 impl Octave {
-    pub fn new(octave: OctaveTy) -> Self {
+    pub fn new(Octave(octave): Octave) -> Self {
         Self(octave)
     }
 
+    pub fn from_value(value: OctaveTy) -> Self {
+        Self(value)
+    }
+    /// Returns an immutable reference to the wrapped value.
+    pub const fn get(&self) -> &OctaveTy {
+        &self.0
+    }
+    /// Returns a mutable reference to the wrapped value.
+    pub fn get_mut(&mut self) -> &mut OctaveTy {
+        &mut self.0
+    }
+    /// Sets the octave value.
+    pub fn set(&mut self, octave: OctaveTy) {
+        self.0 = octave;
+    }
+    /// Consumes the octave and returns the wrapped value.
     pub fn into_inner(self) -> OctaveTy {
         self.0
     }
-
+    
     pub fn value(&self) -> OctaveTy {
         self.0
     }
@@ -96,6 +114,12 @@ impl core::fmt::Octal for Octave {
 impl core::fmt::UpperExp for Octave {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         core::fmt::UpperExp::fmt(&self.0, f)
+    }
+}
+
+impl Default for Octave {
+    fn default() -> Self {
+        Self(DEFAULT_OCTAVE)
     }
 }
 

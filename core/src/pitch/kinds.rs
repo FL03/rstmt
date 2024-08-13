@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PitchClass, PitchTy};
-use crate::error::{Error, MusicalError};
 
 pitch_class! {
     #[default(C)]
@@ -43,7 +42,6 @@ pitch_class! {
 #[derive(
     Clone,
     Copy,
-    Debug,
     Eq,
     Hash,
     Ord,
@@ -51,7 +49,6 @@ pitch_class! {
     PartialOrd,
     smart_default::SmartDefault,
     strum::AsRefStr,
-    strum::Display,
     strum::EnumCount,
     strum::EnumIs,
     strum::VariantNames,
@@ -71,7 +68,7 @@ pub enum Pitches {
 }
 
 impl Pitches {
-    pub fn try_from_value(value: PitchTy) -> Result<Self, Error<MusicalError>> {
+    pub fn try_from_value(value: PitchTy) -> Result<Self, crate::Error> {
         if let Ok(n) = Natural::try_from_value(value) {
             Ok(n.as_class())
         } else if let Ok(s) = Sharp::try_from_value(value) {
@@ -79,11 +76,11 @@ impl Pitches {
         } else if let Ok(f) = Flat::try_from_value(value) {
             Ok(f.as_class())
         } else {
-            Err(crate::Error::invalid_pitch("Invalid pitch value."))
+            Err(crate::Error::music_error("Invalid pitch value."))
         }
     }
 
-    pub fn pitch(&self) -> PitchTy {
+    pub fn value(&self) -> PitchTy {
         match self {
             Pitches::Flat(f) => f.pitch(),
             Pitches::Natural(n) => n.pitch(),
@@ -92,17 +89,39 @@ impl Pitches {
     }
 }
 
+impl core::fmt::Debug for Pitches {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use Pitches::*;
+        match self {
+            Flat(cls) => write!(f, "{}♭", cls.as_ref()),
+            Natural(cls) => write!(f, "{}", cls.as_ref()),
+            Sharp(cls) => write!(f, "{}#", cls.as_ref()),
+        }
+    }
+}
+
+impl core::fmt::Display for Pitches {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use Pitches::*;
+        match self {
+            Flat(cls) => write!(f, "{}♭", cls.as_ref()),
+            Natural(cls) => write!(f, "{}", cls.as_ref()),
+            Sharp(cls) => write!(f, "{}#", cls.as_ref()),
+        }
+    }
+}
+
 impl PitchClass for Pitches {
     seal!();
 
     fn pitch(&self) -> PitchTy {
-        self.pitch()
+        self.value()
     }
 }
 
 impl From<Pitches> for PitchTy {
     fn from(pitch: Pitches) -> PitchTy {
-        pitch.pitch()
+        pitch.value()
     }
 }
 

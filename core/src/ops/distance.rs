@@ -8,6 +8,10 @@
 /// their algorithms of choice operating on two objects within the same
 /// space.
 ///
+/// Musically, intervals are considered to be the distance between any two
+/// pitches or tones. The distance between two pitches is typically measured
+/// in semitones (+/- 1) or tones (+/- 2).
+///
 /// Musically, the distance between two pitches is considered to be an interval.
 /// Intervals are typically measured in semitones (+/- 1) or tones (+/- 2).
 pub trait Distance<Rhs = Self> {

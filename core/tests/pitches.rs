@@ -29,5 +29,5 @@ fn test_pitch_class() {
     let pitch = assert_ok(Pitches::try_from_value(12));
     let rhs = Natural::C;
     assert_eq!(pitch, rhs.as_class());
-    assert_eq!(pitch.pitch(), 0);
+    assert_eq!(pitch.value(), 0);
 }

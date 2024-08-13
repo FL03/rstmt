@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-
 macro_rules! pitch_class {
     ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {
         pitch_class!(@impl $(#[derive($($derive),*)])? $(#[default($default)])? $(#[rename($rename)])? $vis enum $name $($rest)*);
@@ -53,10 +52,10 @@ macro_rules! impl_pitch {
                 $group::try_from(value).ok()
             }
 
-            pub fn try_from_value(value: impl $crate::pitch::IntoPitch) -> Result<Self, $crate::Error<$crate::error::MusicalError>> {
+            pub fn try_from_value(value: impl $crate::pitch::IntoPitch) -> Result<Self, $crate::Error> {
                 match $crate::PitchMod::pitchmod(&*value.into_pitch()) {
                     $(x if x == $value => Ok(Self::$class),)*
-                    _ => Err($crate::Error::invalid_pitch("Invalid pitch value."))
+                    _ => Err($crate::Error::MusicError("Invalid pitch value.".to_string()))
                 }
             }
 

@@ -12,8 +12,28 @@ macro_rules! interval {
         }
 
         impl $name {
-            pub fn value(&self) -> i8 {
-                *self as i8
+            pub fn new(src: $crate::Note, tgt: $crate::Note) -> Result<Self, $crate::Error> {
+                Self::try_from((tgt - src).pitch.pymod())
+            }
+
+            pub fn from_i8(value: i8) -> Result<Self, $crate::Error> {
+                Self::try_from(value)
+            }
+
+            pub fn into_interval(self) -> $crate::Intervals {
+                self.into()
+            }
+
+            pub fn interval(&self) -> $crate::Intervals {
+                (*self).into()
+            }
+
+            pub fn get(&self) -> $crate::intervals::IntervalTy {
+                *self as $crate::intervals::IntervalTy
+            }
+
+            pub fn value(&self) -> $crate::intervals::IntervalTy {
+                *self as $crate::intervals::IntervalTy
             }
 
             pub fn validate(value: i8) -> bool {
@@ -24,24 +44,26 @@ macro_rules! interval {
         enum_as!($name: i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
         impl $crate::IntervalKind for $name {
+            seal!();
+
             fn value(&self) -> i8 {
                 $name::value(self)
             }
         }
 
         impl TryFrom<i8> for $name where {
-            type Error = $crate::error::MusicalError;
+            type Error = $crate::Error;
 
             fn try_from(interval: i8) -> Result<$name, Self::Error> {
                 match interval {
                     $($val => Ok($name::$key)),*,
-                    _ => Err($crate::error::MusicalError::InvalidInterval),
+                    _ => Err($crate::Error::invalid_interval(format!("Invalid interval value: {}", interval))),
                 }
             }
         }
 
         impl TryFrom<$crate::Pitch> for $name where {
-            type Error = $crate::error::MusicalError;
+            type Error = $crate::Error;
 
             fn try_from(interval: $crate::Pitch) -> Result<$name, Self::Error> {
                 Self::try_from(interval.0)

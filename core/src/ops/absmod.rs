@@ -59,10 +59,9 @@ where
 use core::ops::{Add, Rem};
 use num::traits::{Num, Signed};
 
-
 impl<T> PyMod<T> for T
 where
-    T: Copy + Num + PartialOrd + Signed
+    T: Copy + Num + PartialOrd + Signed,
 {
     type Output = T;
 

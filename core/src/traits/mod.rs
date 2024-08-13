@@ -3,15 +3,15 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::notable::Notable;
+pub use self::{intervals::*, notable::Notable};
 
-#[doc(hidden)]
-pub mod harmonic;
+pub mod intervals;
 pub mod notable;
+#[doc(hidden)]
 pub mod symbols;
 
 pub(crate) mod prelude {
-    pub use super::harmonic::*;
+    pub use super::intervals::*;
     pub use super::notable::*;
     pub use super::symbols::*;
 }

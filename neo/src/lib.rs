@@ -17,18 +17,21 @@ pub use self::{
 
 #[macro_use]
 pub(crate) mod macros;
+#[macro_use]
+pub(crate) mod seal;
 pub(crate) mod utils;
 
 pub mod error;
-pub mod space;
 pub mod tonnetz;
 pub mod transform;
 pub mod triad;
 pub mod types;
 
+#[doc(hidden)]
+mod impls {}
+
 pub mod prelude {
     pub use crate::error::{TriadError, TriadResult};
-    pub use crate::space::prelude::*;
     pub use crate::tonnetz::prelude::*;
     pub use crate::transform::prelude::*;
     pub use crate::triad::prelude::*;

@@ -15,7 +15,6 @@ pub trait FloorDiv<Rhs = Self> {
     fn floor_div(self, rhs: Rhs) -> Self::Output;
 }
 
-
 macro_rules! impl_floor {
     (@base $t:ty) => {
         impl Floor for $t {
