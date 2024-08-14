@@ -10,19 +10,16 @@ use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
 
 /// # Triad
+/// Triads are fundamental units in music theory and are used to build out more complex chords.
+/// A triad is a 3-note chord that is built and referenced with chord factors: the root, the
+/// third, and the fifth. Each of these notes is required to satisfy a particular intervalic
+/// relationship with the others. These relationships are used, primarily, as the basis for
+/// classifying the triad. However, knowledge of the relationships between the notes is useful
+/// for building out the various creation routines and understanding the nature of the triad.
 ///
-/// A triad is a 3-note chord that is built and referenced with chord factors:
-/// the root, the third, and the fifth. Each of these notes is required to
-/// satisfy a particular intervalic relationship with the others. These
-/// relationships are used, primarily, as the basis for classifying the triad.
-/// However, knowledge of the relationships between the notes is useful
-/// for building out the various creation routines and understanding the nature
-/// of the triad.
+/// From a topological perspective, triads represent a 2-simplex where the three notes are
+/// considered to be the vertices while the intervals between the notes are the edges.
 ///
-/// For example, a C-Major triad is composed of the notes C, E, and G.
-/// The interval between C and E is a major third, while the interval between
-/// E and G is a minor third, leaving the final interval between C and G as a
-/// perfect fifth.
 ///
 /// ### Creation Routines
 ///
@@ -31,6 +28,13 @@ use rstmt::{Fifth, Note, Third};
 /// of notes, the system works to ensure the final configuration of notes is valid.
 /// This is done by iterating over the notes and checking if the intervals satisfy
 /// the requirements of the given triad class.
+///
+/// ### Example
+///
+/// For example, a C-Major triad is composed of the notes C, E, and G.
+/// The interval between C and E is a major third, while the interval between
+/// E and G is a minor third, leaving the final interval between C and G as a
+/// perfect fifth.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
@@ -99,6 +103,7 @@ impl<K> Triad<K> {
             _class: PhantomData::<Triads>,
         }
     }
+    /// Returns the classifying type of the triad
     pub fn class(&self) -> Triads
     where
         K: TriadKind,
@@ -120,15 +125,15 @@ impl<K> Triad<K> {
             _class: PhantomData::<J>,
         }
     }
-    /// Transforms the triad using one of the [LPR] transformations;
-    /// see [LPR::apply] for more information.
-    pub fn apply(mut self, lpr: LPR) -> Triad<Triads>
-    where
-        K: TriadKind,
-    {
-        lpr._apply(&mut self)
-    }
-
+    /// Applies the given [LPR] transformation onto the triad.
+    ///
+    /// ### Example
+    ///
+    /// Given a C-Major triad => (0, 4, 7) apply a single parallel transformation;
+    /// returns a C-Minor triad => (0, 3, 7).
+    ///
+    /// ```rust
+    ///
     pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
     where
         K: TriadKind,

@@ -2,9 +2,7 @@
     Appellation: lpr <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::store::BaseTriad;
-use crate::triad::TriadKind;
-use crate::Triad;
+use crate::triad::{Triad, TriadKind};
 
 ///
 ///
@@ -71,59 +69,5 @@ impl LPR {
     /// returns a [Triad] with the new notes and classification
     pub fn apply<K: TriadKind>(self, triad: Triad<K>) -> Triad<K::Rel> {
         super::_transform(triad, self).expect("Transformation Error")
-    }
-
-    pub fn _apply<K>(self, triad: &mut Triad<K>) -> Triad<crate::triad::Triads> {
-        use rstmt::{
-            Intervals::{Semitone, Tone},
-            Third::*,
-        };
-        let rt = triad
-            .root_to_third()
-            .expect("The given triad contained an invalid interval between the root and third!");
-        let [r, t, f] = triad.as_mut_array();
-        match rt {
-            Major => match self {
-                LPR::L => *r -= Semitone,
-                LPR::P => *t -= Semitone,
-                LPR::R => *f += Tone,
-            },
-            Minor => match self {
-                LPR::L => *f += Semitone,
-                LPR::P => *t += Semitone,
-                LPR::R => *r -= Tone,
-            },
-        };
-
-        Triad::try_from_arr(dbg!([*r, *t, *f])).expect(
-            "Transformation Error: the triad could not be constructed from the given notes.",
-        )
-    }
-
-    pub fn transform(self, triad: &mut BaseTriad) -> BaseTriad {
-        use rstmt::{
-            Intervals::{Semitone, Tone},
-            Third::*,
-        };
-        let rt = triad
-            .root_to_third()
-            .expect("The given triad contained an invalid interval between the root and third!");
-        let [r, t, f] = triad.as_mut_array();
-        match rt {
-            Major => match self {
-                LPR::L => *r -= Semitone,
-                LPR::P => *t -= Semitone,
-                LPR::R => *f += Tone,
-            },
-            Minor => match self {
-                LPR::L => *f += Semitone,
-                LPR::P => *t += Semitone,
-                LPR::R => *r -= Tone,
-            },
-        };
-
-        BaseTriad::try_from_arr(dbg!([*r, *t, *f])).expect(
-            "Transformation Error: the triad could not be constructed from the given notes.",
-        )
     }
 }

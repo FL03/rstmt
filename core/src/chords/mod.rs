@@ -13,6 +13,14 @@ pub(crate) mod prelude {
     pub use super::dyad::*;
 }
 
+pub trait LinearData {
+    type Elem;
+
+    fn get(&self, idx: usize) -> &Self::Elem;
+
+    fn len(&self) -> usize;
+}
+
 pub trait Container {
     type Elem;
 }
@@ -27,7 +35,7 @@ impl<T> Container for Vec<T> {
 pub trait ChordData {
     type Elem;
 
-    fn get(&self, idx: usize) -> &Self::Elem;
+    fn get(&self, idx: usize) -> Option<&Self::Elem>;
 
     fn len(&self) -> usize;
 

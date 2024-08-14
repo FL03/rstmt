@@ -23,43 +23,19 @@ pub(crate) mod prelude {
     pub use super::triad::Triad;
 }
 
-use crate::TriadError;
-
-pub trait Kind<T> {
-    type Class: Classifier<T>;
-
-    fn phantom() -> core::marker::PhantomData<T>
-    where
-        Self: Sized,
-    {
-        core::marker::PhantomData::<T>
-    }
-
-    fn name() -> &'static str
-    where
-        Self: Sized;
-}
-
-pub trait Classifier<T> {
-    fn name(&self) -> &'static str;
-}
-
-impl<T> Classifier<T> for core::marker::PhantomData<T>
-where
-    T: Kind<T>,
-{
-    fn name(&self) -> &'static str {
-        T::name()
-    }
-}
+use crate::{Factors, TriadError};
 
 /// [IntoTriad] converts a type into a [Triad].
-pub trait IntoTriad<K> {
-    fn into_triad(self) -> Triad<K>;
+pub trait IntoTriad {
+    type Kind;
+
+    fn into_triad(self) -> Triad<Self::Kind>;
 }
 
-pub trait TryIntoTriad<K> {
-    fn try_into_triad(self) -> Result<Triad<K>, TriadError>;
+pub trait TryIntoTriad {
+    type Kind;
+
+    fn try_into_triad(self) -> Result<Triad<Self::Kind>, TriadError>;
 }
 
 pub trait TriadData {
@@ -67,29 +43,67 @@ pub trait TriadData {
 
     fn root(&self) -> &Self::Elem;
 
+    fn root_mut(&mut self) -> &mut Self::Elem;
+
     fn third(&self) -> &Self::Elem;
 
+    fn third_mut(&mut self) -> &mut Self::Elem;
+
     fn fifth(&self) -> &Self::Elem;
+
+    fn fifth_mut(&mut self) -> &mut Self::Elem;
+
+    fn get(&self, factor: Factors) -> &Self::Elem {
+        match factor {
+            Factors::Root => self.root(),
+            Factors::Third => self.third(),
+            Factors::Fifth => self.fifth(),
+        }
+    }
+
+    fn get_mut(&mut self, factor: Factors) -> &mut Self::Elem {
+        match factor {
+            Factors::Root => self.root_mut(),
+            Factors::Third => self.third_mut(),
+            Factors::Fifth => self.fifth_mut(),
+        }
+    }
 }
 
 /*
  ************* Implementations *************
 */
-impl TriadData for store::BaseTriad {
+impl<I> TriadData for I
+where
+    I: core::ops::Index<Factors, Output = rstmt::Note> + core::ops::IndexMut<Factors>,
+{
     type Elem = rstmt::Note;
 
     fn root(&self) -> &Self::Elem {
-        &self.root
+        &self[Factors::Root]
+    }
+
+    fn root_mut(&mut self) -> &mut Self::Elem {
+        &mut self[Factors::Root]
     }
 
     fn third(&self) -> &Self::Elem {
-        &self.third
+        &self[Factors::Third]
+    }
+
+    fn third_mut(&mut self) -> &mut Self::Elem {
+        &mut self[Factors::Third]
     }
 
     fn fifth(&self) -> &Self::Elem {
-        &self.fifth
+        &self[Factors::Fifth]
+    }
+
+    fn fifth_mut(&mut self) -> &mut Self::Elem {
+        &mut self[Factors::Fifth]
     }
 }
+
 impl<T> TriadData for [T; 3] {
     type Elem = T;
 
@@ -97,12 +111,24 @@ impl<T> TriadData for [T; 3] {
         &self[0]
     }
 
+    fn root_mut(&mut self) -> &mut Self::Elem {
+        &mut self[0]
+    }
+
     fn third(&self) -> &Self::Elem {
         &self[1]
     }
 
+    fn third_mut(&mut self) -> &mut Self::Elem {
+        &mut self[1]
+    }
+
     fn fifth(&self) -> &Self::Elem {
         &self[2]
+    }
+
+    fn fifth_mut(&mut self) -> &mut Self::Elem {
+        &mut self[2]
     }
 }
 
@@ -113,37 +139,23 @@ impl<T> TriadData for (T, T, T) {
         &self.0
     }
 
+    fn root_mut(&mut self) -> &mut Self::Elem {
+        &mut self.0
+    }
+
     fn third(&self) -> &Self::Elem {
         &self.1
+    }
+
+    fn third_mut(&mut self) -> &mut Self::Elem {
+        &mut self.1
     }
 
     fn fifth(&self) -> &Self::Elem {
         &self.2
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::store::BaseTriad;
-    use crate::transform::LPR;
-    use rstmt::{IntervalOps, Note};
-
-    #[test]
-    fn test_triad_store() {
-        let root = Note::from_pitch(0);
-        let triad = BaseTriad::major(root);
-        assert_eq!(triad.root(), root);
-        assert_eq!(triad.third(), root.add_major_third());
-        assert_eq!(triad.fifth(), root.add_perfect_fifth());
-    }
-
-    #[test]
-    #[ignore = "This test is not yet implemented"]
-    fn test_leadin() {
-        let root = Note::from_pitch(0);
-        let triad = BaseTriad::major(root);
-        let next = triad.transform(LPR::L);
-        let ll = next.transform(LPR::L);
-        assert_eq!(ll, triad);
+    fn fifth_mut(&mut self) -> &mut Self::Elem {
+        &mut self.2
     }
 }

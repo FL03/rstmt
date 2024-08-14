@@ -4,7 +4,7 @@
 */
 use crate::{IntoPitch, Octave, Pitch, Pitches};
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Note {
     pub(crate) octave: Octave,
@@ -25,6 +25,9 @@ impl Note {
             octave: Octave::default(),
             pitch: pitch.into_pitch(),
         }
+    }
+    pub fn aspn(&self) -> String {
+        format!("{}.{}", self.class(), self.octave)
     }
     /// Returns an instance of the note's [PitchClass](crate::pitch::PitchCalss).
     /// Each pitch class is a synmoblic representation of a group of frequencies,
@@ -75,9 +78,34 @@ impl Note {
  ************* Implementations *************
 */
 
+impl core::fmt::Debug for Note {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        f.write_str(self.aspn().as_str())
+    }
+}
+
 impl core::fmt::Display for Note {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class(), self.octave)
+        f.write_str(self.aspn().as_str())
+    }
+}
+
+#[allow(unused)]
+impl core::str::FromStr for Note {
+    type Err = crate::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut parts = s.split('.');
+        let pitch = parts
+            .next()
+            .ok_or_else(|| crate::Error::music_error("Invalid note."))?;
+        let octave = parts
+            .next()
+            .ok_or_else(|| crate::Error::music_error("Invalid note."))?;
+        unimplemented!();
+        // let pitch = pitch.parse::<Pitches>()?;
+        // let octave = octave.parse::<Octave>()?;
+        // Ok(Note { octave, pitch })
     }
 }
 

@@ -41,7 +41,7 @@ pub enum Intervals {
 
 impl Intervals {
     pub fn dist(a: impl IntoPitch, b: impl IntoPitch) -> Self {
-        Self::new(a.into_pitch().absmod(), b.into_pitch().absmod())
+        Self::new(a.into_pitch().pymod(), b.into_pitch().pymod())
     }
     pub fn new<A, B, C>(lhs: A, rhs: B) -> Self
     where
@@ -87,56 +87,17 @@ impl Intervals {
         Intervals::Thirds(third)
     }
 
-    pub fn major_third() -> Self {
-        Intervals::Thirds(Third::Major)
-    }
-
-    pub fn minor_third() -> Self {
-        Intervals::Thirds(Third::Minor)
-    }
-
     /// A convenience method for constructing a new variant, [`Fourths`](Intervals::Fourths).
     pub fn fourth(fourth: Fourth) -> Self {
         Intervals::Fourths(fourth)
-    }
-
-    pub fn perfect_fourth() -> Self {
-        Intervals::Fourths(Fourth::Perfect)
     }
     /// A convenience method for constructing a new variant, [`Fifths`](Intervals::Fifths).
     pub fn fifth(fifth: Fifth) -> Self {
         Intervals::Fifths(fifth)
     }
-    pub fn augmented_fifth() -> Self {
-        Intervals::Fifths(Fifth::Augmented)
-    }
-
-    pub fn diminished_fifth() -> Self {
-        Intervals::Fifths(Fifth::Diminished)
-    }
-
-    pub fn perfect_fifth() -> Self {
-        Intervals::Fifths(Fifth::Perfect)
-    }
     /// A convenience method for constructing a new variant, [`Sevenths`](Intervals::Sevenths).
     pub fn seventh(seventh: Seventh) -> Self {
         Intervals::Sevenths(seventh)
-    }
-
-    pub fn augmented_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Augmented)
-    }
-
-    pub fn diminished_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Diminished)
-    }
-
-    pub fn major_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Major)
-    }
-
-    pub fn minor_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Minor)
     }
     /// Interpret the current interval as a pitch.
     pub fn as_pitch(&self) -> Pitch {
@@ -160,6 +121,26 @@ impl Intervals {
     }
 }
 
+macro_rules! new_interval {
+    (@impl $name:ident::$variant:ident.$call:ident($($T:ident)::*)) => {
+        pub fn $call() -> Self {
+            $name::$variant($($T)::*)
+        }
+    };
+
+    (@impl $name:ident::$variant:ident.$call:ident) => {
+        pub fn $call() -> Self {
+            $name::$variant
+        }
+    };
+
+    ($name:ident {$($variant:ident.$call:ident$(($($T:ident)::*))?),* $(,)?}) => {
+        impl $name {
+            $(new_interval!(@impl $name::$variant.$call$(($($T)::*))?);)*
+        }
+    };
+}
+
 macro_rules! impl_from_value {
     (@impl $name:ident::$variant:ident($T:ty)) => {
         impl From<$T> for $name {
@@ -168,11 +149,26 @@ macro_rules! impl_from_value {
             }
         }
     };
-    ($($name:ident::$variant:ident($T:ty)),* $(,)?) => {
+    ($name:ident {$($variant:ident($T:ty)),* $(,)?}) => {
         $(
             impl_from_value!(@impl $name::$variant($T));
         )*
     };
+}
+
+new_interval! {
+    Intervals {
+        Thirds.minor_third(Third::Minor),
+        Thirds.major_third(Third::Major),
+        Fourths.perfect_fourth(Fourth::Perfect),
+        Fifths.diminished_fifth(Fifth::Diminished),
+        Fifths.perfect_fifth(Fifth::Perfect),
+        Fifths.augmented_fifth(Fifth::Augmented),
+        Sevenths.diminished_seventh(Seventh::Diminished),
+        Sevenths.minor_seventh(Seventh::Minor),
+        Sevenths.major_seventh(Seventh::Major),
+        Sevenths.augmented_seventh(Seventh::Augmented),
+    }
 }
 
 impl<P> From<P> for Intervals
@@ -185,10 +181,12 @@ where
 }
 
 impl_from_value! {
-    Intervals::Thirds(Third),
-    Intervals::Fourths(Fourth),
-    Intervals::Fifths(Fifth),
-    Intervals::Sevenths(Seventh),
+    Intervals {
+        Thirds(Third),
+        Fourths(Fourth),
+        Fifths(Fifth),
+        Sevenths(Seventh),
+    }
 }
 
 interval! {
@@ -226,6 +224,18 @@ interval! {
 }
 
 impl Fifth {
+    pub fn augmented() -> Self {
+        Fifth::Augmented
+    }
+
+    pub fn diminished() -> Self {
+        Fifth::Diminished
+    }
+
+    pub fn perfect() -> Self {
+        Fifth::Perfect
+    }
+
     pub fn from_thirds(lhs: Third, rhs: Third) -> Self {
         let value = lhs as i8 + rhs as i8;
         match value {

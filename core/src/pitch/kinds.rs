@@ -45,7 +45,6 @@ pitch_class! {
     Eq,
     Hash,
     Ord,
-    PartialEq,
     PartialOrd,
     smart_default::SmartDefault,
     strum::AsRefStr,
@@ -68,13 +67,93 @@ pub enum Pitches {
 }
 
 impl Pitches {
+    pub fn from_flat(note: Flat) -> Self {
+        Self::Flat(note)
+    }
+
+    pub fn from_natural(note: Natural) -> Self {
+        Self::Natural(note)
+    }
+
+    pub fn from_sharp(note: Sharp) -> Self {
+        Self::Sharp(note)
+    }
+
+    pub fn a() -> Self {
+        Self::Natural(Natural::A)
+    }
+
+    pub fn a_flat() -> Self {
+        Self::Flat(Flat::A)
+    }
+
+    pub fn a_sharp() -> Self {
+        Self::Sharp(Sharp::A)
+    }
+
+    pub fn b() -> Self {
+        Self::Natural(Natural::B)
+    }
+
+    pub fn b_flat() -> Self {
+        Self::Flat(Flat::B)
+    }
+
+    pub fn c() -> Self {
+        Self::Natural(Natural::C)
+    }
+
+    pub fn c_sharp() -> Self {
+        Self::Sharp(Sharp::C)
+    }
+
+    pub fn d() -> Self {
+        Self::Natural(Natural::D)
+    }
+
+    pub fn d_flat() -> Self {
+        Self::Flat(Flat::D)
+    }
+
+    pub fn d_sharp() -> Self {
+        Self::Sharp(Sharp::D)
+    }
+
+    pub fn e() -> Self {
+        Self::Natural(Natural::E)
+    }
+
+    pub fn e_flat() -> Self {
+        Self::Flat(Flat::E)
+    }
+
+    pub fn f() -> Self {
+        Self::Natural(Natural::F)
+    }
+
+    pub fn f_sharp() -> Self {
+        Self::Sharp(Sharp::F)
+    }
+
+    pub fn g() -> Self {
+        Self::Natural(Natural::G)
+    }
+
+    pub fn g_flat() -> Self {
+        Self::Flat(Flat::G)
+    }
+
+    pub fn g_sharp() -> Self {
+        Self::Sharp(Sharp::G)
+    }
+    // TODO: Find a way to correctly resolve notes that share the same pitch values; e.g. D♯ == E♭
     pub fn try_from_value(value: PitchTy) -> Result<Self, crate::Error> {
-        if let Ok(n) = Natural::try_from_value(value) {
-            Ok(n.as_class())
-        } else if let Ok(s) = Sharp::try_from_value(value) {
-            Ok(s.as_class())
-        } else if let Ok(f) = Flat::try_from_value(value) {
-            Ok(f.as_class())
+        if let Ok(note) = Natural::try_from_value(value) {
+            Ok(note.as_class())
+        } else if let Ok(note) = Flat::try_from_value(value) {
+            Ok(note.as_class())
+        } else if let Ok(note) = Sharp::try_from_value(value) {
+            Ok(note.as_class())
         } else {
             Err(crate::Error::music_error("Invalid pitch value."))
         }
@@ -108,6 +187,12 @@ impl core::fmt::Display for Pitches {
             Natural(cls) => write!(f, "{}", cls.as_ref()),
             Sharp(cls) => write!(f, "{}#", cls.as_ref()),
         }
+    }
+}
+
+impl core::cmp::PartialEq for Pitches {
+    fn eq(&self, other: &Self) -> bool {
+        self.value() == other.value()
     }
 }
 

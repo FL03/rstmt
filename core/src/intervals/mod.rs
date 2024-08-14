@@ -17,7 +17,9 @@ pub(crate) mod prelude {
 
 pub(crate) type IntervalTy = i8;
 
-pub trait MusicalInterval {
+pub trait IntervalT {
+    private!();
+
     fn as_i8(&self) -> i8;
 }
 

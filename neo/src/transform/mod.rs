@@ -4,8 +4,8 @@
 */
 #[doc(inline)]
 pub use self::lpr::LPR;
-#[allow(unused)]
-pub(crate) use self::utils::*;
+
+pub(crate) use self::utils::_transform;
 
 pub(crate) mod lpr;
 
@@ -31,6 +31,31 @@ pub(crate) mod utils {
     use crate::triad::*;
     use rstmt::{IntervalOps, Note, Third};
 
+    pub(crate) fn _transform<K>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K::Rel>, TriadError>
+    where
+        K: TriadKind,
+    {
+        let rt = triad.root_to_third()?;
+        let chord = triad.into_tuple();
+        let (r, t, f) = match lpr {
+            LPR::L => _leading(chord, rt),
+            LPR::P => _parallel(chord, rt),
+            LPR::R => _relative(chord, rt),
+        };
+
+        Triad::try_from_notes(r, t, f)
+    }
+
+    /// Applies the leading transformation to the given triad;
+    ///
+    /// When applied to a major triad, the leading transformation _decrements_ the root note by
+    /// a semitone and while the third and fifth factors are unchanged, they are shifted
+    /// down a factor becoming the root and third factors respectively allowing the root to
+    /// become the fifth factor.
+    ///
+    /// Minor: _increments_ the fifth factor by a semitone; shifts the root and third factors
+    /// up by a factor and moves the fifth factor to the root.
+    ///
     fn _leading((r, t, f): (Note, Note, Note), rt: Third) -> (Note, Note, Note) {
         match rt {
             Third::Major => (t, f, r.sub_semitone()),
@@ -50,19 +75,5 @@ pub(crate) mod utils {
             Third::Major => (f.add_tone(), r, t),
             Third::Minor => (t, f, r.sub_tone()),
         }
-    }
-    pub(crate) fn _transform<K>(triad: Triad<K>, lpr: LPR) -> Result<Triad<K::Rel>, TriadError>
-    where
-        K: TriadKind,
-    {
-        let rt = triad.root_to_third()?;
-        let chord = triad.into_tuple();
-        let (r, t, f) = match lpr {
-            LPR::L => _leading(chord, rt),
-            LPR::P => _parallel(chord, rt),
-            LPR::R => _relative(chord, rt),
-        };
-
-        Triad::try_from_notes(r, t, f)
     }
 }

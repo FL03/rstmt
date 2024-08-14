@@ -46,19 +46,11 @@ pub enum Triads {
 }
 
 impl Triads {
-    pub fn try_from_notes(
-        root: Note,
-        third: Note,
-        fifth: Note,
-    ) -> Result<super::Triad<Self>, TriadError> {
+    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
         use strum::IntoEnumIterator;
         for i in Self::iter() {
             if i.is_valid(root, third, fifth) {
-                let triad = super::Triad {
-                    notes: [root, third, fifth],
-                    _class: PhantomData::<Self>,
-                };
-                return Ok(triad);
+                return Ok(i);
             }
         }
         Err(TriadError::invalid_triad(
@@ -115,25 +107,16 @@ impl Triads {
             Triads::Minor => (Minor, Major, Perfect),
         }
     }
-
+    /// Determines if the given notes form a valid triad.
     pub fn is_valid(&self, root: Note, third: Note, fifth: Note) -> bool {
         let (a, b) = self.thirds();
         let c = self.root_to_fifth();
         // compute the interval between the root and third
-        let rt = {
-            let interval = third - root;
-            Third::try_from(*interval.pitch())
-        };
+        let rt = Third::new(root, third);
         // compute the interval between the third and fifth
-        let tf = {
-            let interval = fifth - third;
-            Third::try_from(*interval.pitch())
-        };
+        let tf = Third::new(third, fifth);
         // compute the interval between the root and fifth
-        let rf = {
-            let interval = fifth - root;
-            Fifth::try_from(*interval.pitch())
-        };
+        let rf = Fifth::new(root, fifth);
 
         rt == Ok(a) && tf == Ok(b) && rf == Ok(c)
     }
@@ -146,7 +129,18 @@ impl Triads {
 
         Third::try_from(*rt.pitch()).is_ok() && Third::try_from(*tf.pitch()).is_ok()
     }
-
+    /// Returns the interval between the root and third as well as the third and fifth.
+    pub fn edges(&self) -> (Third, Third, Fifth) {
+        use Fifth::*;
+        use Third::*;
+        match self {
+            Triads::Augmented => (Major, Major, Augmented),
+            Triads::Diminished => (Minor, Minor, Diminished),
+            Triads::Major => (Major, Minor, Perfect),
+            Triads::Minor => (Minor, Major, Perfect),
+        }
+    }
+    /// Returns the interval between the root and third as well as the third and fifth.
     pub fn thirds(&self) -> (Third, Third) {
         use Third::*;
         match self {
@@ -156,21 +150,26 @@ impl Triads {
             Triads::Minor => (Minor, Major),
         }
     }
-
+    /// Returns the interval between the root and third chord factors.
     pub fn root_to_third(&self) -> Third {
-        self.thirds().0
-    }
-
-    pub fn third_to_fifth(&self) -> Third {
-        self.thirds().1
-    }
-
-    pub fn root_to_fifth(&self) -> Fifth {
-        use Fifth::*;
         match self {
-            Triads::Augmented => Augmented,
-            Triads::Diminished => Diminished,
-            Triads::Major | Triads::Minor => Perfect,
+            Triads::Augmented | Triads::Major => Third::Major,
+            _ => Third::Minor,
+        }
+    }
+    /// Returns the interval between the third and fifth chord factors.
+    pub fn third_to_fifth(&self) -> Third {
+        match self {
+            Triads::Augmented | Triads::Minor => Third::Major,
+            _ => Third::Minor,
+        }
+    }
+    /// Returns the interval between the root and fifth chord factors.
+    pub fn root_to_fifth(&self) -> Fifth {
+        match self {
+            Triads::Augmented => Fifth::Augmented,
+            Triads::Diminished => Fifth::Diminished,
+            _ => Fifth::Perfect,
         }
     }
 }

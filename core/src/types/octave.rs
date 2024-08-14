@@ -37,7 +37,7 @@ impl Octave {
     pub fn into_inner(self) -> OctaveTy {
         self.0
     }
-    
+
     pub fn value(&self) -> OctaveTy {
         self.0
     }

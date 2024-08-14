@@ -72,11 +72,7 @@ impl Pitch {
     pub fn abs(self) -> Self {
         self.map(|p| p.abs())
     }
-    /// Returns the absolute value of the remainder of the pitch divided by the modulus.
-    pub fn absmod(self) -> Self {
-        self.map(|p| p.pymod(Self::MOD).abs())
-    }
-    /// The [`octmod`](Pitch::octmod) method computes the modulus of the current pitch using
+    /// The [`pymod`](Pitch::pymod) method computes the modulus of the current pitch using
     /// Python's modulo operator, `%`. This method is useful for pitch arithmetic due to its
     /// unique sign-handling behavior.
     pub fn pymod(self) -> Self {

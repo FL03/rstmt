@@ -2,7 +2,6 @@
     Appellation: store <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::transform::LPR;
 use crate::triad::Triads;
 use crate::{ChordFactor, Factors, TriadError};
 use itertools::Itertools;
@@ -150,10 +149,6 @@ impl BaseTriad {
         Third::new(self.third, self.fifth).map_err(|_e| {
             TriadError::invalid_interval("The interval between the third and fifth is not a fifth.")
         })
-    }
-    /// Applies the given transformation to the chord, returning a new [BaseTriad] instance.
-    pub fn transform(mut self, lpr: LPR) -> BaseTriad {
-        lpr.transform(&mut self)
     }
     /// Updates the note specified and provided by the [ChordFactor] enum.
     pub fn update(&mut self, factor: ChordFactor<Note>) {
