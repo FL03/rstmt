@@ -6,7 +6,9 @@ use crate::triad::Triads;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
-pub trait Class {}
+pub trait Class {
+    
+}
 
 pub trait Kind {
     type Class: Class;

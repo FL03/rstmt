@@ -2,9 +2,11 @@
     Appellation: rstopo <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # rstmt-neo
+//! # The Neo-Riemannian Theory of Music
 //!
-//! This project focuses on providing concrete abstractions of musical objects discussed within the neo-Riemannian theory.
+//! The neo-Riemannian theory is a loose collection of research and ideas focused on the triad
+//! and its transformative nature.
+//! 
 extern crate rstmt_core as rstmt;
 
 #[doc(inline)]
@@ -12,7 +14,6 @@ pub use self::{
     error::{TriadError, TriadResult},
     triad::{Triad, TriadBuilder},
     types::*,
-    utils::*,
 };
 
 #[macro_use]

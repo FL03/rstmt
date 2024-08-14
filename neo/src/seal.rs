@@ -9,6 +9,7 @@
 
 /// If this type is pub but not publicly reachable, third parties
 /// can't name it and can't implement traits using it.
+#[doc(hidden)]
 pub struct Seal;
 
 macro_rules! private {

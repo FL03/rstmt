@@ -8,6 +8,8 @@ pub use self::kinds::*;
 pub(crate) mod kinds;
 
 #[doc(hidden)]
+pub mod interval;
+#[doc(hidden)]
 pub mod qualities;
 
 pub(crate) mod prelude {

@@ -3,11 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::{builder::TriadBuilder, kinds::*, store::BaseTriad, triad::Triad};
+pub use self::{kinds::*, triad::Triad};
+#[doc(hidden)]
+pub use self::{builder::TriadBuilder, utils::*};
 
 pub(crate) mod builder;
 pub(crate) mod kinds;
-pub(crate) mod store;
 pub(crate) mod triad;
 
 pub(crate) mod impls {
@@ -21,6 +22,26 @@ pub(crate) mod prelude {
     pub use super::builder::TriadBuilder;
     pub use super::kinds::*;
     pub use super::triad::Triad;
+}
+
+pub(crate) mod utils {
+    use crate::error::TriadError;
+    use rstmt::{Fifth, Note, Third};
+
+    #[doc(hidden)]
+    pub fn try_from_arr(notes: [Note; 3]) -> Result<(Note, Note, Note), TriadError> {
+        use itertools::Itertools;
+        for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
+            if Third::new(a, b).is_ok() && Third::new(b, c).is_ok() && Fifth::new(a, c).is_ok() {
+                return Ok(dbg!((a, b, c)));
+            } else {
+                continue;
+            }
+        }
+        Err(TriadError::InvalidInterval(
+            "Failed to find the required relationships within the given notes...".into(),
+        ))
+    }
 }
 
 use crate::{Factors, TriadError};
