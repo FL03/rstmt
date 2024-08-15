@@ -40,6 +40,8 @@ pub enum TriadError {
     InvalidTriad(String),
     #[error("{0}")]
     Music(#[from] rstmt::Error),
+    #[error("Transformation Error: {0}")]
+    TransformationError(String),
     #[error("{0}")]
     Unknown(String),
 }
@@ -57,8 +59,12 @@ impl TriadError {
         Self::InvalidTriad(msg.to_string())
     }
 
-    pub fn unknown(msg: impl Into<String>) -> Self {
-        Self::Unknown(msg.into())
+    pub fn transformation_error(msg: impl ToString) -> Self {
+        Self::TransformationError(msg.to_string())
+    }
+
+    pub fn unknown(msg: impl ToString) -> Self {
+        Self::Unknown(msg.to_string())
     }
 }
 

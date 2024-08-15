@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::lpr::LPR;
+pub use self::{lpr::LPR, transformer::Transformer};
 
 pub(crate) use self::utils::_transform;
 
@@ -25,7 +25,6 @@ pub trait Transform<F> {
 pub(crate) mod utils {
     use super::LPR;
     use crate::prelude::TriadError;
-    use crate::triad::*;
     use rstmt::{IntervalOps, Note, Third};
 
     pub(crate) fn _transform(

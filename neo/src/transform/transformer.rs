@@ -3,38 +3,37 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{utils::*, LPR};
-use crate::triad::{Triad, TriadKind, Triads};
+use crate::triad::{Triad, TriadKind};
 use crate::TriadError;
-use rstmt::prelude::{IntervalOps, Note, Third};
 
-pub struct Transformer<'a, K> {
-    delta: LPR,
-    triad: &'a Triad<K>,
+pub struct Transformer<K> {
+    delta: Option<LPR>,
+    triad: Triad<K>,
 }
 
-impl<'a, K> Transformer<'a, K> {
-    pub fn new(triad: &'a Triad<K>, delta: LPR) -> Self {
-        Self { delta, triad }
+impl<K> Transformer<K> {
+    pub(crate) fn new(triad: Triad<K>) -> Self {
+        Self { delta: None, triad }
     }
 
-    pub fn class(&self) -> Triads
+    pub fn apply(self, delta: LPR) -> Self {
+        Self {
+            delta: Some(delta),
+            ..self
+        }
+    }
+
+    pub fn transform<J>(self) -> Result<Triad<J>, TriadError>
     where
-        K: 'static,
+        K: TriadKind<Rel = J>,
     {
-        self.triad.class()
-    }
-
-    pub fn triad(&self) -> &Triad<K> {
-        &self.triad
-    }
-
-    pub fn transform(self) -> Result<Triad<K::Rel>, TriadError>
-    where
-        K: TriadKind,
-    {
-        let rt = self.triad().root_to_third()?;
-        let chord = self.triad().as_tuple();
-        let (r, t, f) = match self.delta {
+        let Transformer { triad, delta } = self;
+        let delta = delta.ok_or(TriadError::transformation_error(
+            "No transformation specified...",
+        ))?;
+        let rt = triad.root_to_third()?;
+        let chord = triad.as_tuple();
+        let (r, t, f) = match delta {
             LPR::L => _leading(chord, rt),
             LPR::P => _parallel(chord, rt),
             LPR::R => _relative(chord, rt),

@@ -46,3 +46,9 @@ fn test_relative() {
     // validate the transformation is invertible
     assert_eq!(c_major, next.transform(R));
 }
+
+#[test]
+fn test_transformer() {
+    let c_major = Triad::major(Note::from_pitch(0));
+    assert_eq!(c_major.leading().parallel().parallel().leading(), c_major);
+}

@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Major, TriadCls, TriadKind, Triads};
-use crate::transform::LPR;
+use crate::transform::{Transformer, LPR};
 use crate::TriadError;
 use core::marker::PhantomData;
 use itertools::Itertools;
@@ -221,11 +221,14 @@ impl<K> Triad<K> {
     }
     /// Applies the given [LPR] transformation onto the triad.
     ///
-    pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
+    pub fn transform<J>(self, lpr: LPR) -> Triad<J>
     where
-        K: TriadKind,
+        K: TriadKind<Rel = J>,
     {
-        lpr.apply(self)
+        match Transformer::new(self).apply(lpr).transform() {
+            Ok(triad) => triad,
+            Err(_) => panic!("Failed to transform the triad..."),
+        }
     }
     /// Leading transformations make semitonal adjusments to the root of the triad;
     /// when applied to a major triad, the leading transformation decrements the root note by
