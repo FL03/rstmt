@@ -5,7 +5,6 @@
 #[doc(inline)]
 pub use self::{lpr::LPR, transformer::Transformer};
 
-pub(crate) use self::utils::_transform;
 
 pub(crate) mod lpr;
 pub(crate) mod transformer;
