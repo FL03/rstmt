@@ -15,9 +15,9 @@ pub struct TriadBuilder {
 }
 
 impl TriadBuilder {
-    pub fn new(class: Triads) -> Self {
+    pub fn new() -> Self {
         Self {
-            class,
+            class: Triads::Major,
             root: None,
             third: None,
             fifth: None,

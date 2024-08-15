@@ -31,6 +31,11 @@ pub type PitchTy = i8;
 pub trait IntoPitch {
     fn into_pitch(self) -> Pitch;
 }
+
+pub trait PitchT {
+    private!();
+
+}
 /// Used to denote a particular pitch class; pitch classes are symbolic
 /// representations of pre-defined frequencies.
 pub trait PitchClass {
@@ -50,3 +55,16 @@ where
         self.into()
     }
 }
+
+macro_rules! impl_pitch_t {
+    (@impl $t:ty) => {
+        impl PitchT for $t {
+            seal!();
+        }
+    };
+    ($($t:ty),* $(,)?) => {
+        $(impl_pitch_t!(@impl $t);)*
+    };
+}
+
+impl_pitch_t!(i8);

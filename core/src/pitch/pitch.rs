@@ -45,14 +45,14 @@ impl Pitch {
     pub fn into_class(self) -> Pitches {
         self.class()
     }
-    ///
+    /// Applies the given function to the pitch value, returning a new instance of [Pitch].
     pub fn map<F>(self, f: F) -> Self
     where
         F: Fn(PitchTy) -> PitchTy,
     {
         Self(f(self.0))
     }
-
+    /// Applies the funtion to a mutable pitch value, in-place.
     pub fn map_mut<F>(&mut self, mut f: F)
     where
         F: FnMut(&mut PitchTy),

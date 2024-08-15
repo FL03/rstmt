@@ -5,10 +5,9 @@
 
 ///
 #[derive(
-    Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::EnumIs, strum::VariantNames,
+    Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::EnumIs, strum::VariantNames
 )]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "PascalCase"))]
 pub enum Error {
     InvalidInterval(String),
     MusicError(String),

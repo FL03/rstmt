@@ -10,7 +10,7 @@ pub(crate) mod pure;
 pub(crate) mod tone;
 
 pub(crate) mod prelude {
-    pub use super::pure::*;
+    pub use super::pure::prelude::*;
     pub use super::tone::*;
 }
 
