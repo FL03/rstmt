@@ -2,9 +2,12 @@
     Appellation: lpr <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::{Triad, TriadKind};
-
-///
+/// # LPR Transformations
+/// 
+/// The neo-Riemannian theory focuses on three primary transformations, namely: leading (L),
+/// parallel (P), and relative (R). Each transformation operates on a particular chord factor
+/// determined by the class of the triad. Additionally, each transformation is its own inverse
+/// and they may be chained together to form a sequence of transformations.
 ///
 /// ### Leading (L)
 ///
@@ -64,11 +67,5 @@ impl LPR {
     /// A functional constructor for the `relative` transformation
     pub fn relative() -> Self {
         LPR::R
-    }
-    /// Apply the current transformation to the given triad;
-    /// returns a [Triad] with the new notes and classification
-    pub fn apply<K: TriadKind>(self, triad: Triad<K>) -> Triad<K::Rel> {
-        let (r, t, f) = super::_transform(triad.into_tuple(), self).unwrap();
-        Triad::try_from_notes(r, t, f).unwrap()
     }
 }
