@@ -29,8 +29,8 @@ pub(crate) mod utils {
                 continue;
             }
         }
-        Err(TriadError::InvalidInterval(
-            "Failed to find the required relationships within the given notes...".into(),
+        Err(TriadError::invalid_triad(
+            "Failed to find the required relationships within the given notes...",
         ))
     }
 }

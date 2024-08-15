@@ -38,7 +38,7 @@ interval! {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 impl Third {
     pub fn minor() -> Self {

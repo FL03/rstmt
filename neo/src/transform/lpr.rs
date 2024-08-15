@@ -68,6 +68,7 @@ impl LPR {
     /// Apply the current transformation to the given triad;
     /// returns a [Triad] with the new notes and classification
     pub fn apply<K: TriadKind>(self, triad: Triad<K>) -> Triad<K::Rel> {
-        super::_transform(triad, self).expect("Transformation Error")
+        let (r, t, f) = super::_transform(triad.into_tuple(), self).unwrap();
+        Triad::try_from_notes(r, t, f).unwrap()
     }
 }

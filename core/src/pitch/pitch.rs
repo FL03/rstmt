@@ -138,7 +138,10 @@ impl core::fmt::Display for Pitch {
     }
 }
 
-impl<U> core::cmp::PartialEq<U> for Pitch where PitchTy: PartialEq<U> {
+impl<U> core::cmp::PartialEq<U> for Pitch
+where
+    PitchTy: PartialEq<U>,
+{
     fn eq(&self, other: &U) -> bool {
         &self.0 == other
     }

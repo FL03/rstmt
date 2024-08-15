@@ -6,14 +6,17 @@
 //!
 //! The neo-Riemannian theory is a loose collection of research and ideas focused on the triad
 //! and its transformative nature.
-//! 
+//!
 extern crate rstmt_core as rstmt;
 
 #[doc(inline)]
 pub use self::{
     error::{TriadError, TriadResult},
     transform::LPR,
-    triad::{Triad, kinds::{Augmented, Diminished, Major, Minor}},
+    triad::{
+        kinds::{Augmented, Diminished, Major, Minor},
+        Triad,
+    },
     types::*,
 };
 
@@ -28,7 +31,6 @@ pub mod tonnetz;
 pub mod transform;
 pub mod triad;
 pub mod types;
-
 
 pub(crate) mod impls {
     pub mod impl_iter;

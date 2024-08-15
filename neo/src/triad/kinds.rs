@@ -46,6 +46,18 @@ pub enum Triads {
 }
 
 impl Triads {
+    pub fn classify<K: 'static>() -> Self {
+        use core::any::TypeId;
+        if TypeId::of::<K>() == TypeId::of::<Major>() {
+            Triads::Major
+        } else if TypeId::of::<K>() == TypeId::of::<Minor>() {
+            Triads::Minor
+        } else if TypeId::of::<K>() == TypeId::of::<Augmented>() {
+            Triads::Augmented
+        } else {
+            Triads::Diminished
+        }
+    }
     pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
         use strum::IntoEnumIterator;
         for i in Self::iter() {
@@ -79,22 +91,6 @@ impl Triads {
         K: Kind + 'static,
     {
         core::any::TypeId::of::<K::Class>() == core::any::TypeId::of::<Self>()
-    }
-
-    pub fn of<K: TriadKind>() -> Self {
-        if K::is_major() {
-            Triads::major()
-        } else if K::is_minor() {
-            Triads::minor()
-        } else if K::is_augmented() {
-            Triads::augmented()
-        } else {
-            Triads::diminished()
-        }
-    }
-
-    pub fn classify<K: TriadKind>() -> Self {
-        K::class()
     }
 
     pub fn intervals(&self) -> (Third, Third, Fifth) {

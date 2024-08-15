@@ -5,8 +5,8 @@
 use crate::pitch::{Pitch, Pitches};
 use crate::Octave;
 
-/// The American Standard Pitch Notation ([`ASPN`]) is a system popularized for its ability to 
-/// simplify the representation of musical notes. The ASPN representation simply modifies the 
+/// The American Standard Pitch Notation ([`ASPN`]) is a system popularized for its ability to
+/// simplify the representation of musical notes. The ASPN representation simply modifies the
 /// traditional symbolic framework by including a subscript used to denote the octave of the
 /// note.
 pub trait ASPN {

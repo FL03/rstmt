@@ -45,13 +45,19 @@ impl<T> Frequency<T> {
         Frequency(f(self.0))
     }
     /// Returns the reciprocal of the frequency.
-    pub fn recip(self) -> T where T: core::ops::Div<Output = T> + num::One {
+    pub fn recip(self) -> T
+    where
+        T: core::ops::Div<Output = T> + num::One,
+    {
         T::one() / self.0
     }
     /// Returns the period of the frequency.
-    /// 
+    ///
     /// Frequency: f = 1 / T therefore T = 1 / f
-    pub fn period(self) -> T where T: core::ops::Div<Output = T> + num::One {
+    pub fn period(self) -> T
+    where
+        T: core::ops::Div<Output = T> + num::One,
+    {
         self.recip()
     }
 }

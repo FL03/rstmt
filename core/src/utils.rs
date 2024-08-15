@@ -51,4 +51,3 @@ where
 {
     Intervals::from_value(lhs - rhs)
 }
-

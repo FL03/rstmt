@@ -10,13 +10,11 @@ pub struct Interval<Q> {
     pub value: i8,
 }
 
-
-
 pub trait Quality<T> {
     type Group;
 
     fn group(&self) -> Self::Group;
-    
+
     fn name(&self) -> &str;
 
     fn value(&self) -> T;

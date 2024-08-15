@@ -4,9 +4,8 @@
 */
 use super::Frequency;
 
-
 /// A pure tone is a sine-wave of a constant amplitude, frequency, and phase shift. []()
-/// 
+///
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct PureTone<T = f64> {

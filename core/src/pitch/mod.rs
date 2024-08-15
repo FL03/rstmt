@@ -3,13 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //!
-//! 
+//!
 //! ### Pitch Classes
-//! 
+//!
 //! Every pitch class has a natural reprsentation and depending on the scale, may have either a
-//! sharp or flat representation and in some cases, both. The following table shows the 
+//! sharp or flat representation and in some cases, both. The following table shows the
 //! assigned value for the natural pitch classes:
-//! 
+//!
 //! C = 0
 //! D = 2
 //! E = 4
@@ -17,14 +17,14 @@
 //! G = 7
 //! A = 9
 //! B = 11
-//! 
+//!
 //! If there is 'space' between two natural pitch classes than each class will have a sharp and
 //! flat representation, respectively. For example, the pitches C# and Db are enharmonic;
-//! C# is a semitone above `C` while Db is a half-step below its natural counterpart. 
-//! 
+//! C# is a semitone above `C` while Db is a half-step below its natural counterpart.
+//!
 //! Using this logic allows for 17 unique pitches to represent 12 different tones.
-//! The definition above allows for 17 unique pitches to represent 12 different tones. 
-//! 
+//! The definition above allows for 17 unique pitches to represent 12 different tones.
+//!
 #[doc(inline)]
 pub use self::{kinds::*, pitch::Pitch, types::prelude::*};
 
@@ -36,7 +36,7 @@ pub mod types {
     pub use self::signs::*;
 
     pub mod signs;
-    
+
     #[doc(hidden)]
     pub(crate) mod prelude {
         pub use super::signs::*;
@@ -66,7 +66,6 @@ pub trait IntoPitch {
 
 pub trait PitchT {
     private!();
-
 }
 /// Used to denote a particular pitch class; pitch classes are symbolic
 /// representations of pre-defined frequencies.

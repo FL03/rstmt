@@ -10,7 +10,7 @@ use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
 
 /// # Triad
-/// 
+///
 /// Triads are fundamental units in music theory and are used to build out more complex chords.
 /// A triad is a 3-note chord that is built and referenced with chord factors: the root, the
 /// third, and the fifth. Each of these notes is required to satisfy a particular intervalic
@@ -39,7 +39,7 @@ use rstmt::{Fifth, Note, Third};
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
-pub struct Triad<K = Major> {
+pub struct Triad<K: ?Sized = Major> {
     pub(crate) notes: [Note; 3],
     pub(crate) _class: PhantomData<K>,
 }
@@ -73,8 +73,8 @@ impl<K> Triad<K> {
                 continue;
             }
         }
-        Err(TriadError::InvalidInterval(
-            "Failed to find the required relationships within the given notes...".into(),
+        Err(TriadError::invalid_triad(
+            "Failed to find the required relationships within the given notes...",
         ))
     }
     /// Returns a new instance of [Triad] from a root note and a classifying type;
@@ -92,92 +92,11 @@ impl<K> Triad<K> {
                 notes: [root, third, fifth],
             })
         } else {
-            Err(TriadError::InvalidInterval(
-                "Failed to compute the required intervals...".into(),
+            Err(TriadError::invalid_triad(
+                "Failed to detect the required intervals...",
             ))
         }
     }
-    /// Returns a new instance of [Triad] from a root note and a classifying type;
-    pub fn as_dyn(&self) -> Triad<Triads> {
-        Triad {
-            notes: self.notes,
-            _class: PhantomData::<Triads>,
-        }
-    }
-    /// Returns the classifying type of the triad
-    pub fn class(&self) -> Triads
-    where
-        K: TriadKind,
-    {
-        K::class()
-    }
-    /// Returns the name of the class
-    pub fn class_name(&self) -> &str
-    where
-        K: TriadKind,
-    {
-        TriadCls::named(&self._class)
-    }
-    /// Swaps the classifying type of the triad;
-    /// useful for converting from dynamically typed triads to statically typed triads.
-    pub fn swap_kind<J: TriadKind>(&self) -> Triad<J> {
-        Triad {
-            notes: self.notes,
-            _class: PhantomData::<J>,
-        }
-    }
-    /// Applies the given [LPR] transformation onto the triad.
-    ///
-
-    pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
-    where
-        K: TriadKind,
-    {
-        lpr.apply(self)
-    }
-    /// Applies a leading transformation to the triad;
-    pub fn leading(self) -> Triad<K::Rel>
-    where
-        K: TriadKind,
-    {
-        self.transform(LPR::L)
-    }
-    /// Applies a parallel transformation to the triad; parallel transformations work by making
-    /// semitonal adjustments to the [`third`](crate::Factors::Third) factor of the triad. If
-    /// the triad is a major triad, applying a parallel transformation will result in a minor 
-    /// triad and vice versa.
-    /// 
-    /// ### Example
-    ///
-    /// Apply a single parallel C-Major triad applying a single parallel transformation returns a c-minor triad
-    /// 
-    /// `CM(0, 4, 7) -P-> Cm(0, 3, 7)`
-    ///
-    ///```rust
-    /// use rstmt_core::Note;
-    /// use rstmt_neo::Triad;
-    /// 
-    /// let triad = Triad::major(Note::from_pitch(0));
-    /// assert_eq!(triad.parallel(), Triad::minor(Note::from_pitch(0)));
-    /// assert_eq!(triad.parallel().parallel(), triad);
-    /// ```
-    /// 
-    pub fn parallel(self) -> Triad<K::Rel>
-    where
-        K: TriadKind,
-    {
-        self.transform(LPR::P)
-    }
-    /// Applies a relative transformation to the triad;
-    pub fn relative(self) -> Triad<K::Rel>
-    where
-        K: TriadKind,
-    {
-        self.transform(LPR::R)
-    }
-}
-
-impl<K> Triad<K> {
     /// Returns an owned reference to the array of notes
     pub fn as_array(&self) -> &[Note; 3] {
         &self.notes
@@ -185,6 +104,27 @@ impl<K> Triad<K> {
     /// Returns a mutable reference to the notes as an array
     pub fn as_mut_array(&mut self) -> &mut [Note; 3] {
         &mut self.notes
+    }
+    /// Returns a new instance of [Triad] from a root note and a classifying type; dyn TriadKind<Rel = K::Rel> where K: TriadKind
+    pub fn as_dyn(&self) -> Triad<dyn core::any::Any> {
+        Triad {
+            notes: self.notes,
+            _class: PhantomData::<dyn core::any::Any>,
+        }
+    }
+    /// Returns the classifying type of the triad
+    pub fn class(&self) -> Triads
+    where
+        K: 'static,
+    {
+        Triads::classify::<K>()
+    }
+    /// Returns the name of the class
+    pub fn class_name(&self) -> &str
+    where
+        K: TriadKind,
+    {
+        TriadCls::named(&self._class)
     }
     /// Returns a slice containing the notes of the triad
     pub fn as_slice(&self) -> &[Note] {
@@ -249,29 +189,19 @@ impl<K> Triad<K> {
             self.root_to_fifth()?,
         ))
     }
-    /// Returns the distance (interval) between the root and the third
+    /// Computes the interval between the root and the third factors
     pub fn root_to_third(&self) -> Result<Third, TriadError> {
-        Third::new(self.notes[0], self.notes[1]).map_err(|_| {
-            TriadError::InvalidInterval(
-                "Failed to compute the interval between the root and the third...".into(),
-            )
-        })
+        Third::new(self.root(), self.third())
+            .map_err(|_| TriadError::invalid_interval(self.root(), self.third()))
     }
     /// Returns the distance (interval) between the root and the fifth
     pub fn root_to_fifth(&self) -> Result<Fifth, TriadError> {
-        Fifth::new(self.notes[0], self.notes[2]).map_err(|_| {
-            TriadError::InvalidInterval(
-                "Failed to compute the interval between the root and the fifth...".into(),
-            )
-        })
+        Fifth::new(self.root(), self.fifth())
+            .map_err(|_| TriadError::invalid_interval(self.root(), self.fifth()))
     }
     /// Returns the distance (interval) between the third and the fifth
-    pub fn third_to_fifth(&self) -> Result<Third, TriadError> {
-        Third::new(self.notes[1], self.notes[2]).map_err(|_| {
-            TriadError::InvalidInterval(
-                "Failed to compute the interval between the third and the fifth...".into(),
-            )
-        })
+    pub fn third_to_fifth(&self) -> Result<Third, rstmt::Error> {
+        Third::new(self.third(), self.fifth())
     }
     /// Returns a new instance of [Triad] with the notes in reverse order
     pub fn reversed(&self) -> Self {
@@ -279,5 +209,68 @@ impl<K> Triad<K> {
             notes: [self.notes[2], self.notes[1], self.notes[0]],
             _class: PhantomData::<K>,
         }
+    }
+
+    /// Swaps the classifying type of the triad;
+    /// useful for converting from dynamically typed triads to statically typed triads.
+    pub fn swap_kind<J: TriadKind>(&self) -> Triad<J> {
+        Triad {
+            notes: self.notes,
+            _class: PhantomData::<J>,
+        }
+    }
+    /// Applies the given [LPR] transformation onto the triad.
+    ///
+    pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        lpr.apply(self)
+    }
+    /// Leading transformations make semitonal adjusments to the root of the triad;
+    /// when applied to a major triad, the leading transformation decrements the root note by
+    /// a semitone and while the third and fifth factors are unchanged, they are shifted down
+    /// a factor becoming the root and third factors respectively allowing the root to become
+    /// the fifth factor. For minor triads, the fifth factor is incremented by a semitone and
+    /// the root and third factors are shifted up by a factor. The fifth factor is then moved
+    /// to the root.
+    ///
+    pub fn leading(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::L)
+    }
+    /// Applies a parallel transformation to the triad; parallel transformations work by making
+    /// semitonal adjustments to the [`third`](crate::Factors::Third) factor of the triad. If
+    /// the triad is a major triad, applying a parallel transformation will result in a minor
+    /// triad and vice versa.
+    ///
+    /// ### Example
+    ///
+    /// Apply a single parallel C-Major triad applying a single parallel transformation returns a c-minor triad
+    ///
+    /// `CM(0, 4, 7) -P-> Cm(0, 3, 7)`
+    ///
+    ///```rust
+    /// use rstmt_core::Note;
+    /// use rstmt_neo::Triad;
+    ///
+    /// let triad = Triad::major(Note::from_pitch(0));
+    /// assert_eq!(triad.parallel(), Triad::minor(Note::from_pitch(0)));
+    /// assert_eq!(triad.parallel().parallel(), triad);
+    /// ```
+    pub fn parallel(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::P)
+    }
+    /// Applies a relative transformation to the triad;
+    pub fn relative(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::R)
     }
 }

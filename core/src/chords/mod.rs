@@ -46,7 +46,7 @@ pub trait ChordData: BaseData {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 impl<T> Container for Vec<T> {
     type Elem = T;

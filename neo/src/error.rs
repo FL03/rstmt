@@ -2,7 +2,7 @@
     Appellation: error <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-
+#[doc(hidden)]
 pub use res::EResult;
 /// A type alias for a [`Result`](core::result::Result) that uses the [`TriadError`](TriadError) type.
 pub type TriadResult<T = ()> = core::result::Result<T, TriadError>;
@@ -32,12 +32,14 @@ use rstmt::{Note, Pitch};
 pub enum TriadError {
     #[error("InvalidPitch: {0}")]
     InvalidPitch(String),
-    #[error("Invalid Interval: {0}")]
-    InvalidInterval(String),
+    #[error(
+        "Invalid Interval: the interval between {src} and {dst} is not within the given range."
+    )]
+    InvalidInterval { src: Note, dst: Note },
     #[error("Invalid Triad: {0:?}")]
     InvalidTriad(String),
     #[error("{0}")]
-    Music(#[from] rstmt::error::MusicErr),
+    Music(#[from] rstmt::Error),
     #[error("{0}")]
     Unknown(String),
 }
@@ -47,8 +49,8 @@ impl TriadError {
         Self::InvalidPitch(msg.to_string())
     }
 
-    pub fn invalid_interval(msg: impl ToString) -> Self {
-        Self::InvalidInterval(msg.to_string())
+    pub fn invalid_interval(src: Note, dst: Note) -> Self {
+        Self::InvalidInterval { src, dst }
     }
 
     pub fn invalid_triad(msg: impl ToString) -> Self {
