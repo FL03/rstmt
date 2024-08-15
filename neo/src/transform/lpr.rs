@@ -44,7 +44,6 @@
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "UPPERCASE")
 )]
-#[repr(u8)]
 #[strum(serialize_all = "UPPERCASE")]
 pub enum LPR {
     #[cfg_attr(feature = "serde", serde(alias = "l", alias = "leading"))]
