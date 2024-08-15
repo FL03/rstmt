@@ -10,6 +10,7 @@ use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
 
 /// # Triad
+/// 
 /// Triads are fundamental units in music theory and are used to build out more complex chords.
 /// A triad is a 3-note chord that is built and referenced with chord factors: the root, the
 /// third, and the fifth. Each of these notes is required to satisfy a particular intervalic
@@ -127,18 +128,52 @@ impl<K> Triad<K> {
     }
     /// Applies the given [LPR] transformation onto the triad.
     ///
-    /// ### Example
-    ///
-    /// Given a C-Major triad => (0, 4, 7) apply a single parallel transformation;
-    /// returns a C-Minor triad => (0, 3, 7).
-    ///
-    /// ```rust
-    ///
+
     pub fn transform(self, lpr: LPR) -> Triad<K::Rel>
     where
         K: TriadKind,
     {
         lpr.apply(self)
+    }
+    /// Applies a leading transformation to the triad;
+    pub fn leading(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::L)
+    }
+    /// Applies a parallel transformation to the triad; parallel transformations work by making
+    /// semitonal adjustments to the [`third`](crate::Factors::Third) factor of the triad. If
+    /// the triad is a major triad, applying a parallel transformation will result in a minor 
+    /// triad and vice versa.
+    /// 
+    /// ### Example
+    ///
+    /// Apply a single parallel C-Major triad applying a single parallel transformation returns a c-minor triad
+    /// 
+    /// `CM(0, 4, 7) -P-> Cm(0, 3, 7)`
+    ///
+    ///```rust
+    /// use rstmt_core::Note;
+    /// use rstmt_neo::Triad;
+    /// 
+    /// let triad = Triad::major(Note::from_pitch(0));
+    /// assert_eq!(triad.parallel(), Triad::minor(Note::from_pitch(0)));
+    /// assert_eq!(triad.parallel().parallel(), triad);
+    /// ```
+    /// 
+    pub fn parallel(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::P)
+    }
+    /// Applies a relative transformation to the triad;
+    pub fn relative(self) -> Triad<K::Rel>
+    where
+        K: TriadKind,
+    {
+        self.transform(LPR::R)
     }
 }
 
