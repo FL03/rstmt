@@ -12,7 +12,8 @@ extern crate rstmt_core as rstmt;
 #[doc(inline)]
 pub use self::{
     error::{TriadError, TriadResult},
-    triad::{Triad, TriadBuilder},
+    transform::LPR,
+    triad::{Triad, kinds::{Augmented, Diminished, Major, Minor}},
     types::*,
 };
 
@@ -28,8 +29,13 @@ pub mod transform;
 pub mod triad;
 pub mod types;
 
-#[doc(hidden)]
-mod impls {}
+
+pub(crate) mod impls {
+    pub mod impl_iter;
+    pub mod impl_ops;
+    pub mod impl_triad;
+    pub mod impl_variants;
+}
 
 pub mod prelude {
     pub use crate::error::{TriadError, TriadResult};

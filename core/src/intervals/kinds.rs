@@ -2,6 +2,11 @@
     Appellation: kinds <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#[doc(inline)]
+pub use self::variants::*;
+
+pub(crate) mod variants;
+
 use crate::{IntoPitch, Pitch};
 
 /// [Intervals] enumerates the various intervals used within music theory.
@@ -121,7 +126,7 @@ impl Intervals {
     }
 }
 
-macro_rules! new_interval {
+macro_rules! impl_new_interval {
     (@impl $name:ident::$variant:ident.$call:ident($($T:ident)::*)) => {
         pub fn $call() -> Self {
             $name::$variant($($T)::*)
@@ -136,7 +141,7 @@ macro_rules! new_interval {
 
     ($name:ident {$($variant:ident.$call:ident$(($($T:ident)::*))?),* $(,)?}) => {
         impl $name {
-            $(new_interval!(@impl $name::$variant.$call$(($($T)::*))?);)*
+            $(impl_new_interval!(@impl $name::$variant.$call$(($($T)::*))?);)*
         }
     };
 }
@@ -156,7 +161,7 @@ macro_rules! impl_from_value {
     };
 }
 
-new_interval! {
+impl_new_interval! {
     Intervals {
         Thirds.minor_third(Third::Minor),
         Thirds.major_third(Third::Major),
@@ -186,63 +191,5 @@ impl_from_value! {
         Fourths(Fourth),
         Fifths(Fifth),
         Sevenths(Seventh),
-    }
-}
-
-interval! {
-    default: Major;
-    pub enum Third {
-        Minor = 3,
-        Major = 4,
-    }
-}
-
-interval! {
-    default: Perfect;
-    pub enum Fourth {
-        Perfect = 5,
-    }
-}
-
-interval! {
-    default: Perfect;
-    pub enum Fifth {
-        Diminished = 6,
-        Perfect = 7,
-        Augmented = 8,
-    }
-}
-
-interval! {
-    default: Diminished;
-    pub enum Seventh {
-        Diminished = 9,
-        Minor = 10,
-        Major = 11,
-        Augmented = 12,
-    }
-}
-
-impl Fifth {
-    pub fn augmented() -> Self {
-        Fifth::Augmented
-    }
-
-    pub fn diminished() -> Self {
-        Fifth::Diminished
-    }
-
-    pub fn perfect() -> Self {
-        Fifth::Perfect
-    }
-
-    pub fn from_thirds(lhs: Third, rhs: Third) -> Self {
-        let value = lhs as i8 + rhs as i8;
-        match value {
-            6 => Fifth::Diminished,
-            7 => Fifth::Perfect,
-            8 => Fifth::Augmented,
-            _ => panic!("Invalid fifth value: {}", value),
-        }
     }
 }

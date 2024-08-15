@@ -4,6 +4,12 @@
 */
 use crate::Error;
 
+pub struct Pitcher<T> {
+    pub class: crate::pitch::Natural,
+    pub pitch: T,
+    pub sign: Option<Sign>,
+}
+
 #[derive(
     Clone,
     Copy,
@@ -62,6 +68,22 @@ impl Sign {
         match self {
             Sign::Flat(flat) => flat.symbol(),
             Sign::Sharp(sharp) => sharp.symbol(),
+        }
+    }
+}
+
+impl core::str::FromStr for Sign {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(flat) = s.parse::<FlatSymbol>() {
+            return Ok(Self::Flat(flat));
+        } else if let Ok(sharp) = s.parse::<SharpSym>() {
+            return Ok(Self::Sharp(sharp));
+        } else {
+            Err(Error::parse_error(
+                "No accepted representation of the sign was found.",
+            ))
         }
     }
 }

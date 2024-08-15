@@ -80,13 +80,13 @@ impl Pitch {
     }
 }
 
-impl AsRef<PitchTy> for Pitch {
+impl core::convert::AsRef<PitchTy> for Pitch {
     fn as_ref(&self) -> &PitchTy {
         &self.0
     }
 }
 
-impl AsMut<PitchTy> for Pitch {
+impl core::convert::AsMut<PitchTy> for Pitch {
     fn as_mut(&mut self) -> &mut PitchTy {
         &mut self.0
     }
@@ -106,7 +106,7 @@ impl core::borrow::BorrowMut<PitchTy> for Pitch {
 
 impl Default for Pitch {
     fn default() -> Self {
-        Self(super::Natural::default().pitch())
+        Self(0)
     }
 }
 
@@ -159,28 +159,26 @@ macro_rules! impl_fmt {
     };
 }
 
+macro_rules! impl_from {
+    (@impl <$T:ty>::From<$F:ty>($f:expr)) => {
+        impl From<$F> for $T {
+            fn from(pitch: $F) -> Self {
+                $f(pitch)
+            }
+        }
+    };
+    ($(<$T:ty>::From<$F:ty>($f:expr)),* $(,)?) => {
+        $(
+            impl_from!(@impl <$T>::From<$F>($f));
+        )*
+    };
+}
+
 impl_fmt!(Binary, LowerHex, Octal, UpperHex);
 
-impl From<PitchTy> for Pitch {
-    fn from(pitch: PitchTy) -> Self {
-        Self(pitch)
-    }
-}
-
-impl From<Pitch> for PitchTy {
-    fn from(pitch: Pitch) -> Self {
-        pitch.0
-    }
-}
-
-impl From<Pitches> for Pitch {
-    fn from(pitch: Pitches) -> Self {
-        Self(pitch.value())
-    }
-}
-
-impl From<Pitch> for Pitches {
-    fn from(pitch: Pitch) -> Self {
-        pitch.class()
-    }
+impl_from! {
+    <Pitch>::From<PitchTy>(Pitch::new),
+    <Pitch>::From<Pitches>(|p: Pitches| Pitch::new(p.value())),
+    <PitchTy>::From<Pitch>(|p: Pitch| p.0),
+    <Pitches>::From<Pitch>(|p: Pitch| p.class()),
 }

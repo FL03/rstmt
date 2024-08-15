@@ -2,7 +2,8 @@
     Appellation: qualities <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-/// Musically speaking, an [interval quality](Quality) is used to identify the different versions of various musical
+/// Musically speaking, the [quality](Quality) of an interval is used to denote the particular
+/// variation, or [level](super::IntervalLevel), of the interval.
 /// objects.
 ///
 /// With respect to intervals, the quality is used to identify the different versions of the interval.

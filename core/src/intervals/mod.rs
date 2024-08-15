@@ -3,23 +3,23 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::kinds::*;
+pub use self::{kinds::*, types::*};
 
 pub(crate) mod kinds;
+pub(crate) mod types;
 
 #[doc(hidden)]
 pub mod interval;
-#[doc(hidden)]
-pub mod qualities;
 
 pub(crate) mod prelude {
     pub use super::kinds::*;
+    pub use super::types::IntervalLevel;
     pub use super::IntervalKind;
 }
 
 pub(crate) type IntervalTy = i8;
 
-pub trait IntervalT {
+pub trait Intervallic {
     private!();
 
     fn as_i8(&self) -> i8;

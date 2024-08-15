@@ -2,24 +2,15 @@
     Appellation: triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#[doc(hidden)]
+pub use self::utils::*;
 #[doc(inline)]
 pub use self::{kinds::*, triad::Triad};
-#[doc(hidden)]
-pub use self::{builder::TriadBuilder, utils::*};
 
-pub(crate) mod builder;
 pub(crate) mod kinds;
 pub(crate) mod triad;
 
-pub(crate) mod impls {
-    pub mod impl_iter;
-    pub mod impl_ops;
-    pub mod impl_triad;
-    pub mod impl_variants;
-}
-
 pub(crate) mod prelude {
-    pub use super::builder::TriadBuilder;
     pub use super::kinds::*;
     pub use super::triad::Triad;
 }
@@ -73,6 +64,18 @@ pub trait TriadData {
     fn fifth(&self) -> &Self::Elem;
 
     fn fifth_mut(&mut self) -> &mut Self::Elem;
+
+    // fn root_to_third(&self) -> Result<Third, TriadError> {
+    //     Third::new(*self.root(), *self.third())
+    // }
+
+    // fn third_to_fifth(&self) -> Result<Third, TriadError> {
+    //     Third::new(*self.third(), *self.fifth())
+    // }
+
+    // fn root_to_fifth(&self) -> Result<Fifth, TriadError> {
+    //     Fifth::new(*self.root(), *self.fifth())
+    // }
 
     fn get(&self, factor: Factors) -> &Self::Elem {
         match factor {
