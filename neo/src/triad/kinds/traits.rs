@@ -28,16 +28,20 @@ pub trait Kind {
 
     seal!();
 
-    fn class() -> Self::Class where Self: Sized;
+    fn class() -> Self::Class
+    where
+        Self: Sized;
 
-    fn name() -> &'static str where Self: Sized;
+    fn name() -> &'static str
+    where
+        Self: Sized;
 }
 ///
 ///
 ///
 pub trait TriadKind: Kind<Class = Triads> {
     type Rel: TriadKind;
-    
+
     private!();
 
     // fn class() -> Triads

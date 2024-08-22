@@ -4,8 +4,8 @@
 */
 use crate::triad::Triad;
 use crate::Factors;
-use rstmt::Note;
 use core::ops::{Index, IndexMut, Range};
+use rstmt::Note;
 
 impl<K> Index<Factors> for Triad<K> {
     type Output = Note;

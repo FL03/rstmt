@@ -88,12 +88,10 @@ impl<K> Triad<K> {
     /// relationships.
     pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, NeoError> {
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
-            println!("{a} {b} {c}");
             if let Ok(triad) = Triad::try_from_notes(a, b, c) {
                 return Ok(triad);
-            } else {
-                continue;
             }
+            continue;
         }
         Err(NeoError::invalid_triad(
             "Failed to find the required relationships within the given notes...",

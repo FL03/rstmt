@@ -6,11 +6,11 @@
 //!
 //! The neo-Riemannian theory is a loose collection of research studying chords, called triads,
 //! to better understand their transformational properties. `rstmt-neo` focuses on implementing
-//! the various primitives needed to work with these objects along with a plethora of 
+//! the various primitives needed to work with these objects along with a plethora of
 //! analytical utilities. One of the underlying motivations for this library is to explore the
 //! computational implications of the theory and to provide a foundation for further research.
-//! 
-//! 
+//!
+//!
 extern crate rstmt_core as rstmt;
 
 #[doc(inline)]

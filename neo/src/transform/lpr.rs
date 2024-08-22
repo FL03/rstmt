@@ -14,9 +14,9 @@ use crate::NeoError;
 /// ### Leading (L)
 ///
 /// ### Parallel (P)
-/// 
-/// Parallel transformations work by making semitonal adjustments to the [`third`](crate::Factors::Third) 
-/// factor of the triad, leaving the root and fifth factors unchanged. Applying a parallel 
+///
+/// Parallel transformations work by making semitonal adjustments to the [`third`](crate::Factors::Third)
+/// factor of the triad, leaving the root and fifth factors unchanged. Applying a parallel
 /// transformation to a major triad results in a minor triad and vice versa.
 ///
 /// #### _Example_
