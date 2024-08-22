@@ -51,14 +51,6 @@ use rstmt::{Fifth, Note, Third};
 /// assert_eq!(c_major.fifth(), Note::from_pitch(7)); // G
 /// ```
 ///
-/// ## Transformations
-///
-/// ### Leading (L)
-///
-/// ### Parallel (P)
-///
-/// ### Relative (R)
-///
 /// ## Side Note
 ///
 /// From a topological perspective, triads represent a 2-simplex where the three notes are
