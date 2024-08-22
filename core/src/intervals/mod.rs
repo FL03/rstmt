@@ -5,6 +5,7 @@
 #[doc(inline)]
 pub use self::{kinds::*, types::*};
 
+#[macro_use]
 pub(crate) mod kinds;
 pub(crate) mod types;
 

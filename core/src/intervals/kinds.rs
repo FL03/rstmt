@@ -72,7 +72,7 @@ impl Intervals {
             9 => Sevenths(Seventh::Diminished),
             10 => Sevenths(Seventh::Minor),
             11 => Sevenths(Seventh::Major),
-            _ => panic!("Invalid interval value: {}", pitch),
+            _ => unreachable!("The pitch value is out of range."),
         }
     }
     /// A convenience method for constructing a new instance of the [Octave](Intervals::Octave) variant.
@@ -91,7 +91,6 @@ impl Intervals {
     pub fn third(third: Third) -> Self {
         Intervals::Thirds(third)
     }
-
     /// A convenience method for constructing a new variant, [`Fourths`](Intervals::Fourths).
     pub fn fourth(fourth: Fourth) -> Self {
         Intervals::Fourths(fourth)
@@ -124,27 +123,23 @@ impl Intervals {
             Intervals::Octave => 12,
         }
     }
+
+    variant_constructors! {
+        Intervals {
+            Thirds.major_third::<Third::Major>(),
+            Thirds.minor_third::<Third::Minor>(),
+            Fourths.perfect_fourth::<Fourth::Perfect>(),
+            Fifths.diminished_fifth::<Fifth::Diminished>(),
+            Fifths.perfect_fifth::<Fifth::Perfect>(),
+            Fifths.augmented_fifth::<Fifth::Augmented>(),
+            Sevenths.diminished_seventh::<Seventh::Diminished>(),
+            Sevenths.minor_seventh::<Seventh::Minor>(),
+            Sevenths.major_seventh::<Seventh::Major>(),
+
+        }
+    }
 }
 
-macro_rules! impl_new_interval {
-    (@impl $name:ident::$variant:ident.$call:ident($($T:ident)::*)) => {
-        pub fn $call() -> Self {
-            $name::$variant($($T)::*)
-        }
-    };
-
-    (@impl $name:ident::$variant:ident.$call:ident) => {
-        pub fn $call() -> Self {
-            $name::$variant
-        }
-    };
-
-    ($name:ident {$($variant:ident.$call:ident$(($($T:ident)::*))?),* $(,)?}) => {
-        impl $name {
-            $(impl_new_interval!(@impl $name::$variant.$call$(($($T)::*))?);)*
-        }
-    };
-}
 
 macro_rules! impl_from_value {
     (@impl $name:ident::$variant:ident($T:ty)) => {
@@ -161,20 +156,7 @@ macro_rules! impl_from_value {
     };
 }
 
-impl_new_interval! {
-    Intervals {
-        Thirds.minor_third(Third::Minor),
-        Thirds.major_third(Third::Major),
-        Fourths.perfect_fourth(Fourth::Perfect),
-        Fifths.diminished_fifth(Fifth::Diminished),
-        Fifths.perfect_fifth(Fifth::Perfect),
-        Fifths.augmented_fifth(Fifth::Augmented),
-        Sevenths.diminished_seventh(Seventh::Diminished),
-        Sevenths.minor_seventh(Seventh::Minor),
-        Sevenths.major_seventh(Seventh::Major),
-        Sevenths.augmented_seventh(Seventh::Augmented),
-    }
-}
+
 
 impl<P> From<P> for Intervals
 where

@@ -6,22 +6,32 @@ use super::IntervalLevel;
 
 pub struct Interval<Q> {
     pub level: IntervalLevel,
-    pub quality: Option<Q>,
+    pub quality: Q,
     pub value: i8,
 }
 
-pub trait Quality<T> {
-    type Group;
+impl<Q> Interval<Q> {
+    pub fn new(level: IntervalLevel, quality: Q, value: i8) -> Self {
+        Self {
+            level,
+            quality,
+            value,
+        }
+    }
+}
 
-    fn group(&self) -> Self::Group;
+pub struct IntervalQuality<T> {
+    pub level: IntervalLevel,
+    pub name: &'static str,
+    pub value: Option<T>,
+}
+
+pub trait Quality<T> {
+    type Level;
+
+    fn level(&self) -> Self::Level;
 
     fn name(&self) -> &str;
 
     fn value(&self) -> T;
-}
-
-pub struct Variant<K, V> {
-    pub group: K,
-    pub name: &'static str,
-    pub value: V,
 }

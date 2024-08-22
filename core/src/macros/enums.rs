@@ -3,6 +3,26 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+macro_rules! variant_constructors {
+    (@impl $name:ident::$variant:ident.$call:ident::<$($T:ident)::*>()) => {
+        pub fn $call() -> Self {
+            $name::$variant($($T)::*)
+        }
+    };
+
+    (@impl $name:ident::$variant:ident.$call:ident()) => {
+        pub fn $call() -> Self {
+            $name::$variant
+        }
+    };
+
+    ($name:ident {$($variant:ident.$call:ident$(::<$($T:ident)::*>)?()),* $(,)?}) => {
+        $(
+            variant_constructors!(@impl $name::$variant.$call$(::<$($T)::*>)?());
+        )*
+    };
+}
+
 macro_rules! unit_enum {
     ($(#[derive($($der:ident),*$(,)?)])? $vis:vis enum $class:ident $($rest:tt)*) => {
         unit_enum!(

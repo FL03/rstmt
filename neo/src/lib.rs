@@ -21,7 +21,7 @@ pub use self::{
         kinds::{Augmented, Diminished, Major, Minor},
         Triad,
     },
-    types::*,
+    types::prelude::*,
 };
 
 #[macro_use]
