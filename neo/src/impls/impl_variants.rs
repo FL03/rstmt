@@ -11,7 +11,7 @@ use crate::triad::{Triad, Triads};
 impl Triad<dyn Kind<Class = Triads>> {
     /// Consumes the instance to classify it as a specific kind of triad;
     /// essentially, a safe way to cast "dynamic" instances to "static" ones.
-    pub fn cast<K>(self) -> Triad<K>
+    pub fn cast_dyn<K>(self) -> Triad<K>
     where
         K: Kind<Class = Triads> + 'static,
     {
@@ -28,7 +28,7 @@ impl Triad<dyn Kind<Class = Triads>> {
 impl Triad<Triads> {
     /// Consumes the instance to classify it as a specific kind of triad;
     /// essentially, a safe way to cast "dynamic" instances to "static" ones.
-    pub fn cast<K>(self) -> Triad<K>
+    pub fn cast_dyn<K>(self) -> Triad<K>
     where
         K: Kind<Class = Triads> + 'static,
     {

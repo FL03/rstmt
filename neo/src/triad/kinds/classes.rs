@@ -2,7 +2,6 @@
     Appellation: classes <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Kind, Relative, TriadCls, TriadKind};
 use crate::triad::Triads;
 
 macro_rules! class {
@@ -13,16 +12,8 @@ macro_rules! class {
         pub struct $name;
 
         impl $name {
-            pub fn class() -> Triads {
-                Triads::$name
-            }
-
-            pub fn as_class(&self) -> Triads {
-                Triads::$name
-            }
-
-            pub fn into_class(self) -> Triads {
-                Triads::$name
+            pub fn class(self) -> $crate::triad::Triads {
+                $crate::triad::Triads::$name
             }
 
             pub fn name(&self) -> &'static str {
@@ -30,7 +21,7 @@ macro_rules! class {
             }
         }
 
-        impl Relative for $name {
+        impl $crate::triad::Relative for $name {
             type Rel = $relative;
 
             fn relative(&self) -> Self::Rel {
@@ -38,10 +29,20 @@ macro_rules! class {
             }
         }
 
-        impl Kind for $name {
-            type Class = Triads;
+        impl $crate::triad::TriadCls for $name {
+            seal!();
 
-            fn class() -> Triads where Self: Sized {
+            fn named(&self) -> &'static str {
+                stringify!($call)
+            }
+        }
+
+        impl $crate::triad::Kind for $name {
+            type Class = $crate::triad::Triads;
+
+            seal!();
+
+            fn class() -> $crate::triad::Triads where Self: Sized {
                 Triads::$name
             }
 
@@ -50,49 +51,41 @@ macro_rules! class {
             }
         }
 
-        impl TriadCls for $name {
-            seal!();
-
-            fn named(&self) -> &'static str {
-                stringify!($call)
-            }
-        }
-
-        impl TriadKind for $name {
+        impl $crate::triad::TriadKind for $name {
             type Rel = $relative;
 
             seal!();
         }
 
-        impl AsRef<str> for $name {
+        impl ::core::convert::AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 stringify!($call)
             }
         }
 
-        impl core::ops::Deref for $name {
-            type Target = Triads;
+        impl ::core::ops::Deref for $name {
+            type Target = $crate::triad::Triads;
 
             fn deref(&self) -> &Self::Target {
                 &Triads::$name
             }
         }
 
-        impl core::fmt::Debug for $name {
+        impl ::core::fmt::Debug for $name {
             fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                 f.write_str(stringify!($call))
             }
         }
 
-        impl core::fmt::Display for $name {
+        impl ::core::fmt::Display for $name {
             fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                 f.write_str(stringify!($call))
             }
         }
 
-        unsafe impl Send for $name {}
+        unsafe impl ::core::marker::Send for $name {}
 
-        unsafe impl Sync for $name {}
+        unsafe impl ::core::marker::Sync for $name {}
     };
     ($($name:ident::$call:ident(relative: $rel:ident)),* $(,)?) => {
         $(

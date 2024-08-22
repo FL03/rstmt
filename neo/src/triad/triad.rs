@@ -2,7 +2,7 @@
     Appellation: triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Major, TriadCls, TriadKind, Triads};
+use super::{Kind, Major, TriadKind, Triads};
 use crate::transform::LPR;
 use crate::NeoError;
 use core::marker::PhantomData;
@@ -11,18 +11,22 @@ use rstmt::{Fifth, Note, Third};
 
 /// # Triad
 ///
-/// Triads are fundamental units in music theory and are used to build out more complex chords.
-/// A triad is a 3-note chord that is built and referenced with chord factors: the root, the
-/// third, and the fifth. Each of these notes is required to satisfy a particular intervalic
-/// relationship with the others. These relationships are used, primarily, as the basis for
-/// classifying the triad. However, knowledge of the relationships between the notes is useful
-/// for building out the various creation routines and understanding the nature of the triad.
+/// A triad is defined to be a type of chord compose of three notes that maintain specific
+/// intervalic relationships with each other. The three notes are often called _chord factors_
+/// and are referenced as the root, third, and fifth. The root note is the note from which the
+/// chord is built, the third is the note that is a third above the root, and the fifth is the
+/// note that is a fifth above the root. Therefore, it follows that the interval between the
+/// third and fifth factors is also considered to be a third.
 ///
-/// From a topological perspective, triads represent a 2-simplex where the three notes are
-/// considered to be the vertices while the intervals between the notes are the edges.
+/// ## Classification
+///
+/// Considering the compositional restrictions of the object, triads are able to be classified
+/// as either major, minor, augmented, or diminished. The classification of a triad is
+/// determined by the intervals between the root and the third, the third and the fifth, and
+/// the root and the fifth factors.
 ///
 ///
-/// ### Creation Routines
+/// ## Creation Routines
 ///
 /// Triads can be created either by specifying the root note and providing the
 /// classifying type, or by providing an array of notes. When providing an array
@@ -30,12 +34,36 @@ use rstmt::{Fifth, Note, Third};
 /// This is done by iterating over the notes and checking if the intervals satisfy
 /// the requirements of the given triad class.
 ///
-/// ### Example
+/// ### _Example_
 ///
 /// For example, a C-Major triad is composed of the notes C, E, and G.
 /// The interval between C and E is a major third, while the interval between
 /// E and G is a minor third, leaving the final interval between C and G as a
 /// perfect fifth.
+///
+/// ```rust
+/// use rstmt_core::Note;
+/// use rstmt_neo::Triad;
+///
+/// let c_major = dbg!(Triad::major(Note::from_pitch(0)));
+/// assert_eq!(c_major.root(), Note::from_pitch(0));  // C
+/// assert_eq!(c_major.third(), Note::from_pitch(4)); // E
+/// assert_eq!(c_major.fifth(), Note::from_pitch(7)); // G
+/// ```
+///
+/// ## Transformations
+///
+/// ### Leading (L)
+///
+/// ### Parallel (P)
+///
+/// ### Relative (R)
+///
+/// ## Side Note
+///
+/// From a topological perspective, triads represent a 2-simplex where the three notes are
+/// considered to be the vertices while the intervals between the notes are the edges.
+///
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
@@ -46,7 +74,9 @@ pub struct Triad<K: ?Sized = Major> {
 
 impl<K> Triad<K> {
     pub const LEN: usize = 3;
-    /// Create a new triad from a root note.
+    /// Create a new triad from a root note; the classifying type is used to statically
+    /// determine the composition of the triad, leveraging the defined intervals to
+    /// compute the third and fifth factors.
     pub fn from_root(root: Note) -> Self
     where
         K: TriadKind,
@@ -60,10 +90,10 @@ impl<K> Triad<K> {
             notes: [root, t, f],
         }
     }
-    /// Create a new triad from a slice of notes;
-    /// unlike [`try_from_notes`](Triad::try_from_notes), this function
-    /// iterates through the given notes to discover __**any**__ configuration
-    /// that is valid. If no valid configuration is found, an error is returned.
+    /// Create a new triad from a slice of notes; unlike [`try_from_notes`](Triad::try_from_notes),
+    /// this function iterates through the given notes to discover __**any**__ configuration
+    /// that is valid; returns an error if no configuration of notes contains the required
+    /// relationships.
     pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, NeoError> {
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
             println!("{a} {b} {c}");
@@ -77,9 +107,8 @@ impl<K> Triad<K> {
             "Failed to find the required relationships within the given notes...",
         ))
     }
-    /// Returns a new instance of [Triad] from a root note and a classifying type;
-    /// if the given notes do not form a valid triad, an [error](TriadError) is returned.
-    /// This function is useful for quickly determining whether a set of notes form a valid triad.
+    /// Attempts to construct a new [Triad] from the given notes and classifying type; returns
+    /// an error if the neccessary relationships are note detected within the given notes.
     pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, NeoError> {
         // compute the interval between the root and the third
         let a = Third::new(root, third);
@@ -115,16 +144,16 @@ impl<K> Triad<K> {
     /// Returns the classifying type of the triad
     pub fn class(&self) -> Triads
     where
-        K: 'static,
+        K: Kind<Class = Triads>,
     {
-        Triads::classify::<K>()
+        <K>::class()
     }
     /// Returns the name of the class
     pub fn class_name(&self) -> &str
     where
-        K: TriadKind,
+        K: Kind,
     {
-        TriadCls::named(&self._class)
+        <K>::name()
     }
     /// Returns a slice containing the notes of the triad
     pub fn as_slice(&self) -> &[Note] {
@@ -210,10 +239,8 @@ impl<K> Triad<K> {
             _class: PhantomData::<K>,
         }
     }
-
-    /// Swaps the classifying type of the triad;
-    /// useful for converting from dynamically typed triads to statically typed triads.
-    pub fn swap_kind<J: TriadKind>(&self) -> Triad<J> {
+    /// Cast the current triad into a new triad with a different classifying type
+    pub fn cast<J>(self) -> Triad<J> {
         Triad {
             notes: self.notes,
             _class: PhantomData::<J>,
@@ -225,8 +252,7 @@ impl<K> Triad<K> {
     where
         K: TriadKind<Rel = J>,
     {
-        // Transformer::new(self).apply(lpr).transform()
-        lpr.apply(self)
+        crate::transform::Transformer::new(lpr, self).apply()
     }
     /// Leading transformations make semitonal adjusments to the root of the triad;
     /// when applied to a major triad, the leading transformation decrements the root note by

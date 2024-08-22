@@ -46,16 +46,13 @@ pub enum Triads {
 }
 
 impl Triads {
-    pub fn classify<K: 'static>() -> Self {
-        use core::any::TypeId;
-        if TypeId::of::<K>() == TypeId::of::<Major>() {
-            Triads::Major
-        } else if TypeId::of::<K>() == TypeId::of::<Minor>() {
-            Triads::Minor
-        } else if TypeId::of::<K>() == TypeId::of::<Augmented>() {
-            Triads::Augmented
-        } else {
-            Triads::Diminished
+    pub fn new<K: Kind>() -> Self {
+        match <K>::name() {
+            "augmented" => Triads::Augmented,
+            "diminished" => Triads::Diminished,
+            "major" => Triads::Major,
+            "minor" => Triads::Minor,
+            _ => panic!("Impossible! The given triad does not match the specified kind..."),
         }
     }
     pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, NeoError> {
@@ -69,19 +66,19 @@ impl Triads {
             "The given notes do not form a valid triad...",
         ))
     }
-    /// A functional constructor for the [Augmented](Triads::Augmented) class.
+    /// A functional constructor for the [Triads::Augmented] variant.
     pub fn augmented() -> Self {
         Triads::Augmented
     }
-    /// A functional constructor for the [Diminished](Triads::Diminished) class.
+    /// A functional constructor for the [Triads::Diminished] variant.
     pub fn diminished() -> Self {
         Triads::Diminished
     }
-    /// A functional constructor for the [Major](Triads::Major) class.
+    /// A functional constructor for the [Triads::Major] variant.
     pub fn major() -> Self {
         Triads::Major
     }
-    /// A functional constructor for the [Minor](Triads::Minor) class.
+    /// A functional constructor for the [Triads::Minor] variant.
     pub fn minor() -> Self {
         Triads::Minor
     }

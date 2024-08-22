@@ -14,11 +14,26 @@ use crate::NeoError;
 /// ### Leading (L)
 ///
 /// ### Parallel (P)
+/// 
+/// Parallel transformations work by making semitonal adjustments to the [`third`](crate::Factors::Third) 
+/// factor of the triad, leaving the root and fifth factors unchanged. Applying a parallel 
+/// transformation to a major triad results in a minor triad and vice versa.
 ///
-/// Parallel transformations affect the third by half a step while leaving the root and fifth
-/// unchanged. When applied on a major triad, the transformation results in a minor and vise
-/// versa. For example, applying a single parallel transformation to an F major triad gives us
-/// an F minor triad.
+/// #### _Example_
+///
+/// Apply a single parallel C-Major triad applying a single parallel transformation returns a c-minor triad
+///
+/// `CM(0, 4, 7) -P-> Cm(0, 3, 7)`
+///
+///```rust
+/// use rstmt_core::Note;
+/// use rstmt_neo::Triad;
+///
+/// let c_major = Triad::major(Note::from_pitch(0)); // C-Major(0, 4, 7)
+/// let c_minor = Triad::minor(Note::from_pitch(0)); // C-Minor(0, 3, 7)
+/// assert_eq!(c_major.parallel(), Ok(c_minor));     // C-Major(0, 4, 7) -> C-Minor(0, 3, 7)
+/// assert_eq!(c_minor.parallel(), Ok(c_major));     // C-Minor(0, 3, 7) -> C-Major(0, 4, 7)  
+/// ```
 ///
 /// ### Relative (R)
 ///

@@ -5,8 +5,9 @@
 use crate::triad::Triad;
 use crate::Factors;
 use rstmt::Note;
+use core::ops::{Index, IndexMut, Range};
 
-impl<K> core::ops::Index<Factors> for Triad<K> {
+impl<K> Index<Factors> for Triad<K> {
     type Output = Note;
 
     fn index(&self, index: Factors) -> &Self::Output {
@@ -14,22 +15,22 @@ impl<K> core::ops::Index<Factors> for Triad<K> {
     }
 }
 
-impl<K> core::ops::IndexMut<Factors> for Triad<K> {
+impl<K> Index<Range<Factors>> for Triad<K> {
+    type Output = [Note];
+
+    fn index(&self, index: Range<Factors>) -> &Self::Output {
+        &self.notes[index.start as usize..index.end as usize]
+    }
+}
+
+impl<K> IndexMut<Factors> for Triad<K> {
     fn index_mut(&mut self, index: Factors) -> &mut Self::Output {
         &mut self.notes[index as usize]
     }
 }
 
-impl<K> core::ops::Index<core::ops::Range<Factors>> for Triad<K> {
-    type Output = [Note];
-
-    fn index(&self, index: core::ops::Range<Factors>) -> &Self::Output {
-        &self.notes[index.start as usize..index.end as usize]
-    }
-}
-
-impl<K> core::ops::IndexMut<core::ops::Range<Factors>> for Triad<K> {
-    fn index_mut(&mut self, index: core::ops::Range<Factors>) -> &mut Self::Output {
+impl<K> IndexMut<Range<Factors>> for Triad<K> {
+    fn index_mut(&mut self, index: Range<Factors>) -> &mut Self::Output {
         &mut self.notes[index.start as usize..index.end as usize]
     }
 }

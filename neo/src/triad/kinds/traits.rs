@@ -6,22 +6,6 @@ use crate::triad::Triads;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
-#[doc(hidden)]
-pub trait Group {}
-
-#[doc(hidden)]
-pub trait Kind {
-    type Class;
-
-    fn class() -> Self::Class
-    where
-        Self: Sized;
-
-    fn name() -> &'static str
-    where
-        Self: Sized;
-}
-
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
@@ -38,12 +22,31 @@ pub trait Relative {
 
     fn relative(&self) -> Self::Rel;
 }
+
+pub trait Kind {
+    type Class;
+
+    seal!();
+
+    fn class() -> Self::Class where Self: Sized;
+
+    fn name() -> &'static str where Self: Sized;
+}
 ///
 ///
 ///
 pub trait TriadKind: Kind<Class = Triads> {
     type Rel: TriadKind;
+    
     private!();
+
+    // fn class() -> Triads
+    // where
+    //     Self: Sized;
+
+    // fn name() -> &'static str
+    // where
+    //     Self: Sized;
 
     /// Returns a new instance of [PhantomData]; This method is the only possible constructor
     /// for these objects, a charecteristic enfored with 0-variant enum declarations.
@@ -129,7 +132,6 @@ pub trait TriadKind: Kind<Class = Triads> {
 /*
  ************* Implementations *************
 */
-impl Group for Triads {}
 
 impl TriadCls for Triads {
     seal!();
@@ -144,39 +146,27 @@ impl TriadCls for Triads {
     }
 }
 
-impl<K> Relative for PhantomData<K>
-where
-    K: TriadKind,
-{
-    type Rel = Triads;
-
-    fn relative(&self) -> Self::Rel {
-        K::class()
-    }
-}
-
-impl<K> Kind for PhantomData<K>
-where
-    K: Kind<Class = Triads>,
-{
-    type Class = Triads;
-
-    fn class() -> Triads {
-        K::class()
-    }
-
-    fn name() -> &'static str {
-        K::name()
-    }
-}
-
 impl<K> TriadCls for PhantomData<K>
 where
-    K: Kind<Class = Triads>,
+    K: TriadKind,
 {
     seal!();
 
     fn named(&self) -> &'static str {
+        K::name()
+    }
+}
+
+impl<K: Kind> Kind for PhantomData<K> {
+    type Class = K::Class;
+
+    seal!();
+
+    fn class() -> Self::Class {
+        K::class()
+    }
+
+    fn name() -> &'static str {
         K::name()
     }
 }
