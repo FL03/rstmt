@@ -7,7 +7,7 @@ pub use self::{classes::*, traits::*};
 mod classes;
 mod traits;
 
-use crate::TriadError;
+use crate::NeoError;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
@@ -58,14 +58,14 @@ impl Triads {
             Triads::Diminished
         }
     }
-    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
+    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, NeoError> {
         use strum::IntoEnumIterator;
         for i in Self::iter() {
             if i.is_valid(root, third, fifth) {
                 return Ok(i);
             }
         }
-        Err(TriadError::invalid_triad(
+        Err(NeoError::invalid_triad(
             "The given notes do not form a valid triad...",
         ))
     }

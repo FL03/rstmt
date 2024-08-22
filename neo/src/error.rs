@@ -5,7 +5,7 @@
 #[doc(hidden)]
 pub use res::EResult;
 /// A type alias for a [`Result`](core::result::Result) that uses the [`TriadError`](TriadError) type.
-pub type TriadResult<T = ()> = core::result::Result<T, TriadError>;
+pub type TriadResult<T = ()> = core::result::Result<T, NeoError>;
 
 use rstmt::{Note, Pitch};
 
@@ -29,7 +29,7 @@ use rstmt::{Note, Pitch};
 )]
 #[repr(C)]
 #[strum(serialize_all = "PascalCase")]
-pub enum TriadError {
+pub enum NeoError {
     #[error("InvalidPitch: {0}")]
     InvalidPitch(String),
     #[error(
@@ -46,7 +46,7 @@ pub enum TriadError {
     Unknown(String),
 }
 
-impl TriadError {
+impl NeoError {
     pub fn invalid_pitch(msg: impl ToString) -> Self {
         Self::InvalidPitch(msg.to_string())
     }
@@ -68,15 +68,15 @@ impl TriadError {
     }
 }
 
-impl From<Pitch> for TriadError {
+impl From<Pitch> for NeoError {
     fn from(err: Pitch) -> Self {
-        TriadError::InvalidPitch(err.to_string())
+        NeoError::InvalidPitch(err.to_string())
     }
 }
 
-impl From<(Note, Note, Note)> for TriadError {
+impl From<(Note, Note, Note)> for NeoError {
     fn from((r, t, f): (Note, Note, Note)) -> Self {
-        TriadError::InvalidTriad(format!("({}, {}, {})", r, t, f))
+        NeoError::InvalidTriad(format!("({}, {}, {})", r, t, f))
     }
 }
 

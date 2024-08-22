@@ -16,11 +16,11 @@ pub(crate) mod prelude {
 }
 
 pub(crate) mod utils {
-    use crate::error::TriadError;
+    use crate::error::NeoError;
     use rstmt::{Fifth, Note, Third};
 
     #[doc(hidden)]
-    pub fn try_from_arr(notes: [Note; 3]) -> Result<(Note, Note, Note), TriadError> {
+    pub fn try_from_arr(notes: [Note; 3]) -> Result<(Note, Note, Note), NeoError> {
         use itertools::Itertools;
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
             if Third::new(a, b).is_ok() && Third::new(b, c).is_ok() && Fifth::new(a, c).is_ok() {
@@ -29,13 +29,13 @@ pub(crate) mod utils {
                 continue;
             }
         }
-        Err(TriadError::invalid_triad(
+        Err(NeoError::invalid_triad(
             "Failed to find the required relationships within the given notes...",
         ))
     }
 }
 
-use crate::{Factors, TriadError};
+use crate::{Factors, NeoError};
 
 /// [IntoTriad] converts a type into a [Triad].
 pub trait IntoTriad {
@@ -47,7 +47,7 @@ pub trait IntoTriad {
 pub trait TryIntoTriad {
     type Kind;
 
-    fn try_into_triad(self) -> Result<Triad<Self::Kind>, TriadError>;
+    fn try_into_triad(self) -> Result<Triad<Self::Kind>, NeoError>;
 }
 
 pub trait TriadData {

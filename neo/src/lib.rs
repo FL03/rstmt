@@ -11,7 +11,7 @@ extern crate rstmt_core as rstmt;
 
 #[doc(inline)]
 pub use self::{
-    error::{TriadError, TriadResult},
+    error::{NeoError, TriadResult},
     transform::LPR,
     triad::{
         kinds::{Augmented, Diminished, Major, Minor},
@@ -40,7 +40,7 @@ pub(crate) mod impls {
 }
 
 pub mod prelude {
-    pub use crate::error::{TriadError, TriadResult};
+    pub use crate::error::{NeoError, TriadResult};
     pub use crate::tonnetz::prelude::*;
     pub use crate::transform::prelude::*;
     pub use crate::triad::prelude::*;

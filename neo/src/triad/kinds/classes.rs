@@ -2,7 +2,7 @@
     Appellation: classes <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Class, Kind, Relative, TriadCls, TriadKind};
+use super::{Kind, Relative, TriadCls, TriadKind};
 use crate::triad::Triads;
 
 macro_rules! class {
@@ -38,8 +38,6 @@ macro_rules! class {
             }
         }
 
-        impl Class for $name {}
-
         impl Kind for $name {
             type Class = Triads;
 
@@ -51,8 +49,6 @@ macro_rules! class {
                 $name.as_ref()
             }
         }
-
-
 
         impl TriadCls for $name {
             seal!();
@@ -105,9 +101,9 @@ macro_rules! class {
     };
 }
 
-class!(
+class! {
     Augmented::augmented(relative: Diminished),
     Diminished::diminished(relative: Augmented),
     Major::major(relative: Minor),
     Minor::minor(relative: Major),
-);
+}

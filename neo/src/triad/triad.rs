@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Major, TriadCls, TriadKind, Triads};
-use crate::transform::{Transformer, LPR};
-use crate::TriadError;
+use crate::transform::LPR;
+use crate::NeoError;
 use core::marker::PhantomData;
 use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
@@ -64,7 +64,7 @@ impl<K> Triad<K> {
     /// unlike [`try_from_notes`](Triad::try_from_notes), this function
     /// iterates through the given notes to discover __**any**__ configuration
     /// that is valid. If no valid configuration is found, an error is returned.
-    pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, TriadError> {
+    pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, NeoError> {
         for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
             println!("{a} {b} {c}");
             if let Ok(triad) = Triad::try_from_notes(a, b, c) {
@@ -73,14 +73,14 @@ impl<K> Triad<K> {
                 continue;
             }
         }
-        Err(TriadError::invalid_triad(
+        Err(NeoError::invalid_triad(
             "Failed to find the required relationships within the given notes...",
         ))
     }
     /// Returns a new instance of [Triad] from a root note and a classifying type;
     /// if the given notes do not form a valid triad, an [error](TriadError) is returned.
     /// This function is useful for quickly determining whether a set of notes form a valid triad.
-    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, TriadError> {
+    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, NeoError> {
         // compute the interval between the root and the third
         let a = Third::new(root, third);
         // compute the interval between the third and the fifth
@@ -92,7 +92,7 @@ impl<K> Triad<K> {
                 notes: [root, third, fifth],
             })
         } else {
-            Err(TriadError::invalid_triad(
+            Err(NeoError::invalid_triad(
                 "Failed to detect the required intervals...",
             ))
         }
@@ -182,7 +182,7 @@ impl<K> Triad<K> {
         &mut self.notes[2]
     }
     ///
-    pub fn edges(&self) -> Result<(Third, Third, Fifth), TriadError> {
+    pub fn edges(&self) -> Result<(Third, Third, Fifth), NeoError> {
         Ok((
             self.root_to_third()?,
             self.third_to_fifth()?,
@@ -190,14 +190,14 @@ impl<K> Triad<K> {
         ))
     }
     /// Computes the interval between the root and the third factors
-    pub fn root_to_third(&self) -> Result<Third, TriadError> {
+    pub fn root_to_third(&self) -> Result<Third, NeoError> {
         Third::new(self.root(), self.third())
-            .map_err(|_| TriadError::invalid_interval(self.root(), self.third()))
+            .map_err(|_| NeoError::invalid_interval(self.root(), self.third()))
     }
     /// Returns the distance (interval) between the root and the fifth
-    pub fn root_to_fifth(&self) -> Result<Fifth, TriadError> {
+    pub fn root_to_fifth(&self) -> Result<Fifth, NeoError> {
         Fifth::new(self.root(), self.fifth())
-            .map_err(|_| TriadError::invalid_interval(self.root(), self.fifth()))
+            .map_err(|_| NeoError::invalid_interval(self.root(), self.fifth()))
     }
     /// Returns the distance (interval) between the third and the fifth
     pub fn third_to_fifth(&self) -> Result<Third, rstmt::Error> {
@@ -221,14 +221,12 @@ impl<K> Triad<K> {
     }
     /// Applies the given [LPR] transformation onto the triad.
     ///
-    pub fn transform<J>(self, lpr: LPR) -> Triad<J>
+    pub fn transform<J>(self, lpr: LPR) -> Result<Triad<J>, NeoError>
     where
         K: TriadKind<Rel = J>,
     {
-        match Transformer::new(self).apply(lpr).transform() {
-            Ok(triad) => triad,
-            Err(_) => panic!("Failed to transform the triad..."),
-        }
+        // Transformer::new(self).apply(lpr).transform()
+        lpr.apply(self)
     }
     /// Leading transformations make semitonal adjusments to the root of the triad;
     /// when applied to a major triad, the leading transformation decrements the root note by
@@ -238,9 +236,9 @@ impl<K> Triad<K> {
     /// the root and third factors are shifted up by a factor. The fifth factor is then moved
     /// to the root.
     ///
-    pub fn leading(self) -> Triad<K::Rel>
+    pub fn leading<J>(self) -> Result<Triad<J>, NeoError>
     where
-        K: TriadKind,
+        K: TriadKind<Rel = J>,
     {
         self.transform(LPR::L)
     }
@@ -263,16 +261,16 @@ impl<K> Triad<K> {
     /// assert_eq!(triad.parallel(), Triad::minor(Note::from_pitch(0)));
     /// assert_eq!(triad.parallel().parallel(), triad);
     /// ```
-    pub fn parallel(self) -> Triad<K::Rel>
+    pub fn parallel<J>(self) -> Result<Triad<J>, NeoError>
     where
-        K: TriadKind,
+        K: TriadKind<Rel = J>,
     {
         self.transform(LPR::P)
     }
     /// Applies a relative transformation to the triad;
-    pub fn relative(self) -> Triad<K::Rel>
+    pub fn relative<J>(self) -> Result<Triad<J>, NeoError>
     where
-        K: TriadKind,
+        K: TriadKind<Rel = J>,
     {
         self.transform(LPR::R)
     }

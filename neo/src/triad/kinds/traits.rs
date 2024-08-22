@@ -6,10 +6,12 @@ use crate::triad::Triads;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
-pub trait Class {}
+#[doc(hidden)]
+pub trait Group {}
 
+#[doc(hidden)]
 pub trait Kind {
-    type Class: Class;
+    type Class;
 
     fn class() -> Self::Class
     where
@@ -23,7 +25,7 @@ pub trait Kind {
 /// This trait denotes privately declared instances of different classes of triads.
 /// Traditionally, triads have two primary classes: [major](Major) and [minor](Minor), however, there are
 /// two additional classes: [augmented](Augmented) and [diminished](Diminished). This trait is used to determine
-pub trait TriadCls: Class {
+pub trait TriadCls {
     private!();
 
     fn named(&self) -> &'static str;
@@ -43,9 +45,8 @@ pub trait TriadKind: Kind<Class = Triads> {
     type Rel: TriadKind;
     private!();
 
-    /// Returns a new instance of [PhantomData](core::marker::PhantomData);
-    /// This method is the only possible constructor for these objects,
-    /// a charecteristic enfored with 0-variant enum declarations.
+    /// Returns a new instance of [PhantomData]; This method is the only possible constructor
+    /// for these objects, a charecteristic enfored with 0-variant enum declarations.
     fn phantom() -> core::marker::PhantomData<Self>
     where
         Self: Sized,
@@ -128,7 +129,7 @@ pub trait TriadKind: Kind<Class = Triads> {
 /*
  ************* Implementations *************
 */
-impl Class for Triads {}
+impl Group for Triads {}
 
 impl TriadCls for Triads {
     seal!();
@@ -153,8 +154,6 @@ where
         K::class()
     }
 }
-
-impl<K> Class for PhantomData<K> where K: Kind<Class = Triads> {}
 
 impl<K> Kind for PhantomData<K>
 where

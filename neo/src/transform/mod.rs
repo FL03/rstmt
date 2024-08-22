@@ -5,7 +5,6 @@
 #[doc(inline)]
 pub use self::{lpr::LPR, transformer::Transformer};
 
-
 pub(crate) mod lpr;
 pub(crate) mod transformer;
 
@@ -23,13 +22,13 @@ pub trait Transform<F> {
 }
 pub(crate) mod utils {
     use super::LPR;
-    use crate::prelude::TriadError;
+    use crate::prelude::NeoError;
     use rstmt::{IntervalOps, Note, Third};
 
     pub(crate) fn _transform(
         chord: (Note, Note, Note),
         dirac: LPR,
-    ) -> Result<(Note, Note, Note), TriadError> {
+    ) -> Result<(Note, Note, Note), NeoError> {
         let rt = Third::new(chord.0, chord.1)?;
         let (r, t, f) = match dirac {
             LPR::L => _leading(chord, rt),
