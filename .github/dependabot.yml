@@ -4,9 +4,13 @@ updates:
   - package-ecosystem: cargo
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
   - package-ecosystem: github-actions
     directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: cargo
+    directory: /rstmt
     schedule:
       interval: weekly
   - package-ecosystem: cargo
@@ -15,9 +19,5 @@ updates:
       interval: weekly
   - package-ecosystem: cargo
     directory: /neo
-    schedule:
-      interval: weekly
-  - package-ecosystem: cargo
-    directory: /rstmt
     schedule:
       interval: weekly

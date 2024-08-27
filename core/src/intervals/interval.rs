@@ -41,7 +41,6 @@ pub struct IntervalQuality<T> {
     pub name: &'static str,
     pub value: Option<T>,
 }
-
 pub trait Quality<T> {
     type Level;
 
