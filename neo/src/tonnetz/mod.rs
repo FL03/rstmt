@@ -25,7 +25,11 @@
 //!
 
 pub(crate) mod prelude {
-    pub use super::Tonnetz;
+    pub use super::Tonnetze;
 }
 
-pub trait Tonnetz {}
+pub trait Tonnetze {
+    fn is_complete(&self) -> bool;
+
+    fn layers(&self) -> usize;
+}

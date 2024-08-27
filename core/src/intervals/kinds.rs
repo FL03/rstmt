@@ -140,7 +140,6 @@ impl Intervals {
     }
 }
 
-
 macro_rules! impl_from_value {
     (@impl $name:ident::$variant:ident($T:ty)) => {
         impl From<$T> for $name {
@@ -155,8 +154,6 @@ macro_rules! impl_from_value {
         )*
     };
 }
-
-
 
 impl<P> From<P> for Intervals
 where

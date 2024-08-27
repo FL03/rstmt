@@ -2,8 +2,7 @@
     Appellation: lpr <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::{Triad, TriadKind};
-use crate::NeoError;
+
 /// # LPR Transformations
 ///
 /// The neo-Riemannian theory focuses on three primary transformations, namely: leading (L),
@@ -83,21 +82,5 @@ impl LPR {
     /// A functional constructor for the `relative` transformation
     pub fn relative() -> Self {
         LPR::R
-    }
-
-    pub fn apply<K, J>(self, triad: Triad<K>) -> Result<Triad<J>, NeoError>
-    where
-        K: TriadKind<Rel = J>,
-    {
-        use super::utils::{_leading, _parallel, _relative};
-        let rt = triad.root_to_third()?;
-        let chord = triad.as_tuple();
-        let (r, t, f) = match self {
-            LPR::L => _leading(chord, rt),
-            LPR::P => _parallel(chord, rt),
-            LPR::R => _relative(chord, rt),
-        };
-
-        Triad::try_from_notes(r, t, f)
     }
 }

@@ -24,6 +24,12 @@ pub trait Intervallic {
     private!();
 
     fn as_i8(&self) -> i8;
+
+    fn level(&self) -> IntervalLevel;
+
+    fn kind(&self) -> Intervals {
+        Intervals::from_value(self.as_i8())
+    }
 }
 
 /// [IntoInterval] is a trait describing a method which consumes the current type,

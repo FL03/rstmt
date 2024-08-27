@@ -19,16 +19,16 @@ use crate::Pitch;
 /// A tone is defined to be the pitch, quality, and strength of a particular
 /// sound. Tone's are fundamental to the study of music and sound, providing
 /// a standardized means of describing the characteristics of a sound.
-pub trait MusicTone {
-    type Freq: Frequency<f64>;
+pub trait MusicTone<T> {
+    type Freq: Frequency<T>;
 
     fn pitch(&self) -> Pitch;
     /// The quality of a tone is a measure of the harmonic content of the sound.
     /// Often refered to as timbre, the quality of a tone is what allows us to
     /// distinguish a sound over time.
-    fn quality(&self) -> f64;
+    fn quality(&self) -> T;
 
-    fn strength(&self) -> f64;
+    fn strength(&self) -> T;
 }
 
 pub trait Frequency<T> {

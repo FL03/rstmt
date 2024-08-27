@@ -35,23 +35,14 @@ pub(crate) mod utils {
     }
 }
 
-use crate::{Factors, NeoError};
+use crate::Factors;
 
-/// [IntoTriad] converts a type into a [Triad].
-pub trait IntoTriad {
-    type Kind;
-
-    fn into_triad(self) -> Triad<Self::Kind>;
-}
-
-pub trait TryIntoTriad {
-    type Kind;
-
-    fn try_into_triad(self) -> Result<Triad<Self::Kind>, NeoError>;
-}
-
+#[doc(hidden)]
+/// [TriadData] is a trait describing the data structure of a triad.
 pub trait TriadData {
     type Elem;
+
+    private!();
 
     fn root(&self) -> &Self::Elem;
 
@@ -103,6 +94,8 @@ where
 {
     type Elem = rstmt::Note;
 
+    seal!();
+
     fn root(&self) -> &Self::Elem {
         &self[Factors::Root]
     }
@@ -131,6 +124,8 @@ where
 impl<T> TriadData for [T; 3] {
     type Elem = T;
 
+    seal!();
+
     fn root(&self) -> &Self::Elem {
         &self[0]
     }
@@ -158,6 +153,8 @@ impl<T> TriadData for [T; 3] {
 
 impl<T> TriadData for (T, T, T) {
     type Elem = T;
+
+    seal!();
 
     fn root(&self) -> &Self::Elem {
         &self.0

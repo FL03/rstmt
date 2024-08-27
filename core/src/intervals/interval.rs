@@ -20,6 +20,22 @@ impl<Q> Interval<Q> {
     }
 }
 
+pub struct Major;
+pub struct Third<Q> {
+    pub value: i8,
+    pub quality: Q,
+}
+
+impl Third<Major> {
+    pub fn major(value: i8) -> Self {
+        debug_assert!(value.abs() % 4 == 0);
+        Self {
+            value,
+            quality: Major,
+        }
+    }
+}
+
 pub struct IntervalQuality<T> {
     pub level: IntervalLevel,
     pub name: &'static str,
