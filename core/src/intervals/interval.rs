@@ -3,50 +3,102 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::IntervalLevel;
+use core::marker::PhantomData;
 
 pub struct Interval<Q> {
     pub level: IntervalLevel,
-    pub quality: Q,
     pub value: i8,
+    pub(crate) _quality: PhantomData<Q>,
 }
 
 impl<Q> Interval<Q> {
-    pub fn new(level: IntervalLevel, quality: Q, value: i8) -> Self {
+    pub fn new(value: i8) -> Self {
         Self {
-            level,
-            quality,
+            level: IntervalLevel::from_i8(value),
             value,
+            _quality: PhantomData::<Q>,
         }
     }
 }
 
-pub struct Major;
-pub struct Third<Q> {
-    pub value: i8,
-    pub quality: Q,
+use num::traits::{FromPrimitive, NumOps, One, Zero};
+
+pub trait MusicalTy: Copy + PartialEq + One + Zero + NumOps {}
+
+pub enum Augmented {}
+
+pub enum Diminished {}
+
+pub enum Major {}
+
+enum Minor {}
+
+pub enum Perfect {}
+
+pub struct Third<Q = Major, T = i8> {
+    pub value: T,
+    _quality: PhantomData<Q>,
 }
 
-impl Third<Major> {
-    pub fn major(value: i8) -> Self {
-        debug_assert!(value.abs() % 4 == 0);
+impl<T> Third<Major, T> {
+    pub fn major(value: T) -> Self
+    where
+        T: Copy + PartialEq + core::ops::Rem<Output = T> + FromPrimitive + Zero,
+    {
+        debug_assert!(value % T::from_u8(4).unwrap() == T::zero());
         Self {
             value,
-            quality: Major,
+            _quality: PhantomData::<Major>,
         }
     }
 }
 
-pub struct IntervalQuality<T> {
-    pub level: IntervalLevel,
-    pub name: &'static str,
-    pub value: Option<T>,
+impl Third<Minor> {
+    pub fn minor(value: i8) -> Self {
+        debug_assert!(value % 3 == 0);
+        Self {
+            value,
+            _quality: PhantomData::<Minor>,
+        }
+    }
 }
+
+impl<Q> Third<Q> {
+    pub fn value(&self) -> i8 {
+        self.value
+    }
+}
+
+impl<Q> Level for Third<Q> {
+    type Quality = Q;
+}
+
+pub trait Level {
+    type Quality;
+}
+
 pub trait Quality<T> {
     type Level;
 
-    fn level(&self) -> Self::Level;
-
-    fn name(&self) -> &str;
+    fn name(&self) -> &str {
+        core::any::type_name::<Self>()
+    }
 
     fn value(&self) -> T;
+}
+
+impl Quality<i8> for Major {
+    type Level = Third<Major>;
+
+    fn value(&self) -> i8 {
+        4
+    }
+}
+
+impl Quality<i8> for Minor {
+    type Level = Third<Minor>;
+
+    fn value(&self) -> i8 {
+        3
+    }
 }

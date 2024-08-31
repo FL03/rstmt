@@ -15,3 +15,9 @@ pub(crate) mod prelude {
     pub use super::notable::*;
     pub use super::symbols::*;
 }
+
+pub trait Scale {
+    type Note;
+
+    fn get(&self, note: Self::Note) -> usize;
+}

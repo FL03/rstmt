@@ -2,6 +2,8 @@
     Appellation: level <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+
+/// [IntervalLevel] enumerates the possible levels of an interval
 #[derive(
     Clone,
     Copy,
@@ -35,7 +37,7 @@ pub enum IntervalLevel {
     Fourth = 5,
     Fifth = 7,
     Sixth,
-    Seventh,
+    Seventh = 11,
     Octave = 12,
 }
 
@@ -55,31 +57,36 @@ impl IntervalLevel {
             _ => unreachable!(),
         }
     }
+    /// A functional constructor for the [IntervalLevel::Semitone] variant.
     pub fn semitone() -> Self {
         IntervalLevel::Semitone
     }
-
+    /// A functional constructor for the [IntervalLevel::Tone] variant.
     pub fn tone() -> Self {
         IntervalLevel::Tone
     }
-
+    /// A functional constructor for the [IntervalLevel::Third] variant.
     pub fn third() -> Self {
         IntervalLevel::Third
     }
-
+    /// A functional constructor for the [IntervalLevel::Fourth] variant.
     pub fn fourth() -> Self {
         IntervalLevel::Fourth
     }
-
+    /// A functional constructor for the [IntervalLevel::Fifth] variant.
     pub fn fifth() -> Self {
         IntervalLevel::Fifth
     }
-
+    /// A functional constructor for the [IntervalLevel::Sixth] variant.
     pub fn sixth() -> Self {
         IntervalLevel::Sixth
     }
-
+    /// A functional constructor for the [IntervalLevel::Seventh] variant.
     pub fn seventh() -> Self {
         IntervalLevel::Seventh
+    }
+    /// A functional constructor for the [IntervalLevel::Octave] variant.
+    pub fn octave() -> Self {
+        IntervalLevel::Octave
     }
 }

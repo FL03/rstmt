@@ -26,15 +26,17 @@
 //! The definition above allows for 17 unique pitches to represent 12 different tones.
 //!
 #[doc(inline)]
-pub use self::{kinds::*, pitch::Pitch, types::prelude::*};
+pub use self::{class::*, pitch::Pitch, types::prelude::*};
 
-pub(crate) mod kinds;
+pub(crate) mod class;
 pub(crate) mod pitch;
 
 pub mod types {
     #[doc(inline)]
     pub use self::signs::*;
 
+    #[doc(hidden)]
+    pub mod pitch;
     pub mod signs;
 
     #[doc(hidden)]
@@ -44,11 +46,11 @@ pub mod types {
 }
 
 mod impls {
-    mod pitch_ops;
+    pub mod pitch_ops;
 }
 
 pub(crate) mod prelude {
-    pub use super::kinds::{Flat, Natural, Pitches, Sharp};
+    pub use super::class::{Flat, Natural, Pitches, Sharp};
     pub use super::pitch::Pitch;
     pub use super::{IntoPitch, PitchClass, PitchTy};
 }
@@ -64,7 +66,7 @@ pub trait IntoPitch {
     fn into_pitch(self) -> Pitch;
 }
 
-pub trait PitchT {
+pub trait PitchT: Copy + PartialEq + PartialOrd {
     private!();
 }
 /// Used to denote a particular pitch class; pitch classes are symbolic
@@ -72,12 +74,13 @@ pub trait PitchT {
 pub trait PitchClass {
     private!();
 
-    fn pitch(&self) -> PitchTy;
+    fn get(&self) -> PitchTy;
 }
 
 /*
  ************* Implementations *************
 */
+
 impl<S> IntoPitch for S
 where
     S: Into<Pitch>,
@@ -85,6 +88,30 @@ where
     fn into_pitch(self) -> Pitch {
         self.into()
     }
+}
+
+impl PitchClass for Pitches {
+    seal!();
+
+    fn get(&self) -> PitchTy {
+        self.get()
+    }
+}
+
+macro_rules! impl_pitch_class {
+    (@impl $tgt:ident) => {
+
+        impl $crate::pitch::PitchClass for $tgt {
+            seal!();
+
+            fn get(&self) -> $crate::PitchTy {
+                *self as $crate::PitchTy
+            }
+        }
+    };
+    ($($tgt:ident),* $(,)?) => {
+        $(impl_pitch_class!(@impl $tgt);)*
+    };
 }
 
 macro_rules! impl_pitch_t {
@@ -98,4 +125,6 @@ macro_rules! impl_pitch_t {
     };
 }
 
-impl_pitch_t!(i8);
+impl_pitch_class!(Natural, Flat, Sharp);
+
+impl_pitch_t!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64);

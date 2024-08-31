@@ -181,7 +181,7 @@ impl_fmt!(Binary, LowerHex, Octal, UpperHex);
 
 impl_from! {
     <Pitch>::From<PitchTy>(Pitch::new),
-    <Pitch>::From<Pitches>(|p: Pitches| Pitch::new(p.value())),
+    <Pitch>::From<Pitches>(|p: Pitches| Pitch::new(p.get())),
     <PitchTy>::From<Pitch>(|p: Pitch| p.0),
     <Pitches>::From<Pitch>(|p: Pitch| p.class()),
 }
