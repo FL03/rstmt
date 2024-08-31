@@ -4,14 +4,7 @@
 */
 
 macro_rules! pitch_class {
-    ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {
-        pitch_class!(@impl $(#[derive($($derive),*)])? $(#[default($default)])? $(#[rename($rename)])? $vis enum $name $($rest)*);
-    };
-    (@impl $(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $vis:vis enum $name:ident $($rest:tt)*) => {
-        pitch_class!($(#[derive($($derive),*)])? $(#[default($default)])? #[rename("UPPERCASE")] $vis enum $name $($rest)*);
-    };
     (@impl $(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? #[rename($rename:literal)] $vis:vis enum $name:ident $($rest:tt)*) => {
-
         #[derive(
             Clone,
             Copy,
@@ -41,7 +34,12 @@ macro_rules! pitch_class {
                 }
             }
         )?
-
+    };
+    (@impl $(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $vis:vis enum $name:ident $($rest:tt)*) => {
+        pitch_class!($(#[derive($($derive),*)])? $(#[default($default)])? #[rename("UPPERCASE")] $vis enum $name $($rest)*);
+    };
+    ($(#[derive($($derive:ident),* $(,)?)])? $(#[default($default:ident)])? $(#[rename($rename:literal)])? $vis:vis enum $name:ident $($rest:tt)*) => {
+        pitch_class!(@impl $(#[derive($($derive),*)])? $(#[default($default)])? $(#[rename($rename)])? $vis enum $name $($rest)*);
     };
 }
 
@@ -64,14 +62,6 @@ macro_rules! impl_pitch {
             }
 
             pub fn pitch(&self) -> $crate::PitchTy {
-                *self as $crate::PitchTy
-            }
-        }
-
-        impl $crate::pitch::PitchClass for $group {
-            seal!();
-
-            fn pitch(&self) -> $crate::PitchTy {
                 *self as $crate::PitchTy
             }
         }

@@ -1,10 +1,10 @@
 ---
-name: Feature request
 about: Suggest an idea for this project
+assignees: [ FL03 ]
+labels: [ enhancement ]
+name: Feature request
+projects: ['@FL03/rstmt:dev']
 title: ''
-labels: ''
-assignees: ''
-
 ---
 
 **Is your feature request related to a problem? Please describe.**

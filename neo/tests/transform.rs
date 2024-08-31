@@ -14,35 +14,51 @@ use LPR::*;
 #[test]
 fn test_leading() {
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.transform(L);
+    let next = c_major.transform(L).unwrap();
     // Validate the resulting triad
     assert_eq!(next.root(), c_major.third());
     assert_eq!(next.third(), c_major.fifth());
     assert_eq!(next.fifth(), c_major.root().sub_semitone());
     // validate the transformation is invertible
-    assert_eq!(c_major, next.transform(L));
+    assert_eq!(Ok(c_major), next.transform(L));
 }
 
 #[test]
 fn test_parallel() {
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.transform(P);
+    let next = c_major.transform(P).unwrap();
     // Validate the resulting triad
     assert_eq!(next.root(), c_major.root());
     assert_eq!(next.third(), c_major.third().sub_semitone());
     assert_eq!(next.fifth(), c_major.fifth());
     // validate the transformation is invertible
-    assert_eq!(c_major, next.transform(P));
+    assert_eq!(Ok(c_major), next.transform(P));
 }
 
 #[test]
 fn test_relative() {
     let c_major = Triad::major(Note::from_pitch(0));
-    let next = c_major.transform(R);
+    let next = c_major.transform(R).unwrap();
     // Validate the resulting triad
     assert_eq!(next.root(), c_major.fifth().add_tone());
     assert_eq!(next.third(), c_major.root());
     assert_eq!(next.fifth(), c_major.third());
     // validate the transformation is invertible
-    assert_eq!(c_major, next.transform(R));
+    assert_eq!(Ok(c_major), next.transform(R));
+}
+
+#[test]
+fn test_chain() {
+    let c_major = Triad::major(Note::from_pitch(0));
+    assert_eq!(
+        c_major
+            .leading()
+            .unwrap()
+            .parallel()
+            .unwrap()
+            .parallel()
+            .unwrap()
+            .leading(),
+        Ok(c_major)
+    );
 }

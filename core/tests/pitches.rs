@@ -6,14 +6,6 @@ extern crate rstmt_core as rstmt;
 
 use rstmt::pitch::*;
 
-fn assert_ok<T, E>(result: Result<T, E>) -> T
-where
-    E: core::fmt::Debug + core::fmt::Display,
-{
-    assert!(result.is_ok());
-    result.unwrap()
-}
-
 #[test]
 fn test_pitch() {
     let pitch = Pitch::new(0);
@@ -26,8 +18,20 @@ fn test_pitch() {
 
 #[test]
 fn test_pitch_class() {
-    let pitch = assert_ok(Pitches::try_from_value(12));
-    let rhs = Natural::C;
-    assert_eq!(pitch, rhs.as_class());
-    assert_eq!(pitch.value(), 0);
+    let pitch = Pitches::from(12);
+    //  verify the pitch class is natural
+    assert!(pitch.is_natural());
+    //  verify the pitch class is a natural note C
+    assert_eq!(pitch, Natural::C);
+    // verify the modulo of the pitch class
+    assert_eq!(pitch.get(), 0);
+}
+
+#[test]
+fn test_class_parse() {
+    use core::str::FromStr;
+    let pitch = Pitches::from_str("c").unwrap();
+    assert_eq!(pitch, Natural::C);
+    let pitch = Pitches::from_str("c#").unwrap();
+    assert_eq!(pitch, Sharp::C);
 }

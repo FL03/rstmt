@@ -16,5 +16,3 @@ pub(crate) mod notes;
 pub(crate) mod ops;
 #[macro_use]
 pub(crate) mod pitches;
-#[macro_use]
-pub(crate) mod seal;

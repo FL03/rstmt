@@ -5,14 +5,10 @@
 use crate::pitch::{Pitch, Pitches};
 use crate::Octave;
 
-/// The American Standard Pitch Notation (ASPN) is a system popularized for its
-/// ability to simplify the representation of musical notes, combining the
-/// traditional symbols or pitch classes used to describe a particular pitch
-/// as well as leverging a subscript to denote the octave of the given pitch.
-///
-///
-/// the existing symbolic framework described by the [Pitch](crate::Pitch) and
-/// [Octave](crate::Octave) types.
+/// The American Standard Pitch Notation ([`ASPN`]) is a system popularized for its ability to
+/// simplify the representation of musical notes. The ASPN representation simply modifies the
+/// traditional symbolic framework by including a subscript used to denote the octave of the
+/// note.
 pub trait ASPN {
     fn aspn(&self) -> String {
         format!("{}.{}", self.pitch_class(), self.octave())
@@ -41,6 +37,16 @@ pub trait Notable: Copy + Sized + core::fmt::Display {
  ************* Implementations *************
 */
 
+impl ASPN for crate::Note {
+    fn octave(&self) -> Octave {
+        self.octave
+    }
+
+    fn pitch(&self) -> Pitch {
+        self.pitch
+    }
+}
+
 impl Notable for Pitch {
     fn pitch_class(&self) -> Pitches {
         self.class()
@@ -57,7 +63,7 @@ impl Notable for Pitches {
     }
 
     fn pitch(&self) -> Pitch {
-        Pitch(self.pitch_class().value())
+        Pitch(self.pitch_class().get())
     }
 }
 

@@ -2,20 +2,37 @@
     Appellation: lpr <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::store::BaseTriad;
-use crate::triad::TriadKind;
-use crate::Triad;
 
+/// # LPR Transformations
 ///
+/// The neo-Riemannian theory focuses on three primary transformations, namely: leading (L),
+/// parallel (P), and relative (R). Each transformation operates on a particular chord factor
+/// determined by the class of the triad. Additionally, each transformation is its own inverse
+/// and they may be chained together to form a sequence of transformations.
 ///
 /// ### Leading (L)
 ///
 /// ### Parallel (P)
 ///
-/// Parallel transformations affect the third by half a step while leaving the root and fifth
-/// unchanged. When applied on a major triad, the transformation results in a minor and vise
-/// versa. For example, applying a single parallel transformation to an F major triad gives us
-/// an F minor triad.
+/// Parallel transformations work by making semitonal adjustments to the [`third`](crate::Factors::Third)
+/// factor of the triad, leaving the root and fifth factors unchanged. Applying a parallel
+/// transformation to a major triad results in a minor triad and vice versa.
+///
+/// #### _Example_
+///
+/// Apply a single parallel C-Major triad applying a single parallel transformation returns a c-minor triad
+///
+/// `CM(0, 4, 7) -P-> Cm(0, 3, 7)`
+///
+///```rust
+/// use rstmt_core::Note;
+/// use rstmt_neo::Triad;
+///
+/// let c_major = Triad::major(Note::from_pitch(0)); // C-Major(0, 4, 7)
+/// let c_minor = Triad::minor(Note::from_pitch(0)); // C-Minor(0, 3, 7)
+/// assert_eq!(c_major.parallel(), Ok(c_minor));     // C-Major(0, 4, 7) -> C-Minor(0, 3, 7)
+/// assert_eq!(c_minor.parallel(), Ok(c_major));     // C-Minor(0, 3, 7) -> C-Major(0, 4, 7)  
+/// ```
 ///
 /// ### Relative (R)
 ///
@@ -43,7 +60,6 @@ use crate::Triad;
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "UPPERCASE")
 )]
-#[repr(u8)]
 #[strum(serialize_all = "UPPERCASE")]
 pub enum LPR {
     #[cfg_attr(feature = "serde", serde(alias = "l", alias = "leading"))]
@@ -66,64 +82,5 @@ impl LPR {
     /// A functional constructor for the `relative` transformation
     pub fn relative() -> Self {
         LPR::R
-    }
-    /// Apply the current transformation to the given triad;
-    /// returns a [Triad] with the new notes and classification
-    pub fn apply<K: TriadKind>(self, triad: Triad<K>) -> Triad<K::Rel> {
-        super::_transform(triad, self).expect("Transformation Error")
-    }
-
-    pub fn _apply<K>(self, triad: &mut Triad<K>) -> Triad<crate::triad::Triads> {
-        use rstmt::{
-            Intervals::{Semitone, Tone},
-            Third::*,
-        };
-        let rt = triad
-            .root_to_third()
-            .expect("The given triad contained an invalid interval between the root and third!");
-        let [r, t, f] = triad.as_mut_array();
-        match rt {
-            Major => match self {
-                LPR::L => *r -= Semitone,
-                LPR::P => *t -= Semitone,
-                LPR::R => *f += Tone,
-            },
-            Minor => match self {
-                LPR::L => *f += Semitone,
-                LPR::P => *t += Semitone,
-                LPR::R => *r -= Tone,
-            },
-        };
-
-        Triad::try_from_arr(dbg!([*r, *t, *f])).expect(
-            "Transformation Error: the triad could not be constructed from the given notes.",
-        )
-    }
-
-    pub fn transform(self, triad: &mut BaseTriad) -> BaseTriad {
-        use rstmt::{
-            Intervals::{Semitone, Tone},
-            Third::*,
-        };
-        let rt = triad
-            .root_to_third()
-            .expect("The given triad contained an invalid interval between the root and third!");
-        let [r, t, f] = triad.as_mut_array();
-        match rt {
-            Major => match self {
-                LPR::L => *r -= Semitone,
-                LPR::P => *t -= Semitone,
-                LPR::R => *f += Tone,
-            },
-            Minor => match self {
-                LPR::L => *f += Semitone,
-                LPR::P => *t += Semitone,
-                LPR::R => *r -= Tone,
-            },
-        };
-
-        BaseTriad::try_from_arr(dbg!([*r, *t, *f])).expect(
-            "Transformation Error: the triad could not be constructed from the given notes.",
-        )
     }
 }

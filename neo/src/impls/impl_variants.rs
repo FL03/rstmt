@@ -8,6 +8,23 @@ use strum::IntoEnumIterator;
 use crate::triad::kinds::*;
 use crate::triad::{Triad, Triads};
 
+impl Triad<dyn Kind<Class = Triads>> {
+    /// Consumes the instance to classify it as a specific kind of triad;
+    /// essentially, a safe way to cast "dynamic" instances to "static" ones.
+    pub fn cast_dyn<K>(self) -> Triad<K>
+    where
+        K: Kind<Class = Triads> + 'static,
+    {
+        if let Some(_) = Triads::iter().find(|i| i.is::<K>()) {
+            return Triad {
+                notes: self.notes,
+                _class: core::marker::PhantomData::<K>,
+            };
+        }
+        panic!("Impossible! The given triad does not match the specified kind...");
+    }
+}
+
 impl Triad<Triads> {
     /// Consumes the instance to classify it as a specific kind of triad;
     /// essentially, a safe way to cast "dynamic" instances to "static" ones.

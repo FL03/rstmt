@@ -7,7 +7,7 @@ pub use self::{classes::*, traits::*};
 mod classes;
 mod traits;
 
-use crate::TriadError;
+use crate::NeoError;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
@@ -46,38 +46,39 @@ pub enum Triads {
 }
 
 impl Triads {
-    pub fn try_from_notes(
-        root: Note,
-        third: Note,
-        fifth: Note,
-    ) -> Result<super::Triad<Self>, TriadError> {
+    pub fn new<K: Kind>() -> Self {
+        match <K>::name() {
+            "augmented" => Triads::Augmented,
+            "diminished" => Triads::Diminished,
+            "major" => Triads::Major,
+            "minor" => Triads::Minor,
+            _ => panic!("Impossible! The given triad does not match the specified kind..."),
+        }
+    }
+    pub fn try_from_notes(root: Note, third: Note, fifth: Note) -> Result<Self, NeoError> {
         use strum::IntoEnumIterator;
         for i in Self::iter() {
             if i.is_valid(root, third, fifth) {
-                let triad = super::Triad {
-                    notes: [root, third, fifth],
-                    _class: PhantomData::<Self>,
-                };
-                return Ok(triad);
+                return Ok(i);
             }
         }
-        Err(TriadError::invalid_triad(
+        Err(NeoError::invalid_triad(
             "The given notes do not form a valid triad...",
         ))
     }
-    /// A functional constructor for the [Augmented](Triads::Augmented) class.
+    /// A functional constructor for the [Triads::Augmented] variant.
     pub fn augmented() -> Self {
         Triads::Augmented
     }
-    /// A functional constructor for the [Diminished](Triads::Diminished) class.
+    /// A functional constructor for the [Triads::Diminished] variant.
     pub fn diminished() -> Self {
         Triads::Diminished
     }
-    /// A functional constructor for the [Major](Triads::Major) class.
+    /// A functional constructor for the [Triads::Major] variant.
     pub fn major() -> Self {
         Triads::Major
     }
-    /// A functional constructor for the [Minor](Triads::Minor) class.
+    /// A functional constructor for the [Triads::Minor] variant.
     pub fn minor() -> Self {
         Triads::Minor
     }
@@ -87,22 +88,6 @@ impl Triads {
         K: Kind + 'static,
     {
         core::any::TypeId::of::<K::Class>() == core::any::TypeId::of::<Self>()
-    }
-
-    pub fn of<K: TriadKind>() -> Self {
-        if K::is_major() {
-            Triads::major()
-        } else if K::is_minor() {
-            Triads::minor()
-        } else if K::is_augmented() {
-            Triads::augmented()
-        } else {
-            Triads::diminished()
-        }
-    }
-
-    pub fn classify<K: TriadKind>() -> Self {
-        K::class()
     }
 
     pub fn intervals(&self) -> (Third, Third, Fifth) {
@@ -115,25 +100,16 @@ impl Triads {
             Triads::Minor => (Minor, Major, Perfect),
         }
     }
-
+    /// Determines if the given notes form a valid triad.
     pub fn is_valid(&self, root: Note, third: Note, fifth: Note) -> bool {
         let (a, b) = self.thirds();
         let c = self.root_to_fifth();
         // compute the interval between the root and third
-        let rt = {
-            let interval = third - root;
-            Third::try_from(*interval.pitch())
-        };
+        let rt = Third::new(root, third);
         // compute the interval between the third and fifth
-        let tf = {
-            let interval = fifth - third;
-            Third::try_from(*interval.pitch())
-        };
+        let tf = Third::new(third, fifth);
         // compute the interval between the root and fifth
-        let rf = {
-            let interval = fifth - root;
-            Fifth::try_from(*interval.pitch())
-        };
+        let rf = Fifth::new(root, fifth);
 
         rt == Ok(a) && tf == Ok(b) && rf == Ok(c)
     }
@@ -146,7 +122,18 @@ impl Triads {
 
         Third::try_from(*rt.pitch()).is_ok() && Third::try_from(*tf.pitch()).is_ok()
     }
-
+    /// Returns the interval between the root and third as well as the third and fifth.
+    pub fn edges(&self) -> (Third, Third, Fifth) {
+        use Fifth::*;
+        use Third::*;
+        match self {
+            Triads::Augmented => (Major, Major, Augmented),
+            Triads::Diminished => (Minor, Minor, Diminished),
+            Triads::Major => (Major, Minor, Perfect),
+            Triads::Minor => (Minor, Major, Perfect),
+        }
+    }
+    /// Returns the interval between the root and third as well as the third and fifth.
     pub fn thirds(&self) -> (Third, Third) {
         use Third::*;
         match self {
@@ -156,21 +143,26 @@ impl Triads {
             Triads::Minor => (Minor, Major),
         }
     }
-
+    /// Returns the interval between the root and third chord factors.
     pub fn root_to_third(&self) -> Third {
-        self.thirds().0
-    }
-
-    pub fn third_to_fifth(&self) -> Third {
-        self.thirds().1
-    }
-
-    pub fn root_to_fifth(&self) -> Fifth {
-        use Fifth::*;
         match self {
-            Triads::Augmented => Augmented,
-            Triads::Diminished => Diminished,
-            Triads::Major | Triads::Minor => Perfect,
+            Triads::Augmented | Triads::Major => Third::Major,
+            _ => Third::Minor,
+        }
+    }
+    /// Returns the interval between the third and fifth chord factors.
+    pub fn third_to_fifth(&self) -> Third {
+        match self {
+            Triads::Augmented | Triads::Minor => Third::Major,
+            _ => Third::Minor,
+        }
+    }
+    /// Returns the interval between the root and fifth chord factors.
+    pub fn root_to_fifth(&self) -> Fifth {
+        match self {
+            Triads::Augmented => Fifth::Augmented,
+            Triads::Diminished => Fifth::Diminished,
+            _ => Fifth::Perfect,
         }
     }
 }

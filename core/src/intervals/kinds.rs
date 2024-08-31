@@ -2,6 +2,11 @@
     Appellation: kinds <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#[doc(inline)]
+pub use self::variants::*;
+
+pub(crate) mod variants;
+
 use crate::{IntoPitch, Pitch};
 
 /// [Intervals] enumerates the various intervals used within music theory.
@@ -41,7 +46,7 @@ pub enum Intervals {
 
 impl Intervals {
     pub fn dist(a: impl IntoPitch, b: impl IntoPitch) -> Self {
-        Self::new(a.into_pitch().absmod(), b.into_pitch().absmod())
+        Self::new(a.into_pitch().pymod(), b.into_pitch().pymod())
     }
     pub fn new<A, B, C>(lhs: A, rhs: B) -> Self
     where
@@ -67,7 +72,7 @@ impl Intervals {
             9 => Sevenths(Seventh::Diminished),
             10 => Sevenths(Seventh::Minor),
             11 => Sevenths(Seventh::Major),
-            _ => panic!("Invalid interval value: {}", pitch),
+            _ => unreachable!("The pitch value is out of range."),
         }
     }
     /// A convenience method for constructing a new instance of the [Octave](Intervals::Octave) variant.
@@ -86,57 +91,17 @@ impl Intervals {
     pub fn third(third: Third) -> Self {
         Intervals::Thirds(third)
     }
-
-    pub fn major_third() -> Self {
-        Intervals::Thirds(Third::Major)
-    }
-
-    pub fn minor_third() -> Self {
-        Intervals::Thirds(Third::Minor)
-    }
-
     /// A convenience method for constructing a new variant, [`Fourths`](Intervals::Fourths).
     pub fn fourth(fourth: Fourth) -> Self {
         Intervals::Fourths(fourth)
-    }
-
-    pub fn perfect_fourth() -> Self {
-        Intervals::Fourths(Fourth::Perfect)
     }
     /// A convenience method for constructing a new variant, [`Fifths`](Intervals::Fifths).
     pub fn fifth(fifth: Fifth) -> Self {
         Intervals::Fifths(fifth)
     }
-    pub fn augmented_fifth() -> Self {
-        Intervals::Fifths(Fifth::Augmented)
-    }
-
-    pub fn diminished_fifth() -> Self {
-        Intervals::Fifths(Fifth::Diminished)
-    }
-
-    pub fn perfect_fifth() -> Self {
-        Intervals::Fifths(Fifth::Perfect)
-    }
     /// A convenience method for constructing a new variant, [`Sevenths`](Intervals::Sevenths).
     pub fn seventh(seventh: Seventh) -> Self {
         Intervals::Sevenths(seventh)
-    }
-
-    pub fn augmented_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Augmented)
-    }
-
-    pub fn diminished_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Diminished)
-    }
-
-    pub fn major_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Major)
-    }
-
-    pub fn minor_seventh() -> Self {
-        Intervals::Sevenths(Seventh::Minor)
     }
     /// Interpret the current interval as a pitch.
     pub fn as_pitch(&self) -> Pitch {
@@ -158,6 +123,21 @@ impl Intervals {
             Intervals::Octave => 12,
         }
     }
+
+    variant_constructors! {
+        Intervals {
+            Thirds.major_third::<Third::Major>(),
+            Thirds.minor_third::<Third::Minor>(),
+            Fourths.perfect_fourth::<Fourth::Perfect>(),
+            Fifths.diminished_fifth::<Fifth::Diminished>(),
+            Fifths.perfect_fifth::<Fifth::Perfect>(),
+            Fifths.augmented_fifth::<Fifth::Augmented>(),
+            Sevenths.diminished_seventh::<Seventh::Diminished>(),
+            Sevenths.minor_seventh::<Seventh::Minor>(),
+            Sevenths.major_seventh::<Seventh::Major>(),
+
+        }
+    }
 }
 
 macro_rules! impl_from_value {
@@ -168,7 +148,7 @@ macro_rules! impl_from_value {
             }
         }
     };
-    ($($name:ident::$variant:ident($T:ty)),* $(,)?) => {
+    ($name:ident {$($variant:ident($T:ty)),* $(,)?}) => {
         $(
             impl_from_value!(@impl $name::$variant($T));
         )*
@@ -185,54 +165,10 @@ where
 }
 
 impl_from_value! {
-    Intervals::Thirds(Third),
-    Intervals::Fourths(Fourth),
-    Intervals::Fifths(Fifth),
-    Intervals::Sevenths(Seventh),
-}
-
-interval! {
-    default: Major;
-    pub enum Third {
-        Minor = 3,
-        Major = 4,
-    }
-}
-
-interval! {
-    default: Perfect;
-    pub enum Fourth {
-        Perfect = 5,
-    }
-}
-
-interval! {
-    default: Perfect;
-    pub enum Fifth {
-        Diminished = 6,
-        Perfect = 7,
-        Augmented = 8,
-    }
-}
-
-interval! {
-    default: Diminished;
-    pub enum Seventh {
-        Diminished = 9,
-        Minor = 10,
-        Major = 11,
-        Augmented = 12,
-    }
-}
-
-impl Fifth {
-    pub fn from_thirds(lhs: Third, rhs: Third) -> Self {
-        let value = lhs as i8 + rhs as i8;
-        match value {
-            6 => Fifth::Diminished,
-            7 => Fifth::Perfect,
-            8 => Fifth::Augmented,
-            _ => panic!("Invalid fifth value: {}", value),
-        }
+    Intervals {
+        Thirds(Third),
+        Fourths(Fourth),
+        Fifths(Fifth),
+        Sevenths(Seventh),
     }
 }

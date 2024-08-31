@@ -16,14 +16,14 @@ pub use self::{
     intervals::*,
     notes::Note,
     pitch::{IntoPitch, Pitch, PitchTy, Pitches},
-    primitives::*,
-    utils::*,
 };
 #[doc(inline)]
-pub use self::{ops::prelude::*, traits::prelude::*, types::prelude::*};
+pub use self::{ops::prelude::*, primitives::*, traits::prelude::*, types::prelude::*, utils::*};
 
 #[macro_use]
 pub(crate) mod macros;
+#[macro_use]
+pub(crate) mod seal;
 pub(crate) mod primitives;
 pub(crate) mod utils;
 

@@ -2,10 +2,10 @@
     Appellation: error <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-
+#[doc(hidden)]
 pub use res::EResult;
 /// A type alias for a [`Result`](core::result::Result) that uses the [`TriadError`](TriadError) type.
-pub type TriadResult<T = ()> = core::result::Result<T, TriadError>;
+pub type TriadResult<T = ()> = core::result::Result<T, NeoError>;
 
 use rstmt::{Note, Pitch};
 
@@ -29,46 +29,54 @@ use rstmt::{Note, Pitch};
 )]
 #[repr(C)]
 #[strum(serialize_all = "PascalCase")]
-pub enum TriadError {
+pub enum NeoError {
     #[error("InvalidPitch: {0}")]
     InvalidPitch(String),
-    #[error("Invalid Interval: {0}")]
-    InvalidInterval(String),
+    #[error(
+        "Invalid Interval: the interval between {src} and {dst} is not within the given range."
+    )]
+    InvalidInterval { src: Note, dst: Note },
     #[error("Invalid Triad: {0:?}")]
     InvalidTriad(String),
     #[error("{0}")]
-    Music(#[from] rstmt::error::MusicErr),
+    Music(#[from] rstmt::Error),
+    #[error("Transformation Error: {0}")]
+    TransformationError(String),
     #[error("{0}")]
     Unknown(String),
 }
 
-impl TriadError {
+impl NeoError {
     pub fn invalid_pitch(msg: impl ToString) -> Self {
         Self::InvalidPitch(msg.to_string())
     }
 
-    pub fn invalid_interval(msg: impl ToString) -> Self {
-        Self::InvalidInterval(msg.to_string())
+    pub fn invalid_interval(src: Note, dst: Note) -> Self {
+        Self::InvalidInterval { src, dst }
     }
 
     pub fn invalid_triad(msg: impl ToString) -> Self {
         Self::InvalidTriad(msg.to_string())
     }
 
-    pub fn unknown(msg: impl Into<String>) -> Self {
-        Self::Unknown(msg.into())
+    pub fn transformation_error(msg: impl ToString) -> Self {
+        Self::TransformationError(msg.to_string())
+    }
+
+    pub fn unknown(msg: impl ToString) -> Self {
+        Self::Unknown(msg.to_string())
     }
 }
 
-impl From<Pitch> for TriadError {
+impl From<Pitch> for NeoError {
     fn from(err: Pitch) -> Self {
-        TriadError::InvalidPitch(err.to_string())
+        NeoError::InvalidPitch(err.to_string())
     }
 }
 
-impl From<(Note, Note, Note)> for TriadError {
+impl From<(Note, Note, Note)> for NeoError {
     fn from((r, t, f): (Note, Note, Note)) -> Self {
-        TriadError::InvalidTriad(format!("({}, {}, {})", r, t, f))
+        NeoError::InvalidTriad(format!("({}, {}, {})", r, t, f))
     }
 }
 

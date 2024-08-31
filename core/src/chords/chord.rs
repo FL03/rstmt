@@ -14,9 +14,9 @@ where
     pub(crate) notes: S,
 }
 
-impl<S> Chord<S>
+impl<A, S> Chord<S>
 where
-    S: ChordData,
+    S: ChordData<Elem = A>,
 {
     pub fn new() -> Self
     where
@@ -24,7 +24,7 @@ where
     {
         Self {
             len: 0,
-            notes: Default::default(),
+            notes: <S>::default(),
         }
     }
 
@@ -37,7 +37,7 @@ where
 
     pub fn from_iter<I>(iter: I) -> Self
     where
-        I: IntoIterator<Item = S::Elem>,
+        I: IntoIterator<Item = A>,
         S: Default,
     {
         let mut notes = S::default();
@@ -47,7 +47,7 @@ where
         Self::from_notes(notes)
     }
 
-    pub fn get(&self, idx: usize) -> &S::Elem {
+    pub fn get(&self, idx: usize) -> Option<&A> {
         self.notes.get(idx)
     }
 
@@ -60,7 +60,7 @@ where
         self.len
     }
 
-    pub fn push(&mut self, note: S::Elem) {
+    pub fn push(&mut self, note: A) {
         self.len += 1;
         self.notes.push(note);
     }

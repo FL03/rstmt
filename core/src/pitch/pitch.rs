@@ -45,14 +45,14 @@ impl Pitch {
     pub fn into_class(self) -> Pitches {
         self.class()
     }
-    ///
+    /// Applies the given function to the pitch value, returning a new instance of [Pitch].
     pub fn map<F>(self, f: F) -> Self
     where
         F: Fn(PitchTy) -> PitchTy,
     {
         Self(f(self.0))
     }
-
+    /// Applies the funtion to a mutable pitch value, in-place.
     pub fn map_mut<F>(&mut self, mut f: F)
     where
         F: FnMut(&mut PitchTy),
@@ -72,11 +72,7 @@ impl Pitch {
     pub fn abs(self) -> Self {
         self.map(|p| p.abs())
     }
-    /// Returns the absolute value of the remainder of the pitch divided by the modulus.
-    pub fn absmod(self) -> Self {
-        self.map(|p| p.pymod(Self::MOD).abs())
-    }
-    /// The [`octmod`](Pitch::octmod) method computes the modulus of the current pitch using
+    /// The [`pymod`](Pitch::pymod) method computes the modulus of the current pitch using
     /// Python's modulo operator, `%`. This method is useful for pitch arithmetic due to its
     /// unique sign-handling behavior.
     pub fn pymod(self) -> Self {
@@ -84,13 +80,13 @@ impl Pitch {
     }
 }
 
-impl AsRef<PitchTy> for Pitch {
+impl core::convert::AsRef<PitchTy> for Pitch {
     fn as_ref(&self) -> &PitchTy {
         &self.0
     }
 }
 
-impl AsMut<PitchTy> for Pitch {
+impl core::convert::AsMut<PitchTy> for Pitch {
     fn as_mut(&mut self) -> &mut PitchTy {
         &mut self.0
     }
@@ -110,7 +106,7 @@ impl core::borrow::BorrowMut<PitchTy> for Pitch {
 
 impl Default for Pitch {
     fn default() -> Self {
-        Self(super::Natural::default().pitch())
+        Self(0)
     }
 }
 
@@ -141,6 +137,16 @@ impl core::fmt::Display for Pitch {
         write!(f, "{}({})", self.class(), self.0)
     }
 }
+
+impl<U> core::cmp::PartialEq<U> for Pitch
+where
+    PitchTy: PartialEq<U>,
+{
+    fn eq(&self, other: &U) -> bool {
+        &self.0 == other
+    }
+}
+
 macro_rules! impl_fmt {
     (@impl $trait:ident) => {
         impl ::core::fmt::$trait for Pitch {
@@ -156,28 +162,26 @@ macro_rules! impl_fmt {
     };
 }
 
+macro_rules! impl_from {
+    (@impl <$T:ty>::From<$F:ty>($f:expr)) => {
+        impl From<$F> for $T {
+            fn from(pitch: $F) -> Self {
+                $f(pitch)
+            }
+        }
+    };
+    ($(<$T:ty>::From<$F:ty>($f:expr)),* $(,)?) => {
+        $(
+            impl_from!(@impl <$T>::From<$F>($f));
+        )*
+    };
+}
+
 impl_fmt!(Binary, LowerHex, Octal, UpperHex);
 
-impl From<PitchTy> for Pitch {
-    fn from(pitch: PitchTy) -> Self {
-        Self(pitch)
-    }
-}
-
-impl From<Pitch> for PitchTy {
-    fn from(pitch: Pitch) -> Self {
-        pitch.0
-    }
-}
-
-impl From<Pitches> for Pitch {
-    fn from(pitch: Pitches) -> Self {
-        Self(pitch.value())
-    }
-}
-
-impl From<Pitch> for Pitches {
-    fn from(pitch: Pitch) -> Self {
-        pitch.class()
-    }
+impl_from! {
+    <Pitch>::From<PitchTy>(Pitch::new),
+    <Pitch>::From<Pitches>(|p: Pitches| Pitch::new(p.get())),
+    <PitchTy>::From<Pitch>(|p: Pitch| p.0),
+    <Pitches>::From<Pitch>(|p: Pitch| p.class()),
 }
