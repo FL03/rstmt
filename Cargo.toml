@@ -22,7 +22,7 @@ paste = "1"
 serde_json = "1"
 smart-default = "0.7"
 strum = { features = ["derive"], version = "0.26" }
-thiserror = "1"
+thiserror = "2"
 
 [workspace.package]
 authors = ["Joe McCain III <jo3mccain@icloud.com>",]
