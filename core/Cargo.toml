@@ -1,13 +1,14 @@
 [package]
-authors.workspace = true
 build = "build.rs"
+name = "rstmt-core"
+
+authors.workspace = true
 categories.workspace = true
 description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "rstmt-core"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
@@ -23,7 +24,7 @@ full = [
     "serde",
 ]
 
-# [FF] Dependencies
+# ********* [FF] Dependencies *********
 alloc = [
     "num/alloc",
     "serde?/alloc",
@@ -44,48 +45,27 @@ std = [
     "regex/std",
     "serde?/std",
     "strum/std",
+    "thiserror/std",
 ]
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = [ "cdylib", "rlib" ]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
-lazy_static.workspace = true
-paste.workspace = true
-smart-default.workspace = true
-thiserror.workspace = true
-[dependencies.num]
-default-features = false
-version = "0.4"
-
-[dependencies.regex]
-default-features = false
-features = [
-    "perf",
-    "unicode",
-]
-version = "1"
-
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.strum]
-default-features = false
-features = ["derive"]
-version = "0.26"
+lazy_static = { workspace = true }
+num = { default-features = false, workspace = true }
+paste = { workspace = true }
+regex = { default-features = false, features = [ "perf", "unicode" ], version = "1" }
+serde = { default-features = false, optional = true, workspace = true }
+smart-default = { workspace = true }
+strum = { default-features = false, workspace = true }
+thiserror = { default-features = false, workspace = true }
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
-
-[target.wasm32-unknown-unknown.dependencies]
-
-[target.wasm32-wasi]
+rustc-args = [ "--cfg", "docsrs" ]

@@ -17,36 +17,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  base:
-    env:
-      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
-    name: Publish (${{ github.event.repository.name }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        features: [ core ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ matrix.features }})
-        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
-  features:
-    env:
-      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
-    name: Publish (features)
-    needs: base
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        features: [ neo ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ env.CRATENAME }})
-        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
-  publish:
-    name: Publish (${{ github.event.repository.name }})
-    needs: features
+  crates-io:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ github.event.repository.name }})
-        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}
+      - 
+        uses: actions/checkout@v4
+      - 
+        name: publish to crates.io
+        run: |
+          cargo publish --all-features -v -p rstmt-core
+          cargo publish --all-features -v -p rstmt-neo
+          cargo publish --all-features -v -p rstmt
+      - 
+        id: rust-cache
+        name: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-

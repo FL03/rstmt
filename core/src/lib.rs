@@ -34,6 +34,7 @@ pub mod intervals;
 pub mod notes;
 pub mod ops;
 pub mod pitch;
+pub mod scales;
 pub mod tone;
 pub mod traits;
 pub mod types;

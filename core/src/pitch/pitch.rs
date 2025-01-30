@@ -10,7 +10,7 @@ use crate::PyMod;
 #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
-pub struct Pitch(pub PitchTy);
+pub struct Pitch<T = PitchTy>(pub T);
 
 impl Pitch {
     pub const MOD: PitchTy = crate::MODULUS;

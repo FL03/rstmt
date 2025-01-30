@@ -1,61 +1,78 @@
-name: rust
+name: Rust
 
-concurrency: 
+concurrency:
   cancel-in-progress: false
-  group: ${{ github.event.repository.name }}-rust
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 env:
   CARGO_TERM_COLOR: always
-  CRATE_BASENAME: ${{ github.event.repository.name }}
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
     branches: [ main ]
-    tags: [ v*.*.* ]
   release:
     types: [ created ]
   repository_dispatch:
     types: [ rust ]
-  schedule:
-    - cron: "30 21 * * 0" # Every Sunday at 9:30pm UTC
   workflow_dispatch:
 
-permissions: write-all
-
 jobs:
-  build:
-    name: Build
+  workspace:
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
-        toolchain: [ stable, nightly ]
-    runs-on: ${{ matrix.platform }}
+        target: [ x86_64-unknown-linux-gnu ]
+        toolchain: [ nightly ]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: setup (rustup)
+      - 
+        name: checkout
+        uses: actions/checkout@v4
+      - 
+        name: rustup
         run: |
-          rustup default ${{ matrix.toolchain }}
+          rustup default ${{ matrix.toolchain }} 
           rustup update
-      - name: build (workspace)
-        run: cargo build --all-features -r -v --workspace
-      - name: cache
+      - 
+        name: build
+        run: cargo build --all-features -r -v --workspace --target ${{ matrix.target }}
+      - 
+        name: test
+        run: cargo test --all-features -r -v --workspace --target ${{ matrix.target }}
+      - 
+        continue-on-error: true
+        name: Test (no_std)
+        run: cargo test --no-default-features -p scsys-core -r -v
+      - 
+        name: bench
+        if: matrix.toolchain == 'nightly'
+        run: cargo bench --all-features -v --workspace
+      - 
+        id: rust-cache
+        name: cache
         uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-cargo-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ matrix.toolchain }}-
-            ${{ runner.os }}-cargo-
-            ${{ runner.os }}-
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target/debug
-            target/release
-      - name: cargo (bench)
-        if: matrix.toolchain == 'nightly'
-        run: cargo bench --features full -v --workspace
-      - name: cargo (test) [full]
-        id: test
-        run: cargo test --features full -v --workspace
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-
+  no_std:
+    continue-on-error: true
+    name: Build (no_std)
+    strategy:
+      matrix:
+        package: [ core ]
+        flags: [ --no-default-features ]
+        toolchain: [ stable, nightly ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - 
+        name: rustup
+        run: rustup default ${{ matrix.toolchain }} && rustup update
+
+

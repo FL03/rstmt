@@ -51,19 +51,17 @@ std = [
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = [ "cdylib", "rlib" ]
 doctest = false
 test = true
 
 [[example]]
 name = "triads"
-required-features = ["neo", "std"]
-
-
+required-features = [ "neo", "std" ]
 
 [dev-dependencies]
-anyhow.workspace = true
-num = "0.4"
+anyhow = { workspace = true }
+num = { workspace = true }
 
 [dependencies.rstmt-core]
 default-features = false
@@ -78,4 +76,4 @@ version = "0.0.3"
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args = [ "--cfg", "docsrs" ]

@@ -23,6 +23,10 @@
 //! complex which glues together the various triads in a way that is consistent with the
 //! relationships between the notes.
 //!
+#[doc(inline)]
+pub use self::tgraph::{TonnetzGraph, TonnetzNode};
+
+mod tgraph;
 
 pub(crate) mod prelude {
     pub use super::Tonnetze;
