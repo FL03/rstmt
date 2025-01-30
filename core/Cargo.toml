@@ -36,6 +36,7 @@ rand = [
 
 serde = [
     "dep:serde",
+    "dep:serde_derive",
 ]
 
 # ********* [FF] Environments *********
@@ -62,6 +63,7 @@ num = { default-features = false, workspace = true }
 paste = { workspace = true }
 regex = { default-features = false, features = [ "perf", "unicode" ], version = "1" }
 serde = { default-features = false, optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
 smart-default = { workspace = true }
 strum = { default-features = false, workspace = true }
 thiserror = { default-features = false, workspace = true }

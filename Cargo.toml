@@ -20,6 +20,7 @@ lazy_static = "1"
 num = { default-features = false, version = "0.4" }
 paste = "1"
 serde = { default-features = false, version = "1" }
+serde_derive = "1"
 serde_json = "1"
 smart-default = "0.7"
 strum = { default-features = false, features = [ "derive" ], version = "0.26" }
@@ -28,7 +29,7 @@ thiserror = { default-features = false, version = "2" }
 [workspace.package]
 authors = [ "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)" ]
 categories = [  ]
-description = "This crate focuses on building a music theory library that can be used to generate music theory data structures and algorithms."
+description = "This crate explorers various musical theory concepts"
 edition = "2024"
 homepage = "https://github.com/FL03/rstmt/wiki"
 keywords = [ "music" ]

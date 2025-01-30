@@ -1,10 +1,15 @@
 /*
-    Appellation: triad-core <module>
+    Appellation: rstmt-core <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # triad-core
-//!
-//! This library provides the core abstractions for the triad project.
+//! This crates provides a set of common primitives and utilities for working with music 
+//! theory. It is designed to be as general as possible to support additional research 
+//! activies and other projects.
+//! 
+//! # Features
+//! 
+//! - [Pitch]: A discrete tone played at a particular frequency
+//! - [Note]: A sound with a specific pitch and duration
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]
@@ -34,6 +39,7 @@ pub mod intervals;
 pub mod notes;
 pub mod ops;
 pub mod pitch;
+#[doc(hidden)]
 pub mod scales;
 pub mod tone;
 pub mod traits;
