@@ -2,8 +2,8 @@
     Appellation: notable <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::pitch::{Pitch, Pitches};
 use crate::Octave;
+use crate::pitch::{Pitch, Pitches};
 
 /// The American Standard Pitch Notation ([`ASPN`]) is a system popularized for its ability to
 /// simplify the representation of musical notes. The ASPN representation simply modifies the

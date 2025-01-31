@@ -69,14 +69,14 @@ mod tests {
 
     lazy_static! {
         static ref C_MAJOR_SCALE: [NodeState; 7] = [
-        NodeState::new("C", 0, 0),
-        NodeState::new("D", 2, 1),
-        NodeState::new("E", 4, 2),
-        NodeState::new("F", 5, 3),
-        NodeState::new("G", 7, 4),
-        NodeState::new("A", 9, 5),
-        NodeState::new("B", 11, 6),
-    ];
+            NodeState::new("C", 0, 0),
+            NodeState::new("D", 2, 1),
+            NodeState::new("E", 4, 2),
+            NodeState::new("F", 5, 3),
+            NodeState::new("G", 7, 4),
+            NodeState::new("A", 9, 5),
+            NodeState::new("B", 11, 6),
+        ];
     }
     #[test]
     fn test_tgraph() {

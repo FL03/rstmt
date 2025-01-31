@@ -2,8 +2,8 @@
     Appellation: impl_triad <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::triad::Triad;
 use crate::Factors;
+use crate::triad::Triad;
 use core::ops::{Index, IndexMut, Range};
 use rstmt::Note;
 

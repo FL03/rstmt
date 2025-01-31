@@ -2,9 +2,9 @@
     Appellation: transformer <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{utils::*, LPR};
-use crate::triad::{Triad, TriadKind};
+use super::{LPR, utils::*};
 use crate::NeoError;
+use crate::triad::{Triad, TriadKind};
 
 pub struct Transformer<K> {
     delta: LPR,

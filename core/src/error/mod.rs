@@ -10,8 +10,8 @@ pub(crate) mod err;
 pub mod kinds;
 
 pub(crate) mod prelude {
-    pub use super::err::*;
     pub use super::Result;
+    pub use super::err::*;
 }
 
 /// A type alias for `Result<T, Error>`.

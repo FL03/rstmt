@@ -5,8 +5,8 @@
 extern crate rstmt_core as rstmt;
 extern crate rstmt_neo as neo;
 
-use neo::transform::LPR;
 use neo::Triad;
+use neo::transform::LPR;
 use rstmt::{IntervalOps, Note};
 
 use LPR::*;

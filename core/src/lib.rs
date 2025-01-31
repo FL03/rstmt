@@ -2,12 +2,12 @@
     Appellation: rstmt-core <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! This crates provides a set of common primitives and utilities for working with music 
-//! theory. It is designed to be as general as possible to support additional research 
+//! This crates provides a set of common primitives and utilities for working with music
+//! theory. It is designed to be as general as possible to support additional research
 //! activies and other projects.
-//! 
+//!
 //! # Features
-//! 
+//!
 //! - [Pitch]: A discrete tone played at a particular frequency
 //! - [Note]: A sound with a specific pitch and duration
 #![cfg_attr(not(feature = "std"), no_std)]

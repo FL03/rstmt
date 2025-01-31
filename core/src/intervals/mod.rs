@@ -13,9 +13,9 @@ pub(crate) mod types;
 pub mod interval;
 
 pub(crate) mod prelude {
+    pub use super::IntervalKind;
     pub use super::kinds::*;
     pub use super::types::IntervalLevel;
-    pub use super::IntervalKind;
 }
 
 pub(crate) type IntervalTy = i8;

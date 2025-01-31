@@ -18,8 +18,8 @@ pub use self::{
     error::{NeoError, TriadResult},
     transform::LPR,
     triad::{
-        kinds::{Augmented, Diminished, Major, Minor},
         Triad,
+        kinds::{Augmented, Diminished, Major, Minor},
     },
     types::prelude::*,
 };

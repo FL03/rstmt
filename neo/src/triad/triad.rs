@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Kind, Major, TriadKind, Triads};
-use crate::transform::LPR;
 use crate::NeoError;
+use crate::transform::LPR;
 use core::marker::PhantomData;
 use rstmt::{Fifth, Note, Third};
 
