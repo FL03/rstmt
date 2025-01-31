@@ -6,7 +6,6 @@ use super::{Kind, Major, TriadKind, Triads};
 use crate::transform::LPR;
 use crate::NeoError;
 use core::marker::PhantomData;
-use itertools::Itertools;
 use rstmt::{Fifth, Note, Third};
 
 /// # Triad
@@ -87,15 +86,19 @@ impl<K> Triad<K> {
     /// that is valid; returns an error if no configuration of notes contains the required
     /// relationships.
     pub fn try_from_arr(notes: [Note; 3]) -> Result<Self, NeoError> {
-        for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
-            if let Ok(triad) = Triad::try_from_notes(a, b, c) {
-                return Ok(triad);
-            }
-            continue;
-        }
-        Err(NeoError::invalid_triad(
-            "Failed to find the required relationships within the given notes...",
-        ))
+        // for (&a, &b, &c) in notes.iter().circular_tuple_windows() {
+        //     if let Ok(triad) = Triad::try_from_notes(a, b, c) {
+        //         return Ok(triad);
+        //     }
+        //     continue;
+        // }
+        // Err(NeoError::invalid_triad(
+        //     "Failed to find the required relationships within the given notes...",
+        // ))
+        super::utils::try_from_arr(notes).map(|(a, b, c)| Self {
+            _class: PhantomData::<K>,
+            notes: [a, b, c],
+        })
     }
     /// Attempts to construct a new [Triad] from the given notes and classifying type; returns
     /// an error if the neccessary relationships are note detected within the given notes.
