@@ -14,11 +14,6 @@ pub(crate) mod prelude {
 }
 
 #[doc(hidden)]
-pub trait Container {
-    type Elem;
-}
-
-#[doc(hidden)]
 pub trait BaseData {
     type Elem;
 
@@ -48,6 +43,3 @@ pub trait ChordData: BaseData {
 /*
  ************* Implementations *************
 */
-impl<T> Container for Vec<T> {
-    type Elem = T;
-}

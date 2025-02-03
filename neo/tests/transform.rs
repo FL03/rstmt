@@ -12,6 +12,23 @@ use rstmt::{IntervalOps, Note};
 use LPR::*;
 
 #[test]
+fn test_commutative() {
+    let c_major = Triad::major(Note::from_pitch(0));
+    assert_ne!(
+        c_major.transform(L).unwrap().transform(P),
+        c_major.transform(P).unwrap().transform(L)
+    );
+    assert_ne!(
+        c_major.transform(L).unwrap().transform(R),
+        c_major.transform(R).unwrap().transform(L)
+    );
+    assert_ne!(
+        c_major.transform(P).unwrap().transform(R),
+        c_major.transform(R).unwrap().transform(P)
+    );
+}
+
+#[test]
 fn test_leading() {
     let c_major = Triad::major(Note::from_pitch(0));
     let next = c_major.transform(L).unwrap();
