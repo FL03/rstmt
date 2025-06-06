@@ -6,6 +6,15 @@
 //!
 //! Welcome to the [`rstmt`](https://docs.rs/rstmt) crate! This crate is designed to be a
 //! complete computational framework for computational music theory.
+//!
+//! ## Goals
+//!
+//! The primary goal for this framework is to establish concrete computational representations
+//! of various musical concepts. This is of particular importance for the [`scsys.io`](https://scsys.io)
+//! ecosystem, which is drive by [`eryon`](https://docs.rs/eryon), a topological computational
+//! framework inspired by the neo-Riemannian theory (NRT).
+//!
+//!
 #![crate_name = "rstmt"]
 
 #[doc(inline)]

@@ -4,9 +4,9 @@
 */
 //! this modules implements the various representations of musical notes, octaves, and pitches.
 #[doc(inline)]
-pub use self::{note::Note, note_base::NoteBase, types::prelude::*};
+pub use self::{aspn::Aspn, note_base::NoteBase, types::prelude::*};
 
-pub mod note;
+pub mod aspn;
 pub mod note_base;
 
 pub mod types {
@@ -26,39 +26,39 @@ pub mod types {
 
 pub(crate) mod prelude {
     #[doc(inline)]
-    pub use super::note::*;
+    pub use super::aspn::*;
     #[doc(inline)]
     pub use super::types::prelude::*;
     #[doc(inline)]
-    pub use super::{AsNote, IntoNote};
+    pub use super::{AsAspn, IntoAspn};
 }
 
 /// The [`AsNote`] trait is used to convert a reference into a [`Note`].
-pub trait AsNote {
-    fn as_note(&self) -> Note;
+pub trait AsAspn {
+    fn as_aspn(&self) -> Aspn;
 }
 /// A trait for converting a type into a [`Note`]
-pub trait IntoNote {
-    fn into_note(self) -> Note;
+pub trait IntoAspn {
+    fn into_aspn(self) -> Aspn;
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
-impl<T> AsNote for T
+impl<T> AsAspn for T
 where
-    T: Clone + IntoNote,
+    T: Clone + IntoAspn,
 {
-    fn as_note(&self) -> Note {
-        self.clone().into_note()
+    fn as_aspn(&self) -> Aspn {
+        self.clone().into_aspn()
     }
 }
 
-impl<T> IntoNote for T
+impl<T> IntoAspn for T
 where
-    T: Into<Note>,
+    T: Into<Aspn>,
 {
-    fn into_note(self) -> Note {
+    fn into_aspn(self) -> Aspn {
         self.into()
     }
 }

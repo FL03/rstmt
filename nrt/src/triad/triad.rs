@@ -7,8 +7,7 @@ use super::{Factors, Triads};
 use crate::LPR;
 use crate::error::TriadError;
 use crate::transform::TriadNavigator;
-use rstmt::prelude::{IntoNote, IntoOctave, PitchMod};
-use rstmt::{Note, Octave};
+use rstmt::{Aspn, IntoAspn, IntoOctave, Octave, PitchMod};
 
 use num_traits::{Float, FromPrimitive};
 
@@ -45,10 +44,10 @@ impl Triad {
     /// Create a new triad from a root pitch and class
     pub fn from_root<N>(root: N, class: Triads) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         // all IntoNote implementations should* already compute pmod
-        let note = root.into_note();
+        let note = root.into_aspn();
         let root = note.class();
         let [a, .., c] = class.intervals();
         let third = (root + a).pmod();
@@ -62,28 +61,28 @@ impl Triad {
     /// creates a new augmented triad from the given root
     pub fn augmented<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Augmented)
     }
     /// creates a new diminished triad from the given root
     pub fn diminished<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Diminished)
     }
     /// Create a new major triad from the given root
     pub fn major<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Major)
     }
     /// creates a new minor triad from the given root
     pub fn minor<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Minor)
     }
@@ -193,11 +192,11 @@ impl Triad {
         self.transform(LPR::Relative)
     }
     // return the barycentric coordinates of the given note w.r.t the current triad
-    pub fn barycentric<T>(&self, p: impl IntoNote) -> [T; 3]
+    pub fn barycentric<T>(&self, p: impl IntoAspn) -> [T; 3]
     where
         T: Float + FromPrimitive,
     {
-        let note = p.into_note();
+        let note = p.into_aspn();
         let px = T::from_usize(note.class().pmod()).unwrap();
         let py = T::from_isize(*note.octave()).unwrap();
         let y = T::from_isize(*self.octave).unwrap();
@@ -267,7 +266,7 @@ impl Triad {
 
 impl Default for Triad {
     fn default() -> Self {
-        Triad::major(Note::from_pitch(0))
+        Triad::major(Aspn::from_pitch(0))
     }
 }
 

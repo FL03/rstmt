@@ -4,8 +4,9 @@
 */
 //! this module implements the [`Pitch`] type and its associated traits and types.
 #[doc(inline)]
-pub use self::{wrapper::Pitch, types::prelude::*};
+pub use self::{pbase::Pitch, types::prelude::*};
 
+pub mod pbase;
 pub mod wrapper;
 
 pub mod types {

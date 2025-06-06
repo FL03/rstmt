@@ -4,7 +4,7 @@
 */
 use crate::{LPR, Triad, utils};
 use rshyper::prelude::{EdgeId, HashGraph, VertexId};
-use rstmt::{Note, Octave};
+use rstmt::{Aspn, Octave};
 use std::collections::HashMap;
 
 /// The tonnetz is a representation of tonal space in-which every facet is a valid triad.
@@ -14,7 +14,7 @@ use std::collections::HashMap;
 #[derive(Clone, Debug)]
 pub struct Tonnetz {
     /// The underlying hypergraph structure
-    pub(crate) graph: HashGraph<Note>,
+    pub(crate) graph: HashGraph<Aspn>,
     /// Maps EdgeIds to Triad for efficient access
     pub(crate) triads: HashMap<EdgeId, Triad>,
     /// Tracks adjacency between triads via transformations
@@ -46,31 +46,31 @@ impl Tonnetz {
         }
     }
     /// returns a reference to the underlying graph
-    pub const fn graph(&self) -> &HashGraph<Note> {
+    pub const fn graph(&self) -> &HashGraph<Aspn> {
         &self.graph
     }
     /// returns a mutable reference to the underlying graph
-    pub const fn graph_mut(&mut self) -> &mut HashGraph<Note> {
+    pub const fn graph_mut(&mut self) -> &mut HashGraph<Aspn> {
         &mut self.graph
     }
     /// Add a new note class vertex to the Tonnetz
-    pub fn add_note(&mut self, note: Note) -> crate::Result<VertexId> {
+    pub fn add_note(&mut self, note: Aspn) -> crate::Result<VertexId> {
         let id = self.graph_mut().add_node(note)?;
         Ok(id)
     }
     /// Add a new triad to the Tonnetz
     pub fn add_triad(&mut self, triad: Triad) -> crate::Result<EdgeId> {
-        // Ensure we have vertices for all pitch classes
+        // Ensure we have vertices for all Note classes
         let vertices: Vec<VertexId> = triad
             .notes()
             .iter()
             .map(|&p| {
-                // Try to find existing vertex with this pitch class
-                if let Some(v) = self.find_vertex_by_pitch(p) {
+                // Try to find existing vertex with this Note class
+                if let Some(v) = self.find_vertex_by_note(p) {
                     v
                 } else {
                     // Add new vertex if not found
-                    self.add_note(Note::from_pitch(p))
+                    self.add_note(Aspn::from_pitch(p))
                         .expect("Failed to add note")
                 }
             })
@@ -88,10 +88,10 @@ impl Tonnetz {
     }
     /// initialize a complete layer of the Tonnetz at the given octave
     pub fn scaffold_layer(&mut self, Octave(octave): Octave) -> crate::Result<Vec<VertexId>> {
-        // iterate over all pitch classes in the octave
+        // iterate over all Note classes in the octave
         let res = (0..12)
             .filter_map(|i| {
-                let note = Note::new(i, Octave(octave));
+                let note = Aspn::new(i, Octave(octave));
                 self.add_note(note).ok()
             })
             .collect::<Vec<_>>();
@@ -132,12 +132,12 @@ impl Tonnetz {
             }
         }
     }
-    /// Find a vertex by its pitch class value
-    fn find_vertex_by_pitch(&self, pitch: usize) -> Option<VertexId> {
+    /// Find a vertex by its associated pitch class
+    fn find_vertex_by_note(&self, note: usize) -> Option<VertexId> {
         self.graph
             .nodes()
             .iter()
-            .find(|(_, node)| node.weight().class() == pitch)
+            .find(|(_, node)| node.weight().class() == note)
             .map(|(id, _)| *id)
     }
 }

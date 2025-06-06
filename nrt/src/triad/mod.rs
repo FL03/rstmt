@@ -7,7 +7,6 @@
 pub use self::{base::TriadBase, triad::Triad, types::prelude::*};
 
 pub mod base;
-#[allow(clippy::module_inception)]
 mod triad;
 
 mod impls {

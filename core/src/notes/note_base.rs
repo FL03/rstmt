@@ -3,7 +3,9 @@
     Contrib: @FL03
 */
 use super::Octave;
-use crate::pitch::{self, Pitch, PitchClass, RawPitch};
+use crate::freq::RawFrequency;
+use crate::pitch::{self, Pitch, PitchClass};
+
 
 /// The [`NoteBase`] is a generic representation of a musical note
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -15,7 +17,7 @@ use crate::pitch::{self, Pitch, PitchClass, RawPitch};
 #[repr(C)]
 pub struct NoteBase<T, Cls = pitch::C>
 where
-    T: RawPitch,
+    T: RawFrequency,
 {
     pub(crate) class: Cls,
     pub(crate) octave: Octave,
@@ -24,7 +26,7 @@ where
 
 impl<T, Cls> NoteBase<T, Cls>
 where
-    T: RawPitch,
+    T: RawFrequency,
     Cls: PitchClass,
 {
     pub fn new(pitch: Pitch<T>, octave: Octave) -> Self {
@@ -73,7 +75,7 @@ where
 impl<C, T> core::fmt::Display for NoteBase<T, C>
 where
     C: PitchClass,
-    T: RawPitch,
+    T: RawFrequency,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.octave)
@@ -82,7 +84,7 @@ where
 
 impl<T, C> Default for NoteBase<T, C>
 where
-    T: RawPitch + Default,
+    T: RawFrequency + Default,
     C: PitchClass,
 {
     fn default() -> Self {

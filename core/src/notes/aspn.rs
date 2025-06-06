@@ -5,7 +5,12 @@
 use super::Octave;
 use crate::PitchMod;
 
-/// An american scientific pitch notation ([`Note`]) representation of a musical note.
+/// An american scientific pitch notation ([`Aspn`]) representation of a musical note; this
+/// standard is used to represent notes in a way that is consistent with the
+/// American scientific pitch notation system, which uses a combination of a pitch class
+/// (represented as an integer) and an octave (represented as an [`Octave`]) to uniquely
+/// identify a musical note. The pitch class is the note's position in the chromatic scale,
+/// while the octave indicates the note's position in the musical range.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
@@ -13,12 +18,12 @@ use crate::PitchMod;
     serde(deny_unknown_fields, default, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct Note {
+pub struct Aspn {
     pub(crate) class: usize,
     pub(crate) octave: Octave,
 }
 
-impl Note {
+impl Aspn {
     pub fn new(class: usize, Octave(octave): Octave) -> Self {
         Self {
             class,
@@ -65,55 +70,55 @@ impl Note {
     }
 }
 
-impl core::fmt::Display for Note {
+impl core::fmt::Display for Aspn {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.octave)
     }
 }
 
-impl PartialEq<usize> for Note {
+impl PartialEq<usize> for Aspn {
     fn eq(&self, other: &usize) -> bool {
         self.class() == *other
     }
 }
 
-impl PartialEq<Note> for usize {
-    fn eq(&self, other: &Note) -> bool {
+impl PartialEq<Aspn> for usize {
+    fn eq(&self, other: &Aspn) -> bool {
         *self == other.class()
     }
 }
 
-impl PartialOrd<usize> for Note {
+impl PartialOrd<usize> for Aspn {
     fn partial_cmp(&self, other: &usize) -> Option<core::cmp::Ordering> {
         self.class().partial_cmp(other)
     }
 }
 
-impl PartialOrd<Note> for usize {
-    fn partial_cmp(&self, other: &Note) -> Option<core::cmp::Ordering> {
+impl PartialOrd<Aspn> for usize {
+    fn partial_cmp(&self, other: &Aspn) -> Option<core::cmp::Ordering> {
         self.partial_cmp(&other.class())
     }
 }
 
-impl core::ops::Add<Note> for Note {
+impl core::ops::Add<Aspn> for Aspn {
     type Output = Self;
 
-    fn add(self, rhs: Note) -> Self::Output {
+    fn add(self, rhs: Aspn) -> Self::Output {
         let class = (self.class + rhs.class).pmod();
         let octave = self.octave + rhs.octave;
-        
+
         Self::new(class, octave)
     }
 }
 
-impl core::ops::AddAssign<Note> for Note {
-    fn add_assign(&mut self, rhs: Note) {
+impl core::ops::AddAssign<Aspn> for Aspn {
+    fn add_assign(&mut self, rhs: Aspn) {
         self.class += rhs.class;
         self.octave += rhs.octave;
     }
 }
 
-impl core::ops::Add<usize> for Note {
+impl core::ops::Add<usize> for Aspn {
     type Output = Self;
 
     fn add(self, rhs: usize) -> Self::Output {
@@ -121,13 +126,13 @@ impl core::ops::Add<usize> for Note {
     }
 }
 
-impl core::ops::AddAssign<usize> for Note {
+impl core::ops::AddAssign<usize> for Aspn {
     fn add_assign(&mut self, rhs: usize) {
         self.class = (self.class + rhs).pmod();
     }
 }
 
-impl core::ops::Sub<usize> for Note {
+impl core::ops::Sub<usize> for Aspn {
     type Output = Self;
 
     fn sub(self, rhs: usize) -> Self::Output {
@@ -139,7 +144,7 @@ impl core::ops::Sub<usize> for Note {
     }
 }
 
-impl core::ops::SubAssign<usize> for Note {
+impl core::ops::SubAssign<usize> for Aspn {
     fn sub_assign(&mut self, rhs: usize) {
         self.class = (self.class as isize - rhs as isize).pmod() as usize;
     }
@@ -148,13 +153,13 @@ impl core::ops::SubAssign<usize> for Note {
 macro_rules! impl_note_from {
     ($($t:ty),*) => {
         $(
-            impl From<$t> for Note {
+            impl From<$t> for Aspn {
                 fn from(class: $t) -> Self {
                     Self::from_pitch(class.pmod() as usize)
                 }
             }
 
-            impl From<($t, Octave)> for Note {
+            impl From<($t, Octave)> for Aspn {
                 fn from((class, octave): ($t, Octave)) -> Self {
                     Self::new(class.pmod() as usize, octave)
                 }
