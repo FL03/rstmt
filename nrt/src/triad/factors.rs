@@ -38,11 +38,13 @@ use strum::IntoEnumIterator;
         Hash,
         Ord,
         PartialOrd,
+        scsys::VariantConstructors,
         strum::AsRefStr,
         strum::Display,
         strum::EnumCount,
         strum::EnumIter,
         strum::EnumString,
+        strum::VariantArray,
         strum::VariantNames
     )
 )]
@@ -90,24 +92,14 @@ mod impl_factors {
     use super::*;
 
     impl Factors {
-        pub fn root() -> Self {
-            Self::Root
-        }
-
-        pub fn third() -> Self {
-            Self::Third
-        }
-
-        pub fn fifth() -> Self {
-            Self::Fifth
-        }
-
+        /// returns an array of the possible [`Factors`] variants
         pub fn factors_as_slice() -> [Self; 3] {
             use Factors::*;
             [Root, Third, Fifth]
         }
-
-        pub fn others(&self) -> Vec<Self> {
+        #[cfg(feature = "alloc")]
+        /// returns a collection of all the other variants except the one that is called on
+        pub fn others(&self) -> alloc::vec::Vec<Self> {
             Self::iter().filter(|x| x != self).collect()
         }
     }

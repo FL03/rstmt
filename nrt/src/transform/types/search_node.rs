@@ -2,9 +2,12 @@
     Appellation: search_node <module>
     Contrib: @FL03
 */
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
+
 use crate::{LPR, Triad};
 use rshyper::EdgeId;
-use std::cmp::Ordering;
+use core::cmp::Ordering;
 
 /// A* search node with priority
 #[derive(Clone, Debug)]
