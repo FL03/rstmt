@@ -17,6 +17,7 @@ fn test_transformer() {
     }
 }
 
+#[cfg(feature = "rand")]
 #[test]
 fn test_transformer_rand() {
     let root: usize = rand::random_range(0..12);

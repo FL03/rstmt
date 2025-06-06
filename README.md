@@ -31,22 +31,18 @@ After installation, I always recommend ensuring that rustup is updated to the la
 rustup update
 ```
 
-And to add the latest nightly toolchain, which is often useful for development:
+#### _Setting up for WebAssembly_
+
+If you plan to compile this library for WebAssembly, ensure you have the appropriate targets installed. You can check your current targets with:
 
 ```bash
-rustup toolchain install nightly
-```
-
-Additionally, you may wish to install the `cargo-binstall` utility to streamline the installation of Rust binaries:
-
-```bash
-cargo install cargo-binstall
+rustup target list --installed
 ```
 
 If necessary, add the `wasm32-*` target(s) if you plan to compile for WebAssembly:
 
 ```bash
-rustup target add wasm32-unknown-unknown wasm32-p1 wasm32-p2
+rustup target add wasm32-unknown-unknown wasm32-wasip1 wasm32-wasip2
 ```
 
 ### Building from the source
@@ -66,13 +62,13 @@ cd rstmt
 Once you're in the project directory, you can build the project using `cargo`:
 
 ```bash
-cargo build --workspace --release --all-features
+cargo build -r --workspace --all-features
 ```
 
 Or, if you want to run the tests, you can use:
 
 ```bash
-cargo test --workspace --release --all-features
+cargo test -r --workspace --all-features
 ```
 
 ## Usage
@@ -93,11 +89,22 @@ version = "0.0.x"
 
 ```rust
     extern crate rstmt;
+    
+    use rstmt::Note;
+    use rstmt::nrt::Triad;
 
-    fn main() -> rstmt::Result<()> {
+    fn main() -> Result<(), Box<dyn core::error::Error + Send + Sync + 'static>> {
+        let root = Note::from_pitch(0);
+        // initialize a c-major triad
+        let triad = dbg!(Triad::major(root));
+        // test the root of the triad
+        assert_eq!(triad.root(), root);
+        // test the parallel transformation
+        assert_eq!(triad.parallel(), Triad::minor(root));
+        // assert the invertibility of the transformations
+        assert_eq!(triad.parallel().parallel(), triad);
         Ok(())
     }
-
 ```
 
 ## Contributing
