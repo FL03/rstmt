@@ -2,26 +2,22 @@
     Appellation: motion <planner>
     Contrib: @FL03
 */
-use super::cache::PathCache;
 use super::types::{Path, PathFeatures, SearchNode};
+use super::{PathCache, PathFinderConfig};
 use crate::tonnetz::Tonnetz;
 use crate::{LPR, Triad};
 
 use rshyper::EdgeId;
 use rstmt::PitchMod;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
-use strum::IntoEnumIterator; // For LPR::iter()
 
 /// Motion planning algorithm for finding optimal paths in the Tonnetz
 pub struct MotionPlanner<'a> {
     /// Cache for storing computed paths
-    cache: PathCache,
+    pub(crate) cache: PathCache,
     /// Reference to the tonnetz graph
-    tonnetz: &'a Tonnetz,
-    /// Maximum search depth for pathfinding
-    max_depth: usize,
-    /// Maximum number of paths to find
-    max_paths: usize,
+    pub(crate) tonnetz: &'a Tonnetz,
+    pub(crate) config: PathFinderConfig,
 }
 
 impl<'a> MotionPlanner<'a> {
@@ -31,34 +27,7 @@ impl<'a> MotionPlanner<'a> {
         MotionPlanner {
             cache: PathCache::new(capacity),
             tonnetz,
-            max_depth: 5, // Default search depth
-            max_paths: 5, // Default number of paths
-        }
-    }
-
-    /// Set the maximum search depth
-    pub fn set_max_depth(&mut self, depth: usize) {
-        self.max_depth = depth;
-    }
-
-    /// Set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) {
-        self.max_paths = paths;
-    }
-
-    /// consumes the current instance to create another with the given maximum depth
-    pub fn with_max_depth(self, depth: usize) -> Self {
-        Self {
-            max_depth: depth,
-            ..self
-        }
-    }
-
-    /// consumes the current instance to create another with the given maximum number of paths
-    pub fn with_max_paths(self, paths: usize) -> Self {
-        Self {
-            max_paths: paths,
-            ..self
+            config: PathFinderConfig::default(),
         }
     }
     /// returns an immutable reference to the cache
@@ -69,9 +38,54 @@ impl<'a> MotionPlanner<'a> {
     pub const fn cache_mut(&mut self) -> &mut PathCache {
         &mut self.cache
     }
+    /// returns an immutable reference to the configuration of the planner
+    pub const fn config(&self) -> &PathFinderConfig {
+        &self.config
+    }
+    /// returns a mutable reference to the configuration of the planner
+    pub const fn config_mut(&mut self) -> &mut PathFinderConfig {
+        &mut self.config
+    }
+    /// returns the maximum depth for pathfinding
+    pub const fn max_depth(&self) -> usize {
+        self.config().max_depth()
+    }
+    /// returns the maximum number of paths to find
+    pub const fn max_paths(&self) -> usize {
+        self.config().max_paths()
+    }
     /// returns an immutable reference to the tonnetz
     pub const fn tonnetz(&self) -> &Tonnetz {
         self.tonnetz
+    }
+    /// updates the current configuration and returns a mutable reference to the instance.
+    pub fn set_config(&mut self, config: PathFinderConfig) -> &mut Self {
+        self.config = config;
+        self
+    }
+    /// set the maximum depth for pathfinding
+    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
+        self.config_mut().set_max_depth(depth);
+        self
+    }
+    /// set the maximum number of paths to find
+    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
+        self.config_mut().set_max_paths(paths);
+        self
+    }
+    /// consumes the current instance to create another with the given maximum depth
+    pub fn with_max_depth(self, depth: usize) -> Self {
+        Self {
+            config: self.config.with_max_depth(depth),
+            ..self
+        }
+    }
+    /// consumes the current instance to create another with the given maximum number of paths
+    pub fn with_max_paths(self, paths: usize) -> Self {
+        Self {
+            config: self.config.with_max_paths(paths),
+            ..self
+        }
     }
     /// find a set of paths from one triad to one that contains the target pitch
     pub fn find_paths_to_pitch(&mut self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
@@ -137,7 +151,7 @@ impl<'a> MotionPlanner<'a> {
             }
 
             // Check depth limit
-            if node.transforms.len() >= self.max_depth {
+            if node.transforms.len() >= self.max_depth() {
                 continue;
             }
 
@@ -193,7 +207,7 @@ impl<'a> MotionPlanner<'a> {
                     result_paths.push(path);
 
                     // Check if we've found enough paths
-                    if result_paths.len() >= self.max_paths {
+                    if result_paths.len() >= self.max_paths() {
                         // Sort paths by cost
                         result_paths.sort_by_key(|p| p.cost);
 
@@ -234,7 +248,11 @@ impl<'a> MotionPlanner<'a> {
     /// Search for paths between two specific edges in the tonnetz
     pub fn find_paths_between_edges(&mut self, start_edge: EdgeId, goal_edge: EdgeId) -> Vec<Path> {
         // Check cache first
-        if let Some(paths) = self.cache.get(&[*start_edge, *goal_edge, 1], 0).cloned() {
+        if let Some(paths) = self
+            .cache_mut()
+            .get(&[*start_edge, *goal_edge, 1], 0)
+            .cloned()
+        {
             return paths;
         }
 
@@ -271,7 +289,7 @@ impl<'a> MotionPlanner<'a> {
         let mut all_paths = Vec::new();
 
         // Iterative deepening
-        for depth in 1..=self.max_depth {
+        for depth in 1..=self.max_depth() {
             let paths = self.bfs_between_edges(start_edge, goal_edge, depth);
 
             if !paths.is_empty() {
@@ -282,8 +300,8 @@ impl<'a> MotionPlanner<'a> {
 
         // Sort by cost and limit to max_paths
         all_paths.sort_by_key(|p| p.cost);
-        if all_paths.len() > self.max_paths {
-            all_paths.truncate(self.max_paths);
+        if all_paths.len() > self.max_paths() {
+            all_paths.truncate(self.max_paths());
         }
 
         // Cache the result
@@ -380,7 +398,7 @@ impl<'a> MotionPlanner<'a> {
                     result_paths.push(path);
 
                     // If we've found max_paths, return early
-                    if result_paths.len() >= self.max_paths {
+                    if result_paths.len() >= self.max_paths() {
                         return result_paths;
                     }
                 } else if next_depth < max_depth {
@@ -589,8 +607,8 @@ impl<'a> MotionPlanner<'a> {
                             transforms,
                             triads,
                             edge_ids,
-                            self.max_paths,
-                            self.max_depth - 1,
+                            self.max_paths(),
+                            self.max_depth() - 1,
                         ))
                     }
                     Err(_) => None,
@@ -606,8 +624,8 @@ impl<'a> MotionPlanner<'a> {
 
         // Sort by cost and take max_paths
         all_paths.sort_by_key(|p| p.cost);
-        if all_paths.len() > self.max_paths {
-            all_paths.truncate(self.max_paths);
+        if all_paths.len() > self.max_paths() {
+            all_paths.truncate(self.max_paths());
         }
 
         all_paths
