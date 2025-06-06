@@ -44,7 +44,7 @@ impl Triads {
         let rt = (b - a).pmod();
         let tf = (c - b).pmod();
         let rf = (c - a).pmod();
-        if matches!(rt, 3 | 4) && matches!(tf, 3 | 4) && matches!(rf, 6 | 7 | 8) && rt + tf == rf {
+        if matches!(rt, 3 | 4) && matches!(tf, 3 | 4) && matches!(rf, 6..=8) && rt + tf == rf {
             let class = match [rt, tf, rf] {
                 [4, 3, 7] => Triads::Major,
                 [3, 4, 7] => Triads::Minor,

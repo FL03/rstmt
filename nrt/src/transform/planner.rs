@@ -61,15 +61,17 @@ impl<'a> MotionPlanner<'a> {
             ..self
         }
     }
-
     /// returns an immutable reference to the cache
     pub const fn cache(&self) -> &PathCache {
         &self.cache
     }
-
     /// returns a mutable reference to the cache
-    pub fn cache_mut(&mut self) -> &mut PathCache {
+    pub const fn cache_mut(&mut self) -> &mut PathCache {
         &mut self.cache
+    }
+    /// returns an immutable reference to the tonnetz
+    pub const fn tonnetz(&self) -> &Tonnetz {
+        self.tonnetz
     }
     /// find a set of paths from one triad to one that contains the target pitch
     pub fn find_paths_to_pitch(&mut self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
@@ -89,8 +91,8 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Get the starting triad
-        let start_triad = match self.tonnetz.get_triad(start_edge) {
-            Some(triad) => triad.clone(),
+        let start_triad = match self.tonnetz().get_triad(start_edge) {
+            Some(&triad) => triad,
             None => return Vec::new(),
         };
 
@@ -118,9 +120,9 @@ impl<'a> MotionPlanner<'a> {
         open_set.push(SearchNode {
             priority: 0, // -heuristic for min-heap
             cost: 0,
-            triad: start_triad.clone(),
+            triad: start_triad,
             transforms: Vec::new(),
-            triads: vec![start_triad.clone()],
+            triads: vec![start_triad],
             edge_ids: vec![Some(start_edge)],
         });
 
@@ -238,7 +240,7 @@ impl<'a> MotionPlanner<'a> {
 
         // Get the starting and goal triads
         let start_triad = match self.tonnetz.get_triad(start_edge) {
-            Some(triad) => triad.clone(),
+            Some(triad) => *triad,
             None => return Vec::new(),
         };
 
@@ -302,14 +304,14 @@ impl<'a> MotionPlanner<'a> {
 
         // Get the starting triad
         let start_triad = match self.tonnetz.get_triad(start_edge) {
-            Some(triad) => triad.clone(),
+            Some(&triad) => triad,
             None => return Vec::new(),
         };
 
         // Initialize BFS queue
         let mut queue = VecDeque::new();
         queue.push_back((
-            start_triad.clone(),    // Current triad
+            start_triad,    // Current triad
             Vec::<LPR>::new(),      // Transformation path
             vec![start_triad],      // Triad history
             vec![Some(start_edge)], // Edge IDs
@@ -397,7 +399,7 @@ impl<'a> MotionPlanner<'a> {
 
         result_paths
     }
-
+    #[allow(clippy::too_many_arguments)]
     /// Find paths from a specified edge by continuing search from a given state
     /// Used for parallel search implementations
     pub fn search_from(
@@ -436,7 +438,7 @@ impl<'a> MotionPlanner<'a> {
         // Use BFS for continuation of search
         let mut queue = VecDeque::new();
         queue.push_back((
-            start_triad.clone(),
+            start_triad,
             transforms.clone(),
             triads.clone(),
             edge_ids.clone(),
@@ -542,7 +544,7 @@ impl<'a> MotionPlanner<'a> {
 
         // Get the starting triad
         let start_triad = match self.tonnetz.get_triad(start_edge) {
-            Some(triad) => triad.clone(),
+            Some(triad) => *triad,
             None => return Vec::new(),
         };
 
@@ -577,7 +579,7 @@ impl<'a> MotionPlanner<'a> {
                         });
 
                         let transforms = vec![transform];
-                        let triads = vec![start_triad.clone(), next_triad.clone()];
+                        let triads = vec![start_triad, next_triad];
                         let edge_ids = vec![Some(start_edge), next_edge_id];
 
                         // Start search from this branch

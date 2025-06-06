@@ -102,7 +102,7 @@ mod impl_factors {
             Self::Fifth
         }
 
-        pub fn factors() -> [Self; 3] {
+        pub fn factors_as_slice() -> [Self; 3] {
             use Factors::*;
             [Root, Third, Fifth]
         }
@@ -150,7 +150,7 @@ mod tests {
     fn chord_factors_iter() {
         use Factors::*;
 
-        let factors = Factors::factors();
+        let factors = Factors::factors_as_slice();
         assert_eq!(factors.len(), 3);
         assert_eq!(factors[0], Root);
         assert_eq!(factors[1], Third);

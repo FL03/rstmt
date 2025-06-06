@@ -21,6 +21,12 @@ pub struct Tonnetz {
     pub(crate) transformations: HashMap<EdgeId, HashMap<LPR, EdgeId>>,
 }
 
+impl Default for Tonnetz {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Tonnetz {
     /// returns a new [`Tonnetz`] structure initialized with empty stores
     pub fn new() -> Self {
@@ -115,7 +121,7 @@ impl Tonnetz {
 
                     if let Some(b) = self.triads.get(&edge2) {
                         // Check if there's a transformation from triad1 to triad2
-                        if let Some(transform) = utils::get_transformation(&a, &b) {
+                        if let Some(transform) = utils::get_transformation(a, b) {
                             self.transformations
                                 .get_mut(&edge1)
                                 .unwrap()

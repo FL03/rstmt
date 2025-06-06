@@ -48,11 +48,15 @@ impl<'a> TriadNavigator<'a> {
             ..self
         }
     }
+    /// returns a copy of the triad being navigated
+    pub const fn triad(&self) -> &Triad {
+        self.triad
+    }
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> Vec<TransformationChain> {
         let mut result_paths = Vec::new();
 
-        let start_triad = self.triad.clone();
+        let start_triad = *self.triad();
 
         // Check if the starting triad already contains the target pitch
         if start_triad.contains(&target) {
@@ -106,7 +110,7 @@ impl<'a> TriadNavigator<'a> {
                 new_transforms.push(transform);
 
                 let mut new_triads = triads.clone();
-                new_triads.push(next_triad.clone());
+                new_triads.push(next_triad);
 
                 // Check if this triad contains our target pitch
                 if next_triad.contains(&target) {

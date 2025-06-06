@@ -45,6 +45,7 @@ impl PartialEq for SearchNode {
 
 impl Eq for SearchNode {}
 
+
 impl PartialOrd for SearchNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         // Reverse ordering for max-heap to act as a min-heap
