@@ -1,60 +1,71 @@
 /*
-    Appellation: rstmt-core <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: rstmt-core <library>
+    Contrib: @FL03
 */
-//! This crates provides a set of common primitives and utilities for working with music
-//! theory. It is designed to be as general as possible to support additional research
-//! activies and other projects.
+//! # rstmt-core
 //!
-//! # Features
+//! This crate provides the core functionality for the `rstmt` library.
 //!
-//! - [Pitch]: A discrete tone played at a particular frequency
-//! - [Note]: A sound with a specific pitch and duration
 #![cfg_attr(not(feature = "std"), no_std)]
+#![crate_name = "rstmt_core"]
+#![crate_type = "lib"]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[doc(inline)]
 pub use self::{
-    error::{Error, Result},
-    intervals::*,
-    notes::Note,
-    pitch::{IntoPitch, Pitch, PitchTy, Pitches},
+    error::*,
+    notes::{Note, Octave, Pitch},
+    traits::prelude::*,
+    types::prelude::*,
 };
-#[doc(inline)]
-pub use self::{ops::prelude::*, primitives::*, traits::prelude::*, types::prelude::*, utils::*};
 
 #[macro_use]
-pub(crate) mod macros;
-#[macro_use]
-pub(crate) mod seal;
-pub(crate) mod primitives;
-pub(crate) mod utils;
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
 
-pub mod chords;
 pub mod error;
-pub mod intervals;
-#[macro_use]
 pub mod notes;
-pub mod ops;
-pub mod pitch;
-#[doc(hidden)]
-pub mod scales;
-pub mod tone;
-pub mod traits;
-pub mod types;
+
+pub mod traits {
+    //! this module implements the core traits used throughout the library.
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod convert;
+    pub mod num;
+
+    pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::convert::*;
+        #[doc(inline)]
+        pub use super::num::*;
+    }
+}
+
+pub mod types {
+    //! this module imimplements various types and other primitives used throughout the library
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod harmonic_funcs;
+
+    pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::harmonic_funcs::*;
+    }
+}
 
 pub mod prelude {
-    pub use super::chords::prelude::*;
-    pub use super::error::prelude::*;
-    pub use super::intervals::prelude::*;
-    pub use super::notes::prelude::*;
-    pub use super::ops::prelude::*;
-    pub use super::pitch::prelude::*;
-    pub use super::primitives::prelude::*;
-    pub use super::tone::prelude::*;
-    pub use super::traits::prelude::*;
-    pub use super::types::prelude::*;
-    pub use super::utils::*;
+    #[doc(no_inline)]
+    pub use crate::error::*;
+    #[doc(no_inline)]
+    pub use crate::notes::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::traits::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::types::prelude::*;
 }

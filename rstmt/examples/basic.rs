@@ -2,11 +2,14 @@
     Appellation: misc <example>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use rstmt::{absmod, pymod};
+use rstmt::{PitchMod, PyMod};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    assert_eq!(11, dbg!(absmod(-1, 12)));
-    assert_ne!(dbg!(pymod(-17, 12)), dbg!(-17 % 12));
-    println!("{}", pymod(17, -12));
+fn main() -> rstmt::Result<()> {
+    assert_eq!((-1).pymod(12), 11);
+    assert_ne!((-17).pymod(12), -17 % 12);
+    assert_eq!((-17).pymod(12), (-17).pmod());
+
+    let py17: isize = 17.pymod(-12);
+    println!("{}", py17);
     Ok(())
 }

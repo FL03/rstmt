@@ -1,34 +1,20 @@
 /*
-    Appellation: notes <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    appellation: notes <module>
+    authors: @FL03
 */
+//! this modules implements the various representations of musical notes, octaves, and pitches.
 #[doc(inline)]
-pub use self::note::*;
+pub use self::prelude::*;
 
-pub(crate) mod impls {
-    pub mod impl_note_ops;
-}
-pub(crate) mod note;
+pub mod note;
+pub mod octave;
+pub mod pitch;
 
 pub(crate) mod prelude {
+    #[doc(inline)]
     pub use super::note::*;
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::{Octave, Pitch, Pitches};
-
-    #[test]
-    fn test_note() {
-        let note = Note::from_pitch(0);
-        // check the note's octave
-        assert_eq!(note.octave(), &Octave(4));
-        // check the note's pitch
-        assert_eq!(note.pitch(), &Pitch(0));
-        // check the note's pitch class
-        assert_eq!(note.class(), Pitches::c());
-        // assert the note's string representation; aspn: C.4
-        assert_eq!(note.to_string(), "C.4");
-    }
+    #[doc(inline)]
+    pub use super::octave::*;
+    #[doc(inline)]
+    pub use super::pitch::*;
 }
