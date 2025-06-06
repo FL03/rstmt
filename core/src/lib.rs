@@ -28,6 +28,7 @@ pub(crate) mod macros {
 }
 
 pub mod error;
+pub mod intervals;
 pub mod notes;
 
 pub mod traits {
@@ -62,6 +63,8 @@ pub mod types {
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::error::*;
+    #[doc(inline)]
+    pub use crate::intervals::prelude::*;
     #[doc(no_inline)]
     pub use crate::notes::prelude::*;
     #[doc(no_inline)]

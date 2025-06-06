@@ -7,7 +7,8 @@
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
+    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    serde(default, transparent)
 )]
 #[repr(transparent)]
 pub struct Octave<T = isize>(pub T);

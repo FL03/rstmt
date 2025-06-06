@@ -26,7 +26,7 @@ macro_rules! private {
 macro_rules! seal {
     () => {
         fn __private__(&self) -> $crate::macros::seal::Seal {
-            $crate::seal::Seal
+            $crate::macros::seal::Seal
         }
     };
 }

@@ -1,11 +1,11 @@
 /*
-    Appellation: note <module>
+    Appellation: aspn <module>
     Contrib: @FL03
 */
 use super::Octave;
 use crate::PitchMod;
 
-/// The [`Note`]
+/// An american scientific pitch notation ([`Aspn`]) representation of a musical note.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
@@ -13,12 +13,12 @@ use crate::PitchMod;
     serde(deny_unknown_fields, default, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct Note {
+pub struct Aspn {
     pub(crate) class: usize,
     pub(crate) octave: Octave,
 }
 
-impl Note {
+impl Aspn {
     pub fn new(class: usize, Octave(octave): Octave) -> Self {
         Self {
             class,
@@ -65,28 +65,28 @@ impl Note {
     }
 }
 
-impl core::fmt::Display for Note {
+impl core::fmt::Display for Aspn {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.octave)
     }
 }
 
-impl core::ops::Add<Note> for Note {
+impl core::ops::Add<Aspn> for Aspn {
     type Output = Self;
 
-    fn add(self, rhs: Note) -> Self::Output {
+    fn add(self, rhs: Aspn) -> Self::Output {
         Self::new(self.class + rhs.class, self.octave + rhs.octave)
     }
 }
 
-impl core::ops::AddAssign<Note> for Note {
-    fn add_assign(&mut self, rhs: Note) {
+impl core::ops::AddAssign<Aspn> for Aspn {
+    fn add_assign(&mut self, rhs: Aspn) {
         self.class += rhs.class;
         self.octave += rhs.octave;
     }
 }
 
-impl core::ops::Add<usize> for Note {
+impl core::ops::Add<usize> for Aspn {
     type Output = Self;
 
     fn add(self, rhs: usize) -> Self::Output {
@@ -94,13 +94,13 @@ impl core::ops::Add<usize> for Note {
     }
 }
 
-impl core::ops::AddAssign<usize> for Note {
+impl core::ops::AddAssign<usize> for Aspn {
     fn add_assign(&mut self, rhs: usize) {
         self.class = (self.class + rhs).pmod();
     }
 }
 
-impl core::ops::Sub<usize> for Note {
+impl core::ops::Sub<usize> for Aspn {
     type Output = Self;
 
     fn sub(self, rhs: usize) -> Self::Output {
@@ -112,7 +112,7 @@ impl core::ops::Sub<usize> for Note {
     }
 }
 
-impl core::ops::SubAssign<usize> for Note {
+impl core::ops::SubAssign<usize> for Aspn {
     fn sub_assign(&mut self, rhs: usize) {
         self.class = (self.class as isize - rhs as isize).pmod() as usize;
     }
@@ -121,15 +121,15 @@ impl core::ops::SubAssign<usize> for Note {
 macro_rules! impl_note_from {
     ($($t:ty),*) => {
         $(
-            impl From<$t> for Note {
+            impl From<$t> for Aspn {
                 fn from(class: $t) -> Self {
-                    Note::from_pitch(class.pmod() as usize)
+                    Aspn::from_pitch(class.pmod() as usize)
                 }
             }
 
-            impl From<($t, Octave)> for Note {
+            impl From<($t, Octave)> for Aspn {
                 fn from((class, octave): ($t, Octave)) -> Self {
-                    Note::new(class.pmod() as usize, octave)
+                    Aspn::new(class.pmod() as usize, octave)
                 }
             }
         )*

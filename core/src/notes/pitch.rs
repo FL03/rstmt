@@ -3,16 +3,28 @@
     Contrib: @FL03
 */
 
+#[doc(inline)]
+pub use self::pitch_class::*;
+
+pub mod pitch_class;
+
+use super::RawPitch;
+
 /// Musically, a pitch is defined to be a discrete frequency that may be symbolically
 /// represented via a pitch class.
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
+    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    serde(default, transparent)
 )]
+#[repr(transparent)]
 pub struct Pitch<T = f64>(pub T);
 
-impl<T> Pitch<T> {
+impl<T> Pitch<T>
+where
+    T: RawPitch,
+{
     /// returns a new instance initialized using the default value of the type
     pub fn new() -> Self
     where
@@ -116,7 +128,7 @@ impl<T> Pitch<T> {
 
 impl<T> PartialEq<T> for Pitch<T>
 where
-    T: PartialEq,
+    T: RawPitch + PartialEq,
 {
     fn eq(&self, other: &T) -> bool {
         self.get() == other
@@ -125,7 +137,7 @@ where
 
 impl<T> PartialOrd<T> for Pitch<T>
 where
-    T: PartialOrd,
+    T: RawPitch + PartialOrd,
 {
     fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
         self.get().partial_cmp(other)
@@ -135,6 +147,7 @@ where
 #[cfg(feature = "rand")]
 impl<T> Pitch<T>
 where
+    T: RawPitch,
     rand_distr::StandardUniform: rand_distr::Distribution<T>,
 {
     pub fn random() -> Self {
@@ -148,6 +161,7 @@ where
 #[cfg(feature = "rand")]
 impl<T> rand_distr::Distribution<Pitch<T>> for rand_distr::StandardUniform
 where
+    T: RawPitch,
     rand_distr::StandardUniform: rand_distr::Distribution<T>,
 {
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Pitch<T> {
@@ -155,31 +169,46 @@ where
     }
 }
 
-impl<T> core::convert::AsRef<T> for Pitch<T> {
+impl<T> AsRef<T> for Pitch<T>
+where
+    T: RawPitch,
+{
     fn as_ref(&self) -> &T {
         self.get()
     }
 }
 
-impl<T> core::convert::AsMut<T> for Pitch<T> {
+impl<T> AsMut<T> for Pitch<T>
+where
+    T: RawPitch,
+{
     fn as_mut(&mut self) -> &mut T {
         self.get_mut()
     }
 }
 
-impl<T> core::borrow::Borrow<T> for Pitch<T> {
+impl<T> core::borrow::Borrow<T> for Pitch<T>
+where
+    T: RawPitch,
+{
     fn borrow(&self) -> &T {
         self.get()
     }
 }
 
-impl<T> core::borrow::BorrowMut<T> for Pitch<T> {
+impl<T> core::borrow::BorrowMut<T> for Pitch<T>
+where
+    T: RawPitch,
+{
     fn borrow_mut(&mut self) -> &mut T {
         self.get_mut()
     }
 }
 
-impl<T> core::ops::Deref for Pitch<T> {
+impl<T> core::ops::Deref for Pitch<T>
+where
+    T: RawPitch,
+{
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -187,7 +216,10 @@ impl<T> core::ops::Deref for Pitch<T> {
     }
 }
 
-impl<T> core::ops::DerefMut for Pitch<T> {
+impl<T> core::ops::DerefMut for Pitch<T>
+where
+    T: RawPitch,
+{
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.get_mut()
     }
@@ -195,7 +227,7 @@ impl<T> core::ops::DerefMut for Pitch<T> {
 
 impl<T> core::ops::Neg for Pitch<T>
 where
-    T: core::ops::Neg,
+    T: RawPitch + core::ops::Neg,
 {
     type Output = Pitch<<T as core::ops::Neg>::Output>;
 
@@ -206,7 +238,7 @@ where
 
 impl<T> core::ops::Not for Pitch<T>
 where
-    T: core::ops::Not,
+    T: RawPitch + core::ops::Not,
 {
     type Output = Pitch<<T as core::ops::Not>::Output>;
 
@@ -215,18 +247,18 @@ where
     }
 }
 
-impl<T> num::One for Pitch<T>
+impl<T> num_traits::One for Pitch<T>
 where
-    T: num::One,
+    T: RawPitch + num_traits::One,
 {
     fn one() -> Self {
         Pitch(T::one())
     }
 }
 
-impl<T> num::Zero for Pitch<T>
+impl<T> num_traits::Zero for Pitch<T>
 where
-    T: num::Zero,
+    T: RawPitch + num_traits::Zero,
 {
     fn zero() -> Self {
         Pitch(T::zero())
@@ -237,9 +269,9 @@ where
     }
 }
 
-impl<T> num::Num for Pitch<T>
+impl<T> num_traits::Num for Pitch<T>
 where
-    T: num::Num,
+    T: RawPitch + num_traits::Num,
 {
     type FromStrRadixErr = T::FromStrRadixErr;
 
@@ -256,7 +288,8 @@ macro_rules! impl_assign_op {
     (@impl $trait:ident::$method:ident) => {
         impl<A, B> ::core::ops::$trait<Pitch<B>> for Pitch<A>
         where
-            A: ::core::ops::$trait<B>
+            A: RawPitch + ::core::ops::$trait<B>,
+            B: RawPitch,
         {
             fn $method(&mut self, rhs: Pitch<B>) {
                 ::core::ops::$trait::$method(self.get_mut(), rhs.value())
@@ -265,7 +298,8 @@ macro_rules! impl_assign_op {
 
         impl<'a, A, B> ::core::ops::$trait<&'a Pitch<B>> for Pitch<A>
         where
-            A: ::core::ops::$trait<&'a B>
+            A: RawPitch + ::core::ops::$trait<&'a B>,
+            B: RawPitch,
         {
             fn $method(&mut self, rhs: &'a Pitch<B>) {
                 ::core::ops::$trait::$method(self.get_mut(), rhs.get())
@@ -284,7 +318,9 @@ macro_rules! impl_bin_op {
     (@impl $trait:ident::$method:ident) => {
         impl<A, B, C> ::core::ops::$trait<Pitch<B>> for Pitch<A>
         where
-            A: ::core::ops::$trait<B, Output = C>
+            A: RawPitch + ::core::ops::$trait<B, Output = C>,
+            B: RawPitch,
+            C: RawPitch,
         {
             type Output = Pitch<C>;
 
@@ -295,7 +331,10 @@ macro_rules! impl_bin_op {
 
         impl<'a, A, B, C> ::core::ops::$trait<&'a Pitch<B>> for Pitch<A>
         where
-            A: ::core::ops::$trait<&'a B, Output = C>
+            A: ::core::ops::$trait<&'a B, Output = C>,
+            A: RawPitch,
+            B: RawPitch,
+            C: RawPitch,
         {
             type Output = Pitch<C>;
 
@@ -306,7 +345,10 @@ macro_rules! impl_bin_op {
 
         impl<'a, A, B, C> ::core::ops::$trait<&'a Pitch<B>> for &'a Pitch<A>
         where
-            &'a A: ::core::ops::$trait<&'a B, Output = C>
+            &'a A: ::core::ops::$trait<&'a B, Output = C>,
+            A: RawPitch,
+            B: RawPitch,
+            C: RawPitch,
         {
             type Output = Pitch<C>;
 
@@ -317,7 +359,10 @@ macro_rules! impl_bin_op {
 
         impl<'a, A, B, C> ::core::ops::$trait<Pitch<B>> for &'a Pitch<A>
         where
-            &'a A: ::core::ops::$trait<B, Output = C>
+            &'a A: ::core::ops::$trait<B, Output = C>,
+            A: RawPitch,
+            B: RawPitch,
+            C: RawPitch,
         {
             type Output = Pitch<C>;
 

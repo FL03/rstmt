@@ -6,9 +6,10 @@
 #[cfg(feature = "alloc")]
 use alloc::{boxed::Box, string::String};
 
-/// a type alias for a [`Result`] with a [`MusicError`]
+/// a type alias for a [`Result`] with a [`Error`]
 pub type Result<T = ()> = core::result::Result<T, Error>;
 
+/// The [`Error`] enum represents various errors that can occur in the application.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Invalid Chord")]
@@ -18,8 +19,6 @@ pub enum Error {
     InvalidIntervals(String),
     #[error("Invalid Note")]
     InvalidNote,
-    #[error("Invalid Triad Class")]
-    InvalidTriadClass,
     #[cfg(feature = "anyhow")]
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
