@@ -37,6 +37,7 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
+    scsys::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -66,17 +67,11 @@ pub enum LPR {
 }
 
 impl LPR {
-    pub fn leading() -> Self {
-        LPR::Leading
+    pub fn iter() -> LPRIter {
+        use strum::IntoEnumIterator;
+        <LPR as IntoEnumIterator>::iter()
     }
-
-    pub fn parallel() -> Self {
-        LPR::Parallel
-    }
-
-    pub fn relative() -> Self {
-        LPR::Relative
-    }
+    /// applies the current transformation onto the given triad, returning a new triad
     pub fn apply(&self, triad: &Triad) -> Triad {
         self.try_apply(triad).unwrap()
     }

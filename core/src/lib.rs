@@ -7,9 +7,7 @@
 //! This crate provides the core functionality for the `rstmt` library, including [`Aspn`],
 //! [`NoteBase`], [`Pitch`], and [`Octave`]. Additionally, the crate provides a host of
 //! other primitives and utilities designed to manifest and manipulate musical concepts.
-#![allow(
-    clippy::module_inception
-)]
+#![allow(clippy::module_inception)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![crate_name = "rstmt_core"]
 #![crate_type = "lib"]

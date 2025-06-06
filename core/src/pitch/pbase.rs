@@ -26,10 +26,7 @@ where
     T: RawFrequency,
 {
     pub fn new(class: usize, freq: Frequency<T>) -> Self {
-        Self {
-            class,
-            freq,
-        }
+        Self { class, freq }
     }
     /// returns a copy to the index of the note's class
     pub const fn class(&self) -> usize {
@@ -90,7 +87,6 @@ where
         self.frequency() == other
     }
 }
-
 
 impl<T> PartialEq<usize> for Pitch<T>
 where

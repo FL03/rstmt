@@ -23,9 +23,7 @@ where
 {
     /// returns a new instance of the [`Pitch`] wrapping the given value
     pub const fn new(value: T) -> Self {
-        Pitch {
-            value,
-        }
+        Pitch { value }
     }
     /// returns a new Pitch with the value of one
     pub fn one() -> Self
@@ -85,9 +83,7 @@ where
     }
     /// consumes the current instance to create another with the given value
     pub fn with<U>(self, value: U) -> Pitch<U> {
-        Pitch {
-            value,
-        }
+        Pitch { value }
     }
     /// takes and returns the inner value, replacing it with the logical [`default`](Default)
     /// of the type `T`
@@ -113,9 +109,7 @@ where
     }
     /// returns a new instance containing a reference to the inner value
     pub const fn view(&self) -> Pitch<&T> {
-        Pitch {
-            value: self.get(),
-        }
+        Pitch { value: self.get() }
     }
     /// returns a new instance containing a mutable reference to the inner value
     pub const fn view_mut(&mut self) -> Pitch<&mut T> {

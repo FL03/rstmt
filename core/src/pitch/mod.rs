@@ -23,9 +23,9 @@ pub mod types {
 
 pub(crate) mod prelude {
     #[doc(inline)]
-    pub use super::wrapper::*;
-    #[doc(inline)]
     pub use super::types::prelude::*;
+    #[doc(inline)]
+    pub use super::wrapper::*;
     #[doc(inline)]
     pub use super::{AsPitch, IntoPitch, PitchNum, RawPitch};
 }
@@ -42,7 +42,9 @@ pub trait IntoPitch {
 /// [`RawPitch`] defines an interface for all raw pitch types.
 ///
 /// **note:** This trait is sealed and cannot be implemented outside of this crate.
-pub trait RawPitch: 'static + Default + Send + Sync + core::fmt::Debug + core::fmt::Display {
+pub trait RawPitch:
+    'static + Default + Send + Sync + core::fmt::Debug + core::fmt::Display
+{
     private!();
 }
 /// The [`PitchNum`] trait extends the [`RawPitch`] trait with additional numeric operations
@@ -72,7 +74,7 @@ where
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 impl<T> AsPitch for T
 where
@@ -82,7 +84,6 @@ where
         self.clone().into_pitch()
     }
 }
-
 
 impl<T> IntoPitch for T
 where

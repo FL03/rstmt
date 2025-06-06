@@ -4,11 +4,11 @@
 */
 //! this module focuses on implementing the motion planning algorithm for finding paths along
 //! the surface of the tonnetz.
-#![cfg(feature = "alloc")]
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
 pub use self::planner::MotionPlanner;
+#[cfg(feature = "alloc")]
 #[doc(inline)]
 pub use self::types::prelude::*;
 #[cfg(feature = "std")]

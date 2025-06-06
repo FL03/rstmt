@@ -4,7 +4,7 @@
 */
 use crate::PitchMod;
 use num_traits::{Float, NumCast};
- // For pitch-class modular arithmetic
+// For pitch-class modular arithmetic
 
 /// Maps a frequency to the nearest pitch class in the C Major scale (C=0, D=2, E=4, F=5, G=7, A=9, B=11).
 /// The input frequency is in Hz, and T is a floating-point type (e.g., f32, f64).

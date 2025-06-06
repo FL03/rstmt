@@ -2,10 +2,16 @@
     Appellation: tonnetz <module>
     Contrib: @FL03
 */
-use crate::{LPR, Triad, utils};
+use crate::{LPR, Triad};
 use rshyper::prelude::{EdgeId, HashGraph, VertexId};
 use rstmt::{Aspn, Octave};
 use std::collections::HashMap;
+
+/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`Triad`]
+pub(crate) type TriadMap<I = usize> = HashMap<EdgeId<I>, Triad>;
+/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
+/// transformations.
+pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 
 /// The tonnetz is a representation of tonal space in-which every facet is a valid triad.
 /// Here, we use the tonnetz to define the topology of the runtime as well as the cluster.
@@ -16,9 +22,9 @@ pub struct Tonnetz {
     /// The underlying hypergraph structure
     pub(crate) graph: HashGraph<Aspn>,
     /// Maps EdgeIds to Triad for efficient access
-    pub(crate) triads: HashMap<EdgeId, Triad>,
+    pub(crate) triads: TriadMap,
     /// Tracks adjacency between triads via transformations
-    pub(crate) transformations: HashMap<EdgeId, HashMap<LPR, EdgeId>>,
+    pub(crate) transformations: LprMap,
 }
 
 impl Default for Tonnetz {
@@ -32,8 +38,8 @@ impl Tonnetz {
     pub fn new() -> Self {
         Tonnetz {
             graph: HashGraph::new(),
-            triads: HashMap::new(),
-            transformations: HashMap::new(),
+            triads: TriadMap::new(),
+            transformations: LprMap::new(),
         }
     }
     /// returns a new instance of the [`Tonnetz`] with a specified capacity
@@ -52,6 +58,37 @@ impl Tonnetz {
     /// returns a mutable reference to the underlying graph
     pub const fn graph_mut(&mut self) -> &mut HashGraph<Aspn> {
         &mut self.graph
+    }
+    /// returns a reference to the triads map
+    pub const fn triads(&self) -> &TriadMap {
+        &self.triads
+    }
+    /// returns a mutable reference to the triads map
+    pub fn triads_mut(&mut self) -> &mut TriadMap {
+        &mut self.triads
+    }
+    /// returns a reference to the transformations map
+    pub const fn transformations(&self) -> &LprMap {
+        &self.transformations
+    }
+    /// returns a mutable reference to the transformations map
+    pub fn transformations_mut(&mut self) -> &mut LprMap {
+        &mut self.transformations
+    }
+    /// overwrite the current graph and return a mutable reference to the instance
+    pub fn set_graph(&mut self, graph: HashGraph<Aspn>) -> &mut Self {
+        self.graph = graph;
+        self
+    }
+    /// overwrite the current triads and return a mutable reference to the instance
+    pub fn set_triads(&mut self, triads: TriadMap) -> &mut Self {
+        self.triads = triads;
+        self
+    }
+    /// overwrite the current transformations and return a mutable reference to the instance
+    pub fn set_transformations(&mut self, transformations: LprMap) -> &mut Self {
+        self.transformations = transformations;
+        self
     }
     /// Add a new note class vertex to the Tonnetz
     pub fn add_note(&mut self, note: Aspn) -> crate::Result<VertexId> {
@@ -101,7 +138,6 @@ impl Tonnetz {
     pub fn get_triad(&self, edge_id: EdgeId) -> Option<&Triad> {
         self.triads.get(&edge_id)
     }
-
     /// Compute and store all possible transformations between triads
     pub fn compute_transformations(&mut self) {
         // Clear existing transformations
@@ -119,9 +155,9 @@ impl Tonnetz {
                         continue;
                     }
 
-                    if let Some(b) = self.triads.get(&edge2) {
+                    if let Some(b) = self.triads().get(&edge2) {
                         // Check if there's a transformation from triad1 to triad2
-                        if let Some(transform) = utils::get_transformation(a, b) {
+                        if let Some(transform) = a.is_neighbor(b) {
                             self.transformations
                                 .get_mut(&edge1)
                                 .unwrap()

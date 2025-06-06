@@ -5,7 +5,6 @@
 use super::types::{ChainFeatures, TransformationChain};
 use crate::{LPR, Triad};
 use std::collections::{HashMap, HashSet, VecDeque};
-use strum::IntoEnumIterator;
 
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
@@ -26,13 +25,27 @@ impl<'a> TriadNavigator<'a> {
             max_paths: 5, // default number of paths to find
         }
     }
+    /// returns the maximum depth for pathfinding
+    pub const fn max_depth(&self) -> usize {
+        self.max_depth
+    }
+    /// returns the maximum number of paths to find
+    pub const fn max_paths(&self) -> usize {
+        self.max_paths
+    }
+    /// returns a copy of the triad being navigated
+    pub const fn triad(&self) -> &Triad {
+        self.triad
+    }
     /// set the maximum depth for pathfinding
-    pub fn set_max_depth(&mut self, depth: usize) {
+    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
         self.max_depth = depth;
+        self
     }
     /// set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) {
+    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
         self.max_paths = paths;
+        self
     }
     /// consumes the current instance to create another with the given maximum depth
     pub fn with_max_depth(self, depth: usize) -> Self {
@@ -47,10 +60,6 @@ impl<'a> TriadNavigator<'a> {
             max_paths: paths,
             ..self
         }
-    }
-    /// returns a copy of the triad being navigated
-    pub const fn triad(&self) -> &Triad {
-        self.triad
     }
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> Vec<TransformationChain> {
@@ -88,7 +97,7 @@ impl<'a> TriadNavigator<'a> {
 
         while let Some((current_triad, transforms, triads)) = queue.pop_front() {
             // Don't exceed maximum depth
-            if transforms.len() >= self.max_depth {
+            if transforms.len() >= self.max_depth() {
                 continue;
             }
 

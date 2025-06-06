@@ -6,9 +6,7 @@
 //!
 //! This crate works to establish a solid foundation for working with the neo-riemannian theory
 //!
-#![allow(
-    clippy::module_inception
-)]
+#![allow(clippy::module_inception)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![crate_type = "lib"]
 
@@ -17,13 +15,13 @@ extern crate alloc;
 
 extern crate rstmt_core as rstmt;
 
+#[cfg(feature = "alloc")]
+pub use self::transform::MotionPlanner;
 #[doc(inline)]
 pub use self::{
     error::*,
-    transform::prelude::*,
     triad::{Triad, Triads},
     types::prelude::*,
-    utils::prelude::*,
 };
 
 #[cfg(feature = "tonnetz")]
@@ -62,30 +60,17 @@ pub mod types {
     }
 }
 
-pub mod utils {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod paths;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::paths::*;
-    }
-}
-
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::error::*;
     #[cfg(feature = "tonnetz")]
     #[doc(no_inline)]
     pub use crate::tonnetz::Tonnetz;
+    #[cfg(feature = "alloc")]
     #[doc(no_inline)]
     pub use crate::transform::prelude::*;
     #[doc(no_inline)]
     pub use crate::triad::prelude::*;
     #[doc(no_inline)]
     pub use crate::types::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::utils::prelude::*;
 }

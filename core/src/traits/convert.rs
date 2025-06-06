@@ -4,7 +4,6 @@
 */
 use crate::Octave;
 
-
 /// A trait for converting a reference into an [`Octave`].
 pub trait AsOctave {
     fn as_octave(&self) -> Octave;
@@ -13,7 +12,6 @@ pub trait AsOctave {
 pub trait IntoOctave {
     fn into_octave(self) -> Octave;
 }
-
 
 /*
  ************* Implementations *************
@@ -36,4 +34,3 @@ where
         self.into()
     }
 }
-

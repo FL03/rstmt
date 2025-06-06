@@ -14,7 +14,6 @@ fn main() -> rstmt::Result<()> {
     Ok(())
 }
 
-
 fn _demo_modulo() -> rstmt::Result<()> {
     // Demonstrate the modulo operation
     let a = 17;

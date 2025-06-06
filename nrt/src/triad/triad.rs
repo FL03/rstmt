@@ -7,7 +7,7 @@ use super::{Factors, Triads};
 use crate::LPR;
 use crate::error::TriadError;
 use crate::transform::TriadNavigator;
-use rstmt::{Aspn, IntoAspn, IntoOctave, Octave, PitchMod};
+use rstmt::{Aspn, IntoAspn, Octave, PitchMod};
 
 use num_traits::{Float, FromPrimitive};
 
@@ -111,22 +111,13 @@ impl Triad {
         &mut self.octave
     }
     /// set the octave of the triad
-    pub fn set_octave<O>(&mut self, octave: O) -> &mut Self
-    where
-        O: IntoOctave,
-    {
-        self.octave = octave.into_octave();
+    pub fn set_octave(&mut self, octave: Octave) -> &mut Self {
+        self.octave = octave;
         self
     }
     /// consumes the current instance to create another with the given octave
-    pub fn with_octave<O>(self, octave: O) -> Self
-    where
-        O: IntoOctave,
-    {
-        Self {
-            octave: octave.into_octave(),
-            ..self
-        }
+    pub fn with_octave(self, octave: Octave) -> Self {
+        Self { octave, ..self }
     }
     /// returns a copy of the root pitch of the triad
     pub fn root(&self) -> usize {
@@ -158,6 +149,14 @@ impl Triad {
         Q: core::borrow::Borrow<usize>,
     {
         self.notes().contains(pitch.borrow())
+    }
+    /// returns some [`LPR`] transformation, iff they are within a single _step_ of one another
+    /// otherwise, returns [`None`](Option::None).
+    pub fn is_neighbor(&self, other: &Triad) -> Option<LPR> {
+        LPR::iter().find(|&t| {
+            let result = self.transform(t);
+            result == *other
+        })
     }
     /// returns true if the current instance is an augmented triad
     pub fn is_augmented(&self) -> bool {

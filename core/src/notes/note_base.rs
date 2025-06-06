@@ -6,7 +6,6 @@ use super::Octave;
 use crate::freq::RawFrequency;
 use crate::pitch::{self, Pitch, PitchClass};
 
-
 /// The [`NoteBase`] is a generic representation of a musical note
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
