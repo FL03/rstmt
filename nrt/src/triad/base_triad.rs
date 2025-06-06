@@ -2,7 +2,7 @@
     appellation: triad_base <module>
     authors: @FL03
 */
-use super::{RawStore, TriadKind};
+use super::{RawStore, TriadKind, TriadStore};
 
 /// The [`TriadBase`] implementation is a generic representation of a triad.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
@@ -11,7 +11,7 @@ use super::{RawStore, TriadKind};
     derive(serde::Deserialize, serde::Serialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct TriadBase<S, K>
+pub struct TriadBase<S = [usize; 3], K = super::MajorTriadKind>
 where
     K: TriadKind,
     S: RawStore,
@@ -44,6 +44,48 @@ where
     /// returns a mutable reference to the class of the triad.
     pub const fn class_mut(&mut self) -> &mut K {
         &mut self.class
+    }
+    /// returns a reference to the root note of the triad.
+    pub fn root(&self) -> &A
+    where
+        S: TriadStore,
+    {
+        self.chord().root()
+    }
+    /// returns a mutable reference to the root note of the triad.
+    pub fn root_mut(&mut self) -> &mut A
+    where
+        S: TriadStore,
+    {
+        self.chord_mut().root_mut()
+    }
+    /// returns a reference to the third note of the triad.
+    pub fn third(&self) -> &A
+    where
+        S: TriadStore,
+    {
+        self.chord().third()
+    }
+    /// returns a mutable reference to the third note of the triad.
+    pub fn third_mut(&mut self) -> &mut A
+    where
+        S: TriadStore,
+    {
+        self.chord_mut().third_mut()
+    }
+    /// returns a reference to the fifth note of the triad.
+    pub fn fifth(&self) -> &A
+    where
+        S: TriadStore,
+    {
+        self.chord().fifth()
+    }
+    /// returns a mutable reference to the fifth note of the triad.
+    pub fn fifth_mut(&mut self) -> &mut A
+    where
+        S: TriadStore,
+    {
+        self.chord_mut().fifth_mut()
     }
     /// update the chord and returns a mutable reference to the triad
     pub fn set_chord(&mut self, chord: S) -> &mut Self {
@@ -79,6 +121,26 @@ where
     pub fn into_parts(self) -> (S, K) {
         (self.chord, self.class)
     }
+    /// returns true if the triad is classified as an augmented triad.
+    pub fn is_augmented(&self) -> bool {
+        use core::any::TypeId;
+        TypeId::of::<K>() == TypeId::of::<super::AugmentedTriadKind>()
+    }
+    /// returns true if the triad is classified as a diminished triad.
+    pub fn is_diminished(&self) -> bool {
+        use core::any::TypeId;
+        TypeId::of::<K>() == TypeId::of::<super::DiminishedTriadKind>()
+    }
+    /// returns true if the triad is classified as a major triad.
+    pub fn is_major(&self) -> bool {
+        use core::any::TypeId;
+        TypeId::of::<K>() == TypeId::of::<super::MajorTriadKind>()
+    }
+    /// returns true if the triad is classified as a minor triad.
+    pub fn is_minor(&self) -> bool {
+        use core::any::TypeId;
+        TypeId::of::<K>() == TypeId::of::<super::MinorTriadKind>()
+    }
 }
 
 impl<S, K> core::fmt::Display for TriadBase<S, K>
@@ -88,15 +150,5 @@ where
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{{ chord: {:?}, class: {} }}", self.chord, self.class)
-    }
-}
-
-impl<S, K> From<(S, K)> for TriadBase<S, K>
-where
-    S: RawStore,
-    K: TriadKind,
-{
-    fn from((chord, class): (S, K)) -> Self {
-        Self::new(chord, class)
     }
 }

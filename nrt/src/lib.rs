@@ -13,16 +13,18 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+/// re-declare the external `rstmt_core` crate for convenience
 extern crate rstmt_core as rstmt;
 
-#[cfg(feature = "alloc")]
-pub use self::transform::TriadNavigator;
 #[doc(inline)]
 pub use self::{
     error::*,
     triad::{Triad, Triads},
     types::prelude::*,
 };
+
+#[cfg(feature = "std")]
+pub use self::transform::TriadNavigator;
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]

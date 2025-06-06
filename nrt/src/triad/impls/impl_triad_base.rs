@@ -6,7 +6,7 @@
 use crate::triad::types::{
     AugmentedTriadKind, DiminishedTriadKind, MajorTriadKind, MinorTriadKind,
 };
-use crate::triad::{Factors, RawStore, TriadBase, TriadKind, TriadicStore};
+use crate::triad::{Factors, RawStore, TriadBase, TriadKind, RawTriad};
 
 impl<S, K> TriadBase<S, K>
 where
@@ -59,12 +59,84 @@ where
     }
 }
 
-impl<S, K> core::ops::Index<Factors> for TriadBase<S, K>
+impl<S, K> From<(S, K)> for TriadBase<S, K>
 where
-    S: TriadicStore,
+    S: RawStore,
     K: TriadKind,
 {
-    type Output = S::Item;
+    fn from((chord, class): (S, K)) -> Self {
+        Self::new(chord, class)
+    }
+}
+
+impl<S, K> AsRef<S> for TriadBase<S, K>
+where
+    S: RawStore,
+    K: TriadKind,
+{
+    fn as_ref(&self) -> &S {
+        self.chord()
+    }
+}
+
+impl<S, K> AsMut<S> for TriadBase<S, K>
+where
+    S: RawStore,
+    K: TriadKind,
+{
+    fn as_mut(&mut self) -> &mut S {
+        self.chord_mut()
+    }
+}
+
+impl<S, K> core::borrow::Borrow<S> for TriadBase<S, K>
+where
+    S: RawStore,
+    K: TriadKind,
+{
+    fn borrow(&self) -> &S {
+        self.chord()
+    }
+}
+
+impl<S, K> core::borrow::BorrowMut<S> for TriadBase<S, K>
+where
+    S: RawStore,
+    K: TriadKind,
+{
+    fn borrow_mut(&mut self) -> &mut S {
+        self.chord_mut()
+    }
+}
+
+impl<T, S, K> core::ops::Deref for TriadBase<S, K>
+where
+    S: RawStore<Item = T> + RawTriad<T>,
+    K: TriadKind,
+{
+    type Target = S;
+
+    fn deref(&self) -> &Self::Target {
+        self.chord()
+    }
+}
+
+impl<T, S, K> core::ops::DerefMut for TriadBase<S, K>
+where
+    S: RawStore<Item = T> + RawTriad<T>,
+    K: TriadKind,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.chord_mut()
+    }
+}
+
+impl<T, S, K> core::ops::Index<Factors> for TriadBase<S, K>
+where
+    S: RawStore<Item = T> + RawTriad<T>,
+    K: TriadKind,
+{
+    type Output = T;
 
     fn index(&self, index: Factors) -> &Self::Output {
         match index {
@@ -75,9 +147,9 @@ where
     }
 }
 
-impl<S, K> core::ops::IndexMut<Factors> for TriadBase<S, K>
+impl<T, S, K> core::ops::IndexMut<Factors> for TriadBase<S, K>
 where
-    S: TriadicStore,
+    S: RawStore<Item = T> + RawTriad<T>,
     K: TriadKind,
 {
     fn index_mut(&mut self, index: Factors) -> &mut Self::Output {
@@ -88,3 +160,17 @@ where
         }
     }
 }
+
+
+impl<T, K> IntoIterator for TriadBase<[T; 3], K>
+where
+    K: TriadKind,
+{
+    type Item = T;
+    type IntoIter = core::array::IntoIter<T, 3>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.chord.into_iter()
+    }
+}
+
