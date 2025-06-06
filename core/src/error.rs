@@ -2,11 +2,12 @@
     Appellation: error <module>
     Contrib: @FL03
 */
-
+//! this module defines the [`Error`] type and provides a type alias for a
+//! [`Result`](core::result::Result) with an [`Error`].
 #[cfg(feature = "alloc")]
 use alloc::{boxed::Box, string::String};
 
-/// a type alias for a [`Result`] with a [`Error`]
+/// a type alias for a [`Result`](core::result::Result) with a [`Error`] type
 pub type Result<T = ()> = core::result::Result<T, Error>;
 
 /// The [`Error`] enum represents various errors that can occur in the application.

@@ -1,11 +1,11 @@
 /*
-    Appellation: note <module>
+    Appellation: aspn <module>
     Contrib: @FL03
 */
 use super::Octave;
 use crate::PitchMod;
 
-/// The [`Note`]
+/// An american scientific pitch notation ([`Note`]) representation of a musical note.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
@@ -71,11 +71,38 @@ impl core::fmt::Display for Note {
     }
 }
 
+impl PartialEq<usize> for Note {
+    fn eq(&self, other: &usize) -> bool {
+        self.class() == *other
+    }
+}
+
+impl PartialEq<Note> for usize {
+    fn eq(&self, other: &Note) -> bool {
+        *self == other.class()
+    }
+}
+
+impl PartialOrd<usize> for Note {
+    fn partial_cmp(&self, other: &usize) -> Option<core::cmp::Ordering> {
+        self.class().partial_cmp(other)
+    }
+}
+
+impl PartialOrd<Note> for usize {
+    fn partial_cmp(&self, other: &Note) -> Option<core::cmp::Ordering> {
+        self.partial_cmp(&other.class())
+    }
+}
+
 impl core::ops::Add<Note> for Note {
     type Output = Self;
 
     fn add(self, rhs: Note) -> Self::Output {
-        Self::new(self.class + rhs.class, self.octave + rhs.octave)
+        let class = (self.class + rhs.class).pmod();
+        let octave = self.octave + rhs.octave;
+        
+        Self::new(class, octave)
     }
 }
 
@@ -123,13 +150,13 @@ macro_rules! impl_note_from {
         $(
             impl From<$t> for Note {
                 fn from(class: $t) -> Self {
-                    Note::from_pitch(class.pmod() as usize)
+                    Self::from_pitch(class.pmod() as usize)
                 }
             }
 
             impl From<($t, Octave)> for Note {
                 fn from((class, octave): ($t, Octave)) -> Self {
-                    Note::new(class.pmod() as usize, octave)
+                    Self::new(class.pmod() as usize, octave)
                 }
             }
         )*

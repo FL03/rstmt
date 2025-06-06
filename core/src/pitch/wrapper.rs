@@ -2,12 +2,6 @@
     Appellation: pitch <module>
     Contrib: @FL03
 */
-
-#[doc(inline)]
-pub use self::pitch_class::*;
-
-pub mod pitch_class;
-
 use super::RawPitch;
 
 /// Musically, a pitch is defined to be a discrete frequency that may be symbolically

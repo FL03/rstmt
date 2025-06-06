@@ -2,9 +2,15 @@
     appellation: pitch_class <module>
     authors: @FL03
 */
-/// The [`RawPitchClass`] trait establishes an interface to defining pitch classes.
-pub trait RawPitchClass: 'static + Send + Sync + core::fmt::Debug + core::fmt::Display {
+/// The [`PitchClass`] trait establishes an interface to defining pitch classes.
+pub trait PitchClass:
+    'static + Send + Sized + Sync + core::fmt::Debug + core::fmt::Display
+{
     private!();
+
+    fn new() -> Self;
+
+    fn index(&self) -> usize;
 }
 /*
  ************* Implementations *************
@@ -75,8 +81,12 @@ macro_rules! pitch_class {
     (@ext $name:ident = $c:literal) => {
         impl $name {
             pub const C_MAJOR_ID: usize = $c;
-
-            pub const fn value(self) -> usize {
+            /// returns a new instance of the pitch class
+            pub const fn new() -> Self {
+                Self
+            }
+            /// returns a copy of the assigned index on the c-major scale
+            pub const fn value(&self) -> usize {
                 Self::C_MAJOR_ID
             }
         }
@@ -87,8 +97,16 @@ macro_rules! pitch_class {
             }
         }
 
-        impl RawPitchClass for $name {
+        impl $crate::pitch::PitchClass for $name {
             seal!();
+
+            fn new() -> Self {
+                Self::new()
+            }
+
+            fn index(&self) -> usize {
+                self.value()
+            }
         }
 
         impl PartialEq<usize> for $name {

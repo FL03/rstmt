@@ -7,7 +7,7 @@ use super::{Factors, Triads};
 use crate::LPR;
 use crate::error::TriadError;
 use crate::transform::TriadNavigator;
-use rstmt::traits::{IntoNote, IntoOctave, PitchMod};
+use rstmt::prelude::{IntoNote, IntoOctave, PitchMod};
 use rstmt::{Note, Octave};
 
 use num_traits::{Float, FromPrimitive};
@@ -130,16 +130,28 @@ impl Triad {
         }
     }
     /// returns a copy of the root pitch of the triad
-    pub fn root(&self) -> Note {
-        Note::new(self[Factors::Root], self.octave())
+    pub fn root(&self) -> usize {
+        self[Factors::Root]
     }
-    /// returns a copy of the third chord factor within the triad
-    pub fn third(&self) -> Note {
-        Note::new(self[Factors::Third], self.octave())
+    /// returns a mutable reference to the root pitch of the triad
+    pub fn root_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Root]
     }
-    /// returns a copy of the fifth chord factor within the triad
-    pub fn fifth(&self) -> Note {
-        Note::new(self[Factors::Fifth], self.octave())
+    /// returns a copy of the third pitch of the triad
+    pub fn third(&self) -> usize {
+        self[Factors::Third]
+    }
+    /// returns a mutable reference to the third pitch of the triad
+    pub fn third_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Third]
+    }
+    /// returns a copy of the fifth pitch of the triad
+    pub fn fifth(&self) -> usize {
+        self[Factors::Fifth]
+    }
+    /// returns a mutable reference to the fifth pitch of the triad
+    pub fn fifth_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Fifth]
     }
     /// check if the triad contains a given pitch class
     pub fn contains<Q>(&self, pitch: &Q) -> bool

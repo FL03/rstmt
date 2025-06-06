@@ -16,7 +16,8 @@ extern crate alloc;
 #[doc(inline)]
 pub use self::{
     error::*,
-    notes::{Note, Octave, Pitch},
+    notes::{AsNote, IntoNote, Note, NoteBase, Octave},
+    pitch::{Pitch, PitchClass, RawPitch},
     traits::prelude::*,
     types::prelude::*,
 };
@@ -30,6 +31,7 @@ pub(crate) mod macros {
 pub mod error;
 pub mod intervals;
 pub mod notes;
+pub mod pitch;
 
 pub mod traits {
     //! this module implements the core traits used throughout the library.
@@ -67,6 +69,8 @@ pub mod prelude {
     pub use crate::intervals::prelude::*;
     #[doc(no_inline)]
     pub use crate::notes::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::pitch::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
     #[doc(no_inline)]
