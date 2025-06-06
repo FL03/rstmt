@@ -78,14 +78,14 @@ macro_rules! impl_type_tag {
 
 impl_type_tag! {
     #[doc = "Major triad kind"]
-    pub struct MajorTriadKind;
+    pub struct MajorTri;
 
     #[doc = "Minor triad kind"]
-    pub struct MinorTriadKind;
+    pub struct MinorTri;
 
     #[doc = "Augmented triad kind"]
-    pub struct AugmentedTriadKind;
+    pub struct AugmentedTri;
 
     #[doc = "Diminished triad kind"]
-    pub struct DiminishedTriadKind;
+    pub struct DiminishedTri;
 }

@@ -11,7 +11,7 @@ use super::{RawStore, TriadKind, TriadStore};
     derive(serde::Deserialize, serde::Serialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct TriadBase<S = [usize; 3], K = super::MajorTriadKind>
+pub struct TriadBase<S = [usize; 3], K = super::MajorTri>
 where
     K: TriadKind,
     S: RawStore,
@@ -124,22 +124,22 @@ where
     /// returns true if the triad is classified as an augmented triad.
     pub fn is_augmented(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::AugmentedTriadKind>()
+        TypeId::of::<K>() == TypeId::of::<super::AugmentedTri>()
     }
     /// returns true if the triad is classified as a diminished triad.
     pub fn is_diminished(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::DiminishedTriadKind>()
+        TypeId::of::<K>() == TypeId::of::<super::DiminishedTri>()
     }
     /// returns true if the triad is classified as a major triad.
     pub fn is_major(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::MajorTriadKind>()
+        TypeId::of::<K>() == TypeId::of::<super::MajorTri>()
     }
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::MinorTriadKind>()
+        TypeId::of::<K>() == TypeId::of::<super::MinorTri>()
     }
 }
 
@@ -150,5 +150,23 @@ where
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{{ chord: {:?}, class: {} }}", self.chord, self.class)
+    }
+}
+
+impl<T, S, K> super::RawTriad<T> for TriadBase<S, K>
+where
+    S: TriadStore<Item = T>,
+    K: TriadKind,
+{
+    type Store = S;
+
+    seal!();
+
+    fn store(&self) -> &Self::Store {
+        self.chord()
+    }
+
+    fn store_mut(&mut self) -> &mut Self::Store {
+        self.chord_mut()
     }
 }

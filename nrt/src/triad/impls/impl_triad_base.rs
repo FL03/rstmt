@@ -2,11 +2,8 @@
     appellation: impl_triad_base <module>
     authors: @FL03
 */
-
-use crate::triad::types::{
-    AugmentedTriadKind, DiminishedTriadKind, MajorTriadKind, MinorTriadKind,
-};
-use crate::triad::{Factors, RawStore, TriadBase, TriadKind, RawTriad};
+use crate::triad::types::{AugmentedTri, DiminishedTri, MajorTri, MinorTri};
+use crate::triad::{Factors, RawStore, RawTriad, TriadBase, TriadKind};
 
 impl<S, K> TriadBase<S, K>
 where
@@ -15,47 +12,47 @@ where
 {
 }
 
-impl<S> TriadBase<S, AugmentedTriadKind>
+impl<S> TriadBase<S, AugmentedTri>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
     /// augmented triad.
     pub fn augmented(chord: S) -> Self {
-        TriadBase::new(chord, AugmentedTriadKind)
+        TriadBase::new(chord, AugmentedTri)
     }
 }
 
-impl<S> TriadBase<S, DiminishedTriadKind>
+impl<S> TriadBase<S, DiminishedTri>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
     /// diminished triad.
     pub fn diminished(chord: S) -> Self {
-        TriadBase::new(chord, DiminishedTriadKind)
+        TriadBase::new(chord, DiminishedTri)
     }
 }
 
-impl<S> TriadBase<S, MajorTriadKind>
+impl<S> TriadBase<S, MajorTri>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
     /// triad.
     pub fn major(chord: S) -> Self {
-        TriadBase::new(chord, MajorTriadKind)
+        TriadBase::new(chord, MajorTri)
     }
 }
 
-impl<S> TriadBase<S, MinorTriadKind>
+impl<S> TriadBase<S, MinorTri>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
     /// triad.
     pub fn minor(chord: S) -> Self {
-        TriadBase::new(chord, MinorTriadKind)
+        TriadBase::new(chord, MinorTri)
     }
 }
 
@@ -161,7 +158,6 @@ where
     }
 }
 
-
 impl<T, K> IntoIterator for TriadBase<[T; 3], K>
 where
     K: TriadKind,
@@ -174,3 +170,26 @@ where
     }
 }
 
+impl<'a, T, K> IntoIterator for &'a TriadBase<[T; 3], K>
+where
+    K: TriadKind,
+{
+    type Item = &'a T;
+    type IntoIter = core::slice::Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.chord().iter()
+    }
+}
+
+impl<'a, T, K> IntoIterator for &'a mut TriadBase<[T; 3], K>
+where
+    K: TriadKind,
+{
+    type Item = &'a mut T;
+    type IntoIter = core::slice::IterMut<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.chord_mut().iter_mut()
+    }
+}

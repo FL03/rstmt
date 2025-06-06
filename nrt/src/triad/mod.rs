@@ -14,8 +14,7 @@ mod impls {
 }
 
 pub mod types {
-    //! this module implements additional types used to support the [`triad`](crate::triad)
-    //! module.
+    //! this module implements additional types used to support the triad implementation
     #[doc(inline)]
     pub use self::prelude::*;
 
@@ -39,7 +38,7 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::types::prelude::*;
     #[doc(inline)]
-    pub use super::{RawStore, RawTriad, TriadStore,};
+    pub use super::{RawStore, RawTriad, TriadStore};
 }
 
 /// [`RawStore`] establishes a common interface for all containers used to store the notes
@@ -85,13 +84,13 @@ pub trait TriadStore: RawStore {
 /// The [`RawTriad`] trait defines the interface for all implementations of triads.
 pub trait RawTriad<T> {
     /// the type of the item stored in the triad.
-    type Store<_T>: TriadStore<Item = _T>;
+    type Store: TriadStore<Item = T>;
 
     private!();
 
-    fn store(&self) -> &Self::Store<T>;
+    fn store(&self) -> &Self::Store;
 
-    fn store_mut(&mut self) -> &mut Self::Store<T>;
+    fn store_mut(&mut self) -> &mut Self::Store;
     /// returns a reference to the root note of the triad.
     fn root(&self) -> &T {
         self.store().root()
@@ -134,8 +133,7 @@ impl<T> RawStore for [T; 3] {
     seal!();
 }
 
-impl<T> TriadStore for (T, T, T)
-{
+impl<T> TriadStore for (T, T, T) {
     fn root(&self) -> &T {
         &self.0
     }
@@ -161,8 +159,7 @@ impl<T> TriadStore for (T, T, T)
     }
 }
 
-impl<T> TriadStore for [T; 3]
-{
+impl<T> TriadStore for [T; 3] {
     fn root(&self) -> &T {
         &self[0]
     }
@@ -189,29 +186,28 @@ impl<T> TriadStore for [T; 3]
 }
 
 impl<T> RawTriad<T> for (T, T, T) {
-    type Store<_U> = ( _U, _U, _U );
-
+    type Store = Self;
     seal!();
 
-    fn store(&self) -> &Self::Store<T> {
+    fn store(&self) -> &Self::Store {
         self
     }
 
-    fn store_mut(&mut self) -> &mut Self::Store<T> {
+    fn store_mut(&mut self) -> &mut Self::Store {
         self
     }
 }
 
 impl<T> RawTriad<T> for [T; 3] {
-    type Store<_U> = [_U; 3];
+    type Store = Self;
 
     seal!();
 
-    fn store(&self) -> &Self::Store<T> {
+    fn store(&self) -> &Self::Store {
         self
     }
 
-    fn store_mut(&mut self) -> &mut Self::Store<T> {
+    fn store_mut(&mut self) -> &mut Self::Store {
         self
     }
 }

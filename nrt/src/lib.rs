@@ -28,7 +28,7 @@ pub use self::transform::TriadNavigator;
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
-pub use self::{transform::MotionPlanner, tonnetz::Tonnetz};
+pub use self::{tonnetz::Tonnetz, transform::MotionPlanner};
 
 #[macro_use]
 pub(crate) mod macros {

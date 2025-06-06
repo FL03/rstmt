@@ -44,7 +44,6 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::config::*;
 
-
     #[cfg(feature = "std")]
     #[doc(inline)]
     pub use super::cache::*;

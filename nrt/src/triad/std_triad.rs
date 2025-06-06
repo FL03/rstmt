@@ -8,6 +8,8 @@ use crate::LPR;
 use crate::error::TriadError;
 use rstmt::{Aspn, IntoAspn, Octave, PitchMod};
 
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive};
 
 /// A triad is a particular chord composed of three notes that satify particular intervallic
@@ -221,6 +223,7 @@ impl Triad {
         let x = T::from_usize(self.notes().iter().sum())? / T::from_usize(self.notes().len())?;
         Some([x, y])
     }
+    #[cfg(feature = "alloc")]
     /// returns the number of common tones between two triads
     pub fn common_tones(&self, other: &Self) -> Vec<usize> {
         self.notes()
@@ -329,7 +332,6 @@ impl core::ops::MulAssign<LPR> for Triad {
 
 impl core::iter::IntoIterator for Triad {
     type Item = usize;
-
     type IntoIter = core::array::IntoIter<Self::Item, 3>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -339,7 +341,6 @@ impl core::iter::IntoIterator for Triad {
 
 impl<'a> core::iter::IntoIterator for &'a Triad {
     type Item = &'a usize;
-
     type IntoIter = core::slice::Iter<'a, usize>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -349,7 +350,6 @@ impl<'a> core::iter::IntoIterator for &'a Triad {
 
 impl<'a> core::iter::IntoIterator for &'a mut Triad {
     type Item = &'a mut usize;
-
     type IntoIter = core::slice::IterMut<'a, usize>;
 
     fn into_iter(self) -> Self::IntoIter {
