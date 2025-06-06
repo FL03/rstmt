@@ -6,11 +6,15 @@
 //! the surface of the tonnetz.
 #[doc(inline)]
 pub use self::{
-    cache::PathCache, navigator::TriadNavigator, planner::MotionPlanner, types::prelude::*,
+    cache::PathCache, navigator::TriadNavigator, types::prelude::*,
 };
+#[cfg(feature = "tonnetz")]
+#[doc(inline)]
+pub use self::planner::MotionPlanner;
 
 pub mod cache;
 pub mod navigator;
+#[cfg(feature = "tonnetz")]
 pub mod planner;
 
 pub mod types {
@@ -34,4 +38,7 @@ pub mod types {
 pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::navigator::TriadNavigator;
+    #[cfg(feature = "tonnetz")]
+    #[doc(inline)]
+    pub use super::planner::MotionPlanner;
 }
