@@ -6,16 +6,7 @@
 //! the surface of the tonnetz.
 
 #[doc(inline)]
-pub use self::config::*;
-#[cfg(feature = "tonnetz")]
-#[doc(inline)]
-pub use self::planner::MotionPlanner;
-#[cfg(feature = "alloc")]
-#[doc(inline)]
-pub use self::types::prelude::*;
-#[cfg(feature = "std")]
-#[doc(inline)]
-pub use self::{cache::PathCache, navigator::TriadNavigator};
+pub use self::prelude::*;
 
 #[cfg(feature = "std")]
 pub mod cache;
@@ -52,10 +43,18 @@ pub mod types {
 pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::config::*;
+
+
     #[cfg(feature = "std")]
     #[doc(inline)]
-    pub use super::navigator::TriadNavigator;
+    pub use super::cache::*;
+    #[cfg(feature = "std")]
+    #[doc(inline)]
+    pub use super::navigator::*;
     #[cfg(feature = "tonnetz")]
     #[doc(inline)]
-    pub use super::planner::MotionPlanner;
+    pub use super::planner::*;
+    #[cfg(feature = "alloc")]
+    #[doc(inline)]
+    pub use super::types::prelude::*;
 }

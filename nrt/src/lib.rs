@@ -16,7 +16,7 @@ extern crate alloc;
 extern crate rstmt_core as rstmt;
 
 #[cfg(feature = "alloc")]
-pub use self::transform::MotionPlanner;
+pub use self::transform::TriadNavigator;
 #[doc(inline)]
 pub use self::{
     error::*,
@@ -26,7 +26,7 @@ pub use self::{
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
-pub use self::tonnetz::Tonnetz;
+pub use self::{transform::MotionPlanner, tonnetz::Tonnetz};
 
 #[macro_use]
 pub(crate) mod macros {

@@ -6,7 +6,6 @@ use super::{Factors, Triads};
 
 use crate::LPR;
 use crate::error::TriadError;
-use crate::transform::TriadNavigator;
 use rstmt::{Aspn, IntoAspn, Octave, PitchMod};
 
 use num_traits::{Float, FromPrimitive};
@@ -230,9 +229,10 @@ impl Triad {
             .copied()
             .collect::<Vec<_>>()
     }
+    #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
-    pub fn path_finder(&self) -> TriadNavigator<'_> {
-        TriadNavigator::new(self)
+    pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
+        crate::transform::TriadNavigator::new(self)
     }
     /// apply a single [LPR] transformation to a triad
     pub fn transform(&self, transform: LPR) -> Self {
