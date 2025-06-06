@@ -6,8 +6,8 @@
 use alloc::vec::Vec;
 
 use crate::{LPR, Triad};
-use rshyper::EdgeId;
 use core::cmp::Ordering;
+use rshyper::EdgeId;
 
 /// A* search node with priority
 #[derive(Clone, Debug)]
@@ -47,7 +47,6 @@ impl PartialEq for SearchNode {
 }
 
 impl Eq for SearchNode {}
-
 
 impl PartialOrd for SearchNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

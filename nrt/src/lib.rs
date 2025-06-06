@@ -80,7 +80,7 @@ pub mod prelude {
     #[doc(no_inline)]
     pub use crate::transform::prelude::*;
     #[doc(no_inline)]
-    pub use crate::triad::*;
+    pub use crate::triad::prelude::*;
     #[doc(no_inline)]
     pub use crate::types::prelude::*;
     #[doc(no_inline)]

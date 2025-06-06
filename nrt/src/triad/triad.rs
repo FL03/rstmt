@@ -2,11 +2,7 @@
     Appellation: traid <module>
     Contrib: @FL03
 */
-#[doc(inline)]
-pub use self::{class::*, factors::*};
-
-pub(crate) mod class;
-pub(crate) mod factors;
+use super::{Factors, Triads};
 
 use crate::LPR;
 use crate::error::TriadError;
@@ -114,7 +110,7 @@ impl Triad {
     /// returns a mutable reference to the octave of the triad
     pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
-    }    
+    }
     /// set the octave of the triad
     pub fn set_octave<O>(&mut self, octave: O) -> &mut Self
     where

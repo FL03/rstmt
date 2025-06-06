@@ -6,14 +6,14 @@
 //! the surface of the tonnetz.
 #![cfg(feature = "alloc")]
 
+#[cfg(feature = "tonnetz")]
+#[doc(inline)]
+pub use self::planner::MotionPlanner;
 #[doc(inline)]
 pub use self::types::prelude::*;
 #[cfg(feature = "std")]
 #[doc(inline)]
 pub use self::{cache::PathCache, navigator::TriadNavigator};
-#[cfg(feature = "tonnetz")]
-#[doc(inline)]
-pub use self::planner::MotionPlanner;
 
 #[cfg(feature = "std")]
 pub mod cache;

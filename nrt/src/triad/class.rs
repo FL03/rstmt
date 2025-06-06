@@ -55,15 +55,10 @@ impl Triads {
             };
             return Ok(class);
         }
-        Err(crate::TriadError::InvalidIntervals(format!(
-            "{}-{}-{}",
-            rt, tf, rf
-        )))
+        Err(crate::TriadError::InvalidTriad)
     }
     pub fn try_from_arr(arr: [usize; 3]) -> crate::Result<Self> {
-        let mut res = Err(crate::TriadError::InvalidIntervals(
-            "the given chord does not match any triad class".to_string(),
-        ));
+        let mut res = Err(crate::TriadError::InvalidTriadClass);
         for (&a, &b, &c) in arr
             .iter()
             .circular_tuple_windows()

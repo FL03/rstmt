@@ -11,13 +11,8 @@ pub(crate) type Result<T = ()> = core::result::Result<T, TriadError>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum TriadError {
-    #[error("Invalid Chord")]
-    InvalidChord,
-    #[cfg(feature = "alloc")]
-    #[error("Invalid Intervals: {0}")]
-    InvalidIntervals(String),
-    #[error("Invalid Note")]
-    InvalidNote,
+    #[error("Invalid triad")]
+    InvalidTriad,
     #[error("Invalid Triad Class")]
     InvalidTriadClass,
     #[cfg(feature = "anyhow")]

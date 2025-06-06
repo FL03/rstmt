@@ -311,7 +311,7 @@ impl<'a> MotionPlanner<'a> {
         // Initialize BFS queue
         let mut queue = VecDeque::new();
         queue.push_back((
-            start_triad,    // Current triad
+            start_triad,            // Current triad
             Vec::<LPR>::new(),      // Transformation path
             vec![start_triad],      // Triad history
             vec![Some(start_edge)], // Edge IDs
