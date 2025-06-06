@@ -114,6 +114,24 @@ impl Triad {
     /// returns a mutable reference to the octave of the triad
     pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
+    }    
+    /// set the octave of the triad
+    pub fn set_octave<O>(&mut self, octave: O) -> &mut Self
+    where
+        O: IntoOctave,
+    {
+        self.octave = octave.into_octave();
+        self
+    }
+    /// consumes the current instance to create another with the given octave
+    pub fn with_octave<O>(self, octave: O) -> Self
+    where
+        O: IntoOctave,
+    {
+        Self {
+            octave: octave.into_octave(),
+            ..self
+        }
     }
     /// returns a copy of the root pitch of the triad
     pub fn root(&self) -> Note {
@@ -166,15 +184,6 @@ impl Triad {
     pub fn relative(&self) -> Self {
         self.transform(LPR::Relative)
     }
-    /// computes the centroid of the triad
-    pub fn centroid<T>(&self) -> Option<[T; 2]>
-    where
-        T: Float + FromPrimitive,
-    {
-        let y = T::from_isize(*self.octave)?;
-        let x = T::from_usize(self.notes().iter().sum())? / T::from_usize(self.notes().len())?;
-        Some([x, y])
-    }
     // return the barycentric coordinates of the given note w.r.t the current triad
     pub fn barycentric<T>(&self, p: impl IntoNote) -> [T; 3]
     where
@@ -197,6 +206,15 @@ impl Triad {
         let b = (d00 * d21 - d01 * d20) / denom;
         let c = T::one() - a - b;
         [a, b, c]
+    }
+    /// computes the centroid of the triad
+    pub fn centroid<T>(&self) -> Option<[T; 2]>
+    where
+        T: Float + FromPrimitive,
+    {
+        let y = T::from_isize(*self.octave)?;
+        let x = T::from_usize(self.notes().iter().sum())? / T::from_usize(self.notes().len())?;
+        Some([x, y])
     }
     /// returns the number of common tones between two triads
     pub fn common_tones(&self, other: &Self) -> Vec<usize> {
@@ -236,24 +254,6 @@ impl Triad {
     /// try to apply a single transformation to a triad
     pub fn try_transform(&self, transform: LPR) -> Result<Self, TriadError> {
         transform.try_apply(self)
-    }
-    /// set the octave of the triad
-    pub fn set_octave<O>(&mut self, octave: O) -> &mut Self
-    where
-        O: IntoOctave,
-    {
-        self.octave = octave.into_octave();
-        self
-    }
-    /// consumes the current instance to create another with the given octave
-    pub fn with_octave<O>(self, octave: O) -> Self
-    where
-        O: IntoOctave,
-    {
-        Self {
-            octave: octave.into_octave(),
-            ..self
-        }
     }
 }
 
