@@ -16,6 +16,7 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
+    scsys::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumIs,
@@ -74,22 +75,6 @@ impl Triads {
             }
         }
         res
-    }
-    /// a functional constructor for the major triad type
-    pub fn major() -> Self {
-        Triads::Major
-    }
-    /// a functional constructor for the minor triad type
-    pub fn minor() -> Self {
-        Triads::Minor
-    }
-    /// a functional constructor for the augmented triad type
-    pub fn augmented() -> Self {
-        Triads::Augmented
-    }
-    /// a functional constructor for the diminished triad type
-    pub fn diminished() -> Self {
-        Triads::Diminished
     }
     /// get the relative triad type
     pub fn relative(self) -> Self {
