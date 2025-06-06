@@ -4,17 +4,19 @@
 */
 //! # rstmt
 //!
-//! This crate focuses on implementing various musical objects and operations.
+//! Welcome to the [`rstmt`](https://docs.rs/rstmt) crate! This crate is designed to be a
+//! complete computational framework for computational music theory.
 #![crate_name = "rstmt"]
 
 #[doc(inline)]
 pub use rstmt_core::*;
+/// this module focuses on implementing the basis of the neo-riemannian theory (NRT)
 #[doc(inline)]
-#[cfg(feature = "neo")]
-pub use rstmt_neo as neo;
+#[cfg(feature = "nrt")]
+pub use rstmt_nrt as nrt;
 
 pub mod prelude {
     pub use rstmt_core::prelude::*;
-    #[cfg(feature = "neo")]
-    pub use rstmt_neo::prelude::*;
+    #[cfg(feature = "nrt")]
+    pub use rstmt_nrt::prelude::*;
 }

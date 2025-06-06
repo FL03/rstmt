@@ -1,0 +1,190 @@
+[package]
+build = "build.rs"
+description = "this crate focuses on providing support for the neo-riemannian theory of music"
+name = "rstmt-nrt"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = [
+    "cdylib", 
+    "rlib"
+]
+bench = false
+doc = true
+doctest = true
+test = true
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+rstmt-core = { workspace = true }
+# custom
+rshyper = { workspace = true }
+scsys = { workspace = true }
+# concurrency & parallelism
+rayon = { optional = true, workspace = true }
+# error-handling
+anyhow = { optional = true, workspace = true }
+thiserror = { workspace = true }
+# mathematics
+num = { workspace = true }
+num-traits = { workspace = true }
+# randomization
+getrandom = { optional = true, workspace = true }
+rand = { optional = true, workspace = true }
+rand_distr = { optional = true, workspace = true }
+# serialization
+serde = { features = ["derive"], optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# logging
+tracing = { features = ["attributes"], optional = true, workspace = true }
+# macros & utilities
+itertools = { workspace = true }
+paste = { workspace = true }
+strum = { features = ["derive"], workspace = true }
+smart-default = { workspace = true }
+
+[dev-dependencies]
+tracing-subscriber = { workspace = true }
+
+[features]
+default = [
+    "std",
+    "tonnetz",
+]
+
+full = [
+    "default", 
+    "anyhow",
+    "json", 
+    "rand", 
+    "serde", 
+    "tracing",
+]
+
+# ************* [FF:Features] *************
+
+tonnetz = [
+    "rshyper/hash_graph",
+    "std",
+]
+
+# ************* [FF:Environments] *************
+std = [
+    "alloc",
+    "num/std",
+    "rand?/std",
+    "rshyper/std",
+    "rstmt-core/std",
+    "scsys/std",
+    "serde?/std",
+    "strum/std",
+]
+
+wasi = [
+    "rstmt-core/wasi",
+]
+
+wasm = [
+    "getrandom?/wasm_js",
+    "rstmt-core/wasm",
+    "scsys/wasm",
+]
+# ************* [FF:Dependencies] *************
+alloc = [
+    "num/alloc", 
+    "rshyper/alloc",
+    "rstmt-core/alloc",
+    "scsys/alloc",
+    "serde?/alloc",
+    "serde_json?/alloc",
+]
+
+anyhow = [
+    "dep:anyhow",
+    "rstmt-core/anyhow",
+    "rshyper/anyhow",
+    "scsys/anyhow",
+]
+
+json = [
+    "alloc",
+    "rstmt-core/json",
+    "serde",
+    "serde_json",
+    "rshyper/json",
+    "scsys/json",
+]
+
+rand = [
+    "dep:rand", 
+    "dep:rand_distr", 
+    "num/rand", 
+    "rng", 
+    "rshyper/rand",
+    "rstmt-core/rand",
+    "scsys/rand",
+]
+
+rng = [
+    "dep:getrandom",
+    "rand/small_rng", 
+    "rand/thread_rng", 
+    "rshyper/rng",
+    "rstmt-core/rng",
+    "scsys/rng",
+]
+
+serde = [
+    "dep:serde", 
+    "dep:serde_derive", 
+    "num/serde", 
+    "rshyper/serde", 
+    "rstmt-core/serde",
+    "scsys/serde",
+    "serde?/derive"
+]
+
+serde_json = ["dep:serde_json"]
+
+tracing = [
+    "dep:tracing",
+    "rshyper/tracing", 
+    "rstmt-core/tracing",
+    "scsys/tracing",
+]
+
+# ************* [Unit Tests] *************
+[[test]]
+name = "default"
+required-features = []
+
+[[test]]
+name = "lpr"
+required-features = []
+
+[[test]]
+name = "navigator"
+required-features = []
+
+[[test]]
+name = "planner"
+required-features = ["tonnetz"]
+
+[[test]]
+name = "triad"
+required-features = ["std"]

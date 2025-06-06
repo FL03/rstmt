@@ -1,43 +1,110 @@
 # rstmt
 
-[![crates.io](https://img.shields.io/crates/v/rstmt.svg)](https://crates.io/crates/rstmt)
-[![docs.rs](https://docs.rs/rstmt/badge.svg)](https://docs.rs/rstmt)
-
-[![clippy](https://github.com/FL03/rstmt/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/rstmt/actions/workflows/clippy.yml)
-[![rust](https://github.com/FL03/rstmt/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/rstmt/actions/workflows/rust.yml)
+[![crates.io](https://img.shields.io/crates/v/rstmt?style=for-the-badge&logo=rust)](https://crates.io/crates/rstmt)
+[![docs.rs](https://img.shields.io/docsrs/rstmt?style=for-the-badge&logo=docs.rs)](https://docs.rs/rstmt)
+[![GitHub License](https://img.shields.io/github/license/FL03/rstmt?style=for-the-badge&logo=github)](https://github.com/FL03/rstmt/blob/main/LICENSE)
 
 ***
 
-### _The library is currently in the early stages of development and is not yet ready for production use._
+_**Warning: expect heavy changes to the API as the library is currently in the early stages of development and is not yet ready for production use.**
 
-This project focuses on providing concrete abstractions of musical objects discussed within the neo-Riemannian theory. 
+`rstmt` is a generalize music-theory toolkit written in Rust.
 
 ## Features
 
-- [] The Neo-Riemannian Theory
+- [ ] American Standard Pitch Notation (ASPN)
+- [ ] The Neo-Riemannian Theory
 
 ## Getting Started
+
+### Prerequisites
+
+Ensure you have the latest version of Rust installed. You can install Rust using [rustup](https://rustup.rs/).
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+After installation, I always recommend ensuring that rustup is updated to the latest version:
+
+```bash
+rustup update
+```
+
+#### _Setting up for WebAssembly_
+
+If you plan to compile this library for WebAssembly, ensure you have the appropriate targets installed. You can check your current targets with:
+
+```bash
+rustup target list --installed
+```
+
+If necessary, add the `wasm32-*` target(s) if you plan to compile for WebAssembly:
+
+```bash
+rustup target add wasm32-unknown-unknown wasm32-wasip1 wasm32-wasip2
+```
 
 ### Building from the source
 
 Start by cloning the repository
 
 ```bash
-git clone https://github.com/FL03/rstmt.git
-cd triad
+git clone https://github.com/FL03/rstmt.git -b main --depth 1
 ```
 
+Then, navigate to the project directory:
+
 ```bash
-cargo build --features full -r --workspace
+cd rstmt
+```
+
+Once you're in the project directory, you can build the project using `cargo`:
+
+```bash
+cargo build -r --workspace --all-features
+```
+
+Or, if you want to run the tests, you can use:
+
+```bash
+cargo test -r --workspace --all-features
 ```
 
 ## Usage
 
-### Example
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies.rstmt]
+features = [
+    "nrt",
+]
+version = "0.0.x"
+```
+
+### Examples
+
+#### _Example #1:_ Basic Usage
 
 ```rust
     extern crate rstmt;
+    
+    use rstmt::Note;
+    use rstmt::nrt::Triad;
 
+    fn main() -> Result<(), Box<dyn core::error::Error + Send + Sync + 'static>> {
+        let root = Note::from_pitch(0);
+        // initialize a c-major triad
+        let triad = dbg!(Triad::major(root));
+        // test the root of the triad
+        assert_eq!(triad.root(), root);
+        // test the parallel transformation
+        assert_eq!(triad.parallel(), Triad::minor(root));
+        // assert the invertibility of the transformations
+        assert_eq!(triad.parallel().parallel(), triad);
+        Ok(())
+    }
 ```
 
 ## Contributing
@@ -46,8 +113,3 @@ Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-## License
-
-* [Apache-2.0](https://choosealicense.com/licenses/apache-2.0/)
-* [MIT](https://choosealicense.com/licenses/mit/)

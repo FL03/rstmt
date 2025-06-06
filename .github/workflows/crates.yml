@@ -1,13 +1,12 @@
-name: crates
+name: crates-io
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+concurrency:   
   cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 env:
-  BASENAME: ${{ github.event.repository.name }}
-  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: full
 
 on:
   release:
@@ -15,38 +14,38 @@ on:
   repository_dispatch:
     types: [ crates-io ]
   workflow_dispatch:
+    inputs:
+      publish:
+        default: true
+        description: 'Publish the crate(s) to crates.io?'
+        type: boolean
+
+permissions:
+  contents: read
+  deployments: write
 
 jobs:
-  base:
+  crates-io:    
+    environment:
+      name: production
+      url: https://crates.io/crates/${{ github.event.repository.name }}
     env:
-      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
-    name: Publish (${{ github.event.repository.name }})
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
+      max-parallel: 1
       matrix:
-        features: [ core ]
+        package:  [ rstmt-core, rstmt-nrt, rstmt ]
     steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ matrix.features }})
-        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
-  features:
-    env:
-      CRATENAME: ${{ github.event.repository.name }}-${{ matrix.features }}
-    name: Publish (features)
-    needs: base
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        features: [ neo ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ env.CRATENAME }})
-        run: cargo publish --all-features -v -p ${{ env.CRATENAME }}
-  publish:
-    name: Publish (${{ github.event.repository.name }})
-    needs: features
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Publish (${{ github.event.repository.name }})
-        run: cargo publish --all-features -v -p ${{ github.event.repository.name }}
+      - 
+        name: Checkout
+        uses: actions/checkout@v4
+      - 
+        name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - 
+        name: Publish (${{ matrix.package }})
+        run: cargo publish --locked --package ${{ matrix.package }}

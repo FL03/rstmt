@@ -1,113 +1,138 @@
 /*
     Appellation: note <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Contrib: @FL03
 */
-use crate::{IntoPitch, Octave, Pitch, Pitches};
+use super::Octave;
+use crate::PitchMod;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde_derive::Deserialize, serde_derive::Serialize)
+)]
 pub struct Note {
+    pub(crate) class: usize,
     pub(crate) octave: Octave,
-    pub(crate) pitch: Pitch,
 }
 
 impl Note {
-    pub fn new(octave: Octave, pitch: impl IntoPitch) -> Self {
+    pub fn new(class: usize, Octave(octave): Octave) -> Self {
         Self {
-            octave,
-            pitch: pitch.into_pitch(),
+            class,
+            octave: Octave(octave),
         }
     }
-    /// Returns a new instance of the note with the given pitch;
-    /// the note's octave is set to the default octave (4).
-    pub fn from_pitch(pitch: impl IntoPitch) -> Self {
-        Self {
-            octave: Octave::default(),
-            pitch: pitch.into_pitch(),
-        }
+    /// returns a new note from a pitch value
+    pub fn from_pitch(pitch: usize) -> Self {
+        Self::new(pitch.pmod(), Octave(4))
     }
-    /// Returns an instance of the note's [PitchClass](crate::pitch::PitchCalss).
-    /// Each pitch class is a synmoblic representation of a group of frequencies,
-    /// which are separated by a factor of 2^(1/12).
-    ///
-    pub fn class(&self) -> Pitches {
-        self.pitch.class()
+    /// returns a copy to the index of the note's class
+    pub const fn class(&self) -> usize {
+        self.class
     }
-
-    /// Returns an owned instance of the note's octave
-    pub const fn octave(&self) -> &Octave {
-        &self.octave
+    /// returns a mutable reference to the index of the note's class
+    pub fn class_mut(&mut self) -> &mut usize {
+        &mut self.class
     }
-    /// Returns a mutable reference to the note's octave
-    pub fn octave_mut(&mut self) -> &mut Octave {
+    /// returns a copy to the octave of the note
+    pub const fn octave(&self) -> Octave {
+        self.octave
+    }
+    /// returns a mutable reference to the current octave
+    pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
     }
-    /// Returns an owned instance of the note's pitch
-    pub const fn pitch(&self) -> &Pitch {
-        &self.pitch
+    /// set the pitch class of the note
+    pub fn set_class(&mut self, class: usize) -> &mut Self {
+        self.class = class.pmod();
+        self
     }
-    /// Returns a mutable reference to the note's pitch
-    pub fn pitch_mut(&mut self) -> &mut Pitch {
-        &mut self.pitch
-    }
-    /// Sets the note's octave
-    pub fn set_octave(&mut self, octave: Octave) {
+    /// set the octave of the note
+    pub fn set_octave(&mut self, octave: Octave) -> &mut Self {
         self.octave = octave;
+        self
     }
-    /// Sets the note's pitch
-    pub fn set_pitch(&mut self, Pitch(pitch): Pitch) {
-        self.pitch.set(pitch);
+    /// consumes the current instance to create another with the given pitch class
+    pub fn with_class(self, class: usize) -> Self {
+        Self { class, ..self }
     }
-    /// Returns a new instance of the note with the given octave
+    /// consumes the current instance to create another with the given octave
     pub fn with_octave(self, octave: Octave) -> Self {
         Self { octave, ..self }
     }
-    /// Returns a new instance of the note with the given pitch
-    pub fn with_pitch(self, Pitch(pitch): Pitch) -> Note {
-        Note {
-            octave: self.octave,
-            pitch: Pitch(pitch),
-        }
-    }
 }
-
-/*
- ************* Implementations *************
-*/
 
 impl core::fmt::Display for Note {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class(), self.octave)
+        write!(f, "{}.{}", self.class, self.octave)
     }
 }
 
-unsafe impl Send for Note {}
+impl core::ops::Add<Note> for Note {
+    type Output = Self;
 
-unsafe impl Sync for Note {}
-
-impl From<(Octave, Pitch)> for Note {
-    fn from((octave, pitch): (Octave, Pitch)) -> Self {
-        Self { octave, pitch }
+    fn add(self, rhs: Note) -> Self::Output {
+        Self::new(self.class + rhs.class, self.octave + rhs.octave)
     }
 }
 
-impl From<Note> for (Octave, Pitch) {
-    fn from(note: Note) -> Self {
-        (note.octave, note.pitch)
+impl core::ops::AddAssign<Note> for Note {
+    fn add_assign(&mut self, rhs: Note) {
+        self.class += rhs.class;
+        self.octave += rhs.octave;
     }
 }
 
-impl From<Note> for Pitch {
-    fn from(note: Note) -> Self {
-        note.pitch
+impl core::ops::Add<usize> for Note {
+    type Output = Self;
+
+    fn add(self, rhs: usize) -> Self::Output {
+        Self::new(self.class + rhs, self.octave)
     }
 }
 
-impl From<Pitch> for Note {
-    fn from(pitch: Pitch) -> Self {
+impl core::ops::AddAssign<usize> for Note {
+    fn add_assign(&mut self, rhs: usize) {
+        self.class = (self.class + rhs).pmod();
+    }
+}
+
+impl core::ops::Sub<usize> for Note {
+    type Output = Self;
+
+    fn sub(self, rhs: usize) -> Self::Output {
+        let class = self.class as isize - rhs as isize;
         Self {
-            octave: Octave::default(),
-            pitch,
+            class: class.pmod() as usize,
+            ..self
         }
     }
 }
+
+impl core::ops::SubAssign<usize> for Note {
+    fn sub_assign(&mut self, rhs: usize) {
+        self.class = (self.class as isize - rhs as isize).pmod() as usize;
+    }
+}
+
+macro_rules! impl_note_from {
+    ($($t:ty),*) => {
+        $(
+            impl From<$t> for Note {
+                fn from(class: $t) -> Self {
+                    Note::from_pitch(class.pmod() as usize)
+                }
+            }
+
+            impl From<($t, Octave)> for Note {
+                fn from((class, octave): ($t, Octave)) -> Self {
+                    Note::new(class.pmod() as usize, octave)
+                }
+            }
+        )*
+    };
+}
+
+impl_note_from!(
+    usize, u8, u16, u32, u64, u128, isize, i8, i16, i32, i64, i128
+);

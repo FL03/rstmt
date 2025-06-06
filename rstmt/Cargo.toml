@@ -1,81 +1,144 @@
 [package]
-authors.workspace = true
 build = "build.rs"
+name = "rstmt"
+
+authors.workspace = true
 categories.workspace = true
 description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "rstmt"
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
+
+[lib]
+crate-type = [ 
+    "cdylib", 
+    "rlib" ,
+]
+bench = true
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+rstmt-core = { workspace = true }
+rstmt-nrt = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
+criterion = { workspace = true }
+num = { features = ["std"], workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [ "--cfg", "docsrs" ]
 
 [features]
 default = [
+    "nrt",
     "std",
 ]
 
 full = [
     "default",
-    "neo",
+    "anyhow",
     "rand",
     "serde",
+    "tracing",
 ]
 
 # ********* [FF] Features *********
-neo = [
-    "dep:rstmt-neo",
+nrt = [
+    "dep:rstmt-nrt",
 ]
+
+tonnetz = [
+    "nrt",
+    "rstmt-nrt?/tonnetz",
+]
+
+# ************* [FF:Environments] *************
+std = [
+    "rstmt-core/std",
+    "rstmt-nrt?/std",
+]
+
+wasi = [
+    "rstmt-core/wasi",
+    "rstmt-nrt?/wasi",
+]
+
+wasm = [
+    "rstmt-core/wasm",
+    "rstmt-nrt?/wasm",
+]
+
 
 # ********* [FF] Dependencies *********
 alloc = [
     "rstmt-core/alloc",
+    "rstmt-nrt?/alloc",
+]
+
+anyhow = [
+    "rstmt-core/anyhow",
+    "rstmt-nrt?/anyhow",
+]
+
+json = [
+    "rstmt-core/json",
+    "rstmt-nrt?/json",
 ]
 
 rand = [
     "rstmt-core/rand",
-    "rstmt-neo?/rand",
+    "rstmt-nrt?/rand",
+]
+
+rng = [
+    "rstmt-core/rng",
+    "rstmt-nrt?/rng",
 ]
 
 serde = [
     "rstmt-core/serde",
-    "rstmt-neo?/serde",
+    "rstmt-nrt?/serde",
 ]
 
-# ********* [FF] Environments *********
-std = [
-    "rstmt-core/std",
+serde_json = [
+    "rstmt-core/serde_json",
+    "rstmt-nrt?/serde_json",
 ]
 
-[lib]
-bench = true
-crate-type = ["cdylib", "rlib"]
-doctest = false
-test = true
+tracing = [
+    "rstmt-core/tracing",
+    "rstmt-nrt?/tracing",
+]
 
+# ************* [Benchmarks] *************
+[[bench]]
+name = "default"
+path = "benches/default.rs"
+harness = false
+
+# ************* [Examples] *************
+[[example]]
+name = "motion"
+required-features = ["nrt", "std", "tracing"]
+
+# ************* [Examples] *************
 [[example]]
 name = "triads"
-required-features = ["neo", "std"]
+required-features = [ 
+    "nrt", 
+    "std" 
+]
 
 
-
-[dev-dependencies]
-anyhow.workspace = true
-num = "0.4"
-
-[dependencies.rstmt-core]
-default-features = false
-path = "../core"
-version = "0.0.2"
-
-[dependencies.rstmt-neo]
-default-features = false
-optional = true
-path = "../neo"
-version = "0.0.2"
-
-[package.metadata.docs.rs]
-all-features = true
-rustc-args = ["--cfg", "docsrs"]

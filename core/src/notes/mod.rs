@@ -1,15 +1,20 @@
 /*
-    Appellation: notes <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    appellation: notes <module>
+    authors: @FL03
 */
+//! this modules implements the various representations of musical notes, octaves, and pitches.
 #[doc(inline)]
-pub use self::note::*;
+pub use self::prelude::*;
 
-pub(crate) mod impls {
-    pub mod impl_note_ops;
-}
-pub(crate) mod note;
+pub mod note;
+pub mod octave;
+pub mod pitch;
 
 pub(crate) mod prelude {
+    #[doc(inline)]
     pub use super::note::*;
+    #[doc(inline)]
+    pub use super::octave::*;
+    #[doc(inline)]
+    pub use super::pitch::*;
 }
