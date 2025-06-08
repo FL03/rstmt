@@ -14,20 +14,26 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [ "--cfg", "docsrs" ]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "v{{version}}"
+
 [lib]
 crate-type = [
-    "cdylib", 
-    "rlib"
+    "cdylib",
+    "rlib",
+    "staticlib",
 ]
 bench = false
 doc = true
 doctest = true
 test = true
-
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 # custom
@@ -63,11 +69,11 @@ tracing-subscriber = { workspace = true }
 default = ["std"]
 
 full = [
-    "default", 
+    "default",
     "anyhow",
-    "json", 
-    "rand", 
-    "serde", 
+    "json",
+    "rand",
+    "serde",
     "tracing",
 ]
 
@@ -92,7 +98,7 @@ wasm = [
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-    "num/alloc", 
+    "num/alloc",
     "scsys/alloc",
     "serde?/alloc",
     "serde_json?/alloc",
@@ -111,24 +117,24 @@ json = [
 ]
 
 rand = [
-    "dep:rand", 
-    "dep:rand_distr", 
-    "num/rand", 
-    "rng", 
+    "dep:rand",
+    "dep:rand_distr",
+    "num/rand",
+    "rng",
     "scsys/rand",
 ]
 
 rng = [
     "dep:getrandom",
-    "rand/small_rng", 
-    "rand/thread_rng", 
+    "rand/small_rng",
+    "rand/thread_rng",
     "scsys/rng",
 ]
 
 serde = [
-    "dep:serde", 
-    "dep:serde_derive", 
-    "num/serde", 
+    "dep:serde",
+    "dep:serde_derive",
+    "num/serde",
     "scsys/serde",
     "serde?/derive"
 ]
@@ -138,7 +144,7 @@ serde_json = ["dep:serde_json"]
 tracing = [
     "dep:tracing",
     "scsys/tracing",
-    "tracing?/attributes", 
+    "tracing?/attributes",
     "tracing?/log"
 ]
 

@@ -4,12 +4,12 @@
 */
 use rstmt_core::Octave;
 use rstmt_nrt::transform::MotionPlanner;
-use rstmt_nrt::{Tonnetz, Triad, TriadError};
+use rstmt_nrt::{HashTonnetz, Triad, TriadError};
 
 #[test]
 fn test_motion_planner() -> Result<(), TriadError> {
     // Create a new tonnetz
-    let mut tonnetz = Tonnetz::new();
+    let mut tonnetz = HashTonnetz::new();
 
     // Add pitch classes (0-11)
     let _ = tonnetz.scaffold_layer(Octave(4))?;

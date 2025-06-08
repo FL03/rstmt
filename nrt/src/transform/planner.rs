@@ -4,7 +4,7 @@
 */
 use super::types::{Path, PathFeatures, SearchNode};
 use super::{PathCache, PathFinderConfig};
-use crate::tonnetz::Tonnetz;
+use crate::tonnetz::HashTonnetz;
 use crate::{LPR, Triad};
 
 use rshyper::EdgeId;
@@ -16,13 +16,13 @@ pub struct MotionPlanner<'a> {
     /// Cache for storing computed paths
     pub(crate) cache: PathCache,
     /// Reference to the tonnetz graph
-    pub(crate) tonnetz: &'a Tonnetz,
+    pub(crate) tonnetz: &'a HashTonnetz,
     pub(crate) config: PathFinderConfig,
 }
 
 impl<'a> MotionPlanner<'a> {
     /// Create a new motion planner for the given tonnetz
-    pub fn new(tonnetz: &'a Tonnetz) -> Self {
+    pub fn new(tonnetz: &'a HashTonnetz) -> Self {
         let capacity = 1000; // Default cache capacity
         MotionPlanner {
             cache: PathCache::new(capacity),
@@ -55,7 +55,7 @@ impl<'a> MotionPlanner<'a> {
         self.config().max_paths()
     }
     /// returns an immutable reference to the tonnetz
-    pub const fn tonnetz(&self) -> &Tonnetz {
+    pub const fn tonnetz(&self) -> &HashTonnetz {
         self.tonnetz
     }
     /// updates the current configuration and returns a mutable reference to the instance.

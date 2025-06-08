@@ -14,20 +14,26 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [ "--cfg", "docsrs" ]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "v{{version}}"
+
 [lib]
 crate-type = [
     "cdylib",
-    "rlib"
+    "rlib",
+    "staticlib",
 ]
 bench = false
 doc = true
 doctest = true
 test = true
-
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 rstmt-core = { workspace = true }

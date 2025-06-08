@@ -13,7 +13,7 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-/// re-declare the external `rstmt_core` crate for convenience
+/// re-declare the external `rstmt_core` crate as `rstmt` for convenience
 extern crate rstmt_core as rstmt;
 
 #[doc(inline)]
@@ -28,7 +28,7 @@ pub use self::transform::TriadNavigator;
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
-pub use self::{tonnetz::Tonnetz, transform::MotionPlanner};
+pub use self::{tonnetz::HashTonnetz, transform::MotionPlanner};
 
 #[macro_use]
 pub(crate) mod macros {
@@ -67,7 +67,7 @@ pub mod prelude {
     pub use crate::error::*;
     #[cfg(feature = "tonnetz")]
     #[doc(no_inline)]
-    pub use crate::tonnetz::Tonnetz;
+    pub use crate::tonnetz::prelude::*;
     #[cfg(feature = "alloc")]
     #[doc(no_inline)]
     pub use crate::transform::prelude::*;

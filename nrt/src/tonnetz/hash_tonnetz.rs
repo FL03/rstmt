@@ -18,7 +18,7 @@ pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 /// Each instance of the runtime orchestrates a _fragment_ of the Tonnetz and glues it to the
 /// cluster with various networking protocols.
 #[derive(Clone, Debug)]
-pub struct Tonnetz {
+pub struct HashTonnetz {
     /// The underlying hypergraph structure
     pub(crate) graph: HashGraph<Aspn>,
     /// Maps EdgeIds to Triad for efficient access
@@ -27,16 +27,16 @@ pub struct Tonnetz {
     pub(crate) transformations: LprMap,
 }
 
-impl Default for Tonnetz {
+impl Default for HashTonnetz {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Tonnetz {
+impl HashTonnetz {
     /// returns a new [`Tonnetz`] structure initialized with empty stores
     pub fn new() -> Self {
-        Tonnetz {
+        HashTonnetz {
             graph: HashGraph::new(),
             triads: TriadMap::new(),
             transformations: LprMap::new(),
@@ -45,7 +45,7 @@ impl Tonnetz {
     /// returns a new instance of the [`Tonnetz`] with a specified capacity
     pub fn with_capacity(capacity: usize) -> Self {
         // each edge has n vertices meaning we need to reserve space for n^2 edges
-        Tonnetz {
+        HashTonnetz {
             graph: HashGraph::with_capacity(capacity * capacity, capacity),
             triads: HashMap::with_capacity(capacity),
             transformations: HashMap::new(),
@@ -90,10 +90,20 @@ impl Tonnetz {
         self.transformations = transformations;
         self
     }
-    /// Add a new note class vertex to the Tonnetz
+    /// add a new note class vertex to the Tonnetz
     pub fn add_note(&mut self, note: Aspn) -> crate::Result<VertexId> {
         let id = self.graph_mut().add_node(note)?;
         Ok(id)
+    }
+    /// adds each note within the iterator to the Tonnetz
+    pub fn add_notes<I>(&mut self, notes: I) -> Vec<VertexId>
+    where
+        I: IntoIterator<Item = Aspn>,
+    {
+        notes
+            .into_iter()
+            .filter_map(|note| self.add_note(note).ok())
+            .collect::<Vec<_>>()
     }
     /// Add a new triad to the Tonnetz
     pub fn add_triad(&mut self, triad: Triad) -> crate::Result<EdgeId> {
@@ -123,20 +133,13 @@ impl Tonnetz {
 
         Ok(edge_id)
     }
-    /// initialize a complete layer of the Tonnetz at the given octave
-    pub fn scaffold_layer(&mut self, Octave(octave): Octave) -> crate::Result<Vec<VertexId>> {
-        // iterate over all Note classes in the octave
-        let res = (0..12)
-            .filter_map(|i| {
-                let note = Aspn::new(i, Octave(octave));
-                self.add_note(note).ok()
-            })
-            .collect::<Vec<_>>();
-        Ok(res)
-    }
-    /// Get a triad by its edge id
+    /// returns a reference to the triad associated with the given edge index
     pub fn get_triad(&self, edge_id: EdgeId) -> Option<&Triad> {
-        self.triads.get(&edge_id)
+        self.triads().get(&edge_id)
+    }
+    /// returns a mutable reference to the triad associated with the given edge index
+    pub fn get_triad_mut(&mut self, edge_id: EdgeId) -> Option<&mut Triad> {
+        self.triads_mut().get_mut(&edge_id)
     }
     /// Compute and store all possible transformations between triads
     pub fn compute_transformations(&mut self) {
@@ -168,8 +171,21 @@ impl Tonnetz {
             }
         }
     }
+    /// initialize a complete layer of the Tonnetz at the given octave
+    pub fn scaffold_layer(&mut self, octave: Octave) -> crate::Result<Vec<VertexId>> {
+        // create an iterator over all 12 notes within the given octave
+        let iter = (0..12).map(|i| Aspn::new(i, octave));
+        // use the iterator to insert all the notes into the Tonnetz
+        let res = self.add_notes(iter);
+        // return the result
+        Ok(res)
+    }
+}
+
+/// private methods supporting the [`HashTonnetz`] structure
+impl HashTonnetz {
     /// Find a vertex by its associated pitch class
-    fn find_vertex_by_note(&self, note: usize) -> Option<VertexId> {
+    pub(crate) fn find_vertex_by_note(&self, note: usize) -> Option<VertexId> {
         self.graph
             .nodes()
             .iter()
