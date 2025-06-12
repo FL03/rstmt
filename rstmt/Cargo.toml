@@ -42,6 +42,7 @@ rstmt-nrt = { optional = true, workspace = true }
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
 criterion = { features = ["plotters"], workspace = true }
+lazy_static = { workspace = true }
 num = { features = ["std"], workspace = true }
 tracing = { features = ["std"], workspace = true }
 tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }

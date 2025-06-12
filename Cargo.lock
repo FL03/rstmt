@@ -942,6 +942,7 @@ version = "0.0.5"
 dependencies = [
  "anyhow",
  "criterion",
+ "lazy_static",
  "num",
  "rstmt-core",
  "rstmt-nrt",

@@ -2,40 +2,30 @@
     Appellation: default <module>
     Contrib: @FL03
 */
-use criterion::{BatchSize, BenchmarkId, Criterion};
-use lazy_static::lazy_static;
 use core::hint::black_box;
-use std::time::Duration;
+use criterion::{BatchSize, BenchmarkId, Criterion};
 
 const SAMPLES: usize = 50;
 /// the default number of iterations to benchmark a method for
 const N: usize = 20;
 /// the default number of seconds a benchmark should complete in
-const DEFAULT_DURATION_SECS: u64 = 10;
-
-lazy_static! {
-    /// a static reference to the duration of the benchmark
-    static ref DURATION: Duration = Duration::from_secs(DEFAULT_DURATION_SECS);
+const DURATION: u64 = 10;
+/// a benchmark for the [`finobacci`](fib::fibonacci) function
+fn benchmark_fibonacci_func(c: &mut Criterion) {
+    c.bench_function("fibonacci", |b| b.iter(|| fib::fibonacci(black_box(N))));
 }
-
-fn bench_fib_func(c: &mut Criterion) {
-    c.bench_function("fibonacci", |b| {
-        b.iter(|| fib::fibonacci(black_box(N)))
-    });
-}
-
-fn bench_fib_recursive(c: &mut Criterion) {
+/// a benchmark for the [`fib::recursive_fibonacci`] function
+fn benchmark_recursive_fibonacci(c: &mut Criterion) {
     c.bench_function("recursive_fibonacci", |b| {
         b.iter(|| fib::recursive_fibonacci(black_box(N)))
     });
 }
-
-fn bench_fib_iter(c: &mut Criterion) {
-    let measure_for = Duration::from_secs(DEFAULT_DURATION_SECS);
+/// a benchmark for the [`fib::Fibonacci`] iterator
+fn benchmark_fibonacci_iter(c: &mut Criterion) {
     // create a benchmark group for the Fibonacci iterator
     let mut group = c.benchmark_group("Fibonacci");
     // set the measurement time for the group
-    group.measurement_time(measure_for);
+    group.measurement_time(std::time::Duration::from_secs(DURATION));
     //set the sample size
     group.sample_size(SAMPLES);
 
@@ -44,7 +34,7 @@ fn bench_fib_iter(c: &mut Criterion) {
             b.iter_batched(
                 fib::Fibonacci::new,
                 |mut fib| {
-                    black_box(fib.compute(x));
+                    fib.compute(black_box(x));
                 },
                 BatchSize::SmallInput,
             );
@@ -56,9 +46,9 @@ fn bench_fib_iter(c: &mut Criterion) {
 // initialize the benchmark group
 criterion::criterion_group! {
     benches,
-    bench_fib_func,
-    bench_fib_iter,
-    bench_fib_recursive,
+    benchmark_fibonacci_func,
+    benchmark_fibonacci_iter,
+    benchmark_recursive_fibonacci,
 }
 // This macro expands to a function named `benches`, which uses the given config
 criterion::criterion_main!(benches);
