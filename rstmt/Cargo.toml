@@ -43,7 +43,7 @@ rstmt-nrt = { optional = true, workspace = true }
 anyhow = { features = ["std"], workspace = true }
 criterion = { features = ["plotters"], workspace = true }
 num = { features = ["std"], workspace = true }
-tracing = { workspace = true }
+tracing = { features = ["std"], workspace = true }
 tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
 
 [features]

@@ -904,7 +904,7 @@ dependencies = [
  "rand 0.9.1",
  "rand_distr",
  "rshyper-core",
- "scsys",
+ "scsys 0.2.9",
  "serde",
  "serde_derive",
  "serde_json",
@@ -926,7 +926,7 @@ dependencies = [
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "scsys",
+ "scsys 0.2.9",
  "serde",
  "serde_derive",
  "serde_json",
@@ -962,7 +962,7 @@ dependencies = [
  "rand 0.9.1",
  "rand_distr",
  "rayon",
- "scsys",
+ "scsys 0.3.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -988,7 +988,7 @@ dependencies = [
  "rayon",
  "rshyper",
  "rstmt-core",
- "scsys",
+ "scsys 0.3.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -1026,12 +1026,26 @@ version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99f03c8d2f4cd50a78bb3b888b059071d02555491e9abb3e30397e4c8f1c6c48"
 dependencies = [
- "scsys-config",
- "scsys-core",
- "scsys-crypto",
- "scsys-derive",
- "scsys-traits",
- "scsys-util",
+ "scsys-config 0.2.9",
+ "scsys-core 0.2.9",
+ "scsys-crypto 0.2.9",
+ "scsys-derive 0.2.9",
+ "scsys-traits 0.2.9",
+ "scsys-util 0.2.9",
+]
+
+[[package]]
+name = "scsys"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd97365a000c681edf2a3954250636442d7e76b2b53d32a0d516fa253c34e200"
+dependencies = [
+ "scsys-config 0.3.0",
+ "scsys-core 0.3.0",
+ "scsys-crypto 0.3.0",
+ "scsys-derive 0.3.0",
+ "scsys-traits 0.3.0",
+ "scsys-util 0.3.0",
 ]
 
 [[package]]
@@ -1040,9 +1054,28 @@ version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c618071e02f7298b52923e4adba437a578da846536d8241e730bb5bdb190649d"
 dependencies = [
+ "config",
+ "scsys-core 0.2.9",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+]
+
+[[package]]
+name = "scsys-config"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "50a68cdb65ec0a505e6a8d486755ffff8751db626d3933dae305b80192f5827b"
+dependencies = [
  "anyhow",
  "config",
- "scsys-core",
+ "scsys-core 0.3.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -1059,6 +1092,31 @@ name = "scsys-core"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0861fd47a14867d217d9adc62d6dc376a47fbc3ada3eb0a130aa4497698fa0ef"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "getrandom",
+ "num",
+ "num-traits",
+ "paste",
+ "rand 0.9.1",
+ "rand_distr",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "time",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "scsys-core"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0939b72bac5a53728b7ff767996abd9547df2b7daf60228ee6c959761095b78b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1096,7 +1154,36 @@ dependencies = [
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "scsys-core",
+ "scsys-core 0.2.9",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "time",
+ "tracing",
+ "typenum",
+ "uuid",
+]
+
+[[package]]
+name = "scsys-crypto"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70e266c3cbaf56d7c8fe8f47037c683c909fc85ed1cfa664cc61e35ed9f4f24b"
+dependencies = [
+ "anyhow",
+ "bincode",
+ "blake3",
+ "chrono",
+ "digest",
+ "generic-array 1.2.0",
+ "getrandom",
+ "paste",
+ "rand 0.9.1",
+ "rand_distr",
+ "scsys-core 0.3.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -1121,6 +1208,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "scsys-derive"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f57af57d501f1d0b99af8ce5a7e81705fd01f9cf688da8610e42b8817c049570"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "scsys-traits"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1130,10 +1228,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "scsys-traits"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5849f9fcb8ccacfaf68f287404236029a7d557fe8a875cdd4c1ec2b62b6987a"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "scsys-util"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85f987868945446f6f31def1b47110c1b21c13b0c4101101ec4146634c0e75f5"
+dependencies = [
+ "num-traits",
+ "rand 0.9.1",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "strum",
+ "tracing",
+]
+
+[[package]]
+name = "scsys-util"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b49c0764a02759cae0b0851ebcbab56a2ef18d5d87eb5344e1b9533478a7b82f"
 dependencies = [
  "num-traits",
  "rand 0.9.1",
