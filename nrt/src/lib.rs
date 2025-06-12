@@ -8,6 +8,7 @@
 //!
 #![allow(clippy::module_inception)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![crate_name = "rstmt_nrt"]
 #![crate_type = "lib"]
 
 #[cfg(feature = "alloc")]
