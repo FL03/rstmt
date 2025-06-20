@@ -6,7 +6,7 @@
 //!
 //! This crate works to establish a solid foundation fo exploring the neo-riemannian theory,
 //! providing implementations of the [`Triad`], its transformations [`LPR`], and the
-//! generalized tonnetz (`Tonnetz`).
+//! generalized tonnetz ([`HyperTonnetz`]).
 //!
 //! ## Background
 //!

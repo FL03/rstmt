@@ -23,7 +23,7 @@
 pub use self::hyper_tonnetz::HyperTonnetz;
 
 #[cfg(feature = "std")]
-pub mod hyper_tonnetz;
+pub(self) mod hyper_tonnetz;
 
 pub(crate) mod prelude {
     #[cfg(feature = "std")]
