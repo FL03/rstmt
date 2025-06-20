@@ -2,55 +2,67 @@
     Appellation: navigator <module>
     Contrib: @FL03
 */
-use super::types::{ChainFeatures, TransformationChain};
+use super::{ChainFeatures, PathFinderConfig, TransformationChain};
 use crate::{LPR, Triad};
 use std::collections::{HashMap, HashSet, VecDeque};
-use strum::IntoEnumIterator;
 
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
 #[derive(Debug)]
 pub struct TriadNavigator<'a> {
     triad: &'a Triad,
-    /// Maximum search depth for pathfinding
-    max_depth: usize,
-    /// Maximum number of paths to find
-    max_paths: usize,
+    config: PathFinderConfig,
 }
 
 impl<'a> TriadNavigator<'a> {
     pub(crate) fn new(triad: &'a Triad) -> Self {
         Self {
             triad,
-            max_depth: 5, // Default search depth
-            max_paths: 5, // default number of paths to find
+            config: PathFinderConfig::default(),
         }
     }
+    pub const fn config(&self) -> &PathFinderConfig {
+        &self.config
+    }
+    /// returns a mutable reference to the configuration of the navigator
+    pub fn config_mut(&mut self) -> &mut PathFinderConfig {
+        &mut self.config
+    }
+    /// returns the maximum depth for pathfinding
+    pub const fn max_depth(&self) -> usize {
+        self.config().max_depth()
+    }
+    /// returns the maximum number of paths to find
+    pub const fn max_paths(&self) -> usize {
+        self.config().max_paths()
+    }
+    /// returns a copy of the triad being navigated
+    pub const fn triad(&self) -> &Triad {
+        self.triad
+    }
     /// set the maximum depth for pathfinding
-    pub fn set_max_depth(&mut self, depth: usize) {
-        self.max_depth = depth;
+    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
+        self.config_mut().set_max_depth(depth);
+        self
     }
     /// set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) {
-        self.max_paths = paths;
+    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
+        self.config_mut().set_max_paths(paths);
+        self
     }
     /// consumes the current instance to create another with the given maximum depth
     pub fn with_max_depth(self, depth: usize) -> Self {
         Self {
-            max_depth: depth,
+            config: self.config.with_max_depth(depth),
             ..self
         }
     }
     /// consumes the current instance to create another with the given maximum number of paths
     pub fn with_max_paths(self, paths: usize) -> Self {
         Self {
-            max_paths: paths,
+            config: self.config.with_max_paths(paths),
             ..self
         }
-    }
-    /// returns a copy of the triad being navigated
-    pub const fn triad(&self) -> &Triad {
-        self.triad
     }
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> Vec<TransformationChain> {
@@ -88,7 +100,7 @@ impl<'a> TriadNavigator<'a> {
 
         while let Some((current_triad, transforms, triads)) = queue.pop_front() {
             // Don't exceed maximum depth
-            if transforms.len() >= self.max_depth {
+            if transforms.len() >= self.max_depth() {
                 continue;
             }
 
@@ -128,7 +140,7 @@ impl<'a> TriadNavigator<'a> {
                     });
 
                     // Check if we've found enough paths
-                    if result_paths.len() >= self.max_paths {
+                    if result_paths.len() >= self.max_paths() {
                         // Sort paths by cost (lower is better)
                         result_paths.sort_by_key(|p| p.cost);
                         return result_paths;

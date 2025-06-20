@@ -2,18 +2,14 @@
     Appellation: traid <module>
     Contrib: @FL03
 */
-#[doc(inline)]
-pub use self::{class::*, factors::*};
-
-pub(crate) mod class;
-pub(crate) mod factors;
+use super::{Factors, Triads};
 
 use crate::LPR;
 use crate::error::TriadError;
-use crate::transform::TriadNavigator;
-use rstmt::traits::{IntoNote, IntoOctave, PitchMod};
-use rstmt::{Note, Octave};
+use rstmt::{Aspn, IntoAspn, Octave, PitchMod};
 
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive};
 
 /// A triad is a particular chord composed of three notes that satify particular intervallic
@@ -49,10 +45,10 @@ impl Triad {
     /// Create a new triad from a root pitch and class
     pub fn from_root<N>(root: N, class: Triads) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         // all IntoNote implementations should* already compute pmod
-        let note = root.into_note();
+        let note = root.into_aspn();
         let root = note.class();
         let [a, .., c] = class.intervals();
         let third = (root + a).pmod();
@@ -66,28 +62,28 @@ impl Triad {
     /// creates a new augmented triad from the given root
     pub fn augmented<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Augmented)
     }
     /// creates a new diminished triad from the given root
     pub fn diminished<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Diminished)
     }
     /// Create a new major triad from the given root
     pub fn major<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Major)
     }
     /// creates a new minor triad from the given root
     pub fn minor<N>(root: N) -> Self
     where
-        N: IntoNote,
+        N: IntoAspn,
     {
         Self::from_root(root, Triads::Minor)
     }
@@ -114,36 +110,39 @@ impl Triad {
     /// returns a mutable reference to the octave of the triad
     pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
-    }    
+    }
     /// set the octave of the triad
-    pub fn set_octave<O>(&mut self, octave: O) -> &mut Self
-    where
-        O: IntoOctave,
-    {
-        self.octave = octave.into_octave();
+    pub fn set_octave(&mut self, octave: Octave) -> &mut Self {
+        self.octave = octave;
         self
     }
     /// consumes the current instance to create another with the given octave
-    pub fn with_octave<O>(self, octave: O) -> Self
-    where
-        O: IntoOctave,
-    {
-        Self {
-            octave: octave.into_octave(),
-            ..self
-        }
+    pub fn with_octave(self, octave: Octave) -> Self {
+        Self { octave, ..self }
     }
     /// returns a copy of the root pitch of the triad
-    pub fn root(&self) -> Note {
-        Note::new(self[Factors::Root], self.octave())
+    pub fn root(&self) -> usize {
+        self[Factors::Root]
     }
-    /// returns a copy of the third chord factor within the triad
-    pub fn third(&self) -> Note {
-        Note::new(self[Factors::Third], self.octave())
+    /// returns a mutable reference to the root pitch of the triad
+    pub fn root_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Root]
     }
-    /// returns a copy of the fifth chord factor within the triad
-    pub fn fifth(&self) -> Note {
-        Note::new(self[Factors::Fifth], self.octave())
+    /// returns a copy of the third pitch of the triad
+    pub fn third(&self) -> usize {
+        self[Factors::Third]
+    }
+    /// returns a mutable reference to the third pitch of the triad
+    pub fn third_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Third]
+    }
+    /// returns a copy of the fifth pitch of the triad
+    pub fn fifth(&self) -> usize {
+        self[Factors::Fifth]
+    }
+    /// returns a mutable reference to the fifth pitch of the triad
+    pub fn fifth_mut(&mut self) -> &mut usize {
+        &mut self[Factors::Fifth]
     }
     /// check if the triad contains a given pitch class
     pub fn contains<Q>(&self, pitch: &Q) -> bool
@@ -151,6 +150,14 @@ impl Triad {
         Q: core::borrow::Borrow<usize>,
     {
         self.notes().contains(pitch.borrow())
+    }
+    /// returns some [`LPR`] transformation, iff they are within a single _step_ of one another
+    /// otherwise, returns [`None`](Option::None).
+    pub fn is_neighbor(&self, other: &Triad) -> Option<LPR> {
+        LPR::iter().find(|&t| {
+            let result = self.transform(t);
+            result == *other
+        })
     }
     /// returns true if the current instance is an augmented triad
     pub fn is_augmented(&self) -> bool {
@@ -185,11 +192,11 @@ impl Triad {
         self.transform(LPR::Relative)
     }
     // return the barycentric coordinates of the given note w.r.t the current triad
-    pub fn barycentric<T>(&self, p: impl IntoNote) -> [T; 3]
+    pub fn barycentric<T>(&self, p: impl IntoAspn) -> [T; 3]
     where
         T: Float + FromPrimitive,
     {
-        let note = p.into_note();
+        let note = p.into_aspn();
         let px = T::from_usize(note.class().pmod()).unwrap();
         let py = T::from_isize(*note.octave()).unwrap();
         let y = T::from_isize(*self.octave).unwrap();
@@ -216,6 +223,7 @@ impl Triad {
         let x = T::from_usize(self.notes().iter().sum())? / T::from_usize(self.notes().len())?;
         Some([x, y])
     }
+    #[cfg(feature = "alloc")]
     /// returns the number of common tones between two triads
     pub fn common_tones(&self, other: &Self) -> Vec<usize> {
         self.notes()
@@ -224,9 +232,10 @@ impl Triad {
             .copied()
             .collect::<Vec<_>>()
     }
+    #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
-    pub fn path_finder(&self) -> TriadNavigator<'_> {
-        TriadNavigator::new(self)
+    pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
+        crate::transform::TriadNavigator::new(self)
     }
     /// apply a single [LPR] transformation to a triad
     pub fn transform(&self, transform: LPR) -> Self {
@@ -259,7 +268,7 @@ impl Triad {
 
 impl Default for Triad {
     fn default() -> Self {
-        Triad::major(Note::from_pitch(0))
+        Triad::major(Aspn::from_pitch(0))
     }
 }
 
@@ -323,7 +332,6 @@ impl core::ops::MulAssign<LPR> for Triad {
 
 impl core::iter::IntoIterator for Triad {
     type Item = usize;
-
     type IntoIter = core::array::IntoIter<Self::Item, 3>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -333,7 +341,6 @@ impl core::iter::IntoIterator for Triad {
 
 impl<'a> core::iter::IntoIterator for &'a Triad {
     type Item = &'a usize;
-
     type IntoIter = core::slice::Iter<'a, usize>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -343,7 +350,6 @@ impl<'a> core::iter::IntoIterator for &'a Triad {
 
 impl<'a> core::iter::IntoIterator for &'a mut Triad {
     type Item = &'a mut usize;
-
     type IntoIter = core::slice::IterMut<'a, usize>;
 
     fn into_iter(self) -> Self::IntoIter {

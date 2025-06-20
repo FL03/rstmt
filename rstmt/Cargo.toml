@@ -14,10 +14,21 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [ "--cfg", "docsrs" ]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "v{{version}}"
+
 [lib]
-crate-type = [ 
-    "cdylib", 
-    "rlib" ,
+crate-type = [
+    "cdylib",
+    "rlib",
+    "staticlib",
 ]
 bench = true
 doc = true
@@ -30,15 +41,11 @@ rstmt-nrt = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
-criterion = { workspace = true }
+criterion = { features = ["plotters"], workspace = true }
+lazy_static = { workspace = true }
 num = { features = ["std"], workspace = true }
-tracing = { workspace = true }
+tracing = { features = ["std"], workspace = true }
 tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
-
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = [ "--cfg", "docsrs" ]
 
 [features]
 default = [
@@ -54,7 +61,12 @@ full = [
     "tracing",
 ]
 
-# ********* [FF] Features *********
+nightly = [
+    "rstmt-core/nightly",
+    "rstmt-nrt?/nightly",
+]
+
+# ************* [FF:Features] *************
 nrt = [
     "dep:rstmt-nrt",
 ]
@@ -81,7 +93,7 @@ wasm = [
 ]
 
 
-# ********* [FF] Dependencies *********
+# ************* [FF:Dependencies] *************
 alloc = [
     "rstmt-core/alloc",
     "rstmt-nrt?/alloc",
@@ -131,14 +143,18 @@ harness = false
 # ************* [Examples] *************
 [[example]]
 name = "motion"
-required-features = ["nrt", "std", "tracing"]
+required-features = [
+    "nrt",
+    "std",
+    "tracing",
+]
 
 # ************* [Examples] *************
 [[example]]
 name = "triads"
-required-features = [ 
-    "nrt", 
-    "std" 
+required-features = [
+    "nrt",
+    "std"
 ]
 
 

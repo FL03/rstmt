@@ -65,9 +65,9 @@ impl Path {
     pub fn from_node_with_features(node: SearchNode, features: PathFeatures) -> Self {
         let SearchNode {
             cost,
-            edge_ids,
+            edges: edge_ids,
             transforms,
-            triads,
+            visited: triads,
             ..
         } = node;
         Path {

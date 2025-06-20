@@ -5,6 +5,7 @@ labels: [ enhancement ]
 name: Feature request
 projects: ['@FL03/rstmt:dev']
 title: ''
+type: feature
 ---
 
 **Is your feature request related to a problem? Please describe.**

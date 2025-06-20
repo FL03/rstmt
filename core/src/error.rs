@@ -2,13 +2,15 @@
     Appellation: error <module>
     Contrib: @FL03
 */
-
+//! this module defines the [`Error`] type and provides a type alias for a
+//! [`Result`](core::result::Result) with an [`Error`].
 #[cfg(feature = "alloc")]
 use alloc::{boxed::Box, string::String};
 
-/// a type alias for a [`Result`] with a [`MusicError`]
+/// a type alias for a [`Result`](core::result::Result) with a [`Error`] type
 pub type Result<T = ()> = core::result::Result<T, Error>;
 
+/// The [`Error`] enum represents various errors that can occur in the application.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Invalid Chord")]
@@ -18,8 +20,6 @@ pub enum Error {
     InvalidIntervals(String),
     #[error("Invalid Note")]
     InvalidNote,
-    #[error("Invalid Triad Class")]
-    InvalidTriadClass,
     #[cfg(feature = "anyhow")]
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
@@ -27,12 +27,12 @@ pub enum Error {
     FmtError(#[from] core::fmt::Error),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync + 'static>),
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[cfg(feature = "std")]
     #[error(transparent)]
     IOError(#[from] std::io::Error),
-    #[cfg(feature = "serde_json")]
     #[error(transparent)]
+    #[cfg(feature = "serde_json")]
     JsonError(#[from] serde_json::Error),
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]

@@ -4,7 +4,7 @@
 */
 use rstmt::Octave;
 use rstmt::nrt::transform::MotionPlanner;
-use rstmt::nrt::{Tonnetz, Triad, TriadError};
+use rstmt::nrt::{HyperTonnetz, Triad, TriadError};
 
 fn main() -> Result<(), TriadError> {
     // Set up tracing
@@ -17,7 +17,7 @@ fn main() -> Result<(), TriadError> {
     tracing::info!("Motion Planning Example");
 
     // Create a new tonnetz
-    let mut tonnetz = Tonnetz::new();
+    let mut tonnetz = HyperTonnetz::new();
 
     // Add pitch classes (0-11)
     let _ = tonnetz.scaffold_layer(Octave(4))?;

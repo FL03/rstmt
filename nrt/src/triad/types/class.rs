@@ -2,7 +2,6 @@
     Appellation: classes <module>
     Contrib: @FL03
 */
-use itertools::Itertools;
 use rstmt::PitchMod;
 
 // Expanded triad types in Neo-Riemannian theory
@@ -55,21 +54,18 @@ impl Triads {
             };
             return Ok(class);
         }
-        Err(crate::TriadError::InvalidIntervals(format!(
-            "{}-{}-{}",
-            rt, tf, rf
-        )))
+        Err(crate::TriadError::InvalidTriad)
     }
+    /// try to determine the class of a triad from an array of three notes
     pub fn try_from_arr(arr: [usize; 3]) -> crate::Result<Self> {
-        let mut res = Err(crate::TriadError::InvalidIntervals(
-            "the given chord does not match any triad class".to_string(),
-        ));
+        use itertools::Itertools;
+        let mut res = Err(crate::TriadError::InvalidTriadClass);
         for (&a, &b, &c) in arr
             .iter()
             .circular_tuple_windows()
             .chain(arr.iter().rev().circular_tuple_windows())
         {
-            if let Ok(class) = Triads::try_from_notes(a, b, c) {
+            if let Ok(class) = Self::try_from_notes(a, b, c) {
                 res = Ok(class);
                 break;
             }

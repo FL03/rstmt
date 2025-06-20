@@ -5,6 +5,7 @@ labels: [ bug ]
 name: Bug report
 projects: ['@FL03/rstmt:dev']
 title: 'Bug report: '
+type: bug
 ---
 
 **Describe the bug**

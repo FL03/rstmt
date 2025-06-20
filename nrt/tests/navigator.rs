@@ -13,7 +13,8 @@ fn test_transformer() {
     let paths = triad.path_finder().find_paths_to_target(target_note);
     // verify that all of the paths result in an instance containing the target note.
     for chain in paths {
-        assert!(triad.walk(chain.path()).contains(&target_note));
+        let p = chain.path().clone();
+        assert!(triad.walk(p).contains(&target_note));
     }
 }
 
@@ -29,6 +30,7 @@ fn test_transformer_rand() {
     let paths = triad.path_finder().find_paths_to_target(target_note);
     // verify that all of the paths result in an instance containing the target note.
     for chain in paths {
-        assert!(triad.walk(chain.path()).contains(&target_note));
+        let p = chain.path().clone();
+        assert!(triad.walk(p).contains(&target_note));
     }
 }

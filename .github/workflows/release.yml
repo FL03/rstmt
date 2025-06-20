@@ -1,0 +1,26 @@
+name: release
+
+on:
+  release:
+    types: [ published ]
+  repository_dispatch:
+    types: [ release ]
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: crates-io
+      url: https://crates.io/crates/rstmt
+    steps:
+      -
+        name: publish to crates.io
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: crates-io
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+          token: ${{ github.token }}
