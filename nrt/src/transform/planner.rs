@@ -4,7 +4,7 @@
 */
 use super::types::{Path, PathFeatures, SearchNode};
 use super::{PathCache, PathFinderConfig};
-use crate::tonnetz::HashTonnetz;
+use crate::tonnetz::HyperTonnetz;
 use crate::{LPR, Triad};
 
 use rshyper::EdgeId;
@@ -16,13 +16,13 @@ pub struct MotionPlanner<'a> {
     /// Cache for storing computed paths
     pub(crate) cache: PathCache,
     /// Reference to the tonnetz graph
-    pub(crate) tonnetz: &'a HashTonnetz,
+    pub(crate) tonnetz: &'a HyperTonnetz,
     pub(crate) config: PathFinderConfig,
 }
 
 impl<'a> MotionPlanner<'a> {
     /// Create a new motion planner for the given tonnetz
-    pub fn new(tonnetz: &'a HashTonnetz) -> Self {
+    pub fn new(tonnetz: &'a HyperTonnetz) -> Self {
         let capacity = 1000; // Default cache capacity
         MotionPlanner {
             cache: PathCache::new(capacity),
@@ -55,7 +55,7 @@ impl<'a> MotionPlanner<'a> {
         self.config().max_paths()
     }
     /// returns an immutable reference to the tonnetz
-    pub const fn tonnetz(&self) -> &HashTonnetz {
+    pub const fn tonnetz(&self) -> &HyperTonnetz {
         self.tonnetz
     }
     /// updates the current configuration and returns a mutable reference to the instance.
@@ -136,8 +136,8 @@ impl<'a> MotionPlanner<'a> {
             cost: 0,
             triad: start_triad,
             transforms: Vec::new(),
-            triads: vec![start_triad],
-            edge_ids: vec![Some(start_edge)],
+            visited: vec![start_triad],
+            edges: vec![Some(start_edge)],
         });
 
         visited.insert(start_triad.notes(), 0);
@@ -184,10 +184,10 @@ impl<'a> MotionPlanner<'a> {
                 let mut new_transforms = node.transforms.clone();
                 new_transforms.push(transform);
 
-                let mut new_triads = node.triads.clone();
+                let mut new_triads = node.visited.clone();
                 new_triads.push(next_triad);
 
-                let mut new_edge_ids = node.edge_ids.clone();
+                let mut new_edge_ids = node.edges.clone();
                 new_edge_ids.push(next_edge_id);
 
                 // Check if this triad contains our target pitch
@@ -228,8 +228,8 @@ impl<'a> MotionPlanner<'a> {
                     cost: new_cost,
                     triad: next_triad,
                     transforms: new_transforms,
-                    triads: new_triads,
-                    edge_ids: new_edge_ids,
+                    visited: new_triads,
+                    edges: new_edge_ids,
                 };
 
                 open_set.push(next_node);

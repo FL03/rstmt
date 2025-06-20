@@ -2,8 +2,8 @@
     Appellation: note <module>
     Contrib: @FL03
 */
-use super::Octave;
 use crate::freq::RawFrequency;
+use crate::octave::Octave;
 use crate::pitch::{self, Pitch, PitchClass};
 
 /// The [`NoteBase`] is a generic representation of a musical note
@@ -11,13 +11,10 @@ use crate::pitch::{self, Pitch, PitchClass};
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(deny_unknown_fields, default, rename_all = "snake_case")
+    serde(deny_unknown_fields, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct NoteBase<T, Cls = pitch::C>
-where
-    T: RawFrequency,
-{
+pub struct NoteBase<T, Cls = pitch::C> {
     pub(crate) class: Cls,
     pub(crate) octave: Octave,
     pub(crate) pitch: Pitch<T>,
@@ -83,7 +80,7 @@ where
 
 impl<T, C> Default for NoteBase<T, C>
 where
-    T: RawFrequency + Default,
+    T: Default,
     C: PitchClass,
 {
     fn default() -> Self {

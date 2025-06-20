@@ -27,12 +27,12 @@ pub enum Error {
     FmtError(#[from] core::fmt::Error),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync + 'static>),
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[cfg(feature = "std")]
     #[error(transparent)]
     IOError(#[from] std::io::Error),
-    #[cfg(feature = "serde_json")]
     #[error(transparent)]
+    #[cfg(feature = "serde_json")]
     JsonError(#[from] serde_json::Error),
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]

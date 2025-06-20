@@ -1,61 +1,68 @@
 /*
-    Appellation: frequency <module>
+    Appellation: octave <types>
     Contrib: @FL03
 */
-use super::RawFrequency;
 
-/// The [`Frequency`] type is a generic wrapper around type `T` that implements the
-/// [`RawFrequency`] trait. This implementation is designed to provide a consistent interface
-/// for dealing with frequencies within the crate, enabling conversion, arithmetic operations,
-/// and other utilities that are common to frequency values.
-#[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+/// A type defining an octave
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
     derive(serde_derive::Deserialize, serde_derive::Serialize),
-    serde(transparent)
+    serde(default, transparent)
 )]
 #[repr(transparent)]
-pub struct Frequency<T = f64>(pub T);
+pub struct Octave<T = isize>(pub T);
 
-impl<T> Frequency<T>
-where
-    T: RawFrequency,
-{
-    /// returns a new instance of the [`Frequency`] wrapping the given value
-    pub const fn new(index: T) -> Self {
-        Frequency(index)
+impl<T> Octave<T> {
+    #[allow(clippy::should_implement_trait)]
+    /// returns a new instance initialized using the default value of the type
+    pub fn default() -> Self
+    where
+        T: Default,
+    {
+        Octave::create(T::default)
     }
-    /// returns a new instance of the [`Frequency`] wrapping the output of the given
-    /// initializer function
+    /// returns a new instance of the [`Octave`] wrapping the given value
+    pub const fn new(index: T) -> Self {
+        Octave(index)
+    }
+    /// returns a new [`Octave`] with the output of the given initializer function
     pub fn create<F>(f: F) -> Self
     where
         F: FnOnce() -> T,
     {
-        Frequency(f())
+        Octave(f())
     }
-    /// returns a new Frequency with the value of one
+    /// returns a new Octave with the value of one
     pub fn one() -> Self
     where
         T: num_traits::One,
     {
-        Frequency::create(T::one)
+        Octave::create(T::one)
     }
-    /// returns a new Frequency with the value of zero
+    /// returns a new Octave with the value of zero
     pub fn zero() -> Self
     where
         T: num_traits::Zero,
     {
-        Frequency::create(T::zero)
+        Octave::create(T::zero)
     }
     /// returns a pointer to the inner value
     pub const fn as_ptr(&self) -> *const T {
-        core::ptr::from_ref(self.get())
+        core::ptr::from_ref(&self.0)
     }
     /// returns a mutable pointer to the inner value
     pub const fn as_mut_ptr(&mut self) -> *mut T {
-        core::ptr::from_mut(self.get_mut())
+        core::ptr::from_mut(&mut self.0)
     }
     /// consumes the index returning the inner value
+    pub fn into_inner(self) -> T {
+        self.0
+    }
+    #[deprecated(
+        since = "0.0.5",
+        note = "use `into_inner` instead; this method will be removed in the next major version."
+    )]
     pub fn value(self) -> T {
         self.0
     }
@@ -67,12 +74,12 @@ where
     pub const fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
-    /// apply a function to the inner value and returns a new Frequency wrapping the result
-    pub fn map<U, F>(self, f: F) -> Frequency<U>
+    /// apply a function to the inner value and returns a new Octave wrapping the result
+    pub fn map<U, F>(self, f: F) -> Octave<U>
     where
         F: FnOnce(T) -> U,
     {
-        Frequency(f(self.value()))
+        Octave(f(self.0))
     }
     /// replaces the inner value with the given one and returns the old value
     pub const fn replace(&mut self, index: T) -> T {
@@ -88,8 +95,8 @@ where
         core::mem::swap(self.get_mut(), other.get_mut());
     }
     /// consumes the current instance to create another with the given value
-    pub fn with<U>(self, other: U) -> Frequency<U> {
-        Frequency(other)
+    pub fn with<U>(self, other: U) -> Octave<U> {
+        Octave(other)
     }
     /// takes and returns the inner value, replacing it with the logical [`default`](Default)
     /// of the type `T`
@@ -100,24 +107,11 @@ where
         core::mem::take(self.get_mut())
     }
     /// returns a new instance containing a reference to the inner value
-    pub const fn view(&self) -> Frequency<&T> {
-        Frequency(self.get())
+    pub const fn view(&self) -> Octave<&T> {
+        Octave(self.get())
     }
     /// returns a new instance containing a mutable reference to the inner value
-    pub fn view_mut(&mut self) -> Frequency<&mut T> {
-        Frequency(self.get_mut())
+    pub fn view_mut(&mut self) -> Octave<&mut T> {
+        Octave(self.get_mut())
     }
-}
-
-impl<T> Default for Frequency<T>
-where
-    T: Default,
-{
-    fn default() -> Self {
-        Frequency(T::default())
-    }
-}
-
-scsys::fmt_wrapper! {
-    Frequency<T>(Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex)
 }

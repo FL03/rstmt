@@ -64,22 +64,20 @@ impl TransformationChain {
         let visited = Vec::from_iter(visited);
         TransformationChain::new(Vec::new(), visited)
     }
-
     /// returns a copy of the cost of the transformation chain
-    pub fn cost(&self) -> usize {
+    pub const fn cost(&self) -> usize {
         self.cost
     }
     /// returns a copy of the features of the transformation chain
-    pub fn features(&self) -> ChainFeatures {
-        self.features.clone()
+    pub const fn features(&self) -> &ChainFeatures {
+        &self.features
     }
-
-    /// returns the path of transformations
-    pub fn path(&self) -> Vec<LPR> {
-        self.path.clone()
+    /// returns a reference to the path of transformations
+    pub const fn path(&self) -> &Vec<LPR> {
+        &self.path
     }
     /// returns an immutable reference to the visited triads
-    pub fn visited(&self) -> &[Triad] {
+    pub const fn visited(&self) -> &Vec<Triad> {
         &self.visited
     }
 }

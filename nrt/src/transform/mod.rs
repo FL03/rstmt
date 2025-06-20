@@ -16,16 +16,16 @@ pub mod navigator;
 #[cfg(feature = "tonnetz")]
 pub mod planner;
 
-pub mod types {
+mod types {
     #[doc(inline)]
     pub use self::prelude::*;
 
     #[cfg(feature = "std")]
-    pub mod chain;
+    mod chain;
     #[cfg(feature = "std")]
-    pub mod path;
+    mod path;
     #[cfg(feature = "alloc")]
-    pub mod search_node;
+    mod search_node;
 
     pub(crate) mod prelude {
         #[cfg(feature = "std")]

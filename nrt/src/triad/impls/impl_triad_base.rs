@@ -2,7 +2,7 @@
     appellation: impl_triad_base <module>
     authors: @FL03
 */
-use crate::triad::types::{AugmentedTri, DiminishedTri, MajorTri, MinorTri};
+use crate::triad::types::*;
 use crate::triad::{Factors, RawStore, RawTriad, TriadBase, TriadKind};
 
 impl<S, K> TriadBase<S, K>

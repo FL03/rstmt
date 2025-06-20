@@ -10,7 +10,7 @@ use rstmt::{PitchMod, PyMod};
 fn test_pymod() -> rstmt::Result<()> {
     let x = (-1).pymod(12);
     assert_eq!(x, 11);
-    assert_ne!(x, -1 % 12);
+    assert_ne!(x, -1);
 
     let a: isize = 17;
     let b: isize = 12;

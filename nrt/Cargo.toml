@@ -82,10 +82,15 @@ full = [
     "tracing",
 ]
 
+nightly = [
+    "rshyper/nightly",
+    "rstmt-core/nightly",
+]
+
 # ************* [FF:Features] *************
 
 tonnetz = [
-    "rshyper/hash_graph",
+    "rshyper/hyper_map",
     "std",
 ]
 
@@ -107,6 +112,7 @@ wasi = [
 
 wasm = [
     "getrandom?/wasm_js",
+    "rayon?/web_spin_lock",
     "rstmt-core/wasm",
     "scsys/wasm",
 ]
@@ -129,11 +135,11 @@ anyhow = [
 
 json = [
     "alloc",
+    "rshyper/json",
     "rstmt-core/json",
+    "scsys/json",
     "serde",
     "serde_json",
-    "rshyper/json",
-    "scsys/json",
 ]
 
 rand = [
@@ -144,6 +150,12 @@ rand = [
     "rshyper/rand",
     "rstmt-core/rand",
     "scsys/rand",
+]
+
+rayon = [
+    "dep:rayon",
+    "rshyper/rayon",
+    "rstmt-core/rayon",
 ]
 
 rng = [

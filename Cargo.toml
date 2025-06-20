@@ -42,7 +42,7 @@ rstmt-core = { default-features = false, path = "core", version = "0.0.5" }
 rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.5" }
 
 # custom
-rshyper = { default-features = false, features = ["hash_graph"], version = "0.0.10" }
+rshyper = { default-features = false, features = ["macros"], version = "0.1.7" }
 scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
 
 # benchmarking
@@ -50,6 +50,7 @@ criterion = { version = "0.6" }
 # concurrency & parallelism
 crossbeam = { default-features = false,version = "0.9" }
 rayon = { default-features = false, version = "1" }
+rayon-core = { default-features = false, version = "1" }
 # error-handling
 anyhow = { default-features = false, version = "1" }
 thiserror = { default-features = false, version = "2" }
@@ -72,7 +73,7 @@ smart-default = { version = "0.7" }
 strum = { default-features = false, features = ["derive"], version = "0.27" }
 # logging
 tracing = { default-features = false, features = ["attributes"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["env-filter", "fmt"], version = "0.3" }
+tracing-subscriber = { default-features = false, features = ["ansi", "env-filter", "fmt"], version = "0.3" }
 
 # ************* [Profiles] *************
 [profile.dev]

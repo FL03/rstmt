@@ -25,12 +25,12 @@ on:
     inputs:
       benchmark:
         default: true
-        description: 'Run benchmarks'
+        description: 'Run benchmarks?'
         required: true
         type: boolean
-      no_std:
+      nightly:
         default: false
-        description: 'Run tests with no_std feature'
+        description: 'Run `nightly` tests?'
         required: true
         type: boolean
 
@@ -61,10 +61,10 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.benchmark
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
+    outputs:
+      artifact-id: ${{ steps.artifacts.outputs.artifact-id }}
+      artifact-digest: ${{ steps.artifacts.outputs.artifact-digest }}
+      artifact-url: ${{ steps.artifacts.outputs.artifact-url }}
     steps:
       -
         name: Checkout
@@ -74,19 +74,17 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          target: ${{ matrix.target }}
       -
         name: Benchmark the workspace
-        run: cargo bench -v --locked --workspace --features full --target ${{ matrix.target }}
-      - 
+        run: cargo bench -v --locked --workspace --features full
+      -
         name: Upload the benchmarks
         id: artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: benchmarks}@${{ github.sha }}
+          name: Benchmark Report (${{ github.event.repository.name }})
           if-no-files-found: error
           overwrite: true
-          retention-days: 7
           path: target/criterion/
   test:
     needs: build
@@ -94,7 +92,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        features:  [ full, default, all ]
+        features:  [ full, default ]
         target: [ x86_64-unknown-linux-gnu ]
         toolchain: [ stable ]
     steps:
@@ -121,15 +119,15 @@ jobs:
         name: Test (all-features)
         if: matrix.features == 'all'
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
-  test_no_std:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.no_std || github.event_name == 'repository_dispatch' && github.event.action == 'rust'
+  test_nightly:
+    if: github.event.inputs.nightly || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust'
     continue-on-error: true
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        features:  [ alloc, no_std ]
+        features:  [ all, alloc, no_std ]
     steps:
       -
         name: Checkout
@@ -148,6 +146,10 @@ jobs:
         run: cargo test -r --locked --workspace  --no-default-features --features ${{ matrix.features }}
         env:
           RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
+      -
+        name: Test (all-features)
+        if: matrix.features == 'all'
+        run: cargo test -r --locked --workspace --all-features
       -
         name: Test (no_std)
         continue-on-error: true

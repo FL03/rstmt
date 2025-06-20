@@ -5,18 +5,15 @@
 use crate::PitchMod;
 use crate::freq::{Frequency, RawFrequency};
 
-/// An american scientific pitch notation ([`Note`]) representation of a musical note.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+/// A discrete pitch with a class and frequency.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
-    serde(deny_unknown_fields, default, rename_all = "snake_case")
+    derive(serde::Deserialize, serde::Serialize),
+    serde(deny_unknown_fields, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct Pitch<T = f32>
-where
-    T: RawFrequency,
-{
+pub struct Pitch<T = f32> {
     pub(crate) class: usize,
     pub(crate) freq: Frequency<T>,
 }
@@ -66,6 +63,18 @@ where
         Pitch {
             class: self.class,
             freq,
+        }
+    }
+}
+
+impl<T> Default for Pitch<T>
+where
+    T: Default,
+{
+    fn default() -> Self {
+        Pitch {
+            class: 0,
+            freq: Frequency::default(),
         }
     }
 }

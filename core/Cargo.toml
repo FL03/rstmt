@@ -39,7 +39,7 @@ test = true
 # custom
 scsys = { workspace = true }
 # concurrency & parallelism
-rayon = { optional = true, workspace = true }
+rayon-core = { optional = true, workspace = true }
 # error-handling
 anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
@@ -51,13 +51,12 @@ getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # serialization
-serde = { optional = true, workspace = true }
+serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 # macros & utilities
-itertools = { workspace = true }
 paste = { workspace = true }
 strum = { features = ["derive"], workspace = true }
 smart-default = { workspace = true }
@@ -77,6 +76,8 @@ full = [
     "tracing",
 ]
 
+nightly = []
+
 # ************* [FF:Environments] *************
 std = [
     "alloc",
@@ -94,6 +95,7 @@ wasi = [
 
 wasm = [
     "getrandom?/wasm_js",
+    "rayon-core?/web_spin_lock",
     "scsys/wasm",
 ]
 # ************* [FF:Dependencies] *************
@@ -123,6 +125,8 @@ rand = [
     "rng",
     "scsys/rand",
 ]
+
+rayon = ["dep:rayon-core"]
 
 rng = [
     "dep:getrandom",

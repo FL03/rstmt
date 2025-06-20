@@ -2,8 +2,8 @@
     Appellation: aspn <module>
     Contrib: @FL03
 */
-use super::Octave;
 use crate::PitchMod;
+use crate::octave::Octave;
 
 /// An american scientific pitch notation ([`Aspn`]) representation of a musical note; this
 /// standard is used to represent notes in a way that is consistent with the

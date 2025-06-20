@@ -61,6 +61,11 @@ full = [
     "tracing",
 ]
 
+nightly = [
+    "rstmt-core/nightly",
+    "rstmt-nrt?/nightly",
+]
+
 # ************* [FF:Features] *************
 nrt = [
     "dep:rstmt-nrt",

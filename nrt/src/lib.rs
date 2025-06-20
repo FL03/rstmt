@@ -4,11 +4,26 @@
 */
 //! # rstmt-nrt
 //!
-//! This crate works to establish a solid foundation for working with the neo-riemannian theory
+//! This crate works to establish a solid foundation fo exploring the neo-riemannian theory,
+//! providing implementations of the [`Triad`], its transformations [`LPR`], and the
+//! generalized tonnetz (`Tonnetz`).
 //!
-#![allow(clippy::module_inception)]
+//! ## Background
+//!
+//! Before diving into the implementation details, it is important to understand the concepts
+//! at hand and the theory behind them.
+//!
+//! ### Neo-Riemannian Theory
+//!
+//! The neo-riemannian theory is a loose collection of musical theories focused on the triad.
+#![allow(
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::non_canonical_partial_ord_impl,
+    clippy::should_implement_trait
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![crate_name = "rstmt_nrt"]
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
 
 #[cfg(feature = "alloc")]
@@ -29,33 +44,26 @@ pub use self::transform::TriadNavigator;
 
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
-pub use self::{tonnetz::HashTonnetz, transform::MotionPlanner};
+pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
 }
-
+/// this module defines the standard error type, [`TriadError`], for the crate
 pub mod error;
 #[cfg(feature = "tonnetz")]
 pub mod tonnetz;
 pub mod transform;
 pub mod triad;
 
-#[allow(unused_imports)]
-pub mod traits {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub(crate) mod prelude {}
-}
-
 pub mod types {
+    //! this module defines various types supporting the neo-riemannian theory
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod lpr;
+    mod lpr;
 
     pub(crate) mod prelude {
         #[doc(inline)]
@@ -64,16 +72,10 @@ pub mod types {
 }
 
 pub mod prelude {
-    #[doc(no_inline)]
-    pub use crate::error::*;
     #[cfg(feature = "tonnetz")]
-    #[doc(no_inline)]
     pub use crate::tonnetz::prelude::*;
     #[cfg(feature = "alloc")]
-    #[doc(no_inline)]
     pub use crate::transform::prelude::*;
-    #[doc(no_inline)]
     pub use crate::triad::prelude::*;
-    #[doc(no_inline)]
     pub use crate::types::prelude::*;
 }

@@ -3,7 +3,8 @@
     Contrib: @FL03
 */
 use crate::{LPR, Triad};
-use rshyper::prelude::{EdgeId, HashGraph, VertexId};
+use rshyper::idx::{EdgeId, VertexId};
+use rshyper::{HyperMap, Weight};
 use rstmt::{Aspn, Octave};
 use std::collections::HashMap;
 
@@ -18,26 +19,26 @@ pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 /// Each instance of the runtime orchestrates a _fragment_ of the Tonnetz and glues it to the
 /// cluster with various networking protocols.
 #[derive(Clone, Debug)]
-pub struct HashTonnetz {
+pub struct HyperTonnetz {
     /// The underlying hypergraph structure
-    pub(crate) graph: HashGraph<Aspn>,
+    pub(crate) graph: HyperMap<Aspn>,
     /// Maps EdgeIds to Triad for efficient access
     pub(crate) triads: TriadMap,
     /// Tracks adjacency between triads via transformations
     pub(crate) transformations: LprMap,
 }
 
-impl Default for HashTonnetz {
+impl Default for HyperTonnetz {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl HashTonnetz {
+impl HyperTonnetz {
     /// returns a new [`Tonnetz`] structure initialized with empty stores
     pub fn new() -> Self {
-        HashTonnetz {
-            graph: HashGraph::new(),
+        HyperTonnetz {
+            graph: HyperMap::new(),
             triads: TriadMap::new(),
             transformations: LprMap::new(),
         }
@@ -45,18 +46,18 @@ impl HashTonnetz {
     /// returns a new instance of the [`Tonnetz`] with a specified capacity
     pub fn with_capacity(capacity: usize) -> Self {
         // each edge has n vertices meaning we need to reserve space for n^2 edges
-        HashTonnetz {
-            graph: HashGraph::with_capacity(capacity * capacity, capacity),
+        HyperTonnetz {
+            graph: HyperMap::with_capacity(capacity * capacity, capacity),
             triads: HashMap::with_capacity(capacity),
             transformations: HashMap::new(),
         }
     }
     /// returns a reference to the underlying graph
-    pub const fn graph(&self) -> &HashGraph<Aspn> {
+    pub const fn graph(&self) -> &HyperMap<Aspn> {
         &self.graph
     }
     /// returns a mutable reference to the underlying graph
-    pub const fn graph_mut(&mut self) -> &mut HashGraph<Aspn> {
+    pub const fn graph_mut(&mut self) -> &mut HyperMap<Aspn> {
         &mut self.graph
     }
     /// returns a reference to the triads map
@@ -76,7 +77,7 @@ impl HashTonnetz {
         &mut self.transformations
     }
     /// overwrite the current graph and return a mutable reference to the instance
-    pub fn set_graph(&mut self, graph: HashGraph<Aspn>) -> &mut Self {
+    pub fn set_graph(&mut self, graph: HyperMap<Aspn>) -> &mut Self {
         self.graph = graph;
         self
     }
@@ -92,7 +93,7 @@ impl HashTonnetz {
     }
     /// add a new note class vertex to the Tonnetz
     pub fn add_note(&mut self, note: Aspn) -> crate::Result<VertexId> {
-        let id = self.graph_mut().add_node(note)?;
+        let id = self.graph_mut().add_node(Weight(note))?;
         Ok(id)
     }
     /// adds each note within the iterator to the Tonnetz
@@ -126,7 +127,7 @@ impl HashTonnetz {
         // Add the hyperedge representing this triad
         let edge_id = self
             .graph
-            .add_edge(vertices)
+            .add_link(vertices)
             .expect("Failed to add hyperedge");
         // Store the triad data
         self.triads.insert(edge_id, triad);
@@ -183,7 +184,7 @@ impl HashTonnetz {
 }
 
 /// private methods supporting the [`HashTonnetz`] structure
-impl HashTonnetz {
+impl HyperTonnetz {
     /// Find a vertex by its associated pitch class
     pub(crate) fn find_vertex_by_note(&self, note: usize) -> Option<VertexId> {
         self.graph

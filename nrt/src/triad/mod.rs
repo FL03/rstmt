@@ -2,25 +2,56 @@
     appellation: triad <module>
     authors: @FL03
 */
-//! this module implements the triad
+//! this module defines the [`Triad`] struct along with additional types and traits supporting
+//! the representation of triads and their operations w.r.t. the neo-riemannian theory.
+//!
+//! ## Definition
+//!
+//! A triad is defined to be a chord, composed of three notes, each of which maintain certain
+//! intervallic relationships with one another. More specifically, the distance between the
+//! first and second as well as the second and third notes is defined to be a major or minor
+//! third, whilst the distance between the first and third notes is some variant of a _fifth_.
+//!
+//! ## Examples
+//!
+//! ### _Example 1: Basic Usage_
+//!
+//! ```rust
+//! use rstmt_nrt::Triad;
+//!
+//! // initialize a c-major triad: (0, 4, 7)
+//! let mut triad = Triad::major(0);
+//!
+//! // verify the composition
+//! assert_eq!(triad.root(), &0);
+//! assert_eq!(triad.third(), &4);
+//! assert_eq!(triad.fifth(), &7);
+//! assert!(triad.is_major());
+//! ```
+//!
+//! ## Resources
+//!
+//! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
+//! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)
+//!
 #[doc(inline)]
 pub use self::{base_triad::TriadBase, std_triad::Triad, types::prelude::*};
 
 pub mod base_triad;
-pub mod std_triad;
+mod std_triad;
 
 mod impls {
     pub mod impl_triad_base;
 }
 
-pub mod types {
+mod types {
     //! this module implements additional types used to support the triad implementation
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod class;
-    pub mod factors;
-    pub mod kinds;
+    mod class;
+    mod factors;
+    mod kinds;
 
     pub(crate) mod prelude {
         #[doc(inline)]

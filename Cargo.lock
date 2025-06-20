@@ -12,6 +12,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "allocator-api2"
+version = "0.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
+
+[[package]]
 name = "anes"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -306,6 +312,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
 
 [[package]]
+name = "equivalent"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
+
+[[package]]
+name = "foldhash"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
+
+[[package]]
 name = "form_urlencoded"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -356,6 +374,20 @@ checksum = "459196ed295495a68f7d7fe1d84f6c4b7ff0e21fe3017b2f283c6fac3ad803c9"
 dependencies = [
  "cfg-if",
  "crunchy",
+]
+
+[[package]]
+name = "hashbrown"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
+dependencies = [
+ "allocator-api2",
+ "equivalent",
+ "foldhash",
+ "rayon",
+ "rustc-std-workspace-alloc",
+ "serde",
 ]
 
 [[package]]
@@ -667,6 +699,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
 
 [[package]]
+name = "ordered-float"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2c1f9f56e534ac6a9b8a4600bdf0f530fb393b5f393e7b4d03489c3cf0c3f01"
+dependencies = [
+ "num-traits",
+ "rand 0.8.5",
+ "serde",
+]
+
+[[package]]
 name = "overload"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -779,6 +822,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
 dependencies = [
  "rand_core 0.6.4",
+ "serde",
 ]
 
 [[package]]
@@ -807,6 +851,9 @@ name = "rand_core"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "rand_core"
@@ -836,6 +883,7 @@ checksum = "b418a60154510ca1a002a752ca9714984e21e4241e804d32555251faf8b78ffa"
 dependencies = [
  "either",
  "rayon-core",
+ "wasm_sync",
 ]
 
 [[package]]
@@ -846,6 +894,7 @@ checksum = "1465873a3dfdaa8ae7cb14b4383657caab0b3e8a0aa9ae8e04b044854c8dfce2"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
+ "wasm_sync",
 ]
 
 [[package]]
@@ -894,17 +943,48 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "rshyper"
-version = "0.0.10"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62a7a750ae3b7bc7921cbbfea2eb58d4189067a7805517ca51afe827044ebc4a"
+checksum = "2b400a1fc70975d8a8e75725fddfefd57463aa2e5daddf1f5bc16ba5783d381a"
 dependencies = [
- "getrandom",
+ "rshyper-algo",
+ "rshyper-core",
+ "rshyper-hmap",
+]
+
+[[package]]
+name = "rshyper-algo"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f46d9058de646b1906c2594ef253655bd7b63fb196099be6eff76c3581f72376"
+dependencies = [
+ "hashbrown",
+ "num-traits",
+ "ordered-float",
+ "rayon-core",
+ "rshyper-core",
+ "scsys",
+ "serde",
+ "serde_derive",
+ "strum",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "rshyper-core"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f603dc2dca421a342be765c000fcd7b9e7a1bb1a337ff4f1b592ffb5c3088d5f"
+dependencies = [
+ "anyhow",
+ "hashbrown",
  "num-traits",
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "rshyper-core",
- "scsys 0.2.9",
+ "rayon-core",
+ "scsys",
  "serde",
  "serde_derive",
  "serde_json",
@@ -915,18 +995,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "rshyper-core"
-version = "0.0.10"
+name = "rshyper-hmap"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0692ab3a2b95db35320ee28d94eee5c9193da917948b22b7dff40cbb60e360b8"
+checksum = "4bc527a7dcf96a516138d5c725105af8e1ae02c01e47dfbb63dcb6e8d039f59a"
 dependencies = [
- "anyhow",
- "getrandom",
+ "hashbrown",
  "num-traits",
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "scsys 0.2.9",
+ "rayon",
+ "rshyper-algo",
+ "rshyper-core",
+ "scsys",
  "serde",
  "serde_derive",
  "serde_json",
@@ -956,14 +1038,13 @@ version = "0.0.5"
 dependencies = [
  "anyhow",
  "getrandom",
- "itertools 0.14.0",
  "num",
  "num-traits",
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "rayon",
- "scsys 0.3.0",
+ "rayon-core",
+ "scsys",
  "serde",
  "serde_derive",
  "serde_json",
@@ -989,7 +1070,7 @@ dependencies = [
  "rayon",
  "rshyper",
  "rstmt-core",
- "scsys 0.3.0",
+ "scsys",
  "serde",
  "serde_derive",
  "serde_json",
@@ -999,6 +1080,12 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
 ]
+
+[[package]]
+name = "rustc-std-workspace-alloc"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9d441c3b2ebf55cebf796bfdc265d67fa09db17b7bb6bd4be75c509e1e8fec3"
 
 [[package]]
 name = "rustversion"
@@ -1023,49 +1110,16 @@ dependencies = [
 
 [[package]]
 name = "scsys"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99f03c8d2f4cd50a78bb3b888b059071d02555491e9abb3e30397e4c8f1c6c48"
-dependencies = [
- "scsys-config 0.2.9",
- "scsys-core 0.2.9",
- "scsys-crypto 0.2.9",
- "scsys-derive 0.2.9",
- "scsys-traits 0.2.9",
- "scsys-util 0.2.9",
-]
-
-[[package]]
-name = "scsys"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd97365a000c681edf2a3954250636442d7e76b2b53d32a0d516fa253c34e200"
 dependencies = [
- "scsys-config 0.3.0",
- "scsys-core 0.3.0",
- "scsys-crypto 0.3.0",
- "scsys-derive 0.3.0",
- "scsys-traits 0.3.0",
- "scsys-util 0.3.0",
-]
-
-[[package]]
-name = "scsys-config"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c618071e02f7298b52923e4adba437a578da846536d8241e730bb5bdb190649d"
-dependencies = [
- "config",
- "scsys-core 0.2.9",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "tracing",
- "tracing-subscriber",
- "url",
+ "scsys-config",
+ "scsys-core",
+ "scsys-crypto",
+ "scsys-derive",
+ "scsys-traits",
+ "scsys-util",
 ]
 
 [[package]]
@@ -1076,7 +1130,7 @@ checksum = "50a68cdb65ec0a505e6a8d486755ffff8751db626d3933dae305b80192f5827b"
 dependencies = [
  "anyhow",
  "config",
- "scsys-core 0.3.0",
+ "scsys-core",
  "serde",
  "serde_derive",
  "serde_json",
@@ -1086,31 +1140,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
-]
-
-[[package]]
-name = "scsys-core"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0861fd47a14867d217d9adc62d6dc376a47fbc3ada3eb0a130aa4497698fa0ef"
-dependencies = [
- "anyhow",
- "chrono",
- "getrandom",
- "num",
- "num-traits",
- "paste",
- "rand 0.9.1",
- "rand_distr",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "time",
- "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -1141,35 +1170,6 @@ dependencies = [
 
 [[package]]
 name = "scsys-crypto"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26571cc48f4015ff99e344adbe4faa2cfe9decc9c2f786e1cf7f1eb0e1c2743e"
-dependencies = [
- "anyhow",
- "bincode",
- "blake3",
- "chrono",
- "digest",
- "generic-array 1.2.0",
- "getrandom",
- "paste",
- "rand 0.9.1",
- "rand_distr",
- "scsys-core 0.2.9",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "time",
- "tracing",
- "typenum",
- "uuid",
-]
-
-[[package]]
-name = "scsys-crypto"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "70e266c3cbaf56d7c8fe8f47037c683c909fc85ed1cfa664cc61e35ed9f4f24b"
@@ -1184,7 +1184,7 @@ dependencies = [
  "paste",
  "rand 0.9.1",
  "rand_distr",
- "scsys-core 0.3.0",
+ "scsys-core",
  "serde",
  "serde_derive",
  "serde_json",
@@ -1195,17 +1195,6 @@ dependencies = [
  "tracing",
  "typenum",
  "uuid",
-]
-
-[[package]]
-name = "scsys-derive"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c90cd41f56b2ea7b246720069620d8d39f50d66b2195c294cc14e4eb2de929e4"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -1221,35 +1210,11 @@ dependencies = [
 
 [[package]]
 name = "scsys-traits"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "705820e097cc216289a1dae2a20bab32c5e3ddfffb1e565e9774d49e488613d2"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
-name = "scsys-traits"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a5849f9fcb8ccacfaf68f287404236029a7d557fe8a875cdd4c1ec2b62b6987a"
 dependencies = [
  "num-traits",
-]
-
-[[package]]
-name = "scsys-util"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85f987868945446f6f31def1b47110c1b21c13b0c4101101ec4146634c0e75f5"
-dependencies = [
- "num-traits",
- "rand 0.9.1",
- "serde",
- "serde_derive",
- "serde_json",
- "strum",
- "tracing",
 ]
 
 [[package]]
@@ -1646,6 +1611,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "wasm_sync"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cff360cade7fec41ff0e9d2cda57fe58258c5f16def0e21302394659e6bbb0ea"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

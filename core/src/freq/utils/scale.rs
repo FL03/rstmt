@@ -26,14 +26,12 @@ pub fn map_to_c_major<T: Float + NumCast + Copy>(frequency: T) -> Option<i32> {
     let pitch_class = semitones.round().to_i32()?.pmod();
 
     // Find the nearest pitch class in the C Major scale
-    let nearest = C_MAJOR
+    C_MAJOR
         .iter()
         .min_by_key(|&&scale_pc| {
             // Calculate the absolute distance, considering octave wrapping
             let dist = (pitch_class - scale_pc).pmod();
             dist.min(12 - dist) // Handle wrapping (e.g., distance from 11 to 0)
         })
-        .copied();
-
-    nearest
+        .copied()
 }
