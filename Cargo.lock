@@ -1020,7 +1020,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "anyhow",
  "criterion",
@@ -1034,7 +1034,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt-core"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1057,7 +1057,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt-nrt"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "anyhow",
  "getrandom",
