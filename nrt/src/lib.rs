@@ -16,6 +16,39 @@
 //! ### Neo-Riemannian Theory
 //!
 //! The neo-riemannian theory is a loose collection of musical theories focused on the triad.
+//! Research in the field has been ongoing for over a century, culminating in the successful
+//! generalization of the tonnetz, a geometric representation of the triad and its
+//! transformations, into a single topological entity composed of individual simplices.
+//!
+//! ## Examples
+//!
+//! ### _Example 1: Basic Usage of a Triad_
+//!
+//! ```rust
+//! use rstmt_nrt::Triad;
+//!
+//! // initialize a c-major triad: (0, 4, 7)
+//! let mut triad = Triad::major(0);
+//!
+//! // verify the composition
+//! assert_eq!(triad.root(), &0);
+//! assert_eq!(triad.third(), &4);
+//! assert_eq!(triad.fifth(), &7);
+//! assert!(triad.is_major());
+//! // transform the triad using the parallel transformation
+//! let tp = triad.parallel();
+//! // verify the transformation
+//! assert_eq!(tp.root(), &0);
+//! assert_eq!(tp.third(), &3);
+//! assert_eq!(tp.fifth(), &7);
+//! assert!(tp.is_minor());
+//! // invert the transformation by applying it again
+//! assert_eq!(tp.parallel(), triad);
+//! ```
+//!
+//! ## Resources
+//!
+//! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 #![allow(
     clippy::module_inception,
     clippy::needless_doctest_main,

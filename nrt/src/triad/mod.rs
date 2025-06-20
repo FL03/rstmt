@@ -20,8 +20,7 @@
 //! use rstmt_nrt::Triad;
 //!
 //! // initialize a c-major triad: (0, 4, 7)
-//! let mut triad = Triad::major(0);
-//!
+//! let triad = Triad::major(0);
 //! // verify the composition
 //! assert_eq!(triad.root(), &0);
 //! assert_eq!(triad.third(), &4);
