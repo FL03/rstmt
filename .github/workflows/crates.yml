@@ -25,7 +25,6 @@ jobs:
     if: github.event_name == 'repository_dispatch' || inputs.publish == 'true'
     environment:
       name: production
-      url: https://crates.io/crates/${{ github.event.repository.name }}
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     permissions:

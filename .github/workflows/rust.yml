@@ -56,7 +56,7 @@ jobs:
           override: true
       -
         name: Build the workspace
-        run: cargo build -r --locked --workspace --all-features --target ${{ matrix.target }}
+        run: cargo build -r --locked --workspace --features full --target ${{ matrix.target }}
   benchmark:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.benchmark
     needs: build
@@ -108,17 +108,13 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
       -
-        name: Test (${{ matrix.features }})
-        if: matrix.features != 'default' && matrix.features != 'all'
-        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
-      -
         name: Test (default)
         if: matrix.features == 'default'
         run: cargo test -r --locked --workspace --target ${{ matrix.target}}
       -
-        name: Test (all-features)
-        if: matrix.features == 'all'
-        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
+        name: Test (${{ matrix.features }})
+        if: matrix.features != 'default'
+        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
   test_nightly:
     if: github.event.inputs.nightly || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust'
     continue-on-error: true
@@ -127,7 +123,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        features:  [ all, alloc, no_std ]
+        features:
+          - all
+          - no_std
+          - "alloc,nightly"
     steps:
       -
         name: Checkout
@@ -140,13 +139,6 @@ jobs:
           toolchain: nightly
           override: true
       -
-        name: Test (${{ matrix.features }})
-        continue-on-error: true
-        if: matrix.features != 'no_std'
-        run: cargo test -r --locked --workspace  --no-default-features --features ${{ matrix.features }}
-        env:
-          RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
-      -
         name: Test (all-features)
         if: matrix.features == 'all'
         run: cargo test -r --locked --workspace --all-features
@@ -154,6 +146,13 @@ jobs:
         name: Test (no_std)
         continue-on-error: true
         if: matrix.features == 'no_std'
-        run: cargo test -r --locked --workspace --no-default-features
+        run: cargo test -r --locked --workspace --no-default-features --features nightly
+        env:
+          RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
+      -
+        name: Test (${{ matrix.features }})
+        continue-on-error: true
+        if: matrix.features != 'all' && matrix.features != 'no_std'
+        run: cargo test -r --locked --workspace  --no-default-features --features ${{ matrix.features }}
         env:
           RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
