@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'repository_dispatch' || inputs.publish == 'true'
     environment:
-      name: production
+      name: crates-io
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     permissions:

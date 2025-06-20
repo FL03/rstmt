@@ -943,9 +943,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "rshyper"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b400a1fc70975d8a8e75725fddfefd57463aa2e5daddf1f5bc16ba5783d381a"
+checksum = "32273c3d9f1a94906606eb5a18d80c7d2dce568e603937460ef717a561ef8980"
 dependencies = [
  "rshyper-algo",
  "rshyper-core",
@@ -954,9 +954,9 @@ dependencies = [
 
 [[package]]
 name = "rshyper-algo"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f46d9058de646b1906c2594ef253655bd7b63fb196099be6eff76c3581f72376"
+checksum = "2637a241746a4a0aa72e736309e8920e9a6d6024d47f8275bb230a4f46beac4f"
 dependencies = [
  "hashbrown",
  "num-traits",
@@ -973,9 +973,9 @@ dependencies = [
 
 [[package]]
 name = "rshyper-core"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f603dc2dca421a342be765c000fcd7b9e7a1bb1a337ff4f1b592ffb5c3088d5f"
+checksum = "b5566033e4111f174d27d9cc7f7757bf4d9a6a7301c22984348f8e6e7a863956"
 dependencies = [
  "anyhow",
  "hashbrown",
@@ -996,9 +996,9 @@ dependencies = [
 
 [[package]]
 name = "rshyper-hmap"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bc527a7dcf96a516138d5c725105af8e1ae02c01e47dfbb63dcb6e8d039f59a"
+checksum = "282ace77239f896377b8887f0928905c7863d932614fe99c9f30e6a0ce43aa0b"
 dependencies = [
  "hashbrown",
  "num-traits",
