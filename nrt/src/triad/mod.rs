@@ -22,9 +22,9 @@
 //! // initialize a c-major triad: (0, 4, 7)
 //! let triad = Triad::major(0);
 //! // verify the composition
-//! assert_eq!(triad.root(), &0);
-//! assert_eq!(triad.third(), &4);
-//! assert_eq!(triad.fifth(), &7);
+//! assert_eq!(triad.root(), 0);
+//! assert_eq!(triad.third(), 4);
+//! assert_eq!(triad.fifth(), 7);
 //! assert!(triad.is_major());
 //! ```
 //!

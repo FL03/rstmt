@@ -31,16 +31,16 @@
 //! let mut triad = Triad::major(0);
 //!
 //! // verify the composition
-//! assert_eq!(triad.root(), &0);
-//! assert_eq!(triad.third(), &4);
-//! assert_eq!(triad.fifth(), &7);
+//! assert_eq!(triad.root(), 0);
+//! assert_eq!(triad.third(), 4);
+//! assert_eq!(triad.fifth(), 7);
 //! assert!(triad.is_major());
 //! // transform the triad using the parallel transformation
 //! let tp = triad.parallel();
 //! // verify the transformation
-//! assert_eq!(tp.root(), &0);
-//! assert_eq!(tp.third(), &3);
-//! assert_eq!(tp.fifth(), &7);
+//! assert_eq!(tp.root(), 0);
+//! assert_eq!(tp.third(), 3);
+//! assert_eq!(tp.fifth(), 7);
 //! assert!(tp.is_minor());
 //! // invert the transformation by applying it again
 //! assert_eq!(tp.parallel(), triad);
