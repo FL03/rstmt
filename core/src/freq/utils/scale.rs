@@ -60,12 +60,12 @@ where
     /// ```math
     /// f = base * 2^(n/12)
     /// ```
-    pub fn compute(&self, n: i32) -> Option<T>
+    pub fn compute(&self, n: isize) -> Option<T>
     where
         T: Float + FromPrimitive,
     {
         let anchor = self.anchor().get();
-        compute_freq_from_scale(n as isize, Some(*anchor))
+        compute_freq_from_scale(n, Some(*anchor))
     }
 }
 

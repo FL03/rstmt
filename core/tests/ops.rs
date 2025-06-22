@@ -5,6 +5,20 @@
 extern crate rstmt_core as rstmt;
 
 use rstmt::{PitchMod, PyMod};
+use rstmt::freq::ScaleToFrequency;
+
+#[test]
+fn test_freq_convert() -> rstmt::Result<()> {
+    let n: isize = -9; // C4;
+    let base = ScaleToFrequency::new(440f64); // A4
+
+    let freq = base.compute(n).unwrap();
+    assert!((freq - 261.6255653005986).abs() < f64::EPSILON);
+    let scale = base.from_scale_degree(freq).unwrap();
+    assert_eq!(scale, n);
+
+    Ok(())
+}
 
 #[test]
 fn test_pymod() -> rstmt::Result<()> {

@@ -67,13 +67,12 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
-nrt = [
-    "dep:rstmt-nrt",
-]
+nrt = ["dep:rstmt-nrt"]
 
 tonnetz = [
     "nrt",
     "rstmt-nrt?/tonnetz",
+    "std",
 ]
 
 # ************* [FF:Environments] *************
