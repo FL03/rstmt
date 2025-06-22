@@ -2,8 +2,7 @@
     appellation: impl_freq_ops <module>
     authors: @FL03
 */
-use crate::freq::{Frequency, RawFrequency};
-use crate::traits::PitchMod;
+use crate::freq::{Frequency, RawFrequency, utils};
 use num_traits::{Float, FromPrimitive, Num, One, Zero};
 
 impl<T> Frequency<T>
@@ -15,28 +14,21 @@ where
     /// ```math
     /// f = base * 2^(n/12)
     /// ```
-    pub fn compute_freq_from_scale(n: i32, base: Option<f64>) -> Option<Self> {
-        // get the base "tuning" frequency
-        let compute = |n: i32| -> Option<T> {
-            let base = base.unwrap_or(440.0);
-            T::from_f64(base * 2f64.powf(n as f64 / 12.0))
-        };
-        compute(n).map(Frequency)
+    pub fn compute_freq_from_scale(n: isize, base: Option<T>) -> Option<Self> {
+        utils::compute_freq_from_scale(n, base).map(Frequency)
     }
     /// Compute the pitch class of a frequency (in hertz), using the formula:
     ///
     /// ```math
     /// n = 12 * log2(f / base)
     /// ```
-    pub fn get_scale_of_freq<U>(&self, base: Option<T>) -> Option<i32> {
+    pub fn get_scale_of_freq<U>(&self, base: Option<T>) -> Option<isize> {
         // Ensure frequency is positive
         if self.get() <= &T::zero() {
             return None;
         }
-        let base = base.unwrap_or_else(|| T::from_f64(440.0).unwrap());
-        let log2 = T::from_f64(2.0)?;
-        let semitones = T::from_f64(12.0)? * (self.0 / base).log(log2);
-        semitones.round().to_i32().map(|i| i.pmod())
+        let freq = *self.get();
+        utils::get_scale_of_freq(freq, base)
     }
 }
 
