@@ -48,7 +48,7 @@ scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
 # benchmarking
 criterion = { version = "0.6" }
 # concurrency & parallelism
-crossbeam = { default-features = false,version = "0.9" }
+# crossbeam = { default-features = false, version = "0.9" }
 rayon = { default-features = false, version = "1" }
 rayon-core = { default-features = false, version = "1" }
 # error-handling
@@ -73,7 +73,7 @@ smart-default = { version = "0.7" }
 strum = { default-features = false, features = ["derive"], version = "0.27" }
 # logging
 tracing = { default-features = false, features = ["attributes"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["ansi", "env-filter", "fmt"], version = "0.3" }
+tracing-subscriber = { default-features = false, features = ["env-filter", "fmt"], version = "0.3" }
 
 # ************* [Profiles] *************
 [profile.dev]
@@ -86,14 +86,16 @@ opt-level = 2
 overflow-checks = true
 panic = "abort"
 rpath = true
+strip = "symbols"
 
 [profile.release]
 codegen-units = 16
 debug = false
 debug-assertions = false
 incremental = false
-lto = false
+lto = "fat"
 opt-level = "z"
 overflow-checks = false
 panic = "abort"
 rpath = false
+strip = "debuginfo"
