@@ -18,6 +18,7 @@ where
         r
     }
 }
+
 /// The [`PyMod`] trait defines a pythonic modulo operator that can be used to perform modulo
 /// operations similar to Python's `%` operator, which behaves differently than Rust's `%`
 /// operator when dealing with negative numbers.
