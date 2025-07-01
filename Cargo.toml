@@ -43,7 +43,7 @@ rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.5" }
 
 # custom
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
+scsys = { default-features = false, features = ["derive"], version = "0.3.1" }
 
 # benchmarking
 criterion = { version = "0.6" }
