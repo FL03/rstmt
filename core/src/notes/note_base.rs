@@ -2,9 +2,8 @@
     Appellation: note <module>
     Contrib: @FL03
 */
-use crate::freq::RawFrequency;
 use crate::octave::Octave;
-use crate::pitch::{self, Pitch, PitchClass};
+use crate::pitch::{self, Pitch, RawPitchClass};
 
 /// The [`NoteBase`] is a generic representation of a musical note
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -22,8 +21,7 @@ pub struct NoteBase<T, Cls = pitch::C> {
 
 impl<T, Cls> NoteBase<T, Cls>
 where
-    T: RawFrequency,
-    Cls: PitchClass,
+    Cls: RawPitchClass,
 {
     pub fn new(pitch: Pitch<T>, octave: Octave) -> Self {
         Self {
@@ -55,7 +53,7 @@ where
         self
     }
     /// consumes the current instance to create another with the given pitch class
-    pub fn with_class<Pc: PitchClass>(self) -> NoteBase<T, Pc> {
+    pub fn with_class<Pc: RawPitchClass>(self) -> NoteBase<T, Pc> {
         NoteBase {
             class: Pc::new(),
             octave: self.octave,
@@ -70,8 +68,7 @@ where
 
 impl<C, T> core::fmt::Display for NoteBase<T, C>
 where
-    C: PitchClass,
-    T: RawFrequency,
+    C: RawPitchClass,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.octave)
@@ -81,7 +78,7 @@ where
 impl<T, C> Default for NoteBase<T, C>
 where
     T: Default,
-    C: PitchClass,
+    C: RawPitchClass,
 {
     fn default() -> Self {
         Self {

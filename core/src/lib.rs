@@ -61,10 +61,10 @@ pub mod types {
 pub use self::{
     consts::*,
     error::*,
-    freq::{Frequency, RawFrequency},
+    freq::{Frequency, ScaleToFrequency},
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
     octave::{AsOctave, IntoOctave, Octave},
-    pitch::{AsPitch, IntoPitch, Pitch, PitchClass, RawPitch},
+    pitch::{AsPitch, IntoPitch, Pitch, RawPitch, RawPitchClass},
     types::prelude::*,
 };
 #[doc(inline)]

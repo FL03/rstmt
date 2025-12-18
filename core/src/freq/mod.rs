@@ -4,9 +4,10 @@
 */
 //! The `freq` module defines the [`Frequency`] type and its associated traits and implementations.
 #[doc(inline)]
-pub use self::{frequency::Frequency, traits::*, utils::*};
+pub use self::{frequency::*, scale::*, traits::*};
 
 mod frequency;
+mod scale;
 
 mod impls {
     pub mod impl_freq;
@@ -20,39 +21,16 @@ mod traits {
     //! this module provides various traits to support various representations and operations
     //! related to frequencies.
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{convert::*, frequency::*};
 
     mod convert;
     mod frequency;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::convert::*;
-        #[doc(inline)]
-        pub use super::frequency::*;
-    }
-}
-
-mod utils {
-    //! this module implements additional methods and utilities for working with frequencies.
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod scale;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::scale::*;
-    }
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
     pub use super::frequency::*;
-    #[doc(inline)]
+    pub use super::scale::*;
     pub use super::traits::*;
-    #[doc(inline)]
-    pub use super::utils::prelude::*;
 }
 
 #[cfg(test)]

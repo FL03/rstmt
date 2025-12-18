@@ -3,10 +3,11 @@
     Contrib: @FL03
 */
 use crate::PitchMod;
-use crate::freq::{Frequency, RawFrequency};
+use crate::freq::Frequency;
+use num_traits::{Float, FromPrimitive};
 
 /// A discrete pitch with a class and frequency.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
@@ -18,12 +19,18 @@ pub struct Pitch<T = f32> {
     pub(crate) freq: Frequency<T>,
 }
 
-impl<T> Pitch<T>
-where
-    T: RawFrequency,
-{
-    pub fn new(class: usize, freq: Frequency<T>) -> Self {
+impl<T> Pitch<T> {
+    /// initialize a new instance of a Pitch
+    pub const fn new(class: usize, freq: Frequency<T>) -> Self {
         Self { class, freq }
+    }
+    /// returns a new pitch automatically classified from the given frequency and (optional) scale
+    pub fn from_freq_with_scale(freq: Frequency<T>, scale: Option<T>) -> Option<Self>
+    where
+        T: Float + FromPrimitive,
+    {
+        let class = freq.classify_by(scale)?.pmod() as usize;
+        Some(Self::new(class, freq))
     }
     /// returns a copy to the index of the note's class
     pub const fn class(&self) -> usize {
@@ -56,10 +63,13 @@ where
         Self { class, ..self }
     }
     /// consumes the current instance to create another with the given frequency
-    pub fn with_frequency<T2>(self, freq: Frequency<T2>) -> Pitch<T2>
-    where
-        T2: RawFrequency,
-    {
+    ///
+    /// # Saftey
+    ///
+    /// The function is unsafe because it is up to the caller to ensure the class is unchanged
+    /// or get updated as the method does not perform any checks to validating the frequency
+    /// against the class.
+    pub unsafe fn with_frequency<T2>(self, freq: Frequency<T2>) -> Pitch<T2> {
         Pitch {
             class: self.class,
             freq,
@@ -67,67 +77,37 @@ where
     }
 }
 
-impl<T> Default for Pitch<T>
-where
-    T: Default,
-{
-    fn default() -> Self {
-        Pitch {
-            class: 0,
-            freq: Frequency::default(),
-        }
-    }
-}
-
-impl<T> core::fmt::Display for Pitch<T>
-where
-    T: RawFrequency,
-{
+impl<T: core::fmt::Display> core::fmt::Display for Pitch<T> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.freq)
     }
 }
 
-impl<T> PartialEq<Frequency<T>> for Pitch<T>
-where
-    T: RawFrequency + PartialEq,
-{
+impl<T: PartialEq> PartialEq<Frequency<T>> for Pitch<T> {
     fn eq(&self, other: &Frequency<T>) -> bool {
         self.frequency() == other
     }
 }
 
-impl<T> PartialEq<usize> for Pitch<T>
-where
-    T: RawFrequency,
-{
+impl<T> PartialEq<usize> for Pitch<T> {
     fn eq(&self, other: &usize) -> bool {
         self.class() == *other
     }
 }
 
-impl<T> PartialEq<Pitch<T>> for usize
-where
-    T: RawFrequency,
-{
+impl<T> PartialEq<Pitch<T>> for usize {
     fn eq(&self, other: &Pitch<T>) -> bool {
         *self == other.class()
     }
 }
 
-impl<T> PartialOrd<usize> for Pitch<T>
-where
-    T: RawFrequency,
-{
+impl<T> PartialOrd<usize> for Pitch<T> {
     fn partial_cmp(&self, other: &usize) -> Option<core::cmp::Ordering> {
         self.class().partial_cmp(other)
     }
 }
 
-impl<T> PartialOrd<Pitch<T>> for usize
-where
-    T: RawFrequency,
-{
+impl<T> PartialOrd<Pitch<T>> for usize {
     fn partial_cmp(&self, other: &Pitch<T>) -> Option<core::cmp::Ordering> {
         self.partial_cmp(&other.class())
     }

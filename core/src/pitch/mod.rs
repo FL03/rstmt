@@ -4,29 +4,16 @@
 */
 //! this module implements the [`Pitch`] type and its associated traits and types.
 #[doc(inline)]
-pub use self::{pbase::Pitch, types::*};
-
-mod pbase;
+pub use self::{pitch_base::*, pitch_class::*};
+// modules
+mod pitch_base;
+mod pitch_class;
 mod wrapper;
 
-mod types {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod pitch_class;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::pitch_class::*;
-    }
-}
-
+// prelude (local)
 pub(crate) mod prelude {
-    #[doc(inline)]
-    pub use super::types::*;
-    #[doc(inline)]
+    pub use super::pitch_class::*;
     pub use super::wrapper::*;
-    #[doc(inline)]
     pub use super::{AsPitch, IntoPitch, PitchNum, RawPitch};
 }
 

@@ -2,19 +2,103 @@
     appellation: pitch_class <module>
     authors: @FL03
 */
+
+pub trait NoteType {
+    private! {}
+
+    fn is_sharp(&self) -> bool;
+    fn is_flat(&self) -> bool;
+    fn is_natural(&self) -> bool;
+}
 /// The [`PitchClass`] trait establishes an interface to defining pitch classes.
-pub trait PitchClass:
+pub trait RawPitchClass:
     'static + Send + Sized + Sync + core::fmt::Debug + core::fmt::Display
 {
-    private!();
+    private! {}
 
     fn new() -> Self;
 
     fn index(&self) -> usize;
 }
+
+/// By definition, a pitch class speaks to the symbolic representation associated with the
+/// frequency being played regardless of octave or enharmonic equivalence. Therefore, we only
+/// consider the **natural** notes and their representations here to act as a single source of
+/// truth for pitch-based operations.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    strum::AsRefStr,
+    strum::EnumCount,
+    strum::EnumIs,
+    strum::EnumIter,
+    strum::EnumString,
+    strum::VariantArray,
+    strum::VariantNames,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(untagged, rename_all = "snake_case")
+)]
+#[strum(serialize_all = "snake_case")]
+pub enum PitchClass {
+    #[default]
+    C = 0,
+    D = 2,
+    E = 4,
+    F = 5,
+    G = 7,
+    A = 9,
+    B = 11,
+}
 /*
  ************* Implementations *************
 */
+#[allow(unused_macros)]
+macro_rules! impl_note_type {
+    (@impl $vis:vis enum $name:ident {
+        $($sharp:ident),*;
+        $($flat:ident),*;
+        $($natural:ident),*;
+    }) => {
+        $vis enum $name {
+            $($sharp),*,
+            $($flat),*,
+            $($natural),*,
+        }
+
+        impl NoteType for $name {
+            fn is_sharp(&self) -> bool {
+                match self {
+                    $(Self::$sharp => true,)*
+                    _ => false,
+                }
+            }
+
+            fn is_flat(&self) -> bool {
+                match self {
+                    $(Self::$flat => true,)*
+                    _ => false,
+                }
+            }
+
+            fn is_natural(&self) -> bool {
+                match self {
+                    $(Self::$natural => true,)*
+                    _ => false,
+                }
+            }
+        }
+    };
+}
 macro_rules! class_enum {
     {
         $(#[doc $($doc:tt)*])?
@@ -97,7 +181,7 @@ macro_rules! pitch_class {
             }
         }
 
-        impl $crate::pitch::PitchClass for $name {
+        impl RawPitchClass for $name {
             seal!();
 
             fn new() -> Self {
