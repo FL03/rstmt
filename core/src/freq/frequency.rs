@@ -118,6 +118,17 @@ where
     }
 }
 
-scsys::fmt_wrapper! {
-    Frequency<T>(Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex)
+contained::fmt_wrapper! {
+    impl Frequency<T> {
+        Binary,
+        Debug,
+        Display,
+        LowerExp,
+        LowerHex,
+        Octal,
+        Pointer,
+        UpperExp,
+        UpperHex
+    }
+
 }

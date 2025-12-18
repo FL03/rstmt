@@ -16,8 +16,9 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
+doc-scrape-examples = true
 features = ["full"]
-rustc-args = [ "--cfg", "docsrs" ]
+rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
 [package.metadata.release]
@@ -25,15 +26,28 @@ no-dev-version = true
 tag-name = "v{{version}}"
 
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib",
-    "staticlib",
-]
 bench = true
+crate-type = ["cdylib", "rlib", "staticlib"]
 doc = true
 doctest = true
+name = "rstmt"
+path = "lib.rs"
 test = true
+
+[[bench]]
+harness = false
+name = "default"
+path = "benches/default.rs"
+
+[[example]]
+doc-scrape-examples = true
+name = "motion"
+required-features = ["nrt", "std", "tracing"]
+
+[[example]]
+doc-scrape-examples = true
+name = "triads"
+required-features = ["nrt", "std"]
 
 [dependencies]
 rstmt-core = { workspace = true }
@@ -41,119 +55,87 @@ rstmt-nrt = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
-criterion = { features = ["plotters"], workspace = true }
+criterion = { features = ["plotters"], version = "0.8" }
 lazy_static = { workspace = true }
-num = { features = ["std"], workspace = true }
-tracing = { features = ["std"], workspace = true }
-tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
+num = { features = ["std"], version = "0.4" }
+tracing = { features = ["attributes", "std"], version = "0.1" }
+tracing-subscriber = { features = ["ansi", "serde", "std"], version = "0.3" }
 
 [features]
 default = [
-    "nrt",
-    "std",
+  "nrt",
+  "std",
 ]
 
 full = [
-    "default",
-    "anyhow",
-    "rand",
-    "serde",
-    "tracing",
+  "default",
+  "anyhow",
+  "rand",
+  "serde",
 ]
 
 nightly = [
-    "rstmt-core/nightly",
-    "rstmt-nrt?/nightly",
+  "rstmt-core/nightly",
+  "rstmt-nrt?/nightly",
 ]
 
 # ************* [FF:Features] *************
 nrt = ["dep:rstmt-nrt"]
 
 tonnetz = [
-    "nrt",
-    "rstmt-nrt?/tonnetz",
-    "std",
+  "nrt",
+  "rstmt-nrt?/tonnetz",
+  "std",
 ]
 
 # ************* [FF:Environments] *************
 std = [
-    "rstmt-core/std",
-    "rstmt-nrt?/std",
+  "rstmt-core/std",
+  "rstmt-nrt?/std",
 ]
 
 wasi = [
-    "rstmt-core/wasi",
-    "rstmt-nrt?/wasi",
+  "rstmt-core/wasi",
+  "rstmt-nrt?/wasi",
 ]
 
 wasm = [
-    "rstmt-core/wasm",
-    "rstmt-nrt?/wasm",
+  "rstmt-core/wasm",
+  "rstmt-nrt?/wasm",
 ]
-
 
 # ************* [FF:Dependencies] *************
 alloc = [
-    "rstmt-core/alloc",
-    "rstmt-nrt?/alloc",
+  "rstmt-core/alloc",
+  "rstmt-nrt?/alloc",
 ]
 
 anyhow = [
-    "rstmt-core/anyhow",
-    "rstmt-nrt?/anyhow",
+  "rstmt-core/anyhow",
+  "rstmt-nrt?/anyhow",
 ]
 
 json = [
-    "rstmt-core/json",
-    "rstmt-nrt?/json",
+  "rstmt-core/json",
+  "rstmt-nrt?/json",
 ]
 
 rand = [
-    "rstmt-core/rand",
-    "rstmt-nrt?/rand",
+  "rstmt-core/rand",
+  "rstmt-nrt?/rand",
 ]
 
 rng = [
-    "rstmt-core/rng",
-    "rstmt-nrt?/rng",
+  "rstmt-core/rng",
+  "rstmt-nrt?/rng",
 ]
 
 serde = [
-    "rstmt-core/serde",
-    "rstmt-nrt?/serde",
+  "rstmt-core/serde",
+  "rstmt-nrt?/serde",
 ]
 
 serde_json = [
-    "rstmt-core/serde_json",
-    "rstmt-nrt?/serde_json",
+  "rstmt-core/serde_json",
+  "rstmt-nrt?/serde_json",
 ]
-
-tracing = [
-    "rstmt-core/tracing",
-    "rstmt-nrt?/tracing",
-]
-
-# ************* [Benchmarks] *************
-[[bench]]
-name = "default"
-path = "benches/default.rs"
-harness = false
-
-# ************* [Examples] *************
-[[example]]
-name = "motion"
-required-features = [
-    "nrt",
-    "std",
-    "tracing",
-]
-
-# ************* [Examples] *************
-[[example]]
-name = "triads"
-required-features = [
-    "nrt",
-    "std"
-]
-
-

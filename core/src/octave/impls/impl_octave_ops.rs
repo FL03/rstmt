@@ -47,8 +47,8 @@ impl<T: Num> Num for Octave<T> {
     }
 }
 
-scsys::fmt_wrapper! {
-    Octave<T>(
+contained::fmt_wrapper! {
+    impl Octave<T> {
         Binary,
         Debug,
         Display,
@@ -58,7 +58,8 @@ scsys::fmt_wrapper! {
         Pointer,
         UpperExp,
         UpperHex
-    )
+    }
+
 }
 
 macro_rules! impl_assign_op {

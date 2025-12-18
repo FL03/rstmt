@@ -10,12 +10,12 @@ env:
 
 on:
   repository_dispatch:
-    types: [ crates-io ]
+    types: [crates-io]
   workflow_dispatch:
     inputs:
       publish:
         default: false
-        description: 'Publish the crate(s) to crates.io?'
+        description: "Publish the crate(s) to crates.io?"
         required: true
         type: boolean
 
@@ -34,16 +34,13 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        package:  [ rstmt-core, rstmt-nrt, rstmt ]
+        package: [rstmt-core, rstmt-nrt, rstmt]
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      -
-        name: Publish (${{ matrix.package }})
+      - name: Publish (${{ matrix.package }})
         run: cargo publish --locked --package ${{ matrix.package }}

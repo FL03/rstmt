@@ -1,32 +1,28 @@
 name: clippy
 
-concurrency:   
+concurrency:
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
 on:
   pull_request:
-    branches: [ main, master ]
-    types: [ opened, reopened, synchronize ]
+    branches: [main, master]
+    types: [opened, reopened, synchronize]
     paths:
       - "**/clippy.yml"
       - "**/*.rs"
       - "**/Cargo.*"
   push:
-    branches: [ main, master ]
-    tags: [ latest, v*.*.*, "*-nightly" ]
-    paths:
-      - "**/clippy.yml"
-      - "**/*.rs"
-      - "**/Cargo.*"
+    branches: [main, master]
+    tags: [latest, v*.*.*, "*-nightly"]
   release:
-    types: [ created, edited ]
+    types: [created, edited]
   repository_dispatch:
-    types: [ clippy ]
+    types: [clippy]
   workflow_dispatch:
 
 permissions:
-  actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status 
+  actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
   contents: read
   security-events: write
   statuses: write
@@ -35,28 +31,22 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - 
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           components: clippy, rustfmt
-      - 
-        name: Setup the for sarif output
+      - name: Setup the for sarif output
         run: cargo install clippy-sarif sarif-fmt
-      - 
-        name: Run Clippy
-        run:
-          cargo clippy
+      - name: Run Clippy
+        run: cargo clippy
           --all-features
           --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
         continue-on-error: true
-      - 
-        name: Upload analysis
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload analysis
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: rust-clippy-results.sarif
           wait-for-processing: true

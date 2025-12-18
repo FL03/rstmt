@@ -15,7 +15,7 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumIs,

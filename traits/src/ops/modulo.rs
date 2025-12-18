@@ -8,11 +8,11 @@ use num_traits::{FromPrimitive, Zero};
 fn _pymod<A, B, C>(lhs: A, rhs: B) -> C
 where
     A: core::ops::Rem<B, Output = C>,
-    B: Copy + Zero + PartialOrd,
-    C: core::ops::Add<B, Output = C> + Zero + PartialOrd,
+    B: Copy + PartialOrd + Zero,
+    C: core::ops::Add<B, Output = C> + PartialOrd + Zero,
 {
     let r = lhs % rhs;
-    if (r < C::zero() && rhs > B::zero()) || (r > C::zero() && rhs < B::zero()) {
+    if (r < <C>::zero() && rhs > B::zero()) || (r > <C>::zero() && rhs < B::zero()) {
         r + rhs
     } else {
         r

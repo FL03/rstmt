@@ -14,7 +14,7 @@
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    variants::VariantConstructors,
     strum::EnumCount,
     strum::EnumIs,
 )]
@@ -39,7 +39,7 @@ pub enum Accidental {
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,

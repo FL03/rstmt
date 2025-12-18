@@ -1,34 +1,35 @@
 [workspace]
 default-members = [
-    "rstmt",
+  "rstmt",
 ]
 exclude = [
-    ".artifacts/archive/*",
+  ".artifacts/archive/*",
 ]
 members = [
-    "core",
-    "nrt",
-    "rstmt",
+  "core",
+  "nrt",
+  "rstmt",
+  "traits",
 ]
 resolver = "3"
 
 [workspace.package]
 authors = [
-    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
-    "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
+  "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
+  "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)",
 ]
 categories = [
-    "mathematics",
+  "mathematics",
 ]
 description = "A complete framework for computational music theory, analysis, and research, with a focus on hypergraphs and topology."
 edition = "2024"
 homepage = "https://github.com/FL03/rstmt/wiki"
 keywords = [
-    "analysis",
-    "composition",
-    "music-theory",
-    "research",
-    "topology",
+  "analysis",
+  "composition",
+  "music-theory",
+  "research",
+  "topology",
 ]
 license = "Apache-2.0"
 readme = "README.md"
@@ -40,13 +41,13 @@ version = "0.0.6"
 rstmt = { default-features = false, path = "rstmt", version = "0.0.6" }
 rstmt-core = { default-features = false, path = "core", version = "0.0.6" }
 rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.6" }
-
+rstmt-traits = { default-features = false, path = "traits", version = "0.0.6" }
 # custom
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
+scsys = { default-features = false, features = ["derive"], version = "0.3.2" }
+contained = { default-features = false, features = ["macros"], version = "0.2.2" }
+variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 
-# benchmarking
-criterion = { version = "0.6" }
 # concurrency & parallelism
 # crossbeam = { default-features = false, version = "0.9" }
 rayon = { default-features = false, version = "1" }
@@ -55,7 +56,8 @@ rayon-core = { default-features = false, version = "1" }
 anyhow = { default-features = false, version = "1" }
 thiserror = { default-features = false, version = "2" }
 # numbers
-num = { default-features = false, version = "0.4" }
+num-complex = { default-features = false, version = "0.4" }
+num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, version = "0.2" }
 # randomization
 getrandom = { default-features = false, version = "0.3" }
@@ -71,9 +73,6 @@ lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = { version = "0.7" }
 strum = { default-features = false, features = ["derive"], version = "0.27" }
-# logging
-tracing = { default-features = false, features = ["attributes"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["env-filter", "fmt"], version = "0.3" }
 
 # ************* [Profiles] *************
 [profile.dev]
@@ -93,7 +92,7 @@ codegen-units = 16
 debug = false
 debug-assertions = false
 incremental = false
-lto = "fat"
+lto = true
 opt-level = "z"
 overflow-checks = false
 panic = "abort"
