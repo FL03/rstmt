@@ -34,10 +34,10 @@
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)
 //!
 #[doc(inline)]
-pub use self::{base_triad::TriadBase, std_triad::Triad, types::prelude::*};
+pub use self::{std_triad::Triad, triad_base::TriadBase, types::prelude::*};
 
-pub mod base_triad;
 mod std_triad;
+pub mod triad_base;
 
 mod impls {
     pub mod impl_triad_base;

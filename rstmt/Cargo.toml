@@ -42,7 +42,7 @@ path = "benches/default.rs"
 [[example]]
 doc-scrape-examples = true
 name = "motion"
-required-features = ["nrt", "std", "tracing"]
+required-features = ["nrt", "std"]
 
 [[example]]
 doc-scrape-examples = true

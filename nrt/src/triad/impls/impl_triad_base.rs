@@ -12,47 +12,47 @@ where
 {
 }
 
-impl<S> TriadBase<S, AugmentedTri>
+impl<S> TriadBase<S, Augmented>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
     /// augmented triad.
     pub fn augmented(chord: S) -> Self {
-        TriadBase::new(chord, AugmentedTri)
+        TriadBase::new(chord, Augmented)
     }
 }
 
-impl<S> TriadBase<S, DiminishedTri>
+impl<S> TriadBase<S, Diminished>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
     /// diminished triad.
     pub fn diminished(chord: S) -> Self {
-        TriadBase::new(chord, DiminishedTri)
+        TriadBase::new(chord, Diminished)
     }
 }
 
-impl<S> TriadBase<S, MajorTri>
+impl<S> TriadBase<S, Major>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
     /// triad.
     pub fn major(chord: S) -> Self {
-        TriadBase::new(chord, MajorTri)
+        TriadBase::new(chord, Major)
     }
 }
 
-impl<S> TriadBase<S, MinorTri>
+impl<S> TriadBase<S, Minor>
 where
     S: RawStore,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
     /// triad.
     pub fn minor(chord: S) -> Self {
-        TriadBase::new(chord, MinorTri)
+        TriadBase::new(chord, Minor)
     }
 }
 

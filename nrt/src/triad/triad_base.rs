@@ -11,7 +11,7 @@ use super::{RawStore, TriadKind, TriadStore};
     derive(serde::Deserialize, serde::Serialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct TriadBase<S = [usize; 3], K = super::MajorTri>
+pub struct TriadBase<S = [usize; 3], K = super::Major>
 where
     K: TriadKind,
     S: RawStore,
@@ -124,22 +124,22 @@ where
     /// returns true if the triad is classified as an augmented triad.
     pub fn is_augmented(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::AugmentedTri>()
+        TypeId::of::<K>() == TypeId::of::<super::Augmented>()
     }
     /// returns true if the triad is classified as a diminished triad.
     pub fn is_diminished(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::DiminishedTri>()
+        TypeId::of::<K>() == TypeId::of::<super::Diminished>()
     }
     /// returns true if the triad is classified as a major triad.
     pub fn is_major(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::MajorTri>()
+        TypeId::of::<K>() == TypeId::of::<super::Major>()
     }
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::MinorTri>()
+        TypeId::of::<K>() == TypeId::of::<super::Minor>()
     }
 }
 

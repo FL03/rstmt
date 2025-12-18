@@ -2,8 +2,6 @@
     Appellation: rstmt-nrt <library>
     Contrib: @FL03
 */
-//! # rstmt-nrt
-//!
 //! This crate works to establish a solid foundation fo exploring the neo-riemannian theory,
 //! providing implementations of the [`Triad`], its transformations [`LPR`], and the
 //! generalized tonnetz ([`HyperTonnetz`]).
@@ -61,23 +59,11 @@
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
-
+// external crates
+#[cfg(feature = "alloc")]
+extern crate alloc;
 /// re-declare the external `rstmt_core` crate as `rstmt` for convenience
 extern crate rstmt_core as rstmt;
-
-#[doc(inline)]
-pub use self::{
-    error::*,
-    triad::{Triad, Triads},
-    types::prelude::*,
-};
-
-#[cfg(feature = "std")]
-pub use self::transform::TriadNavigator;
-
-#[cfg(feature = "tonnetz")]
-#[doc(inline)]
-pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 
 #[macro_use]
 pub(crate) mod macros {
@@ -103,7 +89,21 @@ pub mod types {
         pub use super::lpr::*;
     }
 }
-
+// re-exports
+#[cfg(feature = "std")]
+#[doc(inline)]
+pub use self::transform::TriadNavigator;
+#[doc(inline)]
+pub use self::{
+    error::*,
+    triad::{Triad, Triads},
+    types::prelude::*,
+};
+#[cfg(feature = "tonnetz")]
+#[doc(inline)]
+pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
+// prelude
+#[doc(hidden)]
 pub mod prelude {
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::prelude::*;

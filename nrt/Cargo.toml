@@ -41,7 +41,7 @@ rstmt-core = { workspace = true }
 rshyper = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
-rayon = { optional = true, workspace = true }
+rayon-core = { optional = true, workspace = true }
 # error-handling
 anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
@@ -105,7 +105,7 @@ wasi = [
 
 wasm = [
   "getrandom?/wasm_js",
-  "rayon?/web_spin_lock",
+  "rayon-core?/web_spin_lock",
   "rstmt-core/wasm",
 ]
 # ************* [FF:Dependencies] *************
@@ -139,7 +139,7 @@ rand = [
 ]
 
 rayon = [
-  "dep:rayon",
+  "dep:rayon-core",
   "rshyper/rayon",
   "rstmt-core/rayon",
 ]

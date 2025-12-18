@@ -1,10 +1,5 @@
 [workspace]
-default-members = [
-  "rstmt",
-]
-exclude = [
-  ".artifacts/archive/*",
-]
+default-members = ["rstmt"]
 members = [
   "core",
   "nrt",
@@ -18,9 +13,7 @@ authors = [
   "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
   "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)",
 ]
-categories = [
-  "mathematics",
-]
+categories = ["mathematics"]
 description = "A complete framework for computational music theory, analysis, and research, with a focus on hypergraphs and topology."
 edition = "2024"
 homepage = "https://github.com/FL03/rstmt/wiki"
@@ -44,14 +37,13 @@ rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.6" }
 rstmt-traits = { default-features = false, path = "traits", version = "0.0.6" }
 # custom
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-scsys = { default-features = false, features = ["derive"], version = "0.3.2" }
 contained = { default-features = false, features = ["macros"], version = "0.2.2" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 
 # concurrency & parallelism
-# crossbeam = { default-features = false, version = "0.9" }
-rayon = { default-features = false, version = "1" }
 rayon-core = { default-features = false, version = "1" }
+# data structures
+hashbrown = { default-features = false, version = "0.16" }
 # error-handling
 anyhow = { default-features = false, version = "1" }
 thiserror = { default-features = false, version = "2" }

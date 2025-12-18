@@ -10,7 +10,7 @@ env:
 
 on:
   repository_dispatch:
-    types: [crates-io]
+    types: [crates-io, cargo-publish]
   workflow_dispatch:
     inputs:
       publish:
@@ -19,10 +19,11 @@ on:
         required: true
         type: boolean
 
+
+
 jobs:
   crates-io:
     runs-on: ubuntu-latest
-    if: github.event_name == 'repository_dispatch' || inputs.publish == 'true'
     environment:
       name: crates-io
     env:
@@ -34,7 +35,11 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        package: [rstmt-core, rstmt-nrt, rstmt]
+        package:
+          - rstmt-traits
+          - rstmt-core
+          - rstmt-nrt
+          - rstmt
     steps:
       - name: Checkout
         uses: actions/checkout@v5
