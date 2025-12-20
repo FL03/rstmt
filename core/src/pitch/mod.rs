@@ -19,11 +19,11 @@ pub(crate) mod prelude {
 
 /// A trait for converting a reference into a [`Pitch`].
 pub trait AsPitch {
-    fn as_pitch(&self) -> Pitch;
+    fn as_pitch(&self) -> ClassifiedPitch;
 }
 /// A trait for converting a type into a [`Pitch`].
 pub trait IntoPitch {
-    fn into_pitch(self) -> Pitch;
+    fn into_pitch(self) -> ClassifiedPitch;
 }
 
 /// [`RawPitch`] defines an interface for all raw pitch types.
@@ -67,16 +67,16 @@ impl<T> AsPitch for T
 where
     T: Clone + IntoPitch,
 {
-    fn as_pitch(&self) -> Pitch {
+    fn as_pitch(&self) -> ClassifiedPitch {
         self.clone().into_pitch()
     }
 }
 
 impl<T> IntoPitch for T
 where
-    T: Into<Pitch>,
+    T: Into<ClassifiedPitch>,
 {
-    fn into_pitch(self) -> Pitch {
+    fn into_pitch(self) -> ClassifiedPitch {
         self.into()
     }
 }

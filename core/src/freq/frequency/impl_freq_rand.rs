@@ -2,7 +2,7 @@
     appellation: impl_freq_rand <module>
     authors: @FL03
 */
-use crate::freq::{Frequency, RawFrequency};
+use super::Frequency;
 use rand_distr::uniform::{SampleRange, SampleUniform};
 use rand_distr::{Distribution, StandardUniform};
 
@@ -29,11 +29,9 @@ where
     }
 }
 
-#[cfg(feature = "rand")]
-impl<T> rand_distr::Distribution<Frequency<T>> for rand_distr::StandardUniform
+impl<T> Distribution<Frequency<T>> for StandardUniform
 where
-    T: RawFrequency,
-    rand_distr::StandardUniform: rand_distr::Distribution<T>,
+    StandardUniform: Distribution<T>,
 {
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Frequency<T> {
         Frequency(rng.random())

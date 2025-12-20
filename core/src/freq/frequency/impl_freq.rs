@@ -2,7 +2,7 @@
     appellation: impl_freq <module>
     authors: @FL03
 */
-use crate::freq::Frequency;
+use super::Frequency;
 
 impl<T> Frequency<T> {
     /// returns a new instance of the [`Frequency`] wrapping the given value

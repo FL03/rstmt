@@ -14,12 +14,12 @@ use rstmt_traits::PitchMod;
     serde(deny_unknown_fields, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct Pitch<T = f32> {
+pub struct ClassifiedPitch<T = f32> {
     pub(crate) class: isize,
     pub(crate) freq: Frequency<T>,
 }
 
-impl<T> Pitch<T> {
+impl<T> ClassifiedPitch<T> {
     /// initialize a new instance of a Pitch
     pub const fn new(class: isize, freq: Frequency<T>) -> Self {
         Self { class, freq }
@@ -75,46 +75,46 @@ impl<T> Pitch<T> {
     /// The function is unsafe because it is up to the caller to ensure the class is unchanged
     /// or get updated as the method does not perform any checks to validating the frequency
     /// against the class.
-    pub unsafe fn with_frequency<T2>(self, freq: Frequency<T2>) -> Pitch<T2> {
-        Pitch {
+    pub unsafe fn with_frequency<T2>(self, freq: Frequency<T2>) -> ClassifiedPitch<T2> {
+        ClassifiedPitch {
             class: self.class,
             freq,
         }
     }
 }
 
-impl<T: core::fmt::Display> core::fmt::Display for Pitch<T> {
+impl<T: core::fmt::Display> core::fmt::Display for ClassifiedPitch<T> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.freq)
     }
 }
 
-impl<T: PartialEq> PartialEq<Frequency<T>> for Pitch<T> {
+impl<T: PartialEq> PartialEq<Frequency<T>> for ClassifiedPitch<T> {
     fn eq(&self, other: &Frequency<T>) -> bool {
         self.frequency() == other
     }
 }
 
-impl<T> PartialEq<isize> for Pitch<T> {
+impl<T> PartialEq<isize> for ClassifiedPitch<T> {
     fn eq(&self, other: &isize) -> bool {
         self.class() == *other
     }
 }
 
-impl<T> PartialEq<Pitch<T>> for isize {
-    fn eq(&self, other: &Pitch<T>) -> bool {
+impl<T> PartialEq<ClassifiedPitch<T>> for isize {
+    fn eq(&self, other: &ClassifiedPitch<T>) -> bool {
         *self == other.class()
     }
 }
 
-impl<T> PartialOrd<isize> for Pitch<T> {
+impl<T> PartialOrd<isize> for ClassifiedPitch<T> {
     fn partial_cmp(&self, other: &isize) -> Option<core::cmp::Ordering> {
         self.class().partial_cmp(other)
     }
 }
 
-impl<T> PartialOrd<Pitch<T>> for isize {
-    fn partial_cmp(&self, other: &Pitch<T>) -> Option<core::cmp::Ordering> {
+impl<T> PartialOrd<ClassifiedPitch<T>> for isize {
+    fn partial_cmp(&self, other: &ClassifiedPitch<T>) -> Option<core::cmp::Ordering> {
         self.partial_cmp(&other.class())
     }
 }

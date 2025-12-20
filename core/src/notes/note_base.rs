@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use crate::octave::Octave;
-use crate::pitch::{self, Pitch, PitchClassifier};
+use crate::pitch::{self, ClassifiedPitch, PitchClassifier};
 
 /// The [`NoteBase`] is a generic representation of a musical note
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16,14 +16,14 @@ use crate::pitch::{self, Pitch, PitchClassifier};
 pub struct NoteBase<T, Cls = pitch::CNote> {
     pub(crate) class: Cls,
     pub(crate) octave: Octave,
-    pub(crate) pitch: Pitch<T>,
+    pub(crate) pitch: ClassifiedPitch<T>,
 }
 
 impl<T, Cls> NoteBase<T, Cls>
 where
     Cls: PitchClassifier,
 {
-    pub fn new(pitch: Pitch<T>, octave: Octave) -> Self {
+    pub fn new(pitch: ClassifiedPitch<T>, octave: Octave) -> Self {
         Self {
             class: Cls::new(),
             octave,
@@ -84,7 +84,7 @@ where
         Self {
             class: C::new(),
             octave: Octave::default(),
-            pitch: Pitch::default(),
+            pitch: ClassifiedPitch::default(),
         }
     }
 }

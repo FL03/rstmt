@@ -2,7 +2,7 @@
     appellation: impl_freq_repr <module>
     authors: @FL03
 */
-use crate::freq::Frequency;
+use super::Frequency;
 
 impl<T> Frequency<&T> {
     /// returns a new instance of the [`Frequency`] with a cloned instance of the current value.
@@ -14,7 +14,7 @@ impl<T> Frequency<&T> {
     }
 
     /// returns a new instance of the [`Frequency`] with a copied instance of the current value.
-    pub fn copied(&self) -> Frequency<T>
+    pub const fn copied(&self) -> Frequency<T>
     where
         T: Copy,
     {

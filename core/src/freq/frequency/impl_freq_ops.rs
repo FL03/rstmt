@@ -2,7 +2,8 @@
     appellation: impl_freq_ops <module>
     authors: @FL03
 */
-use crate::freq::{Frequency, classify_freq_by_scale, get_freq_from_scale};
+use super::Frequency;
+use crate::freq::{classify_freq_by_scale, get_freq_from_scale};
 use num_traits::{Float, FromPrimitive, Num, One, Zero};
 use rstmt_traits::ClassifyBy;
 
