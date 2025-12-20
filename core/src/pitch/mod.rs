@@ -4,11 +4,20 @@
 */
 //! this module implements the [`Pitch`] type and its associated traits and types.
 #[doc(inline)]
-pub use self::{pitch_base::*, pitch_class::*, traits::*, wrapper::*};
+pub use self::{pitch_class::*, pitches::*, traits::*, types::*};
 // modules
-mod pitch_base;
 mod pitch_class;
-mod wrapper;
+mod pitches;
+
+mod impls {
+    mod impl_pitch;
+    mod impl_pitch_ext;
+    mod impl_pitch_rand;
+    mod impl_pitch_repr;
+
+    mod impl_pitch_class;
+    mod impl_pitch_classified;
+}
 
 mod traits {
     #[doc(inline)]
@@ -17,43 +26,20 @@ mod traits {
     mod convert;
     mod raw_pitch;
 }
+
+mod types {
+    #[doc(inline)]
+    pub use self::{classes::*, kinds::*};
+
+    mod classes;
+    mod kinds;
+}
 // prelude (local)
 pub(crate) mod prelude {
-    pub use super::pitch_base::*;
     pub use super::pitch_class::*;
+    pub use super::pitches::*;
     pub use super::traits::*;
-    pub use super::wrapper::*;
-}
-/*
- ************* Types *************
-*/
-macro_rules! classes {
-    (@impl $name:ident::<Natural>) => {
-        paste::paste! {
-            pub type $name = PitchClass<[<$name Note>], Natural>;
-        }
-    };
-    (@impl $name:ident::<$kind:ident>) => {
-        paste::paste! {
-            pub type [<$name $kind>] = PitchClass<[<$name $kind Note>], $kind>;
-        }
-    };
-    (@impl $name:ident::<$($kind:ident),+ $(,)?>) => {
-        $(classes! { @impl $name::<$kind> })*
-    };
-    ($($name:ident::<$($K:ident),* $(,)?>),* $(,)?) => {
-        $(classes! { @impl $name::<Natural, $($K),*> })*
-    };
-}
-
-classes! {
-    C::<Sharp>,
-    D::<Flat, Sharp>,
-    E::<Flat>,
-    F::<Sharp>,
-    G::<Flat, Sharp>,
-    A::<Flat, Sharp>,
-    B::<Flat>,
+    pub use super::types::*;
 }
 
 #[cfg(test)]

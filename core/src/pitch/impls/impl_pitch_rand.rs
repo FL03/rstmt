@@ -4,7 +4,8 @@
     Contrib: @FL03
 */
 #![cfg(feature = "rand")]
-use super::Pitch;
+use crate::pitch::Pitch;
+
 use rand::Rng;
 use rand_distr::{Distribution, StandardUniform};
 

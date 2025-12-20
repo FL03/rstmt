@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:08:56
     Contrib: @FL03
 */
-use super::Pitch;
+use crate::pitch::Pitch;
 
 impl<T> Pitch<&T> {
     /// returns a new instance of the [`Pitch`] containing a cloned inner value

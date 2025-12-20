@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:06:46
     Contrib: @FL03
 */
-use super::Pitch;
+use crate::pitch::Pitch;
 use num_traits::{Num, One, Zero};
 
 contained::fmt_wrapper! {
