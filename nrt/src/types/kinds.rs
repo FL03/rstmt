@@ -3,36 +3,30 @@
     authors: @FL03
 */
 
-macro_rules! impl_type_tag {
-    ($($(#[$meta:meta])* $vis:vis $i:ident $kind:ident);* $(;)?) => {
-        $(
-            impl_type_tag!(@impl $(#[$meta])* $vis $i $kind);
-        )*
+macro_rules! triad_class {
+    ($($(#[$meta:meta])* $vis:vis $i:ident $name:ident);* $(;)?) => {
+        $(triad_class! { @impl $(#[$meta])* $vis $i $name })*
     };
-    (@def $(#[$meta:meta])* $vis:vis enum $kind:ident) => {
-        $(#[$meta])*
-        $vis enum $kind {};
+    (@def $(#[$meta:meta])* $vis:vis enum $name:ident $({})? $(;)?) => {
+        $(#[$meta])* $vis enum $name {}
     };
-    (@def $(#[$meta:meta])* $vis:vis struct $kind:ident) => {
-        $(#[$meta])*
-        #[derive(Default)]
-        $vis struct $kind;
+    (@def $(#[$meta:meta])* $vis:vis struct $name:ident $(;)?) => {
+        $(#[$meta])* #[derive(Default)] $vis struct $name;
     };
-    (@impl $(#[$meta:meta])* $vis:vis $i:ident $kind:ident) => {
-        impl_type_tag! {
-            @def
-            $(#[$meta])*
+    (@impl $(#[$meta:meta])* $vis:vis $repr:ident $name:ident) => {
+        triad_class! {
+            @def $(#[$meta])*
             #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
             #[repr(transparent)]
-            $vis $i $kind
+            $vis $repr $name
         }
 
-        unsafe impl Send for $kind {}
+        unsafe impl Send for $name {}
 
-        unsafe impl Sync for $kind {}
+        unsafe impl Sync for $name {}
 
-        impl $crate::TriadKind for $kind {
+        impl $crate::TriadKind for $name {
             seal! {}
 
             fn new() -> Self {
@@ -40,24 +34,21 @@ macro_rules! impl_type_tag {
             }
         }
 
-        impl ::core::fmt::Display for $kind {
+        impl ::core::fmt::Display for $name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                // stringify the ident of the kind
-                let tag = stringify!($kind);
-                // write the tag in lowercase
-                write!(f, "{}", tag.to_lowercase())
+                f.write_str(stringify!($name))
             }
         }
     };
 }
 
-impl_type_tag! {
-    #[doc = "Major triad kind"]
+triad_class! {
+    #[doc = "An initializable, transparent type defining the _major_ triad classification."]
     pub struct Major;
-    #[doc = "Minor triad kind"]
+    #[doc = "An initializable, transparent type defining the _minor_ triad classification."]
     pub struct Minor;
-    #[doc = "Augmented triad kind"]
+    #[doc = "The [`Augmented`] triad kind defines a special class of triads composed of two major thirds."]
     pub struct Augmented;
-    #[doc = "Diminished triad kind"]
+    #[doc = "An initializable, transparent type defining the _diminished_ triad classification."]
     pub struct Diminished;
 }
