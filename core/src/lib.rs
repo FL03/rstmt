@@ -2,8 +2,6 @@
     Appellation: rstmt-core <library>
     Contrib: @FL03
 */
-//! # rstmt-core
-//!
 //! This crate provides the core functionality for the `rstmt` library, including [`Aspn`],
 //! [`NoteBase`], [`Pitch`], and [`Octave`]. Additionally, the crate provides a host of
 //! other primitives and utilities designed to manifest and manipulate musical concepts.
@@ -16,6 +14,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
@@ -64,7 +63,7 @@ pub use self::{
     freq::{Frequency, ScaleToFrequency},
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
     octave::{AsOctave, IntoOctave, Octave},
-    pitch::{AsPitch, IntoPitch, Pitch, RawPitch, RawPitchClass},
+    pitch::{AsPitch, IntoPitch, Pitch, PitchClassifier, RawPitch},
     types::prelude::*,
 };
 #[doc(inline)]

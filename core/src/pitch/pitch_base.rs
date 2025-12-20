@@ -37,7 +37,7 @@ impl<T> Pitch<T> {
         self.class
     }
     /// returns a mutable reference to the index of the note's class
-    pub fn class_mut(&mut self) -> &mut usize {
+    pub const fn class_mut(&mut self) -> &mut usize {
         &mut self.class
     }
     /// returns a reference to the frequency of the pitch
@@ -49,14 +49,17 @@ impl<T> Pitch<T> {
         &mut self.freq
     }
     /// set the pitch class and return a mutable reference to the current instance
-    pub fn set_class(&mut self, class: usize) -> &mut Self {
-        self.class = class.pmod();
-        self
+    pub fn set_class(&mut self, class: usize) {
+        self.class = class.pmod()
     }
     /// set the frequency and return a mutable reference to the current instance
-    pub fn set_frequency(&mut self, freq: Frequency<T>) -> &mut Self {
-        self.freq = freq;
-        self
+    pub fn set_frequency(&mut self, freq: Frequency<T>) where T: Float + FromPrimitive {
+        if let Some(cls) = freq.classify_by(None) {
+            self.class = cls.pmod() as usize;
+            self.freq = freq;
+        } else {
+            panic!("Unable to classify the given frequency");
+        }
     }
     /// consumes the current instance to create another with the given pitch class
     pub fn with_class(self, class: usize) -> Self {

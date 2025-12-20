@@ -45,10 +45,6 @@ where
     /// n = 12\cdot\log_2(\frac{F}{\gamma})
     /// ```
     pub fn classify_by(&self, base: Option<T>) -> Option<isize> {
-        // Ensure frequency is positive
-        if self.get() <= &T::zero() {
-            return None;
-        }
         let freq = *self.get();
         classify_freq_by_scale(freq, base)
     }

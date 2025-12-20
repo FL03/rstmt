@@ -6,13 +6,13 @@
 //! that cannot be implemented outside of our own crate.  This way we
 //! can feel free to extend those traits without worrying about it
 //! being a breaking change for other implementations.
+#![allow(dead_code, unused_macros)]
 
 /// If this type is pub but not publicly reachable, third parties
 /// can't name it and can't implement traits using it.
-#[allow(dead_code)]
 pub struct Seal;
-
-#[allow(unused_macros)]
+/// The [`private`] macro injects a hidden, private method into a trait definition preventing
+/// it from being implemented outside of the crate.
 macro_rules! private {
     () => {
         /// This trait is private to implement; this method exists to make it
@@ -21,8 +21,7 @@ macro_rules! private {
         fn __private__(&self) -> $crate::macros::seal::Seal;
     };
 }
-
-#[allow(unused_macros)]
+/// [`seal`] is a helper macro to streamline the implementation of _sealed_ traits.
 macro_rules! seal {
     () => {
         fn __private__(&self) -> $crate::macros::seal::Seal {

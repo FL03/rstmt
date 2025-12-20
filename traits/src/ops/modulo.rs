@@ -9,31 +9,35 @@ fn _pymod<A, B, C>(lhs: A, rhs: B) -> C
 where
     A: core::ops::Rem<B, Output = C>,
     B: Copy + PartialOrd + Zero,
-    C: core::ops::Add<B, Output = C> + PartialOrd + Zero,
+    C: PartialOrd + Zero + core::ops::Add<B, Output = C>,
 {
     let r = lhs % rhs;
-    if (r < <C>::zero() && rhs > B::zero()) || (r > <C>::zero() && rhs < B::zero()) {
+    if (r < <C>::zero() && rhs > <B>::zero()) || (r > <C>::zero() && rhs < <B>::zero()) {
         r + rhs
     } else {
         r
     }
 }
 
-/// The [`PyMod`] trait defines a pythonic modulo operator that can be used to perform modulo
-/// operations similar to Python's `%` operator, which behaves differently than Rust's `%`
-/// operator when dealing with negative numbers.
+/// [`PyMod`] is a modulo operator inspired by Python's `%` operator, which handles negative
+/// values differently than rust's built-in `%` operator.
 pub trait PyMod<Rhs = Self> {
     type Output;
 
     fn pymod(self, rhs: Rhs) -> Self::Output;
 }
 
-/// this trait relies on a python modulo operator with a divisor of 12
+/// The [`PitchMod`] trait is a particular implementation of the [`PyMod`] trait, specifically
+/// binding the caller to a mod 12 space.
 pub trait PitchMod {
     type Output;
 
     fn pmod(self) -> Self::Output;
 }
+
+/*
+ ************* Implementations *************
+*/
 
 impl<A, B, C> PyMod<B> for A
 where
@@ -55,6 +59,6 @@ where
     type Output = A::Output;
 
     fn pmod(self) -> Self::Output {
-        self.pymod(A::from_i32(12).unwrap())
+        self.pymod(A::from_u8(12).unwrap())
     }
 }

@@ -4,11 +4,13 @@
 */
 use super::Frequency;
 use num_traits::{Float, FromPrimitive};
+use rstmt_traits::PitchMod;
 
-/// calculate the frequency (in hertz) of a given pitch class, using the formula:
+/// Given some pitch class $`n`$ (in semitones) and an optional base frequency $`\beta`$ (in hertz), 
+/// calculate the corresponding frequency $`f`$.
 ///
 /// ```math
-/// f = x\cdot{2^{\frac{n}{12}}}
+/// F=\beta\cdot{2^{\frac{n}{12}}}
 /// ```
 pub fn get_freq_from_scale<T>(n: isize, base: Option<T>) -> Option<T>
 where
@@ -17,32 +19,30 @@ where
     // get the base "tuning" frequency
     let base = match base {
         Some(v) => v,
-        None => T::from_f64(440.0)?,
+        None => T::from_f32(440.0)?,
     };
 
-    let res = base * T::from_f64(2f64.powf(n as f64 / 12.0))?;
+    let res = base * T::from_f32(2f32.powf(n as f32 / 12f32))?;
     Some(res)
 }
 /// Compute the pitch class of a frequency (in hertz), using the formula:
 ///
 /// ```math
-/// n = 12\cdot{\log_{2}(\frac{f}{x})}
+/// n = 12\cdot\log_{2}(\frac{F}{\beta})
 /// ```
 pub fn classify_freq_by_scale<T>(freq: T, base: Option<T>) -> Option<isize>
 where
-    T: Float + FromPrimitive,
+    T: Float + FromPrimitive + PitchMod<Output = T>,
 {
     // Ensure frequency is positive
-    if freq <= T::zero() {
-        return None;
-    }
+    debug_assert! { freq <= T::zero(), "Frequency must be positive" }
     // Reference frequency (A4 = 440 Hz)
-    let ref_freq = base.unwrap_or(T::from(440.0)?);
-
+    let base = base.unwrap_or(T::from_u16(440)?);
     // Calculate pitch class: round(12 * log2(frequency / 440))
-    let log2 = T::from(2.0).unwrap();
-    let semitones = T::from(12.0).unwrap() * (freq / ref_freq).log(log2);
-    semitones.to_isize()
+    let two = T::from_u8(2)?;
+    let modulo = T::from_u8(12)?;
+    let semitones = modulo * (freq / base).log(two);
+    semitones.round().pmod().to_isize()
 }
 
 /// the [`ScaleToFrequency`] struct provides a way to convert between musical scale degrees
@@ -89,7 +89,7 @@ impl<T> ScaleToFrequency<T> {
         &self.anchor
     }
     /// returns a mutable reference to the base frequency
-    pub fn anchor_mut(&mut self) -> &mut Frequency<T> {
+    pub const fn anchor_mut(&mut self) -> &mut Frequency<T> {
         &mut self.anchor
     }
     /// calculate the frequency (in hertz) of a given pitch class, using the formula:
@@ -101,7 +101,7 @@ impl<T> ScaleToFrequency<T> {
     where
         T: Float + FromPrimitive,
     {
-        let anchor = self.anchor().get();
-        get_freq_from_scale(n, Some(*anchor))
+        let anchor = **self.anchor();
+        get_freq_from_scale(n, Some(anchor))
     }
 }

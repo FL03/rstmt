@@ -10,8 +10,8 @@ pub trait NoteType {
     fn is_flat(&self) -> bool;
     fn is_natural(&self) -> bool;
 }
-/// The [`PitchClass`] trait establishes an interface to defining pitch classes.
-pub trait RawPitchClass:
+/// The [`PitchClassifier`] trait establishes an interface to defining pitch classes.
+pub trait PitchClassifier:
     'static + Send + Sized + Sync + core::fmt::Debug + core::fmt::Display
 {
     private! {}
@@ -21,89 +21,12 @@ pub trait RawPitchClass:
     fn index(&self) -> usize;
 }
 
-/// By definition, a pitch class speaks to the symbolic representation associated with the
-/// frequency being played regardless of octave or enharmonic equivalence. Therefore, we only
-/// consider the **natural** notes and their representations here to act as a single source of
-/// truth for pitch-based operations.
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    strum::AsRefStr,
-    strum::EnumCount,
-    strum::EnumIs,
-    strum::EnumIter,
-    strum::EnumString,
-    strum::VariantArray,
-    strum::VariantNames,
-)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(untagged, rename_all = "snake_case")
-)]
-#[strum(serialize_all = "snake_case")]
-pub enum PitchClass {
-    #[default]
-    C = 0,
-    D = 2,
-    E = 4,
-    F = 5,
-    G = 7,
-    A = 9,
-    B = 11,
-}
 /*
  ************* Implementations *************
 */
-#[allow(unused_macros)]
-macro_rules! impl_note_type {
-    (@impl $vis:vis enum $name:ident {
-        $($sharp:ident),*;
-        $($flat:ident),*;
-        $($natural:ident),*;
-    }) => {
-        $vis enum $name {
-            $($sharp),*,
-            $($flat),*,
-            $($natural),*,
-        }
 
-        impl NoteType for $name {
-            fn is_sharp(&self) -> bool {
-                match self {
-                    $(Self::$sharp => true,)*
-                    _ => false,
-                }
-            }
-
-            fn is_flat(&self) -> bool {
-                match self {
-                    $(Self::$flat => true,)*
-                    _ => false,
-                }
-            }
-
-            fn is_natural(&self) -> bool {
-                match self {
-                    $(Self::$natural => true,)*
-                    _ => false,
-                }
-            }
-        }
-    };
-}
 macro_rules! class_enum {
-    {
-        $(#[doc $($doc:tt)*])?
-        $vis:vis enum $name:ident {$($rest:tt)*}
-    } => {
+    ($(#[doc $($doc:tt)*])? $vis:vis enum $name:ident {$($rest:tt)*}) => {
         $(#[doc $($doc)*])?
         #[derive(
             Clone,
@@ -136,30 +59,25 @@ macro_rules! class_enum {
 }
 
 macro_rules! pitch_class {
-    {
-        $($(#[doc $($doc:tt)*])?
-        $vis:vis $i:ident $name:ident = $c:literal);* $(;)?
-    } => {
+    {$($(#[$meta:meta])? $vis:vis $i:ident $name:ident = $c:literal);* $(;)?} => {
         $(
             pitch_class! {
                 @impl
-                $(#[doc $($doc)*])?
+                $(#[$meta])?
                 $vis $i $name
             }
-            pitch_class!(@ext $name = $c);
+            pitch_class! { @ext $name = $c }
         )*
     };
-    {
-        @impl
-        $(#[doc $($doc:tt)*])?
-        $vis:vis struct $name:ident
-    } => {
-        $(#[doc $($doc)*])?
+    {@impl $(#[$meta:meta])? $vis:vis struct $name:ident} => {
+        $(#[$meta])?
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(
             feature = "serde",
             derive(serde::Deserialize, serde::Serialize),
+            serde(rename_all = "UPPERCASE")
         )]
+        #[repr(transparent)]
         $vis struct $name;
     };
     (@ext $name:ident = $c:literal) => {
@@ -181,7 +99,7 @@ macro_rules! pitch_class {
             }
         }
 
-        impl RawPitchClass for $name {
+        impl PitchClassifier for $name {
             seal!();
 
             fn new() -> Self {
@@ -221,7 +139,7 @@ macro_rules! pitch_class {
 
 class_enum! {
     #[doc = "A representation of the natural pitch class"]
-    pub enum Natural {
+    pub enum Naturals {
         #[default]
         C = 0,
         D = 2,
@@ -235,7 +153,7 @@ class_enum! {
 
 class_enum! {
     #[doc = "A representation of the sharp pitch class"]
-    pub enum Sharp {
+    pub enum Sharps {
         #[default]
         C = 1,
         D = 3,
@@ -247,7 +165,7 @@ class_enum! {
 
 class_enum! {
     #[doc = "A representation of the flat pitch class"]
-    pub enum Flat {
+    pub enum Flats {
         #[default]
         D = 1,
         E = 3,
