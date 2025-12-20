@@ -1,64 +1,43 @@
 /*
-    appellation: impl_triad_base <module>
-    authors: @FL03
+    Appellation: impl_triad_ext <module>
+    Created At: 2025.12.20:11:14:38
+    Contrib: @FL03
 */
-use crate::triad::types::*;
-use crate::triad::{Factors, RawStore, RawTriad, TriadBase, TriadKind};
+use crate::triad::TriadBase;
 
-impl<S, K> TriadBase<S, K>
+use crate::traits::{RawTriad, RawTriadStore, RawTriadStoreMut, TriadKind};
+use crate::types::Factors;
+
+impl<T, K> RawTriad<T> for TriadBase<[T; 3], K, T>
 where
     K: TriadKind,
-    S: RawStore,
 {
-}
+    type Store<U> = [U; 3];
 
-impl<S> TriadBase<S, Augmented>
-where
-    S: RawStore,
-{
-    /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
-    /// augmented triad.
-    pub fn augmented(chord: S) -> Self {
-        TriadBase::new(chord, Augmented)
+    seal!();
+
+    fn store(&self) -> &Self::Store<T> {
+        self.chord()
+    }
+
+    fn store_mut(&mut self) -> &mut Self::Store<T> {
+        self.chord_mut()
     }
 }
 
-impl<S> TriadBase<S, Diminished>
+impl<T, S, K> core::fmt::Display for TriadBase<S, K, T>
 where
-    S: RawStore,
+    S: RawTriadStore<Elem = T> + core::fmt::Debug,
+    K: TriadKind + core::fmt::Display,
 {
-    /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
-    /// diminished triad.
-    pub fn diminished(chord: S) -> Self {
-        TriadBase::new(chord, Diminished)
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{{ chord: {:?}, class: {} }}", self.chord, self.class)
     }
 }
 
-impl<S> TriadBase<S, Major>
+impl<T, S, K> From<(S, K)> for TriadBase<S, K, T>
 where
-    S: RawStore,
-{
-    /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
-    /// triad.
-    pub fn major(chord: S) -> Self {
-        TriadBase::new(chord, Major)
-    }
-}
-
-impl<S> TriadBase<S, Minor>
-where
-    S: RawStore,
-{
-    /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
-    /// triad.
-    pub fn minor(chord: S) -> Self {
-        TriadBase::new(chord, Minor)
-    }
-}
-
-impl<S, K> From<(S, K)> for TriadBase<S, K>
-where
-    S: RawStore,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     fn from((chord, class): (S, K)) -> Self {
@@ -66,9 +45,9 @@ where
     }
 }
 
-impl<S, K> AsRef<S> for TriadBase<S, K>
+impl<T, S, K> AsRef<S> for TriadBase<S, K, T>
 where
-    S: RawStore,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     fn as_ref(&self) -> &S {
@@ -76,9 +55,9 @@ where
     }
 }
 
-impl<S, K> AsMut<S> for TriadBase<S, K>
+impl<T, S, K> AsMut<S> for TriadBase<S, K, T>
 where
-    S: RawStore,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     fn as_mut(&mut self) -> &mut S {
@@ -86,9 +65,9 @@ where
     }
 }
 
-impl<S, K> core::borrow::Borrow<S> for TriadBase<S, K>
+impl<T, S, K> core::borrow::Borrow<S> for TriadBase<S, K, T>
 where
-    S: RawStore,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     fn borrow(&self) -> &S {
@@ -96,9 +75,9 @@ where
     }
 }
 
-impl<S, K> core::borrow::BorrowMut<S> for TriadBase<S, K>
+impl<T, S, K> core::borrow::BorrowMut<S> for TriadBase<S, K, T>
 where
-    S: RawStore,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     fn borrow_mut(&mut self) -> &mut S {
@@ -106,9 +85,9 @@ where
     }
 }
 
-impl<T, S, K> core::ops::Deref for TriadBase<S, K>
+impl<T, S, K> core::ops::Deref for TriadBase<S, K, T>
 where
-    S: RawStore<Item = T> + RawTriad<T>,
+    S: RawTriadStore<Elem = T> + RawTriad<T>,
     K: TriadKind,
 {
     type Target = S;
@@ -118,9 +97,9 @@ where
     }
 }
 
-impl<T, S, K> core::ops::DerefMut for TriadBase<S, K>
+impl<T, S, K> core::ops::DerefMut for TriadBase<S, K, T>
 where
-    S: RawStore<Item = T> + RawTriad<T>,
+    S: RawTriadStore<Elem = T> + RawTriad<T>,
     K: TriadKind,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -128,9 +107,9 @@ where
     }
 }
 
-impl<T, S, K> core::ops::Index<Factors> for TriadBase<S, K>
+impl<T, S, K> core::ops::Index<Factors> for TriadBase<S, K, T>
 where
-    S: RawStore<Item = T> + RawTriad<T>,
+    S: RawTriadStore<Elem = T>,
     K: TriadKind,
 {
     type Output = T;
@@ -144,9 +123,9 @@ where
     }
 }
 
-impl<T, S, K> core::ops::IndexMut<Factors> for TriadBase<S, K>
+impl<T, S, K> core::ops::IndexMut<Factors> for TriadBase<S, K, T>
 where
-    S: RawStore<Item = T> + RawTriad<T>,
+    S: RawTriadStoreMut<Elem = T>,
     K: TriadKind,
 {
     fn index_mut(&mut self, index: Factors) -> &mut Self::Output {

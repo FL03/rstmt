@@ -77,28 +77,37 @@ pub mod tonnetz;
 pub mod transform;
 pub mod triad;
 
-pub mod types {
+mod impls {
+    mod impl_std_triad;
+    mod impl_triad_base;
+    mod impl_triad_ext;
+    mod impl_triad_repr;
+}
+
+mod traits {
+    //! this module implements various traits supporting the triad implementation
+    #[doc(inline)]
+    pub use self::raw_triad::*;
+
+    mod raw_triad;
+}
+
+mod types {
     //! this module defines various types supporting the neo-riemannian theory
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{class::*, factors::*, kinds::*, lpr::*};
 
+    mod class;
+    mod factors;
+    mod kinds;
     mod lpr;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::lpr::*;
-    }
 }
 // re-exports
 #[cfg(feature = "std")]
 #[doc(inline)]
 pub use self::transform::TriadNavigator;
 #[doc(inline)]
-pub use self::{
-    error::*,
-    triad::{Triad, Triads},
-    types::prelude::*,
-};
+pub use self::{error::*, traits::*, triad::*, types::*};
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
 pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
@@ -107,8 +116,9 @@ pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 pub mod prelude {
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::prelude::*;
+    pub use crate::traits::*;
     #[cfg(feature = "alloc")]
     pub use crate::transform::prelude::*;
-    pub use crate::triad::prelude::*;
-    pub use crate::types::prelude::*;
+    pub use crate::triad::*;
+    pub use crate::types::*;
 }

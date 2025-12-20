@@ -2,7 +2,7 @@
     Appellation: transform <module>
     Contrib: @FL03
 */
-use crate::{Triad, TriadError, Triads};
+use crate::{Triad, TriadClass, TriadError};
 use rstmt::PitchMod;
 
 /// Enumerates primary available transformations in Neo-Riemannian theory.
@@ -80,34 +80,34 @@ impl LPR {
         let [x, y, z] = triad.notes;
 
         let notes: [usize; 3];
-        let class: Triads;
+        let class: TriadClass;
         match triad.class() {
-            Triads::Major => match self {
+            TriadClass::Major => match self {
                 LPR::Leading => {
                     notes = [y, z, (x as isize - 1).pmod() as usize];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
                 LPR::Parallel => {
                     notes = [x, (y as isize - 1).pmod() as usize, z];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
                 LPR::Relative => {
                     notes = [(z + 2).pmod(), x, y];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
             },
-            Triads::Minor => match self {
+            TriadClass::Minor => match self {
                 LPR::Leading => {
                     notes = [(z + 1).pmod(), x, y];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
                 LPR::Parallel => {
                     notes = [x, (y + 1).pmod(), z];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
                 LPR::Relative => {
                     notes = [y, z, (x as isize - 2).pmod() as usize];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
             },
             _ => return Err(TriadError::InvalidTriadClass),

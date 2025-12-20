@@ -30,7 +30,7 @@ use rstmt::PitchMod;
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Triads {
+pub enum TriadClass {
     #[default]
     Major,
     Minor,
@@ -38,7 +38,7 @@ pub enum Triads {
     Diminished,
 }
 
-impl Triads {
+impl TriadClass {
     pub fn try_from_notes(a: usize, b: usize, c: usize) -> crate::Result<Self> {
         let (a, b, c) = (a as isize, b as isize, c as isize);
         let rt = (b - a).pmod();
@@ -46,10 +46,10 @@ impl Triads {
         let rf = (c - a).pmod();
         if matches!(rt, 3 | 4) && matches!(tf, 3 | 4) && matches!(rf, 6..=8) && rt + tf == rf {
             let class = match [rt, tf, rf] {
-                [4, 3, 7] => Triads::Major,
-                [3, 4, 7] => Triads::Minor,
-                [4, 4, 8] => Triads::Augmented,
-                [3, 3, 6] => Triads::Diminished,
+                [4, 3, 7] => TriadClass::Major,
+                [3, 4, 7] => TriadClass::Minor,
+                [4, 4, 8] => TriadClass::Augmented,
+                [3, 3, 6] => TriadClass::Diminished,
                 _ => unreachable!(),
             };
             return Ok(class);
@@ -75,23 +75,23 @@ impl Triads {
     /// get the relative triad type
     pub fn relative(self) -> Self {
         match self {
-            Triads::Major => Triads::Minor,
-            Triads::Minor => Triads::Major,
-            Triads::Augmented => Triads::Diminished,
-            Triads::Diminished => Triads::Augmented,
+            TriadClass::Major => TriadClass::Minor,
+            TriadClass::Minor => TriadClass::Major,
+            TriadClass::Augmented => TriadClass::Diminished,
+            TriadClass::Diminished => TriadClass::Augmented,
         }
     }
     /// returns the intervals corresponding to the triad type
     pub fn intervals(self) -> [usize; 3] {
         match self {
-            Triads::Major => [4, 3, 7],
-            Triads::Minor => [3, 4, 7],
-            Triads::Augmented => [4, 4, 8],
-            Triads::Diminished => [3, 3, 6],
+            TriadClass::Major => [4, 3, 7],
+            TriadClass::Minor => [3, 4, 7],
+            TriadClass::Augmented => [4, 4, 8],
+            TriadClass::Diminished => [3, 3, 6],
         }
     }
     pub fn thirds(&self) -> (usize, usize) {
-        use Triads::*;
+        use TriadClass::*;
         match self {
             Augmented => (4, 4),
             Diminished => (3, 3),
@@ -132,14 +132,22 @@ impl Triads {
     }
 }
 
-impl From<usize> for Triads {
+impl crate::TriadKind for TriadClass {
+    seal! {}
+
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl From<usize> for TriadClass {
     fn from(value: usize) -> Self {
         match value {
-            0 => Triads::Major,
-            1 => Triads::Minor,
-            2 => Triads::Augmented,
-            3 => Triads::Diminished,
-            _ => Triads::Major,
+            0 => TriadClass::Major,
+            1 => TriadClass::Minor,
+            2 => TriadClass::Augmented,
+            3 => TriadClass::Diminished,
+            _ => TriadClass::Major,
         }
     }
 }

@@ -1,32 +1,19 @@
 /*
-    appellation: triad_base <module>
-    authors: @FL03
+    Appellation: impl_triad_base <module>
+    Created At: 2025.12.20:10:56:30
+    Contrib: @FL03
 */
-use super::{RawStore, TriadKind, TriadStore};
+use crate::triad::TriadBase;
 
-/// The [`TriadBase`] implementation is a generic representation of a triad.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(default, rename_all = "snake_case")
-)]
-pub struct TriadBase<S = [usize; 3], K = super::Major>
+use crate::traits::{RawTriadStore, RawTriadStoreMut, TriadKind};
+
+impl<T, S, K> TriadBase<S, K, T>
 where
     K: TriadKind,
-    S: RawStore,
-{
-    pub(crate) chord: S,
-    pub(crate) class: K,
-}
-
-impl<A, S, K> TriadBase<S, K>
-where
-    K: TriadKind,
-    S: RawStore<Item = A>,
+    S: RawTriadStore<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
-    pub fn new(chord: S, class: K) -> Self {
+    pub const fn new(chord: S, class: K) -> Self {
         Self { chord, class }
     }
     /// returns an immutable reference to the chord.
@@ -46,44 +33,44 @@ where
         &mut self.class
     }
     /// returns a reference to the root note of the triad.
-    pub fn root(&self) -> &A
+    pub fn root(&self) -> &T
     where
-        S: TriadStore,
+        S: RawTriadStore,
     {
         self.chord().root()
     }
     /// returns a mutable reference to the root note of the triad.
-    pub fn root_mut(&mut self) -> &mut A
+    pub fn root_mut(&mut self) -> &mut T
     where
-        S: TriadStore,
+        S: RawTriadStoreMut,
     {
         self.chord_mut().root_mut()
     }
     /// returns a reference to the third note of the triad.
-    pub fn third(&self) -> &A
+    pub fn third(&self) -> &T
     where
-        S: TriadStore,
+        S: RawTriadStore,
     {
         self.chord().third()
     }
     /// returns a mutable reference to the third note of the triad.
-    pub fn third_mut(&mut self) -> &mut A
+    pub fn third_mut(&mut self) -> &mut T
     where
-        S: TriadStore,
+        S: RawTriadStoreMut,
     {
         self.chord_mut().third_mut()
     }
     /// returns a reference to the fifth note of the triad.
-    pub fn fifth(&self) -> &A
+    pub fn fifth(&self) -> &T
     where
-        S: TriadStore,
+        S: RawTriadStore,
     {
         self.chord().fifth()
     }
     /// returns a mutable reference to the fifth note of the triad.
-    pub fn fifth_mut(&mut self) -> &mut A
+    pub fn fifth_mut(&mut self) -> &mut T
     where
-        S: TriadStore,
+        S: RawTriadStoreMut,
     {
         self.chord_mut().fifth_mut()
     }
@@ -100,7 +87,7 @@ where
     /// consumes the current instance to create another with the given chord
     pub fn with_chord<S2>(self, chord: S2) -> TriadBase<S2, K>
     where
-        S2: RawStore<Item = A>,
+        S2: RawTriadStore<Elem = T>,
     {
         TriadBase {
             chord,
@@ -124,49 +111,21 @@ where
     /// returns true if the triad is classified as an augmented triad.
     pub fn is_augmented(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::Augmented>()
+        TypeId::of::<K>() == TypeId::of::<crate::Augmented>()
     }
     /// returns true if the triad is classified as a diminished triad.
     pub fn is_diminished(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::Diminished>()
+        TypeId::of::<K>() == TypeId::of::<crate::Diminished>()
     }
     /// returns true if the triad is classified as a major triad.
     pub fn is_major(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::Major>()
+        TypeId::of::<K>() == TypeId::of::<crate::Major>()
     }
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<super::Minor>()
-    }
-}
-
-impl<S, K> core::fmt::Display for TriadBase<S, K>
-where
-    S: RawStore + core::fmt::Debug,
-    K: TriadKind + core::fmt::Display,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{{ chord: {:?}, class: {} }}", self.chord, self.class)
-    }
-}
-
-impl<T, S, K> super::RawTriad<T> for TriadBase<S, K>
-where
-    S: TriadStore<Item = T>,
-    K: TriadKind,
-{
-    type Store = S;
-
-    seal!();
-
-    fn store(&self) -> &Self::Store {
-        self.chord()
-    }
-
-    fn store_mut(&mut self) -> &mut Self::Store {
-        self.chord_mut()
+        TypeId::of::<K>() == TypeId::of::<crate::Minor>()
     }
 }

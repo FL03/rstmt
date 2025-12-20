@@ -1,38 +1,20 @@
 /*
-    Appellation: traid <module>
+    Appellation: impl_std_triad <module>
+    Created At: 2025.12.20:10:40:33
     Contrib: @FL03
 */
-use super::{Factors, Triads};
+use crate::triad::Triad;
 
-use crate::LPR;
 use crate::error::TriadError;
+use crate::{Factors, LPR, TriadClass};
 use rstmt::{Aspn, IntoAspn, Octave, PitchMod};
 
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive};
 
-/// A triad is a particular chord composed of three notes that satify particular intervallic
-/// constrains with each other. Here, the triad materializes the facet of a hyperedge within a
-/// cluster of triads persisted in the Tonnetz. The triad is a fundamental entity in the
-/// substrate used to represent the _headspace_ of a plant. Each plant relies on these objects
-/// to transverse the surface of the tonnetz so that it may gaurantee the completion of a task.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
-)]
-pub struct Triad {
-    /// The type of triad (Major, Minor, Augmented, Diminished)
-    pub(crate) class: Triads,
-    /// the set of three pitch classes defining the triad
-    pub(crate) notes: [usize; 3],
-    /// The octave of the triad
-    pub(crate) octave: Octave,
-}
-
 impl Triad {
-    pub fn new(notes: [usize; 3], class: Triads) -> Self {
+    pub fn new(notes: [usize; 3], class: TriadClass) -> Self {
         if !class.validate(&notes) {
             panic!("Invalid triad pitches for class {notes:?}");
         }
@@ -43,7 +25,7 @@ impl Triad {
         }
     }
     /// Create a new triad from a root pitch and class
-    pub fn from_root<N>(root: N, class: Triads) -> Self
+    pub fn from_root<N>(root: N, class: TriadClass) -> Self
     where
         N: IntoAspn,
     {
@@ -64,35 +46,35 @@ impl Triad {
     where
         N: IntoAspn,
     {
-        Self::from_root(root, Triads::Augmented)
+        Self::from_root(root, TriadClass::Augmented)
     }
     /// creates a new diminished triad from the given root
     pub fn diminished<N>(root: N) -> Self
     where
         N: IntoAspn,
     {
-        Self::from_root(root, Triads::Diminished)
+        Self::from_root(root, TriadClass::Diminished)
     }
     /// Create a new major triad from the given root
     pub fn major<N>(root: N) -> Self
     where
         N: IntoAspn,
     {
-        Self::from_root(root, Triads::Major)
+        Self::from_root(root, TriadClass::Major)
     }
     /// creates a new minor triad from the given root
     pub fn minor<N>(root: N) -> Self
     where
         N: IntoAspn,
     {
-        Self::from_root(root, Triads::Minor)
+        Self::from_root(root, TriadClass::Minor)
     }
     /// returns a copy of the class of the triad
-    pub const fn class(&self) -> Triads {
+    pub const fn class(&self) -> TriadClass {
         self.class
     }
     /// returns a mutable reference to the class of the triad
-    pub const fn class_mut(&mut self) -> &mut Triads {
+    pub const fn class_mut(&mut self) -> &mut TriadClass {
         &mut self.class
     }
     /// returns copy of the notes currently composing the triad
