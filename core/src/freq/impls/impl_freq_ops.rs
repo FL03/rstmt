@@ -4,6 +4,7 @@
 */
 use crate::freq::{Frequency, classify_freq_by_scale, get_freq_from_scale};
 use num_traits::{Float, FromPrimitive, Num, One, Zero};
+use rstmt_traits::ClassifyBy;
 
 contained::unary_wrapper! {
     impl Frequency {
@@ -45,8 +46,18 @@ where
     /// n = 12\cdot\log_2(\frac{F}{\gamma})
     /// ```
     pub fn classify_by(&self, base: Option<T>) -> Option<isize> {
-        let freq = *self.get();
-        classify_freq_by_scale(freq, base)
+        classify_freq_by_scale(**self, base)
+    }
+}
+
+impl<T> ClassifyBy<T> for Frequency<T>
+where
+    T: Float + FromPrimitive,
+{
+    type Output = Option<isize>;
+
+    fn classify_by(&self, base: T) -> Self::Output {
+        self.classify_by(Some(base))
     }
 }
 

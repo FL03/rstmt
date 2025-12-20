@@ -13,7 +13,7 @@ use crate::pitch::{self, Pitch, PitchClassifier};
     serde(deny_unknown_fields, rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct NoteBase<T, Cls = pitch::C> {
+pub struct NoteBase<T, Cls = pitch::CNote> {
     pub(crate) class: Cls,
     pub(crate) octave: Octave,
     pub(crate) pitch: Pitch<T>,

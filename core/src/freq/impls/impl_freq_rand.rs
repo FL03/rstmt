@@ -6,10 +6,7 @@ use crate::freq::{Frequency, RawFrequency};
 use rand_distr::uniform::{SampleRange, SampleUniform};
 use rand_distr::{Distribution, StandardUniform};
 
-impl<T> Frequency<T>
-where
-    T: RawFrequency,
-{
+impl<T> Frequency<T> {
     /// generates a new random frequency within the specified range.
     pub fn random_range<R>(range: R) -> Self
     where

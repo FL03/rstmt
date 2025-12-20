@@ -3,13 +3,28 @@
     authors: @FL03
 */
 
-pub trait NoteType {
-    private! {}
+macro_rules! classes {
+    (@impl $name:ident) => {
+        paste::paste! {
+            pub type $name = PitchClass<[<$name Note>], Natural>;
+        }
+    };
+    (@impl $name:ident::<$kind:ident>) => {
+        paste::paste! {
+            pub type [<$name $kind>] = PitchClass<[<$name $kind Note>], $kind>;
+        }
+    };
+    ($($name:ident::<$($K:ident),* $(,)?>),* $(,)?) => {
+            $(
+                classes! { @impl $name }
+                $(classes! { @impl $name::<$K> })*
+            )*
 
-    fn is_sharp(&self) -> bool;
-    fn is_flat(&self) -> bool;
-    fn is_natural(&self) -> bool;
+    };
 }
+
+classes! { C::<Sharp>, D::<Flat, Sharp>, E::<Flat>, F::<Sharp>, G::<Flat, Sharp>, A::<Flat, Sharp>, B::<Flat>, }
+
 /// The [`PitchClassifier`] trait establishes an interface to defining pitch classes.
 pub trait PitchClassifier:
     'static + Send + Sized + Sync + core::fmt::Debug + core::fmt::Display
@@ -20,10 +35,81 @@ pub trait PitchClassifier:
 
     fn index(&self) -> usize;
 }
+/// [`PitchType`] is a sealed marker trait used to designate various _kinds_ of musical notes,
+/// i.e., sharp, flat, natural, etc.
+pub trait PitchType {
+    private! {}
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
+#[repr(C)]
+pub struct PitchClass<N = CNote, K = Natural>
+where
+    K: PitchType,
+{
+    pub(crate) class: N,
+    pub(crate) _marker: core::marker::PhantomData<K>,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
+#[repr(transparent)]
+pub struct ConstClass<const N: usize>;
 
 /*
  ************* Implementations *************
 */
+macro_rules! pitch_type {
+    (@base $name:ident) => {
+        impl PitchType for $name {
+            seal! {}
+        }
+    };
+    (@impl $vis:vis enum $name:ident $(;)?) => {
+        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        #[cfg_attr(
+            feature = "serde",
+            derive(serde::Deserialize, serde::Serialize),
+            serde(rename_all = "lowercase")
+        )]
+        #[repr(transparent)]
+        $vis enum $name {}
+
+        pitch_type! { @base $name }
+    };
+    (@impl $vis:vis struct $name:ident $(;)?) => {
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        #[cfg_attr(
+            feature = "serde",
+            derive(serde::Deserialize, serde::Serialize),
+            serde(rename_all = "lowercase")
+        )]
+        #[repr(transparent)]
+        $vis struct $name;
+
+        pitch_type! { @base $name }
+    };
+    ($($vis:vis $type:ident $name:tt);* $(;)?) => {
+        $(pitch_type! {
+            @impl $vis $type $name;
+        })*
+    };
+}
+
+pitch_type! {
+    pub struct Flat;
+    pub struct Sharp;
+    pub struct Natural;
+}
 
 macro_rules! class_enum {
     ($(#[doc $($doc:tt)*])? $vis:vis enum $name:ident {$($rest:tt)*}) => {
@@ -100,7 +186,7 @@ macro_rules! pitch_class {
         }
 
         impl PitchClassifier for $name {
-            seal!();
+            seal! {}
 
             fn new() -> Self {
                 Self::new()
@@ -177,29 +263,28 @@ class_enum! {
 
 pitch_class! {
     #[doc = "A representation of the C pitch class"]
-    pub struct C = 0;
+    pub struct CNote = 0;
     #[doc = "A representation of the D pitch class"]
-    pub struct D = 2;
+    pub struct DNote = 2;
     #[doc = "A representation of the E pitch class"]
-    pub struct E = 4;
+    pub struct ENote = 4;
     #[doc = "A representation of the F pitch class"]
-    pub struct F = 5;
+    pub struct FNote = 5;
     #[doc = "A representation of the G pitch class"]
-    pub struct G = 7;
+    pub struct GNote = 7;
     #[doc = "A representation of the A pitch class"]
-    pub struct A = 9;
+    pub struct ANote = 9;
     #[doc = "A representation of the B pitch class"]
-    pub struct B = 11;
+    pub struct BNote = 11;
 
-    pub struct CSharp = 1;
-    pub struct DSharp = 3;
-    pub struct FSharp = 6;
-    pub struct GSharp = 8;
-    pub struct ASharp = 10;
-    pub struct DFlat = 1;
-    pub struct EFlat = 3;
-    pub struct GFlat = 6;
-    pub struct AFlat = 8;
-    pub struct BFlat = 10;
-
+    pub struct CSharpNote = 1;
+    pub struct DSharpNote = 3;
+    pub struct FSharpNote = 6;
+    pub struct GSharpNote = 8;
+    pub struct ASharpNote = 10;
+    pub struct DFlatNote = 1;
+    pub struct EFlatNote = 3;
+    pub struct GFlatNote = 6;
+    pub struct AFlatNote = 8;
+    pub struct BFlatNote = 10;
 }

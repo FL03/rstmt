@@ -6,7 +6,7 @@ use super::Frequency;
 use num_traits::{Float, FromPrimitive};
 use rstmt_traits::PitchMod;
 
-/// Given some pitch class $`n`$ (in semitones) and an optional base frequency $`\beta`$ (in hertz), 
+/// Given some pitch class $`n`$ (in semitones) and an optional base frequency $`\beta`$ (in hertz),
 /// calculate the corresponding frequency $`f`$.
 ///
 /// ```math

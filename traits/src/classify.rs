@@ -9,10 +9,10 @@ pub trait Classify {
 
     fn classify(&self) -> Self::Output;
 }
-//// [`ClassifyWith`] defines an interface for objects capable of being classified with respect 
-/// to another object.
-pub trait ClassifyWith<Rhs> {
+/// [`ClassifyBy`] is a trait defining the ability for an object to be classified _by_ or _with_
+/// another object.
+pub trait ClassifyBy<Rhs> {
     type Output;
 
-    fn classify_with(&self, rhs: Rhs) -> Self::Output;
+    fn classify_by(&self, rhs: Rhs) -> Self::Output;
 }

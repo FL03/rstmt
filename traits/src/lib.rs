@@ -28,8 +28,8 @@ extern crate alloc;
 // modules
 pub mod chroma;
 pub mod classify;
-pub mod quality;
 pub mod num;
+pub mod quality;
 
 pub mod ops {
     //! This module provides various operations traits and implementations for musical concepts
@@ -45,8 +45,8 @@ pub use self::prelude::*;
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::classify::*;
     pub use crate::chroma::*;
-    pub use crate::ops::*;
+    pub use crate::classify::*;
     pub use crate::num::*;
+    pub use crate::ops::*;
 }

@@ -46,14 +46,10 @@ pub mod consts {
 pub mod types {
     //! this module imimplements various types and other primitives used throughout the library
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{accidentals::*, harmonic_funcs::*};
 
+    mod accidentals;
     mod harmonic_funcs;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::harmonic_funcs::*;
-    }
 }
 // re-exports
 #[doc(inline)]
@@ -64,7 +60,7 @@ pub use self::{
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
     octave::{AsOctave, IntoOctave, Octave},
     pitch::{AsPitch, IntoPitch, Pitch, PitchClassifier, RawPitch},
-    types::prelude::*,
+    types::*,
 };
 #[doc(inline)]
 pub use rstmt_traits as traits;

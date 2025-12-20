@@ -2,9 +2,9 @@
     Appellation: aspn <module>
     Contrib: @FL03
 */
-use crate::PitchMod;
 use crate::freq::Frequency;
 use num_traits::{Float, FromPrimitive};
+use rstmt_traits::PitchMod;
 
 /// A discrete pitch with a class and frequency.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -15,13 +15,13 @@ use num_traits::{Float, FromPrimitive};
 )]
 #[repr(C)]
 pub struct Pitch<T = f32> {
-    pub(crate) class: usize,
+    pub(crate) class: isize,
     pub(crate) freq: Frequency<T>,
 }
 
 impl<T> Pitch<T> {
     /// initialize a new instance of a Pitch
-    pub const fn new(class: usize, freq: Frequency<T>) -> Self {
+    pub const fn new(class: isize, freq: Frequency<T>) -> Self {
         Self { class, freq }
     }
     /// returns a new pitch automatically classified from the given frequency and (optional) scale
@@ -29,15 +29,15 @@ impl<T> Pitch<T> {
     where
         T: Float + FromPrimitive,
     {
-        let class = freq.classify_by(scale)?.pmod() as usize;
+        let class = freq.classify_by(scale)?.pmod();
         Some(Self::new(class, freq))
     }
     /// returns a copy to the index of the note's class
-    pub const fn class(&self) -> usize {
+    pub const fn class(&self) -> isize {
         self.class
     }
     /// returns a mutable reference to the index of the note's class
-    pub const fn class_mut(&mut self) -> &mut usize {
+    pub const fn class_mut(&mut self) -> &mut isize {
         &mut self.class
     }
     /// returns a reference to the frequency of the pitch
@@ -49,20 +49,23 @@ impl<T> Pitch<T> {
         &mut self.freq
     }
     /// set the pitch class and return a mutable reference to the current instance
-    pub fn set_class(&mut self, class: usize) {
+    pub fn set_class(&mut self, class: isize) {
         self.class = class.pmod()
     }
     /// set the frequency and return a mutable reference to the current instance
-    pub fn set_frequency(&mut self, freq: Frequency<T>) where T: Float + FromPrimitive {
+    pub fn set_frequency(&mut self, freq: Frequency<T>)
+    where
+        T: Float + FromPrimitive,
+    {
         if let Some(cls) = freq.classify_by(None) {
-            self.class = cls.pmod() as usize;
+            self.class = cls.pmod() as isize;
             self.freq = freq;
         } else {
             panic!("Unable to classify the given frequency");
         }
     }
     /// consumes the current instance to create another with the given pitch class
-    pub fn with_class(self, class: usize) -> Self {
+    pub fn with_class(self, class: isize) -> Self {
         Self { class, ..self }
     }
     /// consumes the current instance to create another with the given frequency
@@ -92,25 +95,25 @@ impl<T: PartialEq> PartialEq<Frequency<T>> for Pitch<T> {
     }
 }
 
-impl<T> PartialEq<usize> for Pitch<T> {
-    fn eq(&self, other: &usize) -> bool {
+impl<T> PartialEq<isize> for Pitch<T> {
+    fn eq(&self, other: &isize) -> bool {
         self.class() == *other
     }
 }
 
-impl<T> PartialEq<Pitch<T>> for usize {
+impl<T> PartialEq<Pitch<T>> for isize {
     fn eq(&self, other: &Pitch<T>) -> bool {
         *self == other.class()
     }
 }
 
-impl<T> PartialOrd<usize> for Pitch<T> {
-    fn partial_cmp(&self, other: &usize) -> Option<core::cmp::Ordering> {
+impl<T> PartialOrd<isize> for Pitch<T> {
+    fn partial_cmp(&self, other: &isize) -> Option<core::cmp::Ordering> {
         self.class().partial_cmp(other)
     }
 }
 
-impl<T> PartialOrd<Pitch<T>> for usize {
+impl<T> PartialOrd<Pitch<T>> for isize {
     fn partial_cmp(&self, other: &Pitch<T>) -> Option<core::cmp::Ordering> {
         self.partial_cmp(&other.class())
     }

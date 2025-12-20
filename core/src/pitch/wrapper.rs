@@ -25,19 +25,26 @@ where
     pub const fn new(value: T) -> Self {
         Pitch { value }
     }
+    /// initialize a new instance of the pitch using the result of the given function
+    pub fn init<F>(f: F) -> Self
+    where
+        F: FnOnce() -> T,
+    {
+        Pitch::new(f())
+    }
     /// returns a new Pitch with the value of one
     pub fn one() -> Self
     where
         T: num_traits::One,
     {
-        Pitch::new(T::one())
+        Pitch::init(T::one)
     }
     /// returns a new Pitch with the value of zero
     pub fn zero() -> Self
     where
         T: num_traits::Zero,
     {
-        Pitch::new(T::zero())
+        Pitch::init(T::zero)
     }
     /// returns a pointer to the inner value
     pub const fn as_ptr(&self) -> *const T {
@@ -47,6 +54,7 @@ where
     pub const fn as_mut_ptr(&mut self) -> *mut T {
         core::ptr::from_mut(self.get_mut())
     }
+    #[inline]
     /// consumes the index returning the inner value
     pub fn value(self) -> T {
         self.value
@@ -67,6 +75,14 @@ where
         Pitch {
             value: f(self.value()),
         }
+    }
+    /// applies the function onto a mutable reference of the inner value
+    pub fn apply_mut<F>(&mut self, mut f: F) -> &mut Self
+    where
+        F: FnMut(&mut T),
+    {
+        f(self.get_mut());
+        self
     }
     /// replaces the inner value with the given one and returns the old value
     pub const fn replace(&mut self, index: T) -> T {
