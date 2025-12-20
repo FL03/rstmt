@@ -1,20 +1,12 @@
 /*
-    appellation: triad_base <module>
-    authors: @FL03
+    Appellation: triad <module>
+    Created At: 2025.12.20:11:38:53
+    Contrib: @FL03
 */
 //! this module defines the [`Triad`] struct along with additional types and traits supporting
 //! the representation of triads and their operations w.r.t. the neo-riemannian theory.
 //!
-//! ## Definition
-//!
-//! A triad is defined to be a chord, composed of three notes, each of which maintain certain
-//! intervallic relationships with one another. More specifically, the distance between the
-//! first and second as well as the second and third notes is defined to be a major or minor
-//! third, whilst the distance between the first and third notes is some variant of a _fifth_.
-//!
-//! ## Examples
-//!
-//! ### _Example 1: Basic Usage_
+//! # Overview
 //!
 //! ```rust
 //! use rstmt_nrt::Triad;
@@ -28,11 +20,17 @@
 //! assert!(triad.is_major());
 //! ```
 //!
-//! ## Resources
+//! # Background
+//!
+//! A triad is defined to be a chord, composed of three notes, each of which maintain certain
+//! intervallic relationships with one another. More specifically, the distance between the
+//! first and second as well as the second and third notes is defined to be a major or minor
+//! third, whilst the distance between the first and third notes is some variant of a _fifth_.
+//!
+//! # References
 //!
 //! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
-//! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 
 use crate::traits::{RawTriadStore, TriadKind};
 use crate::types::{Major, TriadClass};
