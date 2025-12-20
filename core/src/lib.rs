@@ -59,7 +59,7 @@ pub use self::{
     freq::{Frequency, ScaleToFrequency},
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
     octave::{AsOctave, IntoOctave, Octave},
-    pitch::{AsPitch, ClassifiedPitch, IntoPitch, PitchClassifier, RawPitch},
+    pitch::{AsPitch, ClassifiedPitch, IntoPitch, PitchCls, RawPitch},
     types::*,
 };
 #[doc(inline)]

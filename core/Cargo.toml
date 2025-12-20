@@ -38,6 +38,8 @@ contained = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
+# data structures
+hashbrown = { optional = true, workspace = true }
 # error-handling
 anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
@@ -48,6 +50,7 @@ num-traits = { workspace = true }
 # randomization
 getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
+rand_core = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # serialization
 serde = { features = ["derive"], optional = true, workspace = true }
@@ -71,6 +74,7 @@ full = [
 ]
 
 nightly = [
+  "hashbrown?/nightly",
   "rstmt-traits/nightly",
 ]
 
@@ -78,10 +82,12 @@ nightly = [
 std = [
   "alloc",
   "contained/std",
+  "hashbrown?/default",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
   "rand?/std",
+  "rand_distr?/std",
   "rstmt-traits/std",
   "serde?/std",
   "strum/std",
@@ -101,6 +107,9 @@ wasm = [
 alloc = [
   "rstmt-traits/alloc",
   "contained/alloc",
+  "hashbrown?/alloc",
+  "rand?/alloc",
+  "rand_distr?/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
@@ -110,11 +119,14 @@ anyhow = ["dep:anyhow"]
 
 complex = ["dep:num-complex"]
 
+hashbrown = ["dep:hashbrown"]
+
 json = ["alloc", "serde_json"]
 
 rand = [
   "rng",
   "dep:rand",
+  "dep:rand_core",
   "dep:rand_distr",
   "rstmt-traits/rand",
   "num-complex?/rand",
@@ -122,6 +134,7 @@ rand = [
 
 rayon = [
   "dep:rayon-core",
+  "hashbrown?/rayon",
   "rstmt-traits/rayon",
 ]
 
@@ -134,6 +147,7 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "hashbrown?/serde",
   "rstmt-traits/serde",
   "serde?/derive",
   "num-complex/serde",
