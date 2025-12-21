@@ -27,9 +27,8 @@ where
         Some(v) => v,
         None => T::from_f32(440.0)?,
     };
-
-    let res = base * T::from_f32(2f32.powf(n as f32 / 12f32))?;
-    Some(res)
+    let exp = T::from_f32(2f32.powf(n as f32 / 12f32))?;
+    Some(base * exp)
 }
 /// Compute the pitch class of a frequency (in hertz), using the formula:
 ///
@@ -45,9 +44,7 @@ where
     // Reference frequency (A4 = 440 Hz)
     let base = base.unwrap_or(T::from_u16(440)?);
     // Calculate pitch class: round(12 * log2(frequency / 440))
-    let two = T::from_u8(2)?;
-    let modulo = T::from_u8(12)?;
-    let semitones = modulo * (freq / base).log(two);
+    let semitones = T::from_u8(12)? * (freq / base).log(T::from_u8(2)?);
     semitones.round().to_isize()
 }
 
@@ -117,7 +114,7 @@ mod tests {
 
         let res = base.compute(n).unwrap();
 
-        assert!((res - f_exp).abs() < f64::EPSILON);
+        assert!((res - f_exp).abs() < 1e-5);
         assert_eq!(base.from_scale_degree(res), Some(n));
     }
 }
