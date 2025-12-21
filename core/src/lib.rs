@@ -56,7 +56,7 @@ pub mod types {
 pub use self::{
     consts::*,
     error::*,
-    freq::{Frequency, ScaleToFrequency},
+    freq::{AsFrequency, Frequency, IntoFrequency, ScaleToFrequency},
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
     octave::*,
     pitch::{AsPitch, ClassifiedPitch, IntoPitch, PitchCls, RawPitch},
@@ -74,7 +74,7 @@ pub mod prelude {
     pub use crate::consts::*;
     pub use crate::types::*;
 
-    pub use crate::freq::prelude::*;
+    pub use crate::freq::*;
     pub use crate::intervals::prelude::*;
     pub use crate::notes::prelude::*;
     pub use crate::octave::*;

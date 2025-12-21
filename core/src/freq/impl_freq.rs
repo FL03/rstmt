@@ -38,6 +38,7 @@ impl<T> Frequency<T> {
     pub const fn as_mut_ptr(&mut self) -> *mut T {
         core::ptr::from_mut(self.get_mut())
     }
+    #[inline]
     /// consumes the index returning the inner value
     pub fn value(self) -> T {
         self.0
@@ -50,6 +51,7 @@ impl<T> Frequency<T> {
     pub const fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
+    #[inline]
     /// apply a function to the inner value and returns a new Frequency wrapping the result
     pub fn map<U, F>(self, f: F) -> Frequency<U>
     where
@@ -69,6 +71,7 @@ impl<T> Frequency<T> {
     pub const fn replace(&mut self, index: T) -> T {
         core::mem::replace(self.get_mut(), index)
     }
+    #[inline]
     /// set the index to the given value
     pub fn set(&mut self, index: T) -> &mut Self {
         *self.get_mut() = index;
@@ -78,10 +81,7 @@ impl<T> Frequency<T> {
     pub const fn swap(&mut self, other: &mut Self) {
         core::mem::swap(self.get_mut(), other.get_mut());
     }
-    /// consumes the current instance to create another with the given value
-    pub fn with<U>(self, other: U) -> Frequency<U> {
-        Frequency(other)
-    }
+    #[inline]
     /// takes and returns the inner value, replacing it with the logical [`default`](Default)
     /// of the type `T`
     pub fn take(&mut self) -> T
@@ -90,6 +90,11 @@ impl<T> Frequency<T> {
     {
         core::mem::take(self.get_mut())
     }
+    #[inline]
+    /// consumes the current instance to create another with the given value
+    pub fn with<U>(self, other: U) -> Frequency<U> {
+        Frequency(other)
+    }
     /// returns a new instance containing a reference to the inner value
     pub const fn view(&self) -> Frequency<&T> {
         Frequency(self.get())
@@ -97,30 +102,6 @@ impl<T> Frequency<T> {
     /// returns a new instance containing a mutable reference to the inner value
     pub const fn view_mut(&mut self) -> Frequency<&mut T> {
         Frequency(self.get_mut())
-    }
-}
-
-contained::fmt_wrapper! {
-    impl Frequency<T> {
-        Binary,
-        Debug,
-        Display,
-        LowerExp,
-        LowerHex,
-        Octal,
-        Pointer,
-        UpperExp,
-        UpperHex
-    }
-
-}
-
-impl<T> Default for Frequency<T>
-where
-    T: Default,
-{
-    fn default() -> Self {
-        Frequency(T::default())
     }
 }
 

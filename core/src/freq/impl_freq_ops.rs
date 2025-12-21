@@ -3,9 +3,24 @@
     authors: @FL03
 */
 use super::Frequency;
-use crate::freq::{classify_freq_by_scale, get_freq_from_scale};
+use crate::freq::{classify_freq_by_scale, get_frequency_from_pitch_class};
 use num_traits::{Float, FromPrimitive, Num, One, Zero};
 use rstmt_traits::ClassifyBy;
+
+contained::fmt_wrapper! {
+    impl Frequency<T> {
+        Binary,
+        Debug,
+        Display,
+        LowerExp,
+        LowerHex,
+        Octal,
+        Pointer,
+        UpperExp,
+        UpperHex
+    }
+
+}
 
 contained::unary_wrapper! {
     impl Frequency {
@@ -39,7 +54,7 @@ where
     /// F=\gamma\cdot{2^\frac{n}{12}}
     /// ```
     pub fn compute_freq_from_scale(n: isize, base: Option<T>) -> Option<Self> {
-        get_freq_from_scale(n, base).map(Frequency)
+        get_frequency_from_pitch_class(n, base).map(Frequency)
     }
     /// Compute the pitch class of a frequency (in hertz), using the formula:
     ///
