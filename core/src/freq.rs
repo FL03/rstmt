@@ -11,7 +11,6 @@ mod impl_freq_repr;
 mod impl_scale_to_frequency;
 
 use num_traits::{Float, FromPrimitive};
-use rstmt_traits::PitchMod;
 
 /// Given some pitch class $`n`$ (in semitones) and an optional base frequency $`\beta`$ (in hertz),
 /// calculate the corresponding frequency $`f`$.
@@ -39,7 +38,7 @@ where
 /// ```
 pub(crate) fn classify_freq_by_scale<T>(freq: T, base: Option<T>) -> Option<isize>
 where
-    T: Float + FromPrimitive + PitchMod<Output = T>,
+    T: Float + FromPrimitive,
 {
     // Ensure frequency is positive
     debug_assert! { freq <= T::zero(), "Frequency must be positive" }
@@ -49,7 +48,7 @@ where
     let two = T::from_u8(2)?;
     let modulo = T::from_u8(12)?;
     let semitones = modulo * (freq / base).log(two);
-    semitones.round().pmod().to_isize()
+    semitones.round().to_isize()
 }
 
 /// [`AsFrequency`] is a trait enabling the conversion of a reference to a type into a
