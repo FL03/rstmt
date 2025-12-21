@@ -19,8 +19,6 @@ on:
         required: true
         type: boolean
 
-
-
 jobs:
   crates-io:
     runs-on: ubuntu-latest
