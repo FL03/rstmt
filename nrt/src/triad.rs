@@ -42,10 +42,7 @@ use rstmt_core::Octave;
 /// substrate used to represent the _headspace_ of a plant. Each plant relies on these objects
 /// to transverse the surface of the tonnetz so that it may gaurantee the completion of a task.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Triad {
     /// The type of triad (Major, Minor, Augmented, Diminished)
     pub(crate) class: TriadClass,

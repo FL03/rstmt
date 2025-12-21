@@ -27,7 +27,7 @@ pub trait IntoAspn {
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(deny_unknown_fields, default, rename_all = "snake_case")
 )]
 #[repr(C)]

@@ -26,7 +26,7 @@ use rstmt::PitchMod;
 )]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]

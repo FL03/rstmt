@@ -22,7 +22,7 @@ pub trait IntoOctave<T> {
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(default, transparent)
 )]
 #[repr(transparent)]

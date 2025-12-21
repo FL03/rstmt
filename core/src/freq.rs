@@ -23,10 +23,7 @@ where
     T: Float + FromPrimitive,
 {
     // get the base "tuning" frequency
-    let base = match base {
-        Some(v) => v,
-        None => T::from_f32(440.0)?,
-    };
+    let base = base.unwrap_or(T::from_u16(440)?);
     let exp = T::from_f32(2f32.powf(n as f32 / 12f32))?;
     Some(base * exp)
 }
@@ -40,7 +37,7 @@ where
     T: Float + FromPrimitive,
 {
     // Ensure frequency is positive
-    debug_assert! { freq <= T::zero(), "Frequency must be positive" }
+    debug_assert! { freq.is_sign_negative(), "Frequency must be positive" }
     // Reference frequency (A4 = 440 Hz)
     let base = base.unwrap_or(T::from_u16(440)?);
     // Calculate pitch class: round(12 * log2(frequency / 440))
@@ -67,7 +64,7 @@ pub trait IntoFrequency<T> {
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(transparent)
 )]
 #[repr(transparent)]
@@ -84,6 +81,7 @@ pub struct Frequency<T = f64>(pub T);
     derive(serde::Serialize, serde::Deserialize),
     serde(default, rename_all = "snake_case")
 )]
+#[repr(transparent)]
 pub struct ScaleToFrequency<T = f64> {
     /// the `anchor` frequency is one that we can use as a reference point for calculating
     /// other frequencies within the scale
