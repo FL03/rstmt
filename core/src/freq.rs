@@ -93,9 +93,9 @@ pub struct ScaleToFrequency<T = f64> {
 /*
  ************* Implementations *************
 */
-impl<T> IntoFrequency<T> for T
+impl<U, T> IntoFrequency<T> for U
 where
-    T: Into<Frequency<T>>,
+    U: Into<Frequency<T>>,
 {
     fn into_frequency(self) -> Frequency<T> {
         self.into()
@@ -106,8 +106,18 @@ where
 mod tests {
     use super::*;
 
+    const A4: f64 = 440.0;
+    const C4: f64 = 261.6255653005986;
+
     #[test]
-    fn test_freq_convert() {
+    fn test_freq_classification() {
+        let f = Frequency(C4);
+        let p_class = f.classify_by(Some(A4));
+        assert_eq!(p_class, Some(-9));
+    }
+
+    #[test]
+    fn test_freq_converter() {
         let n: isize = -9; // C4;
         let f_exp: f64 = 261.6255653005986;
         let base = ScaleToFrequency::new(440f64); // A4
