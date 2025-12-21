@@ -58,7 +58,7 @@ pub use self::{
     error::*,
     freq::{Frequency, ScaleToFrequency},
     notes::{AsAspn, Aspn, IntoAspn, NoteBase},
-    octave::{AsOctave, IntoOctave, Octave},
+    octave::*,
     pitch::{AsPitch, ClassifiedPitch, IntoPitch, PitchCls, RawPitch},
     types::*,
 };
@@ -77,6 +77,6 @@ pub mod prelude {
     pub use crate::freq::prelude::*;
     pub use crate::intervals::prelude::*;
     pub use crate::notes::prelude::*;
-    pub use crate::octave::prelude::*;
+    pub use crate::octave::*;
     pub use crate::pitch::prelude::*;
 }

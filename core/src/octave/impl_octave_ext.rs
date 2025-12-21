@@ -1,8 +1,9 @@
 /*
-    appellation: impl_octave <module>
-    authors: @FL03
+    Appellation: impl_octave_ext <module>
+    Created At: 2025.12.21:08:48:17
+    Contrib: @FL03
 */
-use crate::octave::Octave;
+use super::Octave;
 
 impl<T> From<T> for Octave<T> {
     fn from(index: T) -> Self {
@@ -61,43 +62,5 @@ where
 {
     fn partial_cmp(&self, other: &&'a mut T) -> Option<core::cmp::Ordering> {
         self.get().partial_cmp(*other)
-    }
-}
-
-impl<T> AsRef<T> for Octave<T> {
-    fn as_ref(&self) -> &T {
-        self.get()
-    }
-}
-
-impl<T> AsMut<T> for Octave<T> {
-    fn as_mut(&mut self) -> &mut T {
-        self.get_mut()
-    }
-}
-
-impl<T> core::borrow::Borrow<T> for Octave<T> {
-    fn borrow(&self) -> &T {
-        self.get()
-    }
-}
-
-impl<T> core::borrow::BorrowMut<T> for Octave<T> {
-    fn borrow_mut(&mut self) -> &mut T {
-        self.get_mut()
-    }
-}
-
-impl<T> core::ops::Deref for Octave<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        self.get()
-    }
-}
-
-impl<T> core::ops::DerefMut for Octave<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        self.get_mut()
     }
 }

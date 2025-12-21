@@ -1,17 +1,8 @@
 /*
-    Appellation: octave <types>
-    Contrib: @FL03
+    appellation: impl_octave <module>
+    authors: @FL03
 */
-
-/// A type defining an octave
-#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
-    serde(default, transparent)
-)]
-#[repr(transparent)]
-pub struct Octave<T = isize>(pub T);
+use crate::octave::Octave;
 
 impl<T> Octave<T> {
     #[allow(clippy::should_implement_trait)]
@@ -113,5 +104,43 @@ impl<T> Octave<T> {
     /// returns a new instance containing a mutable reference to the inner value
     pub fn view_mut(&mut self) -> Octave<&mut T> {
         Octave(self.get_mut())
+    }
+}
+
+impl<T> AsRef<T> for Octave<T> {
+    fn as_ref(&self) -> &T {
+        self.get()
+    }
+}
+
+impl<T> AsMut<T> for Octave<T> {
+    fn as_mut(&mut self) -> &mut T {
+        self.get_mut()
+    }
+}
+
+impl<T> core::borrow::Borrow<T> for Octave<T> {
+    fn borrow(&self) -> &T {
+        self.get()
+    }
+}
+
+impl<T> core::borrow::BorrowMut<T> for Octave<T> {
+    fn borrow_mut(&mut self) -> &mut T {
+        self.get_mut()
+    }
+}
+
+impl<T> core::ops::Deref for Octave<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.get()
+    }
+}
+
+impl<T> core::ops::DerefMut for Octave<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.get_mut()
     }
 }
