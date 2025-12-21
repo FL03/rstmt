@@ -55,7 +55,7 @@ jobs:
       - name: Build the workspace
         run: cargo build -r --locked --workspace --features full --target ${{ matrix.target }}
   benchmark:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.benchmark
+    if: github.event_name == 'push' || github.event.action == 'repository_dispatch' || github.event.inputs.benchmark
     needs: build
     runs-on: ubuntu-latest
     steps:
