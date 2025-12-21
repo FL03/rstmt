@@ -21,17 +21,17 @@ mod impls {
 
 mod traits {
     #[doc(inline)]
-    pub use self::{convert::*, raw_pitch::*};
+    pub use self::{classifiers::*, convert::*, raw_pitch::*};
 
+    mod classifiers;
     mod convert;
     mod raw_pitch;
 }
 
 mod types {
     #[doc(inline)]
-    pub use self::{classes::*, kinds::*};
+    pub use self::kinds::*;
 
-    mod classes;
     mod kinds;
 }
 // prelude (local)

@@ -4,56 +4,22 @@
     Contrib: @FL03
 */
 
-/// The [`PitchCls`] trait establishes an interface to defining pitch classes.
-pub trait PitchCls: core::fmt::Debug {
-    const IDX: usize;
-    type Tag: PitchType;
-
-    private! {}
-
-    fn new() -> Self
-    where
-        Self: Sized;
-
-    fn index(&self) -> usize;
-}
-/// [`PitchType`] is a sealed marker trait used to designate various _kinds_ of musical notes,
-/// i.e., sharp, flat, natural, etc.
-pub trait PitchType {
-    private! {}
-}
-
-/*
- ************* Implementations *************
-*/
-
-macro_rules! pitch_type {
-    (@impl $(#[$meta:meta])* $vis:vis enum $name:ident $(;)?) => {
-        $(#[$meta])*
-        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-        $vis enum $name {}
+macro_rules! classes {
+    (@impl $name:ident::<Natural>) => {
+        paste::paste! {
+            pub type $name = $crate::pitch::PitchClass<$crate::pitch::[<$name Note>], $crate::pitch::Natural>;
+        }
     };
-    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident $(;)?) => {
-        $(#[$meta])*
-        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-        $vis struct $name;
+    (@impl $name:ident::<$kind:ident>) => {
+        paste::paste! {
+            pub type [<$name $kind>] = $crate::pitch::PitchClass<$crate::pitch::[<$name $kind Note>], $crate::pitch::$kind>;
+        }
     };
-    ($($vis:vis $type:ident $name:ident);* $(;)?) => {
-        $(
-            pitch_type! { @impl
-                #[cfg_attr(
-                    feature = "serde",
-                    derive(serde::Deserialize, serde::Serialize),
-                    serde(rename_all = "lowercase")
-                )]
-                #[repr(transparent)]
-                $vis $type $name;
-            }
-
-            impl PitchType for $name {
-                seal! {}
-            }
-        )*
+    (@impl $name:ident::<$($kind:ident),+ $(,)?>) => {
+        $(classes! { @impl $name::<$kind> })*
+    };
+    ($($name:ident::<$($K:ident),* $(,)?>),* $(,)?) => {
+        $(classes! { @impl $name::<Natural, $($K),*> })*
     };
 }
 
@@ -129,7 +95,7 @@ macro_rules! pitch_class {
             }
         }
 
-        impl PitchCls for $name {
+        impl $crate::pitch::PitchCls for $name {
             const IDX: usize = $c;
             type Tag = $tag;
 
@@ -170,12 +136,39 @@ macro_rules! pitch_class {
     };
 }
 
-pitch_type! {
-    pub struct Flat;
-    pub struct Sharp;
-    pub struct Natural;
+macro_rules! pitch_type {
+    (@impl $(#[$meta:meta])* $vis:vis enum $name:ident $(;)?) => {
+        $(#[$meta])*
+        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        $vis enum $name {}
+    };
+    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident $(;)?) => {
+        $(#[$meta])*
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        $vis struct $name;
+    };
+    ($($vis:vis $type:ident $name:ident);* $(;)?) => {
+        $(
+            pitch_type! { @impl
+                #[cfg_attr(
+                    feature = "serde",
+                    derive(serde::Deserialize, serde::Serialize),
+                    serde(rename_all = "lowercase")
+                )]
+                #[repr(transparent)]
+                $vis $type $name
+            }
+
+            impl $crate::pitch::PitchType for $name {
+                seal! {}
+            }
+        )*
+    };
 }
 
+/*
+ ************* Implementations *************
+*/
 create_class_enums! {
     #[doc = "A representation of the natural pitch class"]
     pub enum Naturals {
@@ -208,6 +201,12 @@ create_class_enums! {
     };
 }
 
+pitch_type! {
+    pub struct Flat;
+    pub struct Sharp;
+    pub struct Natural;
+}
+
 pitch_class! {
     pub struct CNote<Natural> = 0;
     pub struct DNote<Natural> = 2;
@@ -226,4 +225,14 @@ pitch_class! {
     pub struct GFlatNote<Flat> = 6;
     pub struct AFlatNote<Flat> = 8;
     pub struct BFlatNote<Flat> = 10;
+}
+
+classes! {
+    C::<Sharp>,
+    D::<Flat, Sharp>,
+    E::<Flat>,
+    F::<Sharp>,
+    G::<Flat, Sharp>,
+    A::<Flat, Sharp>,
+    B::<Flat>,
 }
