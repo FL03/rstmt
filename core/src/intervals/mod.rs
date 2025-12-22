@@ -8,6 +8,10 @@ pub use self::{interval_base::IntervalBase, traits::*};
 
 mod interval_base;
 
+mod impls {
+    mod impl_interval_base;
+}
+
 mod traits {
     #[doc(inline)]
     pub use self::qualities::*;

@@ -3,13 +3,13 @@
     authors: @FL03
 */
 
-/// [`RawQuality`] is used to represent the _quality_ of an interval.
+/// [`RawQuality`] is a private marker trait used to represent an intervallic quality.
 pub trait RawQuality: 'static + Send + Sync + core::fmt::Debug + core::fmt::Display {
     private! {}
 }
 
 pub trait Quality: RawQuality {
-    /// returns the quality of the interval.
+    /// returns the name of the current quality
     fn name(&self) -> &str;
 }
 
