@@ -54,13 +54,7 @@ pub mod types {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    consts::*,
-    error::*,
-    freq::{AsFrequency, Frequency, IntoFrequency, ScaleToFrequency},
-    notes::*,
-    octave::*,
-    pitch::{AsPitch, ClassifiedPitch, IntoPitch, PitchCls, RawPitch},
-    types::*,
+    consts::*, error::*, freq::*, intervals::*, notes::*, octave::*, pitch::*, types::*,
 };
 #[doc(inline)]
 pub use rstmt_traits as traits;
