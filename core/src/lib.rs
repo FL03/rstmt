@@ -14,6 +14,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "nightly", feature(const_trait_impl))]
 
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
@@ -23,6 +24,8 @@ compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
+    #[macro_use]
+    pub mod units;
 }
 
 #[cfg(feature = "alloc")]

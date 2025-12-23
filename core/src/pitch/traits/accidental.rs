@@ -20,16 +20,9 @@ pub trait Accidental {
  ************* Implementations *************
 */
 macro_rules! pitch_type {
-    (@def $(#[$meta:meta])* $vis:vis enum $name:ident $({})? $(;)?) => {
-        $(#[$meta])*
-        $vis enum $name {}
-    };
-    (@def $(#[$meta:meta])* $vis:vis struct $name:ident $(;)?) => {
-        $(#[$meta])* #[derive(Default)]
-        $vis struct $name;
-    };
     (@impl $(#[$meta:meta])* $vis:vis $type:ident $name:ident $(;)?) => {
-        pitch_type! { @def $(#[$meta])*
+        unit_type! { 
+            $(#[$meta])*
             #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
             #[repr(transparent)]
