@@ -1,9 +1,9 @@
 /*
-    Appellation: convert <module>
-    Created At: 2025.12.20:09:12:05
+    Appellation: pitches <module>
+    Created At: 2025.12.20:10:02:21
     Contrib: @FL03
 */
-use crate::pitch::Pitch;
+
 /// A trait for converting a reference into a [`Pitch`].
 pub trait AsPitch<T> {
     fn as_pitch(&self) -> Pitch<T>;
@@ -15,13 +15,23 @@ pub trait IntoPitch<T> {
     private! {}
 }
 
+/// Musically, a pitch is defined to be a discrete frequency that may be symbolically
+/// represented via a pitch class.
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(transparent)
+)]
+#[repr(transparent)]
+pub struct Pitch<T = f64>(pub T);
+
 /*
  ************* Implementations *************
 */
-
-impl<T> AsPitch<T> for T
+impl<U, T> AsPitch<T> for U
 where
-    T: Clone + IntoPitch<T>,
+    U: Clone + IntoPitch<T>,
 {
     fn as_pitch(&self) -> Pitch<T> {
         self.clone().into_pitch()

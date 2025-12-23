@@ -5,11 +5,11 @@
 */
 use super::NoteBase;
 use crate::octave::Octave;
-use crate::pitch::{Pitch, PitchCls};
+use crate::pitch::{Pitch, PitchRepr};
 
 impl<T, Cls> NoteBase<T, Cls>
 where
-    Cls: PitchCls,
+    Cls: PitchRepr,
 {
     pub fn new(pitch: Pitch<T>, octave: Octave) -> Self {
         Self {
@@ -41,7 +41,7 @@ where
         self
     }
     /// consumes the current instance to create another with the given pitch class
-    pub fn with_class<Pc: PitchCls>(self) -> NoteBase<T, Pc> {
+    pub fn with_class<Pc: PitchRepr>(self) -> NoteBase<T, Pc> {
         NoteBase {
             class: Pc::new(),
             octave: self.octave,
@@ -56,7 +56,7 @@ where
 
 impl<C, T> core::fmt::Display for NoteBase<T, C>
 where
-    C: PitchCls + core::fmt::Display,
+    C: PitchRepr + core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}.{}", self.class, self.octave)

@@ -6,7 +6,7 @@
 use crate::triad::TriadBase;
 
 use crate::traits::RawTriadStore;
-use crate::types::{Augmented, Diminished, Major, Minor};
+use rstmt_core::{Augmented, Diminished, Major, Minor};
 
 impl<S> TriadBase<S, Augmented>
 where

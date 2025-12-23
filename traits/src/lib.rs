@@ -29,7 +29,6 @@ extern crate alloc;
 pub mod chroma;
 pub mod classify;
 pub mod num;
-pub mod quality;
 
 pub mod ops {
     //! This module provides various operations traits and implementations for musical concepts

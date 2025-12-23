@@ -5,11 +5,12 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriadStore, RawTriadStoreMut, TriadKind};
+use crate::traits::{RawTriadStore, RawTriadStoreMut, TriadCls};
+use rstmt_core::{Augmented, Diminished, Major, Minor};
 
 impl<T, S, K> TriadBase<S, K, T>
 where
-    K: TriadKind,
+    K: TriadCls,
     S: RawTriadStore<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
@@ -97,7 +98,7 @@ where
     /// consumes the current instance to create another with the given class
     pub fn with_class<K2>(self, class: K2) -> TriadBase<S, K2>
     where
-        K2: TriadKind,
+        K2: TriadCls,
     {
         TriadBase {
             chord: self.chord,
@@ -111,21 +112,21 @@ where
     /// returns true if the triad is classified as an augmented triad.
     pub fn is_augmented(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<crate::Augmented>()
+        TypeId::of::<K>() == TypeId::of::<Augmented>()
     }
     /// returns true if the triad is classified as a diminished triad.
     pub fn is_diminished(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<crate::Diminished>()
+        TypeId::of::<K>() == TypeId::of::<Diminished>()
     }
     /// returns true if the triad is classified as a major triad.
     pub fn is_major(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<crate::Major>()
+        TypeId::of::<K>() == TypeId::of::<Major>()
     }
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
         use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<crate::Minor>()
+        TypeId::of::<K>() == TypeId::of::<Minor>()
     }
 }

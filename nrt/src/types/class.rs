@@ -132,7 +132,7 @@ impl TriadClass {
     }
 }
 
-impl crate::TriadKind for TriadClass {
+impl crate::TriadCls for TriadClass {
     seal! {}
 
     fn new() -> Self {

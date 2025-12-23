@@ -32,9 +32,9 @@
 //! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
 
-use crate::traits::{RawTriadStore, TriadKind};
-use crate::types::{Major, TriadClass};
-use rstmt_core::Octave;
+use crate::traits::{RawTriadStore, TriadCls};
+use crate::types::TriadClass;
+use rstmt_core::{Major, Octave};
 
 /// A triad is a particular chord composed of three notes that satify particular intervallic
 /// constrains with each other. Here, the triad materializes the facet of a hyperedge within a
@@ -61,7 +61,7 @@ pub struct Triad {
 )]
 pub struct TriadBase<S = [usize; 3], K = Major, T = <S as RawTriadStore>::Elem>
 where
-    K: TriadKind,
+    K: TriadCls,
     S: RawTriadStore<Elem = T>,
 {
     pub(crate) chord: S,

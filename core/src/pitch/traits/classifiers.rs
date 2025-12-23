@@ -3,10 +3,13 @@
     Created At: 2025.12.21:09:08:08
     Contrib: @FL03
 */
-/// The [`PitchCls`] trait establishes an interface to defining pitch classes.
-pub trait PitchCls: core::fmt::Debug {
-    const IDX: usize;
-    type Tag: PitchType;
+use crate::pitch::Accidental;
+
+/// [`PitchRepr`] is a sealed trait used to define compatible pitch representations
+/// (a.k.a pitch classes).
+pub trait PitchRepr: AsRef<str> + core::fmt::Debug + core::fmt::Display {
+    const IDX: isize;
+    type Tag: Accidental;
 
     private! {}
 
@@ -14,10 +17,7 @@ pub trait PitchCls: core::fmt::Debug {
     where
         Self: Sized;
 
-    fn index(&self) -> usize;
-}
-/// [`PitchType`] is a sealed marker trait used to designate various _kinds_ of musical notes,
-/// i.e., sharp, flat, natural, etc.
-pub trait PitchType {
-    private! {}
+    fn value(&self) -> isize {
+        Self::IDX
+    }
 }

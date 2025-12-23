@@ -87,19 +87,20 @@ mod impls {
 mod traits {
     //! this module implements various traits supporting the triad implementation
     #[doc(inline)]
-    pub use self::raw_triad::*;
+    pub use self::{raw_store::*, raw_triad::*, triad_kind::*};
 
+    mod raw_store;
     mod raw_triad;
+    mod triad_kind;
 }
 
 mod types {
     //! this module defines various types supporting the neo-riemannian theory
     #[doc(inline)]
-    pub use self::{class::*, factors::*, kinds::*, lpr::*};
+    pub use self::{class::*, factors::*, lpr::*};
 
     mod class;
     mod factors;
-    mod kinds;
     mod lpr;
 }
 // re-exports

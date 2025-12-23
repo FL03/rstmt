@@ -14,7 +14,7 @@
     Ord,
     PartialEq,
     PartialOrd,
-    variants::VariantConstructors,
+    smart_default::SmartDefault,
     strum::EnumCount,
     strum::EnumIs,
 )]
@@ -24,41 +24,55 @@
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Accidental {
-    Sharp(AccidentalState),
-    Flat(AccidentalState),
+pub enum Accidentals {
+    Sharp(crate::pitch::Sharp),
+    Flat(crate::pitch::Flat),
+    #[default]
+    Natural(crate::pitch::Natural),
 }
 
 #[derive(
     Clone,
     Copy,
     Debug,
-    Default,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
-    variants::VariantConstructors,
-    strum::AsRefStr,
-    strum::Display,
     strum::EnumCount,
+    strum::EnumDiscriminants,
     strum::EnumIs,
-    strum::EnumIter,
-    strum::EnumString,
-    strum::VariantArray,
-    strum::VariantNames,
+)]
+#[strum_discriminants(
+    name(AccidentalFlag),
+    derive(
+        Hash,
+        Ord,
+        PartialOrd,
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIs,
+        strum::EnumIter,
+        strum::EnumString,
+        strum::VariantArray,
+        strum::VariantNames,
+    ),
+    strum(serialize_all = "lowercase")
 )]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase")
+    serde(rename_all = "lowercase"),
+    strum_discriminants(
+        derive(serde::Deserialize, serde::Serialize),
+        serde(rename_all = "lowercase")
+    )
 )]
-#[strum(serialize_all = "lowercase")]
-pub enum AccidentalState {
-    #[default]
+pub enum AccidentalState<T> {
     /// A [`Single`](AccidentalState::Single) accidental state represents typical sharp/flat note
-    Single,
+    Single(T),
     /// A [`Double`](AccidentalState::Double) accidental state represents a double sharp/flat note
-    Double,
+    Double(T),
 }

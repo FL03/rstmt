@@ -46,9 +46,8 @@ pub mod consts {
 pub mod types {
     //! this module imimplements various types and other primitives used throughout the library
     #[doc(inline)]
-    pub use self::{accidentals::*, harmonic_funcs::*};
+    pub use self::harmonic_funcs::*;
 
-    mod accidentals;
     mod harmonic_funcs;
 }
 // re-exports

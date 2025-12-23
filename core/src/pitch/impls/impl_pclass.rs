@@ -3,12 +3,12 @@
     Created At: 2025.12.20:08:51:41
     Contrib: @FL03
 */
-use crate::pitch::{PitchClass, PitchCls, PitchType};
+use crate::pitch::{Accidental, Flat, Natural, PitchClass, PitchRepr, Sharp};
 
 impl<T, K> PitchClass<T, K>
 where
-    T: PitchCls<Tag = K>,
-    K: PitchType,
+    T: PitchRepr<Tag = K>,
+    K: Accidental,
 {
     pub fn new() -> Self {
         Self {
@@ -37,50 +37,86 @@ where
     where
         K: 'static,
     {
-        core::any::TypeId::of::<K>() == core::any::TypeId::of::<crate::pitch::Natural>()
+        Natural::of::<K>()
     }
     /// returns true if the class is considered flat
     pub fn is_flat(&self) -> bool
     where
         K: 'static,
     {
-        core::any::TypeId::of::<K>() == core::any::TypeId::of::<crate::pitch::Flat>()
+        Flat::of::<K>()
     }
     /// returns true if the class is considered sharp
     pub fn is_sharp(&self) -> bool
     where
         K: 'static,
     {
-        core::any::TypeId::of::<K>() == core::any::TypeId::of::<crate::pitch::Sharp>()
+        Sharp::of::<K>()
     }
 }
 
 impl<T, K> core::fmt::Debug for PitchClass<T, K>
 where
-    T: PitchCls<Tag = K> + core::fmt::Debug,
-    K: PitchType,
+    T: PitchRepr<Tag = K> + core::fmt::Debug,
+    K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{:?}", self.class)
+        write!(f, "{:?} {:?}", self.class, self._marker.name())
     }
 }
 
 impl<T, K> core::fmt::Display for PitchClass<T, K>
 where
-    T: PitchCls<Tag = K> + core::fmt::Display,
-    K: PitchType,
+    T: PitchRepr<Tag = K> + core::fmt::Display,
+    K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.class)
     }
 }
 
-impl<T, K> PitchCls for PitchClass<T, K>
+impl<T, K> AsRef<str> for PitchClass<T, K>
 where
-    T: PitchCls<Tag = K>,
-    K: PitchType,
+    T: PitchRepr<Tag = K>,
+    K: Accidental,
 {
-    const IDX: usize = T::IDX;
+    fn as_ref(&self) -> &str {
+        self.class.as_ref()
+    }
+}
+
+impl<S, K> core::ops::Deref for PitchClass<S, K>
+where
+    S: crate::pitch::PitchRepr<Tag = K>,
+    K: crate::pitch::Accidental,
+{
+    type Target = S;
+
+    fn deref(&self) -> &Self::Target {
+        self.get()
+    }
+}
+
+unsafe impl<T, K> Send for PitchClass<T, K>
+where
+    T: PitchRepr<Tag = K>,
+    K: Accidental,
+{
+}
+
+unsafe impl<T, K> Sync for PitchClass<T, K>
+where
+    T: PitchRepr<Tag = K>,
+    K: Accidental,
+{
+}
+
+impl<T, K> PitchRepr for PitchClass<T, K>
+where
+    T: PitchRepr<Tag = K>,
+    K: Accidental,
+{
+    const IDX: isize = T::IDX;
     type Tag = K;
 
     seal! {}
@@ -92,21 +128,7 @@ where
         }
     }
 
-    fn index(&self) -> usize {
-        self.class.index()
+    fn value(&self) -> isize {
+        self.class.value()
     }
-}
-
-unsafe impl<T, K> Send for PitchClass<T, K>
-where
-    T: PitchCls<Tag = K>,
-    K: PitchType,
-{
-}
-
-unsafe impl<T, K> Sync for PitchClass<T, K>
-where
-    T: PitchCls<Tag = K>,
-    K: PitchType,
-{
 }
