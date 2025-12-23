@@ -5,9 +5,16 @@
 */
 use crate::pitch::Accidental;
 
-/// [`PitchRepr`] is a sealed trait used to define compatible pitch representations
+/// [`PitchClassRepr`] is a sealed trait used to define compatible pitch representations
 /// (a.k.a pitch classes).
-pub trait PitchRepr: AsRef<str> + core::fmt::Debug + core::fmt::Display {
+pub trait PitchClassRepr:
+    AsRef<str>
+    + AsRef<isize>
+    + Default
+    + core::fmt::Debug
+    + core::fmt::Display
+    + core::borrow::Borrow<isize>
+{
     const IDX: isize;
     type Tag: Accidental;
 

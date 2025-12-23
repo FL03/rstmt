@@ -3,7 +3,8 @@
     Created At: 2025.12.23:14:33:56
     Contrib: @FL03
 */
-use crate::pitch::{Accidental, PitchClass, PitchRepr};
+use crate::pitch::pitch_class::PitchClass;
+use crate::pitch::traits::{Accidental, PitchClassRepr};
 use rstmt_traits::PitchMod;
 
 /// Add two pitch-classes producing a wrapped semitone count in the tonal space.
@@ -15,9 +16,9 @@ use rstmt_traits::PitchMod;
 /// prefer.
 impl<T1, A1, T2, A2> core::ops::Add<PitchClass<T2, A2>> for PitchClass<T1, A1>
 where
-    T1: PitchRepr<Tag = A1>,
+    T1: PitchClassRepr<Tag = A1>,
     A1: Accidental,
-    T2: PitchRepr<Tag = A2>,
+    T2: PitchClassRepr<Tag = A2>,
     A2: Accidental,
 {
     type Output = isize;
@@ -29,9 +30,9 @@ where
 
 impl<T1, A1, T2, A2> core::ops::Sub<PitchClass<T2, A2>> for PitchClass<T1, A1>
 where
-    T1: PitchRepr<Tag = A1>,
+    T1: PitchClassRepr<Tag = A1>,
     A1: Accidental,
-    T2: PitchRepr<Tag = A2>,
+    T2: PitchClassRepr<Tag = A2>,
     A2: Accidental,
 {
     /// Subtract two pitch-classes producing a wrapped signed semitone interval.

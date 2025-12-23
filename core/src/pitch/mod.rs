@@ -22,6 +22,7 @@ mod impls {
     mod impl_pitch_repr;
 
     mod impl_pclass;
+    mod impl_pclass_ext;
     mod impl_pclass_ops;
 }
 
@@ -60,6 +61,6 @@ mod tests {
         // verify the type checkers
         assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
         // check the index
-        assert_eq!(c.value(), 0);
+        assert_eq! { c, 0 }
     }
 }

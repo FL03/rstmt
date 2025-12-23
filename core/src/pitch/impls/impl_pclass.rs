@@ -3,33 +3,33 @@
     Created At: 2025.12.20:08:51:41
     Contrib: @FL03
 */
-use crate::pitch::{Accidental, Flat, Natural, PitchClass, PitchRepr, Sharp};
+use crate::pitch::{Accidental, Flat, Natural, PitchClass, PitchClassRepr, Sharp};
 
-impl<T, K> PitchClass<T, K>
+impl<P, K> PitchClass<P, K>
 where
-    T: PitchRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
     pub fn new() -> Self {
         Self {
-            class: T::new(),
-            _marker: core::marker::PhantomData::<K>,
+            class: P::new(),
+            kind: K::default(),
         }
     }
     /// returns a pointer to the inner class
-    pub const fn as_ptr(&self) -> *const T {
+    pub const fn as_ptr(&self) -> *const P {
         core::ptr::from_ref(self.get())
     }
     /// returns a mutable pointer to the inner class
-    pub const fn as_mut_ptr(&mut self) -> *mut T {
+    pub const fn as_mut_ptr(&mut self) -> *mut P {
         core::ptr::from_mut(self.get_mut())
     }
     /// returns a reference to the inner class
-    pub const fn get(&self) -> &T {
+    pub const fn get(&self) -> &P {
         &self.class
     }
     /// returns a mutable reference to the inner class
-    pub const fn get_mut(&mut self) -> &mut T {
+    pub const fn get_mut(&mut self) -> &mut P {
         &mut self.class
     }
     /// returns true if the class is considered natural
@@ -55,80 +55,48 @@ where
     }
 }
 
-impl<T, K> core::fmt::Debug for PitchClass<T, K>
+impl<N, K> PitchClassRepr for PitchClass<N, K>
 where
-    T: PitchRepr<Tag = K> + core::fmt::Debug,
+    N: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{:?} {:?}", self.class, self._marker.name())
-    }
-}
-
-impl<T, K> core::fmt::Display for PitchClass<T, K>
-where
-    T: PitchRepr<Tag = K> + core::fmt::Display,
-    K: Accidental,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.class)
-    }
-}
-
-impl<T, K> AsRef<str> for PitchClass<T, K>
-where
-    T: PitchRepr<Tag = K>,
-    K: Accidental,
-{
-    fn as_ref(&self) -> &str {
-        self.class.as_ref()
-    }
-}
-
-impl<S, K> core::ops::Deref for PitchClass<S, K>
-where
-    S: crate::pitch::PitchRepr<Tag = K>,
-    K: crate::pitch::Accidental,
-{
-    type Target = S;
-
-    fn deref(&self) -> &Self::Target {
-        self.get()
-    }
-}
-
-unsafe impl<T, K> Send for PitchClass<T, K>
-where
-    T: PitchRepr<Tag = K>,
-    K: Accidental,
-{
-}
-
-unsafe impl<T, K> Sync for PitchClass<T, K>
-where
-    T: PitchRepr<Tag = K>,
-    K: Accidental,
-{
-}
-
-impl<T, K> PitchRepr for PitchClass<T, K>
-where
-    T: PitchRepr<Tag = K>,
-    K: Accidental,
-{
-    const IDX: isize = T::IDX;
+    const IDX: isize = N::IDX;
     type Tag = K;
 
     seal! {}
 
     fn new() -> Self {
         Self {
-            class: T::new(),
-            _marker: core::marker::PhantomData,
+            class: N::new(),
+            kind: K::default(),
         }
     }
 
     fn value(&self) -> isize {
         self.class.value()
+    }
+}
+
+impl<N, K> core::fmt::Debug for PitchClass<N, K>
+where
+    N: PitchClassRepr<Tag = K> + core::fmt::Debug,
+    K: Accidental,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        if self.is_natural() {
+            write!(f, "{:?}", self.class)
+        } else {
+            write!(f, "{:?}[{:?}]", self.class, self.kind.name())
+        }
+    }
+}
+
+impl<N, K> core::fmt::Display for PitchClass<N, K>
+where
+    N: PitchClassRepr<Tag = K> + core::fmt::Display,
+    K: Accidental,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.class)
     }
 }

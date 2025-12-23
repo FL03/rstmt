@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:31:05
     Contrib: @FL03
 */
-use super::{Accidental, CNote, Natural, PitchRepr};
+use super::{Accidental, CNote, Natural, PitchClassRepr};
 
 /// The [`PitchClass`] implementations works to generically define the structure for a pitch
 /// class. This is accomplished through the use of two type parameters: `N`, which defines the
@@ -19,13 +19,13 @@ use super::{Accidental, CNote, Natural, PitchRepr};
     serde(rename_all = "lowercase")
 )]
 #[repr(C)]
-pub struct PitchClass<N = CNote, A = Natural>
+pub struct PitchClass<P = CNote, A = Natural>
 where
-    N: PitchRepr<Tag = A>,
+    P: PitchClassRepr<Tag = A>,
     A: Accidental,
 {
-    pub(crate) class: N,
-    pub(crate) _marker: core::marker::PhantomData<A>,
+    pub(crate) class: P,
+    pub(crate) kind: A,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]

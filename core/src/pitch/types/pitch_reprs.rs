@@ -27,8 +27,12 @@ macro_rules! pitch_class {
             pub const fn new() -> Self {
                 $name::<N>
             }
-            /// returns a copy of the assigned index on the c-major scale
-            pub const fn get(&self) -> isize {
+            /// returns a reference to the assigned index
+            pub const fn get(&self) -> &isize {
+                &N
+            }
+            /// returns the assigned index value
+            pub const fn value(&self) -> isize {
                 N
             }
         }
@@ -40,9 +44,29 @@ macro_rules! pitch_class {
             }
         }
 
+        impl<const N: isize> AsRef<isize> for $name<N> {
+            fn as_ref(&self) -> &isize {
+                self.get()
+            }
+        }
+
         impl<const N: isize> AsRef<str> for $name<N> {
             fn as_ref(&self) -> &str {
                 stringify!($name)
+            }
+        }
+
+        impl<const N: isize> core::borrow::Borrow<isize> for $name<N> {
+            fn borrow(&self) -> &isize {
+                self.get()
+            }
+        }
+
+        impl<const N: isize> core::ops::Deref for $name<N> {
+            type Target = isize;
+
+            fn deref(&self) -> &Self::Target {
+                self.get()
             }
         }
 
@@ -64,7 +88,7 @@ macro_rules! pitch_class {
             }
         }
 
-        impl<const N: isize> $crate::pitch::PitchRepr for $name<N> {
+        impl<const N: isize> $crate::pitch::PitchClassRepr for $name<N> {
             const IDX: isize = N;
             type Tag = $tag;
 
@@ -77,13 +101,13 @@ macro_rules! pitch_class {
 
         impl<const N: isize> PartialEq<isize> for $name<N> {
             fn eq(&self, other: &isize) -> bool {
-                self.get() == *other
+                self.get() == other
             }
         }
 
         impl<const N: isize> PartialEq<$name<N>> for isize {
             fn eq(&self, other: &$name<N>) -> bool {
-                *self == other.get()
+                self == other.get()
             }
         }
 

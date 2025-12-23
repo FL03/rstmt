@@ -6,7 +6,7 @@
 
 /// [`Accidental`] is a sealed marker trait used to designate various _kinds_ of musical notes,
 /// i.e., sharp, flat, natural, etc.
-pub trait Accidental {
+pub trait Accidental: 'static + AsRef<str> + Default + Send + Sync + core::fmt::Debug + core::fmt::Display {
     const NAME: &'static str;
 
     private! {}
@@ -19,13 +19,11 @@ pub trait Accidental {
 /*
  ************* Implementations *************
 */
-macro_rules! pitch_type {
+macro_rules! accidental {
     (@impl $(#[$meta:meta])* $vis:vis $type:ident $name:ident $(;)?) => {
         unit_type! { 
-            $(#[$meta])*
-            #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+            $(#[$meta])*            
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-            #[repr(transparent)]
             $vis $type $name;
         }
 
@@ -69,24 +67,12 @@ macro_rules! pitch_type {
 
     };
     ($($vis:vis $type:ident $name:ident);* $(;)?) => {
-        $(pitch_type! { @impl $vis $type $name })*
+        $(accidental! { @impl $vis $type $name })*
     };
 }
 
-pitch_type! {
+accidental! {
     pub struct Flat;
     pub struct Sharp;
     pub struct Natural;
-}
-
-impl<T> Accidental for core::marker::PhantomData<T>
-where
-    T: Accidental,
-{
-    const NAME: &'static str = T::NAME;
-    seal! {}
-
-    fn name(&self) -> &str {
-        <T>::NAME
-    }
 }
