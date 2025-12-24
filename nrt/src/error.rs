@@ -2,6 +2,7 @@
     Appellation: error <module>
     Contrib: @FL03
 */
+//! custom error types for the `nrt` crate
 
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
@@ -18,18 +19,16 @@ pub enum TriadError {
     #[error("Invalid Triad Class")]
     InvalidTriadClass,
     #[error(transparent)]
-    #[cfg(feature = "alloc")]
-    CoreError(#[from] rstmt::Error),
+    CoreError(#[from] rstmt_core::Error),
     #[error(transparent)]
     GraphError(#[from] rshyper::Error),
 }
 
-#[cfg(feature = "alloc")]
 impl From<TriadError> for rstmt::Error {
     fn from(err: TriadError) -> Self {
-        use TriadError::*;
         match err {
-            CoreError(e) => e,
+            TriadError::CoreError(e) => e,
+            #[cfg(feature = "alloc")]
             _ => rstmt::Error::BoxError(Box::new(err)),
         }
     }
@@ -43,8 +42,8 @@ impl From<&str> for TriadError {
 }
 
 #[cfg(feature = "alloc")]
-impl From<String> for TriadError {
-    fn from(err: String) -> Self {
+impl From<alloc::string::String> for TriadError {
+    fn from(err: alloc::string::String) -> Self {
         rstmt::Error::from(err).into()
     }
 }
