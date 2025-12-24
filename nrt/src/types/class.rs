@@ -2,6 +2,7 @@
     Appellation: classes <module>
     Contrib: @FL03
 */
+use num_traits::ToPrimitive;
 use rstmt::PitchMod;
 
 /// The [`TriadClass`] implementation enumerates the allowed triad classifications determined
@@ -116,11 +117,14 @@ impl TriadClass {
         (third - root).pmod() == rt && (fifth - root).pmod() == rf && (fifth - third).pmod() == tf
     }
     /// validate a chord's composition satisfies the requirements of the current class
-    pub fn validate(&self, notes: &[usize; 3]) -> bool {
+    pub fn validate<T>(&self, notes: &[T; 3]) -> bool
+    where
+        T: ToPrimitive,
+    {
         let [a, b, c] = self.intervals();
-        let r = notes[0] as isize;
-        let t = notes[1] as isize;
-        let f = notes[2] as isize;
+        let r = <T>::to_isize(&notes[0]).unwrap();
+        let t = <T>::to_isize(&notes[1]).unwrap();
+        let f = <T>::to_isize(&notes[2]).unwrap();
         (t - r).pmod() as usize == a && (f - t).pmod() as usize == c && (f - r).pmod() as usize == b
     }
 }

@@ -8,7 +8,7 @@ use crate::triad::TriadBase;
 use crate::error::TriadError;
 use crate::traits::RawTriad;
 use crate::types::{LPR, TriadClass};
-use num_traits::{Float, FromPrimitive};
+use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_core::{Augmented, Diminished, IntoAspn, Major, Minor, PitchMod};
 
 impl<S, T> TriadBase<S, Augmented, T>
@@ -55,70 +55,48 @@ where
     }
 }
 
-impl TriadBase<[usize; 3], TriadClass, usize> {
-    /// Create a new triad from a root pitch and class
-    pub fn from_root<N>(root: N, class: TriadClass) -> Self
-    where
-        N: IntoAspn,
-    {
-        // all IntoNote implementations should* already compute pmod
-        let note = root.into_aspn();
-        let root = note.class();
-        // generate the chord factors from the root and class
-        let chord = [
-            root,
-            (root + class.root()).pmod(),
-            (root + class.fifth()).pmod(),
-        ];
-        Self {
-            class,
-            chord,
-            octave: note.octave(),
-        }
-    }
+impl<T> TriadBase<[T; 3], TriadClass, T> {
     /// creates a new augmented triad from the given root
-    pub fn augmented<N>(root: N) -> Self
+    pub fn augmented(root: T) -> Self
     where
-        N: IntoAspn,
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
     {
-        Self::from_root(root, TriadClass::Augmented)
+        Self::from_root_with_class(root, TriadClass::Augmented)
     }
     /// creates a new diminished triad from the given root
-    pub fn diminished<N>(root: N) -> Self
+    pub fn diminished(root: T) -> Self
     where
-        N: IntoAspn,
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
     {
-        Self::from_root(root, TriadClass::Diminished)
+        Self::from_root_with_class(root, TriadClass::Diminished)
     }
     /// Create a new major triad from the given root
-    pub fn major<N>(root: N) -> Self
+    pub fn major(root: T) -> Self
     where
-        N: IntoAspn,
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
     {
-        Self::from_root(root, TriadClass::Major)
+        Self::from_root_with_class(root, TriadClass::Major)
     }
     /// creates a new minor triad from the given root
-    pub fn minor<N>(root: N) -> Self
+    pub fn minor(root: T) -> Self
     where
-        N: IntoAspn,
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
     {
-        Self::from_root(root, TriadClass::Minor)
-    }
-    /// returns true if the pitches within the triad match its classification
-    pub fn is_valid(&self) -> bool {
-        self.class().validate(&self.chord())
+        Self::from_root_with_class(root, TriadClass::Minor)
     }
     // return the barycentric coordinates of the given note w.r.t the current triad
     pub fn barycentric<N, U>(&self, p: N) -> [U; 3]
     where
+        T: ToPrimitive,
         N: IntoAspn,
         U: Float + FromPrimitive,
+        [T; 3]: Copy,
     {
         let note = p.into_aspn();
         let px = U::from_usize(note.class().pmod()).unwrap();
         let py = U::from_isize(*note.octave()).unwrap();
         let y = U::from_isize(*self.octave).unwrap();
-        let [v0, v1, v2] = self.chord().map(|n| U::from_usize(n).unwrap());
+        let [v0, v1, v2] = self.chord().map(|n| U::from(n).unwrap());
 
         let d00 = v0 * v0 + y * y;
         let d01 = v0 * v1 + y * y;
@@ -132,16 +110,31 @@ impl TriadBase<[usize; 3], TriadClass, usize> {
         let c = U::one() - a - b;
         [a, b, c]
     }
-    #[cfg(feature = "alloc")]
+    /// returns true if the pitches within the triad match its classification
+    pub fn is_valid(&self) -> bool
+    where
+        T: ToPrimitive,
+    {
+        self.class().validate(self.chord())
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<T> TriadBase<[T; 3], TriadClass> {
     /// returns the number of common tones between two triads
-    pub fn common_tones(&self, other: &Self) -> Vec<usize> {
+    pub fn common_tones(&self, other: &Self) -> Vec<T>
+    where
+        T: Clone + PartialEq,
+    {
         self.chord()
             .iter()
-            .filter(|&&n| other.contains(&n))
-            .copied()
-            .collect::<Vec<_>>()
+            .cloned()
+            .filter(|n| other.contains(n))
+            .collect::<Vec<T>>()
     }
+}
 
+impl TriadBase<[usize; 3], TriadClass> {
     /// check if the triad contains a given pitch class
     pub fn contains<Q>(&self, pitch: &Q) -> bool
     where

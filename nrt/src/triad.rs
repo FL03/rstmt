@@ -34,8 +34,11 @@ use crate::traits::{RawTriad, TriadCls};
 use crate::types::TriadClass;
 use rstmt_core::{Major, Octave, RawChord};
 
-/// The standard alias for a dynamic triad representation.
-pub type Triad = TriadBase<[usize; 3], TriadClass, usize>;
+/// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
+/// its storage
+pub type Triad<T = usize> = TriadBase<DefaultTriadChord<T>, TriadClass, T>;
+/// The default representation of a triadic chord
+pub type DefaultTriadChord<T = usize> = [T; 3];
 
 /// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its
 /// classification, and the element type used to represent a note within the triadic chord.
@@ -45,7 +48,7 @@ pub type Triad = TriadBase<[usize; 3], TriadClass, usize>;
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
-pub struct TriadBase<S = [usize; 3], K = Major, T = <S as RawChord>::Elem>
+pub struct TriadBase<S = DefaultTriadChord<isize>, K = Major, T = <S as RawChord>::Elem>
 where
     K: TriadCls,
     S: RawTriad<Elem = T>,

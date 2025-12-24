@@ -3,6 +3,7 @@
     Created At: 2025.12.20:10:36:11
     Contrib: @FL03
 */
+#![allow(deprecated)]
 use crate::{RawTriad, RawTriadMut};
 
 #[doc(hidden)]
