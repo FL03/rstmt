@@ -138,6 +138,10 @@ impl crate::TriadCls for TriadClass {
         Self::default()
     }
 
+    fn rel(&self) -> Self::Rel {
+        self.relative()
+    }
+
     fn is_major(&self) -> bool {
         matches!(self, TriadClass::Major)
     }

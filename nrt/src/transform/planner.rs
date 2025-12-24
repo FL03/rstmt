@@ -160,7 +160,10 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = node.triad.transform(transform);
+                let next_triad = node
+                    .triad
+                    .transform(transform)
+                    .expect("Transformation failed");
                 let new_cost = node.cost + 1;
 
                 // Skip if we've found a shorter path to this triad
@@ -351,7 +354,9 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = current_triad.transform(transform);
+                let next_triad = current_triad
+                    .transform(transform)
+                    .expect("Transformation failed");
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
@@ -485,7 +490,9 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = current_triad.transform(transform);
+                let next_triad = current_triad
+                    .transform(transform)
+                    .expect("transformation failed");
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
@@ -587,7 +594,7 @@ impl<'a> MotionPlanner<'a> {
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
-                match transform.try_apply(&start_triad) {
+                match transform.try_apply_dyn(&start_triad) {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {

@@ -65,7 +65,7 @@ impl<'a> TriadNavigator<'a> {
         }
     }
     /// find all possible chains that are capable of transforming the given instance to the target symbol
-    pub fn find_paths_to_target(&self, target: usize) -> Vec<TransformationChain> {
+    pub fn find_paths_to_target(&self, target: usize) -> crate::Result<Vec<TransformationChain>> {
         let mut result_paths = Vec::new();
 
         let start_triad = *self.triad();
@@ -86,7 +86,7 @@ impl<'a> TriadNavigator<'a> {
                 visited: vec![start_triad],
             });
 
-            return result_paths;
+            return Ok(result_paths);
         }
 
         // For BFS: (current_triad, transforms_so_far, triads_so_far, edge_ids_so_far)
@@ -107,7 +107,7 @@ impl<'a> TriadNavigator<'a> {
             // Try each transformation: Leading, Parallel, Relative
             for transform in LPR::iter() {
                 // Apply the transformation to get a new triad
-                let next_triad = current_triad.transform(transform);
+                let next_triad = current_triad.transform(transform)?;
 
                 // Skip if we've already visited this triad
                 if visited_triads.contains(&next_triad.chord) {
@@ -143,7 +143,7 @@ impl<'a> TriadNavigator<'a> {
                     if result_paths.len() >= self.max_paths() {
                         // Sort paths by cost (lower is better)
                         result_paths.sort_by_key(|p| p.cost);
-                        return result_paths;
+                        return Ok(result_paths);
                     }
                 }
 
@@ -154,7 +154,7 @@ impl<'a> TriadNavigator<'a> {
 
         // Sort paths by cost (lower is better)
         result_paths.sort_by_key(|p| p.cost);
-        result_paths
+        Ok(result_paths)
     }
 
     /// Analyze musical features of a transformation path using triads

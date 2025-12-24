@@ -20,6 +20,10 @@ pub trait TriadCls:
         Self::default()
     }
 
+    fn rel(&self) -> Self::Rel {
+        Self::Rel::new()
+    }
+
     fn is_major(&self) -> bool {
         false
     }

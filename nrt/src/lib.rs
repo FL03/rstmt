@@ -34,12 +34,12 @@
 //! assert_eq! { triad, [0, 4, 7] }
 //! assert! { triad.is_major() }
 //! // transform the triad using the parallel transformation
-//! let tp = triad.parallel().unwrap();
+//! let tp = triad.parallel();
 //! // verify the transformation
 //! assert_eq! { tp, [0, 3, 7] }
 //! assert! { tp.is_minor() }
 //! // invert the transformation by applying it again
-//! assert_eq! { tp.parallel().unwrap(), triad }
+//! assert_eq! { tp.parallel(), triad }
 //! ```
 //!
 //! ## Resources
@@ -79,13 +79,30 @@ mod impls {
     mod impl_triad_base;
     mod impl_triad_ext;
     mod impl_triad_repr;
+}
 
-    // mod impl_dyn_triad_ext;
-    // mod impl_std_triad;
+pub mod iter {
+    //! this module defines various iterators for traversing a tonnetz, chaining
+    //! transformations and more.
+
+    #[cfg(feature = "rayon")]
+    #[doc(inline)]
+    pub use self::parallel::ParIter;
+    #[doc(inline)]
+    pub use self::walker::Walk;
+
+    #[cfg(feature = "rayon")]
+    pub mod parallel;
+    pub mod walker;
+
+    pub(crate) mod prelude {
+        #[cfg(feature = "rayon")]
+        pub use super::parallel::*;
+        pub use super::walker::*;
+    }
 }
 
 mod traits {
-    //! this module implements various traits supporting the triad implementation
     #[doc(inline)]
     pub use self::{raw_store::*, triad_kind::*, triadic::*};
 
@@ -95,7 +112,6 @@ mod traits {
 }
 
 mod types {
-    //! this module defines various types supporting the neo-riemannian theory
     #[doc(inline)]
     pub use self::{class::*, factors::*, lpr::*};
 
@@ -108,13 +124,14 @@ mod types {
 #[doc(inline)]
 pub use self::transform::TriadNavigator;
 #[doc(inline)]
-pub use self::{error::*, traits::*, triad::*, types::*};
+pub use self::{error::*, iter::prelude::*, traits::*, triad::*, types::*};
 #[cfg(feature = "tonnetz")]
 #[doc(inline)]
 pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
+    pub use crate::iter::prelude::*;
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::prelude::*;
     pub use crate::traits::*;
