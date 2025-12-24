@@ -1046,7 +1046,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt"
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
  "anyhow",
  "criterion",
@@ -1060,7 +1060,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt-core"
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
  "anyhow",
  "contained",
@@ -1086,7 +1086,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt-nrt"
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1111,7 +1111,7 @@ dependencies = [
 
 [[package]]
 name = "rstmt-traits"
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
  "contained",
  "hashbrown 0.16.1",
