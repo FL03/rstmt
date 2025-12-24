@@ -1,3 +1,4 @@
+use crate::TriadCls;
 /*
     Appellation: impl_triad_repr <module>
     Created At: 2025.12.20:11:04:03
@@ -52,6 +53,28 @@ where
     /// triad.
     pub const fn minor(chord: S) -> Self {
         TriadBase::new(chord, Minor)
+    }
+}
+
+impl<S, T, K> TriadBase<S, K, T>
+where
+    K: TriadCls,
+    S: RawTriad<Elem = T>,
+    T:,
+{
+    /// Create a new triad from a root pitch and class
+    pub fn from_root_with_class(root: isize, class: K) -> Self where T: FromPrimitive{
+        // generate the chord factors from the root and class
+        let chord = [
+            T::from_isize(root).unwrap(),
+            T::from_isize((root + class.root() as isize).pmod()).unwrap(),
+            T::from_isize((root + class.fifth() as isize).pmod()).unwrap(),
+        ];
+        Self {
+            class,
+            chord: S::from_arr(chord),
+            octave: rstmt_core::Octave(0),
+        }
     }
 }
 

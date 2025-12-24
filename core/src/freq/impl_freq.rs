@@ -196,3 +196,9 @@ impl<T> core::ops::DerefMut for Frequency<T> {
         &mut self.0
     }
 }
+
+impl<T> From<T> for Frequency<T> {
+    fn from(value: T) -> Self {
+        Frequency(value)
+    }
+}
