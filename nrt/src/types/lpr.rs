@@ -4,10 +4,9 @@
 */
 use crate::error::TriadError;
 use crate::traits::{RawTriad, TriadCls};
-use crate::triad::{Triad, TriadBase};
-use crate::types::TriadClass;
+use crate::triad::TriadBase;
 use num_traits::{FromPrimitive, Num, ToPrimitive};
-use rstmt::PitchMod;
+use rstmt::{PitchMod, TryApply};
 
 /// Enumerates primary available transformations in Neo-Riemannian theory.
 ///
@@ -87,7 +86,7 @@ impl LPR {
         <LPR as IntoEnumIterator>::iter()
     }
     /// applies the current transformation onto the given triad, returning a new triad
-    pub fn apply<S, T, K, K2>(&self, triad: &TriadBase<S, K, T>) -> TriadBase<[T; 3], K::Rel, T>
+    pub fn apply<S, T, K, K2>(&self, triad: &TriadBase<S, K, T>) -> TriadBase<S, K::Rel, T>
     where
         S: RawTriad<Elem = T>,
         K: TriadCls<Rel = K2>,
@@ -97,12 +96,11 @@ impl LPR {
         self.try_apply(triad)
             .expect("Failed to apply the transformation onto the triad.")
     }
-    #[doc(hidden)]
     /// Apply a transformation to a triad
     pub fn try_apply<S, T, K, K2>(
         &self,
         triad: &TriadBase<S, K, T>,
-    ) -> Result<TriadBase<[T; 3], K::Rel, T>, TriadError>
+    ) -> Result<TriadBase<S, K::Rel, T>, TriadError>
     where
         S: RawTriad<Elem = T>,
         K: TriadCls<Rel = K2>,
@@ -143,66 +141,25 @@ impl LPR {
         }
 
         Ok(TriadBase {
-            chord: notes,
+            chord: S::from_arr(notes),
             class: triad.class().rel(),
             octave: triad.octave,
         })
     }
-    /// Applies the transformation onto a generic triad, returning a new triad
-    pub fn try_apply_dyn<S, T, K>(
-        &self,
-        triad: &TriadBase<S, K, T>,
-    ) -> Result<TriadBase<[T; 3], TriadClass, T>, TriadError>
-    where
-        S: RawTriad<Elem = T>,
-        K: TriadCls,
-        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
-    {
-        let x = *triad.chord().root();
-        let y = *triad.chord().third();
-        let z = *triad.chord().fifth();
+}
 
-        let notes: [T; 3];
-        let class: TriadClass;
-        if triad.is_major() {
-            match self {
-                LPR::Leading => {
-                    notes = [y, z, (x - T::one()).pmod()];
-                    class = TriadClass::Minor;
-                }
-                LPR::Parallel => {
-                    notes = [x, (y - T::one()).pmod(), z];
-                    class = TriadClass::Minor;
-                }
-                LPR::Relative => {
-                    notes = [(z + T::from_u8(2).unwrap()).pmod(), x, y];
-                    class = TriadClass::Minor;
-                }
-            }
-        } else if triad.is_minor() {
-            match self {
-                LPR::Leading => {
-                    notes = [(z + T::one()).pmod(), x, y];
-                    class = TriadClass::Major;
-                }
-                LPR::Parallel => {
-                    notes = [x, (y + T::one()).pmod(), z];
-                    class = TriadClass::Major;
-                }
-                LPR::Relative => {
-                    notes = [y, z, (x - T::from_u8(2).unwrap()).pmod()];
-                    class = TriadClass::Major;
-                }
-            }
-        } else {
-            return Err(TriadError::InvalidTriadClass);
-        }
+impl<S, T, K, Q> TryApply<&TriadBase<S, K, T>> for LPR
+where
+    K: TriadCls<Rel = Q>,
+    Q: TriadCls<Rel = K>,
+    S: RawTriad<Elem = T>,
+    T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+    type Error = TriadError;
 
-        Ok(Triad {
-            chord: notes,
-            class,
-            octave: triad.octave,
-        })
+    fn try_apply(&self, rhs: &TriadBase<S, K, T>) -> Result<Self::Output, Self::Error> {
+        LPR::try_apply(self, rhs)
     }
 }
 

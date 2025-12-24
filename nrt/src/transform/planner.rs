@@ -594,7 +594,7 @@ impl<'a> MotionPlanner<'a> {
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
-                match transform.try_apply_dyn(&start_triad) {
+                match transform.try_apply(&start_triad) {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {

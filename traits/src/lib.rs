@@ -33,8 +33,9 @@ pub mod num;
 pub mod ops {
     //! This module provides various operations traits and implementations for musical concepts
     #[doc(inline)]
-    pub use self::{modulo::*, transform::*};
+    pub use self::{apply::*, modulo::*, transform::*};
 
+    mod apply;
     mod modulo;
     mod transform;
 }
