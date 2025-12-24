@@ -1,4 +1,3 @@
-use crate::TriadCls;
 /*
     Appellation: impl_triad_repr <module>
     Created At: 2025.12.20:11:04:03
@@ -12,9 +11,9 @@ use crate::types::{LPR, TriadClass};
 use num_traits::{Float, FromPrimitive};
 use rstmt_core::{Augmented, Diminished, IntoAspn, Major, Minor, PitchMod};
 
-impl<S> TriadBase<S, Augmented>
+impl<S, T> TriadBase<S, Augmented, T>
 where
-    S: RawTriad,
+    S: RawTriad<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
     /// augmented triad.
@@ -23,9 +22,9 @@ where
     }
 }
 
-impl<S> TriadBase<S, Diminished>
+impl<S, T> TriadBase<S, Diminished, T>
 where
-    S: RawTriad,
+    S: RawTriad<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
     /// diminished triad.
@@ -34,9 +33,9 @@ where
     }
 }
 
-impl<S> TriadBase<S, Major>
+impl<S, T> TriadBase<S, Major, T>
 where
-    S: RawTriad,
+    S: RawTriad<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
     /// triad.
@@ -45,36 +44,14 @@ where
     }
 }
 
-impl<S> TriadBase<S, Minor>
+impl<S, T> TriadBase<S, Minor, T>
 where
-    S: RawTriad,
+    S: RawTriad<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
     /// triad.
     pub const fn minor(chord: S) -> Self {
         TriadBase::new(chord, Minor)
-    }
-}
-
-impl<S, T, K> TriadBase<S, K, T>
-where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
-    T:,
-{
-    /// Create a new triad from a root pitch and class
-    pub fn from_root_with_class(root: isize, class: K) -> Self where T: FromPrimitive{
-        // generate the chord factors from the root and class
-        let chord = [
-            T::from_isize(root).unwrap(),
-            T::from_isize((root + class.root() as isize).pmod()).unwrap(),
-            T::from_isize((root + class.fifth() as isize).pmod()).unwrap(),
-        ];
-        Self {
-            class,
-            chord: S::from_arr(chord),
-            octave: rstmt_core::Octave(0),
-        }
     }
 }
 
@@ -155,15 +132,6 @@ impl TriadBase<[usize; 3], TriadClass, usize> {
         let c = U::one() - a - b;
         [a, b, c]
     }
-    /// computes the centroid of the triad
-    pub fn centroid<T>(&self) -> Option<[T; 2]>
-    where
-        T: Float + FromPrimitive,
-    {
-        let y = T::from_isize(*self.octave)?;
-        let x = T::from_usize(self.chord().iter().sum())? / T::from_usize(self.chord().len())?;
-        Some([x, y])
-    }
     #[cfg(feature = "alloc")]
     /// returns the number of common tones between two triads
     pub fn common_tones(&self, other: &Self) -> Vec<usize> {
@@ -222,15 +190,15 @@ impl TriadBase<[usize; 3], TriadClass, usize> {
         transform.try_apply(self)
     }
     /// apply the leading transformation to the triad
-    pub fn leading(&self) -> Self {
-        self.transform(LPR::Leading)
+    pub fn leading(&self) -> Result<Self, TriadError> {
+        self.try_transform(LPR::Leading)
     }
     /// apply the parallel transformation to the triad
-    pub fn parallel(&self) -> Self {
-        self.transform(LPR::Parallel)
+    pub fn parallel(&self) -> Result<Self, TriadError> {
+        self.try_transform(LPR::Parallel)
     }
     /// apply the relative transformation to the triad
-    pub fn relative(&self) -> Self {
-        self.transform(LPR::Relative)
+    pub fn relative(&self) -> Result<Self, TriadError> {
+        self.try_transform(LPR::Relative)
     }
 }

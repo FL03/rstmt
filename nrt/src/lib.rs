@@ -31,15 +31,15 @@
 //! let mut triad = Triad::major(0);
 //!
 //! // verify the composition
-//! assert_eq! { triad, [0, 4, 7] };
-//! assert! { triad.is_major() };
+//! assert_eq! { triad, [0, 4, 7] }
+//! assert! { triad.is_major() }
 //! // transform the triad using the parallel transformation
-//! let tp = triad.parallel();
+//! let tp = triad.parallel().unwrap();
 //! // verify the transformation
-//! assert_eq! { tp, [0, 3, 7] };
-//! assert! { tp.is_minor() };
+//! assert_eq! { tp, [0, 3, 7] }
+//! assert! { tp.is_minor() }
 //! // invert the transformation by applying it again
-//! assert_eq! { tp.parallel(), triad };
+//! assert_eq! { tp.parallel().unwrap(), triad }
 //! ```
 //!
 //! ## Resources

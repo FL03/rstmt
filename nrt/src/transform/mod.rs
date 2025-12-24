@@ -8,27 +8,20 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
-#[cfg(feature = "std")]
-pub mod cache;
 pub mod config;
 #[cfg(feature = "std")]
 pub mod navigator;
 #[cfg(feature = "tonnetz")]
 pub mod planner;
 
+#[cfg(feature = "alloc")]
 mod types {
-    #[cfg(feature = "alloc")]
     #[doc(inline)]
-    pub use self::search_node::*;
-    #[doc(inline)]
-    #[cfg(feature = "std")]
-    pub use self::{chain::*, path::*};
+    pub use self::{cache::*, chain::*, path::*, search_node::*};
 
-    #[cfg(feature = "std")]
+    mod cache;
     mod chain;
-    #[cfg(feature = "std")]
     mod path;
-    #[cfg(feature = "alloc")]
     mod search_node;
 }
 
@@ -36,10 +29,7 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::config::*;
 
-    #[cfg(feature = "std")]
-    #[doc(inline)]
-    pub use super::cache::*;
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[doc(inline)]
     pub use super::navigator::*;
     #[cfg(feature = "tonnetz")]

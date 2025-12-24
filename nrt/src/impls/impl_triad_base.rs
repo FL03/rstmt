@@ -6,7 +6,8 @@
 use crate::triad::TriadBase;
 
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
-use rstmt_core::Octave;
+use num_traits::{Float, FromPrimitive, ToPrimitive};
+use rstmt_core::{Octave, PitchMod};
 
 impl<T, S, K> TriadBase<S, K, T>
 where
@@ -19,6 +20,23 @@ where
             chord,
             class,
             octave: Octave(0),
+        }
+    }
+    /// Create a new triad from a root pitch and class
+    pub fn from_root_with_class(root: isize, class: K) -> Self
+    where
+        T: FromPrimitive,
+    {
+        // generate the chord factors from the root and class
+        let chord = [
+            T::from_isize(root).unwrap(),
+            T::from_isize((root + class.root() as isize).pmod()).unwrap(),
+            T::from_isize((root + class.fifth() as isize).pmod()).unwrap(),
+        ];
+        Self {
+            class,
+            chord: S::from_arr(chord),
+            octave: rstmt_core::Octave(0),
         }
     }
     /// returns an immutable reference to the chord.
@@ -142,5 +160,15 @@ where
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
         self.class().is_minor()
+    }
+    /// computes the centroid of the triad
+    pub fn centroid<U>(&self) -> Option<[U; 2]>
+    where
+        U: Float + FromPrimitive + ToPrimitive + core::iter::Sum<T>,
+        S: Clone + IntoIterator<Item = T>,
+    {
+        let y = U::from_isize(*self.octave)?;
+        let x = self.chord().clone().into_iter().sum::<U>() / U::from_u8(3)?;
+        Some([x, y])
     }
 }

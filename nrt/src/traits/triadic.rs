@@ -4,11 +4,10 @@
     Contrib: @FL03
 */
 use crate::{RawTriad, RawTriadMut};
+
+#[doc(hidden)]
 /// The [`Triadic`] trait defines the interface for all implementations of triads.
-pub trait Triadic<T>
-where
-    Self::Store<T>: RawTriad<Elem = T>,
-{
+pub trait Triadic<T> {
     /// the type of the item stored in the triad.
     type Store<U>: RawTriad<Elem = U>;
 

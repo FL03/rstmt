@@ -4,11 +4,14 @@
     Contrib: @FL03
 */
 
-/// [`TriadCls`] is a trait that represents the kind of a triad in Neo-Riemannian theory.
+/// The [`TriadCls`] trait is used to represent the various classifications of a triad
+/// considered by the Neo-Riemannian theory.
 pub trait TriadCls:
     'static + Copy + Default + Send + Sync + core::fmt::Debug + core::fmt::Display
 {
-    private!();
+    type Rel: TriadCls<Rel = Self>;
+
+    private! {}
 
     fn new() -> Self
     where
@@ -45,11 +48,13 @@ pub trait TriadCls:
 */
 
 macro_rules! triad_kind {
-    ($($($name:ident)::*.$method:ident($($v:literal),* $(,)?)),* $(,)?) => {
-        $(triad_kind! { @impl TriadCls for $($name)::*.$method($($v),*) })*
+    ($($($name:ident)::*<Rel = $rel:ty>.$method:ident($($v:literal),* $(,)?)),* $(,)?) => {
+        $(triad_kind! { @impl TriadCls for $($name)::*<Rel = $rel>.$method($($v),*) })*
     };
-    (@impl $trait:ident for $($name:ident)::* .$method:ident($r:literal, $f:literal, $t:literal)) => {
+    (@impl $trait:ident for $($name:ident)::* <Rel = $rel:ty>.$method:ident($r:literal, $f:literal, $t:literal)) => {
         impl $trait for $($name)::* {
+            type Rel = $rel;
+
             seal! {}
 
             fn $method(&self) -> bool {
@@ -71,9 +76,11 @@ macro_rules! triad_kind {
     };
 }
 
+use rstmt_core::{Augmented, Diminished, Major, Minor};
+
 triad_kind! {
-    rstmt_core::Augmented.is_augmented(4, 8, 4),
-    rstmt_core::Diminished.is_diminished(3, 6, 3),
-    rstmt_core::Major.is_major(4, 7, 3),
-    rstmt_core::Minor.is_minor(3, 7, 4)
+    Augmented<Rel = Diminished>.is_augmented(4, 8, 4),
+    Diminished<Rel = Augmented>.is_diminished(3, 6, 3),
+    Major<Rel = Minor>.is_major(4, 7, 3),
+    Minor<Rel = Major>.is_minor(3, 7, 4)
 }

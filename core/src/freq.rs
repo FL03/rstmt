@@ -4,7 +4,7 @@
 */
 
 mod impl_freq;
-mod impl_freq_ops;
+mod impl_freq_ext;
 #[cfg(feature = "rand")]
 mod impl_freq_rand;
 mod impl_freq_repr;
@@ -32,7 +32,10 @@ where
 /// ```math
 /// n = 12\cdot\log_{2}(\frac{F}{\beta})
 /// ```
-pub(crate) fn classify_freq_by_scale<T>(Frequency(freq): Frequency<T>, base: Option<T>) -> Option<isize>
+pub(crate) fn classify_freq_with_scale<T>(
+    Frequency(freq): Frequency<T>,
+    base: Option<T>,
+) -> Option<isize>
 where
     T: Float + FromPrimitive,
 {

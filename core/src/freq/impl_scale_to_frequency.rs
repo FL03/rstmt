@@ -3,7 +3,7 @@
     Created At: 2025.12.21:08:58:02
     Contrib: @FL03
 */
-use super::{Frequency, ScaleToFrequency, classify_freq_by_scale, compute_freq_of_pitch};
+use super::{Frequency, ScaleToFrequency, classify_freq_with_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive};
 
 impl<T> ScaleToFrequency<T> {
@@ -15,7 +15,7 @@ impl<T> ScaleToFrequency<T> {
     /// calculate the position (in semitones) of a given frequency, using the formula:
     ///
     /// ```math
-    /// n = 12 * log2(f / base)
+    /// n=12\cdot{log_2{\big(\frac{f}{base}\big)}}
     /// ```
     pub fn from_scale_degree(&self, freq: Frequency<T>) -> Option<isize>
     where
@@ -26,7 +26,7 @@ impl<T> ScaleToFrequency<T> {
             return None;
         }
         let anchor = self.anchor().get();
-        classify_freq_by_scale(freq, Some(*anchor))
+        classify_freq_with_scale(freq, Some(*anchor))
     }
     /// returns a reference to the base frequency
     pub const fn anchor(&self) -> &Frequency<T> {
@@ -39,7 +39,7 @@ impl<T> ScaleToFrequency<T> {
     /// calculate the frequency (in hertz) of a given pitch class, using the formula:
     ///
     /// ```math
-    /// f = base * 2^(n/12)
+    /// F=base\cdot{2^{\frac{n}{12}}}
     /// ```
     pub fn compute(&self, n: isize) -> Option<T>
     where

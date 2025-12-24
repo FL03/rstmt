@@ -7,11 +7,13 @@ use super::{PathCache, PathFinderConfig};
 use crate::tonnetz::HyperTonnetz;
 use crate::{LPR, Triad};
 
+use alloc::collections::{BinaryHeap, VecDeque};
+use hashbrown::{HashMap, HashSet};
 use rshyper::EdgeId;
 use rstmt::PitchMod;
-use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 
-/// Motion planning algorithm for finding optimal paths in the Tonnetz
+/// The [`MotionPlanner`] is a pathfinding algorithm implementation for finding the chain of
+/// transformations between two triads along the surface of the hyper-tonnetz.
 pub struct MotionPlanner<'a> {
     /// Cache for storing computed paths
     pub(crate) cache: PathCache,
@@ -558,7 +560,7 @@ impl<'a> MotionPlanner<'a> {
     /// Run searches in parallel from initial transformations
     #[cfg(feature = "rayon")]
     pub fn find_paths_parallel(&self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
-        use rayon::prelude::*;
+        use rayon::iter::{ParallelBridge, ParallelIterator};
 
         // Get the starting triad
         let start_triad = match self.tonnetz.get_triad(start_edge) {

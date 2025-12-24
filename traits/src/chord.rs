@@ -3,9 +3,16 @@
     Created At: 2025.12.23:17:32:04
     Contrib: @FL03
 */
-
+/// The [`RawChord`] trait works to define a basic interface shared by all compatible
+/// reprsentations of a chord. Since a chord is essentially a sequence of pitches, the trait
+/// captures this behavior through association with an element type.
 pub trait RawChord {
     type Elem;
+}
+
+pub trait ChordRepr: RawChord {
+    /// returns the number of elements in the chord representation.
+    fn len(&self) -> usize;
 }
 
 /*
@@ -44,6 +51,9 @@ macro_rules! impl_raw_chord  {
 impl_raw_chord! {
     impl<Elem = T> RawChord for {
         core::option::Option<T>,
+        core::cell::Cell<T>,
+        core::cell::OnceCell<T>,
+        core::cell::RefCell<T>,
         core::cell::UnsafeCell<T>,
         core::ops::Range<T>,
         core::result::Result<T, E>,
@@ -68,9 +78,6 @@ impl_raw_chord! {
 #[cfg(feature = "std")]
 impl_raw_chord! {
     impl<Elem = T> RawChord for {
-        std::cell::Cell<T>,
-        std::cell::OnceCell<T>,
-        std::cell::RefCell<T>,
         std::sync::Mutex<T>,
         std::sync::RwLock<T>,
         std::sync::LazyLock<T>,
@@ -103,6 +110,52 @@ impl<const N: usize, T> RawChord for [T; N] {
     type Elem = T;
 }
 
-impl<T> RawChord for (T, T, T) {
-    type Elem = T;
+macro_rules! impl_raw_chord_tuple {
+    (@impl<$T:ident> ($($name:ident),+ $(,)?)) => {
+        impl<$T> RawChord for ($($name),+) {
+            type Elem = $T;
+        }
+    };
+    (impl<$T:ident> {$(($($name:ident),+)),* $(,)?}) => {
+        $(impl_raw_chord_tuple! { @impl<$T> ($($name),+) } )*
+    };
+}
+
+impl_raw_chord_tuple! {
+    impl<T> {
+        (T, T),
+        (T, T, T),
+        (T, T, T, T),
+        (T, T, T, T, T),
+        (T, T, T, T, T, T),
+        (T, T, T, T, T, T, T),
+        (T, T, T, T, T, T, T, T),
+        (T, T, T, T, T, T, T, T, T),
+        (T, T, T, T, T, T, T, T, T, T),
+    }
+}
+
+impl<T> ChordRepr for [T] {
+    fn len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<T> ChordRepr for &[T] {
+    fn len(&self) -> usize {
+        (*self).len()
+    }
+}
+
+impl<T> ChordRepr for &mut [T] {
+    fn len(&self) -> usize {
+        (**self).len()
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<T> ChordRepr for alloc::vec::Vec<T> {
+    fn len(&self) -> usize {
+        self.len()
+    }
 }

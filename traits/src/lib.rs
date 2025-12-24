@@ -34,9 +34,10 @@ pub mod num;
 pub mod ops {
     //! This module provides various operations traits and implementations for musical concepts
     #[doc(inline)]
-    pub use self::modulo::*;
+    pub use self::{modulo::*, transform::*};
 
     mod modulo;
+    mod transform;
 }
 
 // re-exports
@@ -45,9 +46,14 @@ pub use self::prelude::*;
 // prelude
 #[doc(hidden)]
 pub mod prelude {
+    #[doc(inline)]
     pub use crate::chord::*;
+    #[doc(inline)]
     pub use crate::chroma::*;
+    #[doc(inline)]
     pub use crate::classify::*;
+    #[doc(inline)]
     pub use crate::num::*;
+    #[doc(inline)]
     pub use crate::ops::*;
 }

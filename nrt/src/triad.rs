@@ -37,7 +37,7 @@ use rstmt_core::{Major, Octave, RawChord};
 /// The standard alias for a dynamic triad representation.
 pub type Triad = TriadBase<[usize; 3], TriadClass, usize>;
 
-/// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its 
+/// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its
 /// classification, and the element type used to represent a note within the triadic chord.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
 #[cfg_attr(
