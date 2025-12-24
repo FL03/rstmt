@@ -13,7 +13,7 @@
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -25,7 +25,7 @@
 )]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
 #[strum(serialize_all = "snake_case")]

@@ -2,7 +2,7 @@
     Appellation: transform <module>
     Contrib: @FL03
 */
-use crate::{Triad, TriadError, Triads};
+use crate::{Triad, TriadClass, TriadError};
 use rstmt::PitchMod;
 
 /// Enumerates primary available transformations in Neo-Riemannian theory.
@@ -37,7 +37,7 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -49,7 +49,7 @@ use rstmt::PitchMod;
 )]
 #[cfg_attr(
     feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize),
+    derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
@@ -77,44 +77,44 @@ impl LPR {
     }
     /// Apply a transformation to a triad
     pub fn try_apply(&self, triad: &Triad) -> Result<Triad, TriadError> {
-        let [x, y, z] = triad.notes;
+        let [x, y, z] = *triad.chord();
 
         let notes: [usize; 3];
-        let class: Triads;
+        let class: TriadClass;
         match triad.class() {
-            Triads::Major => match self {
+            TriadClass::Major => match self {
                 LPR::Leading => {
                     notes = [y, z, (x as isize - 1).pmod() as usize];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
                 LPR::Parallel => {
                     notes = [x, (y as isize - 1).pmod() as usize, z];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
                 LPR::Relative => {
                     notes = [(z + 2).pmod(), x, y];
-                    class = Triads::Minor;
+                    class = TriadClass::Minor;
                 }
             },
-            Triads::Minor => match self {
+            TriadClass::Minor => match self {
                 LPR::Leading => {
                     notes = [(z + 1).pmod(), x, y];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
                 LPR::Parallel => {
                     notes = [x, (y + 1).pmod(), z];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
                 LPR::Relative => {
                     notes = [y, z, (x as isize - 2).pmod() as usize];
-                    class = Triads::Major;
+                    class = TriadClass::Major;
                 }
             },
             _ => return Err(TriadError::InvalidTriadClass),
         };
 
         Ok(Triad {
-            notes,
+            chord: notes,
             class,
             octave: triad.octave,
         })

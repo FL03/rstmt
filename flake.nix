@@ -14,8 +14,8 @@
       in
       {
         packages.default = rustPlatform.buildRustPackage {
-          pname = "pzzld-cli";
-          version = "0.0.0";
+          pname = "rstmt";
+          version = "0.0.6";
           src = "./.";
           # If Cargo.lock doesn't exist yet, remove or comment out this block:
           cargoLock = {

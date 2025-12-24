@@ -20,7 +20,6 @@ pub enum Error {
     InvalidIntervals(String),
     #[error("Invalid Note")]
     InvalidNote,
-    #[cfg(feature = "anyhow")]
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
     #[error(transparent)]

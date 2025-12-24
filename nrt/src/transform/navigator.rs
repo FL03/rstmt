@@ -25,7 +25,7 @@ impl<'a> TriadNavigator<'a> {
         &self.config
     }
     /// returns a mutable reference to the configuration of the navigator
-    pub fn config_mut(&mut self) -> &mut PathFinderConfig {
+    pub const fn config_mut(&mut self) -> &mut PathFinderConfig {
         &mut self.config
     }
     /// returns the maximum depth for pathfinding
@@ -96,7 +96,7 @@ impl<'a> TriadNavigator<'a> {
         // Use a hash set to track visited triads and avoid cycles
         // We'll hash based on the triad's notes, not its edge ID, since we might explore virtual triads
         let mut visited_triads = HashSet::new();
-        visited_triads.insert(start_triad.notes);
+        visited_triads.insert(start_triad.chord);
 
         while let Some((current_triad, transforms, triads)) = queue.pop_front() {
             // Don't exceed maximum depth
@@ -110,12 +110,12 @@ impl<'a> TriadNavigator<'a> {
                 let next_triad = current_triad.transform(transform);
 
                 // Skip if we've already visited this triad
-                if visited_triads.contains(&next_triad.notes) {
+                if visited_triads.contains(&next_triad.chord) {
                     continue;
                 }
 
                 // Mark as visited
-                visited_triads.insert(next_triad.notes);
+                visited_triads.insert(next_triad.chord);
 
                 // Build new path
                 let mut new_transforms = transforms.clone();
@@ -199,10 +199,10 @@ impl<'a> TriadNavigator<'a> {
             }
 
             // Calculate voice leading distance (semitone movement between triads)
-            for &prev_note in &prev.notes {
+            for &prev_note in &prev.chord {
                 // Find the minimum distance to move from prev_note to any note in curr
                 let min_distance = curr
-                    .notes
+                    .chord
                     .iter()
                     .map(|&curr_note| {
                         let dist = (curr_note as isize - prev_note as isize).abs() % 12;

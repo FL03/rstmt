@@ -2,8 +2,6 @@
     Appellation: rstmt-nrt <library>
     Contrib: @FL03
 */
-//! # rstmt-nrt
-//!
 //! This crate works to establish a solid foundation fo exploring the neo-riemannian theory,
 //! providing implementations of the [`Triad`], its transformations [`LPR`], and the
 //! generalized tonnetz ([`HyperTonnetz`]).
@@ -22,7 +20,9 @@
 //!
 //! ## Examples
 //!
-//! ### _Example 1: Basic Usage of a Triad_
+//! ### _Basic Usage_
+//!
+//! Create a C major triad and perform some basic operations.
 //!
 //! ```rust
 //! use rstmt_nrt::Triad;
@@ -31,53 +31,37 @@
 //! let mut triad = Triad::major(0);
 //!
 //! // verify the composition
-//! assert_eq!(triad.root(), 0);
-//! assert_eq!(triad.third(), 4);
-//! assert_eq!(triad.fifth(), 7);
-//! assert!(triad.is_major());
+//! assert_eq! { triad, [0, 4, 7] };
+//! assert! { triad.is_major() };
 //! // transform the triad using the parallel transformation
 //! let tp = triad.parallel();
 //! // verify the transformation
-//! assert_eq!(tp.root(), 0);
-//! assert_eq!(tp.third(), 3);
-//! assert_eq!(tp.fifth(), 7);
-//! assert!(tp.is_minor());
+//! assert_eq! { tp, [0, 3, 7] };
+//! assert! { tp.is_minor() };
 //! // invert the transformation by applying it again
-//! assert_eq!(tp.parallel(), triad);
+//! assert_eq! { tp.parallel(), triad };
 //! ```
 //!
 //! ## Resources
 //!
 //! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 #![allow(
+    clippy::missing_errors_doc,
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::non_canonical_partial_ord_impl,
-    clippy::should_implement_trait
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_type = "lib"]
-
+// compiler check
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
 /// re-declare the external `rstmt_core` crate as `rstmt` for convenience
 extern crate rstmt_core as rstmt;
-
-#[doc(inline)]
-pub use self::{
-    error::*,
-    triad::{Triad, Triads},
-    types::prelude::*,
-};
-
-#[cfg(feature = "std")]
-pub use self::transform::TriadNavigator;
-
-#[cfg(feature = "tonnetz")]
-#[doc(inline)]
-pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 
 #[macro_use]
 pub(crate) mod macros {
@@ -91,24 +75,51 @@ pub mod tonnetz;
 pub mod transform;
 pub mod triad;
 
-pub mod types {
-    //! this module defines various types supporting the neo-riemannian theory
-    #[doc(inline)]
-    pub use self::prelude::*;
+mod impls {
+    mod impl_triad_base;
+    mod impl_triad_ext;
+    mod impl_triad_repr;
 
-    mod lpr;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::lpr::*;
-    }
+    // mod impl_dyn_triad_ext;
+    // mod impl_std_triad;
 }
 
+mod traits {
+    //! this module implements various traits supporting the triad implementation
+    #[doc(inline)]
+    pub use self::{raw_store::*, triad_kind::*, triadic::*};
+
+    mod raw_store;
+    mod triad_kind;
+    mod triadic;
+}
+
+mod types {
+    //! this module defines various types supporting the neo-riemannian theory
+    #[doc(inline)]
+    pub use self::{class::*, factors::*, lpr::*};
+
+    mod class;
+    mod factors;
+    mod lpr;
+}
+// re-exports
+#[cfg(feature = "std")]
+#[doc(inline)]
+pub use self::transform::TriadNavigator;
+#[doc(inline)]
+pub use self::{error::*, traits::*, triad::*, types::*};
+#[cfg(feature = "tonnetz")]
+#[doc(inline)]
+pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
+// prelude
+#[doc(hidden)]
 pub mod prelude {
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::prelude::*;
+    pub use crate::traits::*;
     #[cfg(feature = "alloc")]
     pub use crate::transform::prelude::*;
-    pub use crate::triad::prelude::*;
-    pub use crate::types::prelude::*;
+    pub use crate::triad::*;
+    pub use crate::types::*;
 }

@@ -4,25 +4,25 @@
 */
 //! this module implements intervallic relationships in music theory
 #[doc(inline)]
-pub use self::{interval::IntervalBase, types::prelude::*};
+pub use self::{interval_base::*, traits::*};
 
-pub mod dyad;
-pub mod interval;
+mod interval_base;
 
-pub mod types {
-    //! this module imimplements various types and other primitives used throughout the library
+mod impls {
+    mod impl_interval_base;
+}
+
+mod traits {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::qualities::*;
 
-    pub mod qualities;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::qualities::*;
-    }
+    mod qualities;
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
-    pub use super::types::prelude::*;
+    pub use super::interval_base::*;
+    pub use super::traits::*;
 }
+
+#[cfg(test)]
+mod tests {}

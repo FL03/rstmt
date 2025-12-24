@@ -2,135 +2,64 @@
     appellation: pitch <module>
     authors: @FL03
 */
-//! this module implements the [`Pitch`] type and its associated traits and types.
+//! this module implements various pitch-related items used throughout the library. Some of the
+//! key abstractions defined here are the [`Pitch`] and [`PitchClass`] implementations designed
+//! to generically represent these musical concepts. The [`PitchClass`] isn't necessarily
+//! intended to be used directly, rather through type aliases such as [`C`], [`DSharp`],
+//! [`EFlat`], etc. Additionally, the module provides various traits, types, and other
+//! implementations aimed at facilitating the manipulation and representation of pitches in a
+//! musical context.
 #[doc(inline)]
-pub use self::{pbase::Pitch, types::*};
+pub use self::{pitch::*, pitch_class::*, traits::*, types::*};
+// modules
+mod pitch;
+mod pitch_class;
 
-mod pbase;
-mod wrapper;
+mod impls {
+    mod impl_pitch;
+    mod impl_pitch_ext;
+    mod impl_pitch_rand;
+    mod impl_pitch_repr;
+
+    mod impl_pclass;
+    mod impl_pclass_ext;
+    mod impl_pclass_ops;
+}
+
+mod traits {
+    #[doc(inline)]
+    pub use self::{accidental::*, classifiers::*, raw_pitch::*};
+
+    mod accidental;
+    mod classifiers;
+    mod raw_pitch;
+}
 
 mod types {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{flags::*, pitch_reprs::*};
 
-    mod pitch_class;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::pitch_class::*;
-    }
+    mod flags;
+    mod pitch_reprs;
 }
-
+// prelude (local)
 pub(crate) mod prelude {
-    #[doc(inline)]
+    pub use super::pitch::*;
+    pub use super::pitch_class::*;
+    pub use super::traits::*;
     pub use super::types::*;
-    #[doc(inline)]
-    pub use super::wrapper::*;
-    #[doc(inline)]
-    pub use super::{AsPitch, IntoPitch, PitchNum, RawPitch};
 }
 
-/// A trait for converting a reference into a [`Pitch`].
-pub trait AsPitch {
-    fn as_pitch(&self) -> Pitch;
-}
-/// A trait for converting a type into a [`Pitch`].
-pub trait IntoPitch {
-    fn into_pitch(self) -> Pitch;
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-/// [`RawPitch`] defines an interface for all raw pitch types.
-///
-/// **note:** This trait is sealed and cannot be implemented outside of this crate.
-pub trait RawPitch:
-    'static + Default + Send + Sync + core::fmt::Debug + core::fmt::Display
-{
-    private!();
-}
-/// The [`PitchNum`] trait extends the [`RawPitch`] trait with additional numeric operations
-/// and traits.
-pub trait PitchNum: RawPitch + Sized
-where
-    Self: Copy
-        + Eq
-        + PartialEq
-        + PartialOrd
-        + core::ops::Add<Output = Self>
-        + core::ops::Sub<Output = Self>
-        + core::ops::Mul<Output = Self>
-        + core::ops::Div<Output = Self>
-        + core::ops::Rem<Output = Self>
-        + core::ops::Neg<Output = Self>
-        + core::ops::AddAssign
-        + core::ops::SubAssign
-        + core::ops::MulAssign
-        + core::ops::DivAssign
-        + core::ops::RemAssign
-        + num_traits::FromPrimitive
-        + num_traits::ToPrimitive
-        + num_traits::Zero
-        + num_traits::One,
-{
-}
-
-/*
- ************* Implementations *************
-*/
-impl<T> AsPitch for T
-where
-    T: Clone + IntoPitch,
-{
-    fn as_pitch(&self) -> Pitch {
-        self.clone().into_pitch()
+    #[test]
+    fn test_pitch_class() {
+        let c = C::new();
+        // verify the type checkers
+        assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
+        // check the index
+        assert_eq! { c, 0 }
     }
-}
-
-impl<T> IntoPitch for T
-where
-    T: Into<Pitch>,
-{
-    fn into_pitch(self) -> Pitch {
-        self.into()
-    }
-}
-
-macro_rules! impl_raw_pitch {
-    ($($t:ty),* $(,)?) => {
-        $(
-            impl_raw_pitch!(@impl $t);
-        )*
-    };
-    (@impl $t:ty) => {
-        impl RawPitch for $t {
-            seal!();
-        }
-    };
-}
-
-impl_raw_pitch!(
-    u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64
-);
-
-impl<T> PitchNum for T where
-    T: RawPitch
-        + Copy
-        + Eq
-        + PartialEq
-        + PartialOrd
-        + core::ops::Add<Output = T>
-        + core::ops::Sub<Output = T>
-        + core::ops::Mul<Output = T>
-        + core::ops::Div<Output = T>
-        + core::ops::Rem<Output = T>
-        + core::ops::Neg<Output = T>
-        + core::ops::AddAssign
-        + core::ops::SubAssign
-        + core::ops::MulAssign
-        + core::ops::DivAssign
-        + core::ops::RemAssign
-        + num_traits::FromPrimitive
-        + num_traits::ToPrimitive
-        + num_traits::Zero
-        + num_traits::One
-{
 }

@@ -1,59 +1,68 @@
-# Artifacts
+# General
+**/.artifacts/tmp/
+**/.docker/data
+
+**/.cache/
+**/.DS_Store
+
+*.bk
+*.bk.*
+
+*.bak
+*.bak.*
+
+*.csv
+*.csv.*
+
+*.db
+*.db.*
+
+*.db-*.*
+
+*.error
+*.error.*
+
+*.gz
+*.gz.*
+
+*.log
+*.log.*
+
+*.sqlite
+*.sqlite.*
+
+*.zip
+*.zip.*
+
+## Development Environments
+
+### IntelliJ Idea
+**/.idea/
+
+**/*.iml
+**/*.iml.*
+
+**/*.iws
+**/*.iws.*
+
+### Visual Studio Code
+**/.vscode/
+
+!.vscode/settings.*
+!.vscode/launch.*
+
+## Operating Systems
+
+### Nix
+!flake.lock
+
+### Windows (WSL2)
+**/*:Zone.Identifier
+
 **/.artifacts/data/
 **/.docker/data/
 
-## cache
-**/.cache/
-
-# config
-**/.config/*.config.*
-
-**/*.env
-**/*.env.*
-
-# Dev
-
-### Idea
-
-**/.idea/
-
-### vscode
-**/.vscode/
-
-# Misc
-**/*.csv
-**/*.csv.*
-
-**/*.db
-**/*.db.*
-
-**/*.db-*.*
-
-**/*.lock
-**/*.lock.*
-
-**/*-lock.*
-
-**/*.log
-**/*.log.*
-
-**/*.tmp
-**/*.tmp.*
-
-**/*.tmp-*
-
-**/*.whl
-**/*.whl.*
-
-**/*.zip
-**/*.zip.*
-
-## Nix
-**/*.drv
-**/*.drv.*
-
-!**/flake.lock
-
+# Language Specific
 
 ## Rust
 **/debug/
@@ -62,19 +71,80 @@
 **/*.bk
 **/*.bk.*
 
-**/Cargo.lock
+!Cargo.lock
 
-# Exceptions
-!**/.config/default.config.*
-!**/.config/docker.config.*
+## Python
+**/__pycache__/
+**/.pytest_cache/
+**/venv/
 
-!**/*.env.example
-!**/*.env.default
+**/*.egg
+**/*.egg.*
 
-!**/default.env
-!**/default.env.*
+**/*.egg-info
 
-!**/example.env
-!**/example.env.*
+**/*.pyc
+**/*.pyc.*
 
-!**/Cargo.lock
+**/*.pyo
+**/*.pyo.*
+
+**/*.pyz
+**/*.pyz.*
+
+**/*.pyzw
+**/*.pyzw.*
+
+**/*.whl
+**/*.whl.*
+
+## Node.js
+**/.DS_STORE
+**/.pnp
+**/.pnp.*
+**/.vercel
+**/build
+**/debug
+**/dist
+**/node_modules
+
+### TypeScript
+**/*.tsbuildinfo
+
+### npm
+!**/package-lock.json
+**/npm-debug.log
+
+### yarn
+**/.yarn/install-state.gz
+**/yarn-error.log
+**/yarn-debug.log
+
+### SvelteKit
+**/__sapper__/
+**/.svelte-kit/
+
+### Deno
+**/deno.json
+**/deno.jsonc
+
+### Next.js
+**/.next
+**/out
+
+**/next-env.d.ts
+
+### Jest
+**/.swc
+**/coverage
+
+### OpenNext (Cloudflare)
+**/.open-next
+**/.wrangler
+**/.vercel
+
+### Supabase
+**/supabase/temp
+
+### Vercel
+**/.vercel

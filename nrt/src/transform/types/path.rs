@@ -9,10 +9,7 @@ use std::collections::HashMap;
 
 /// Represents a sequence of transformations from one triad to another
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Path {
     /// Musical cost or distance metric (lower is better)
     pub(crate) cost: usize,
@@ -28,10 +25,7 @@ pub struct Path {
 
 /// Features describing musical characteristics of a transformation path
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct PathFeatures {
     /// Smoothness of voice leading (sum of semitone movements)
     pub(crate) distance: usize,
