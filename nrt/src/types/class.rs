@@ -126,6 +126,8 @@ impl TriadClass {
 }
 
 impl crate::TriadCls for TriadClass {
+    type Rel = Self;
+
     seal! {}
 
     fn new() -> Self {

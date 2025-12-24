@@ -15,8 +15,10 @@ pub trait IntoPitch<T> {
     private! {}
 }
 
-/// Musically, a pitch is defined to be a discrete frequency that may be symbolically
-/// represented via a pitch class.
+/// The [`Pitch`] implementation is a generic wrapper used to represent a musical pitch. A
+/// pitch is defined to be a perceptual property of sounds that enables one to define the
+/// _highness_ or _lowness_ of a sound. In music, pitch is often associated with the
+/// frequency of a sound wave, with higher frequencies corresponding to higher pitches.
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",

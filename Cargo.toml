@@ -40,6 +40,8 @@ rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
 contained = { default-features = false, features = ["macros"], version = "0.2.2" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # concurrency & parallelism
+crossbeam = { default-features = false, version = "0.8" }
+rayon = { default-features = false, version = "1" }
 rayon-core = { default-features = false, version = "1" }
 # data structures
 hashbrown = { default-features = false, version = "0.16" }

@@ -3,10 +3,10 @@
     Contrib: @FL03
 */
 use crate::{LPR, Triad};
+use hashbrown::HashMap;
 use rshyper::idx::{EdgeId, VertexId};
 use rshyper::{HyperMap, Weight};
 use rstmt::{Aspn, Octave};
-use std::collections::HashMap;
 
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`Triad`]
 pub(crate) type TriadMap<I = usize> = HashMap<EdgeId<I>, Triad>;

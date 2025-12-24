@@ -3,11 +3,25 @@
     authors: @FL03
 */
 use super::Frequency;
+use crate::freq::{classify_freq_with_scale, compute_freq_of_pitch};
+use num_traits::{Float, FromPrimitive};
+use rstmt_traits::ClassifyBy;
 
 impl<T> Frequency<T> {
     /// returns a new instance of the [`Frequency`] wrapping the given value
     pub const fn new(index: T) -> Self {
         Frequency(index)
+    }
+    /// calculate the frequency (in hertz) of a given pitch class, using the formula:
+    ///
+    /// ```math
+    /// F=\gamma\cdot{2^\frac{n}{12}}
+    /// ```
+    pub fn from_pitch_class_with_scale(n: isize, base: Option<T>) -> Option<Self>
+    where
+        T: Float + FromPrimitive,
+    {
+        compute_freq_of_pitch(n, base).map(Frequency)
     }
     /// initializes a new frequency by capturing the result of the given function
     pub fn init<F>(f: F) -> Self
@@ -103,102 +117,26 @@ impl<T> Frequency<T> {
     pub const fn view_mut(&mut self) -> Frequency<&mut T> {
         Frequency(self.get_mut())
     }
+    /// Compute the pitch class of a frequency (in hertz), using the formula:
+    ///
+    /// ```math
+    /// n = 12\cdot\log_2(\frac{F}{\gamma})
+    /// ```
+    pub fn classify_by(&self, base: Option<T>) -> Option<isize>
+    where
+        T: Float + FromPrimitive,
+    {
+        classify_freq_with_scale(*self, base)
+    }
 }
 
-impl<T> PartialEq<T> for Frequency<T>
+impl<T> ClassifyBy<T> for Frequency<T>
 where
-    T: PartialEq,
+    T: Float + FromPrimitive,
 {
-    fn eq(&self, other: &T) -> bool {
-        &self.0 == other
-    }
-}
+    type Output = Option<isize>;
 
-impl<'a, T> PartialEq<&'a T> for Frequency<T>
-where
-    T: PartialEq,
-{
-    fn eq(&self, other: &&'a T) -> bool {
-        &self.0 == *other
-    }
-}
-
-impl<'a, T> PartialEq<&'a mut T> for Frequency<T>
-where
-    T: PartialEq,
-{
-    fn eq(&self, other: &&'a mut T) -> bool {
-        &self.0 == *other
-    }
-}
-
-impl<T> PartialOrd<T> for Frequency<T>
-where
-    T: PartialOrd,
-{
-    fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
-        self.0.partial_cmp(other)
-    }
-}
-
-impl<'a, T> PartialOrd<&'a T> for Frequency<T>
-where
-    T: PartialOrd,
-{
-    fn partial_cmp(&self, other: &&'a T) -> Option<core::cmp::Ordering> {
-        self.0.partial_cmp(*other)
-    }
-}
-
-impl<'a, T> PartialOrd<&'a mut T> for Frequency<T>
-where
-    T: PartialOrd,
-{
-    fn partial_cmp(&self, other: &&'a mut T) -> Option<core::cmp::Ordering> {
-        self.0.partial_cmp(*other)
-    }
-}
-
-impl<T> AsRef<T> for Frequency<T> {
-    fn as_ref(&self) -> &T {
-        &self.0
-    }
-}
-
-impl<T> AsMut<T> for Frequency<T> {
-    fn as_mut(&mut self) -> &mut T {
-        &mut self.0
-    }
-}
-
-impl<T> core::borrow::Borrow<T> for Frequency<T> {
-    fn borrow(&self) -> &T {
-        &self.0
-    }
-}
-
-impl<T> core::borrow::BorrowMut<T> for Frequency<T> {
-    fn borrow_mut(&mut self) -> &mut T {
-        &mut self.0
-    }
-}
-
-impl<T> core::ops::Deref for Frequency<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<T> core::ops::DerefMut for Frequency<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl<T> From<T> for Frequency<T> {
-    fn from(value: T) -> Self {
-        Frequency(value)
+    fn classify_by(&self, base: T) -> Self::Output {
+        self.classify_by(Some(base))
     }
 }

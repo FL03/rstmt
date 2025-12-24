@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::Path;
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 // Add to Transformer
 #[derive(Clone, Debug, PartialEq)]

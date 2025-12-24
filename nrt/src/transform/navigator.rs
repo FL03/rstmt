@@ -4,8 +4,8 @@
 */
 use super::{ChainFeatures, PathFinderConfig, TransformationChain};
 use crate::{LPR, Triad};
-use std::collections::{HashMap, HashSet, VecDeque};
-
+use alloc::collections::VecDeque;
+use hashbrown::{HashMap, HashSet};
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
 #[derive(Debug)]

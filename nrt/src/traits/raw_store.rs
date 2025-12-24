@@ -5,14 +5,29 @@
 */
 use rstmt_core::RawChord;
 
-/// [`RawTriadStore`] defines an interface for compatible representations of triads enabling
-/// the [`TriadBase`] instance to be generic over its _container_.
+/// The [`RawTriad`] trait is used to restrict and extend the [`RawChord`] trait to define valid  
+/// representations of a triad.
 pub trait RawTriad: RawChord {
     private! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self
     where
         Self: Sized;
+
+    fn from_iter<I>(iter: I) -> Option<Self>
+    where
+        I: IntoIterator<Item = Self::Elem>,
+        Self: Sized,
+    {
+        let mut it = iter.into_iter();
+        let a = it.next()?;
+        let b = it.next()?;
+        let c = it.next()?;
+        Some(Self::from_arr([a, b, c]))
+    }
+    fn len(&self) -> usize {
+        3
+    }
     /// returns a reference to the root note of the triad.
     fn root(&self) -> &Self::Elem;
     /// returns a reference to the third note of the triad.
@@ -52,8 +67,9 @@ impl<T> RawTriad for (T, T, T) {
     seal! {}
 
     fn from_arr([a, b, c]: [Self::Elem; 3]) -> Self
-        where
-            Self: Sized {
+    where
+        Self: Sized,
+    {
         (a, b, c)
     }
 

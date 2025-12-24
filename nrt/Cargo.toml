@@ -40,6 +40,7 @@ variants = { workspace = true }
 hashbrown = { optional = true, workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
+rayon = { optional = true, workspace = true }
 # error-handling
 anyhow = { workspace = true }
 thiserror = { workspace = true }
@@ -148,6 +149,7 @@ rand = [
 ]
 
 rayon = [
+  "dep:rayon",
   "dep:rayon-core",
   "hashbrown?/rayon",
   "rshyper/rayon",

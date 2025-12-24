@@ -6,7 +6,7 @@ use crate::LPR;
 use crate::triad::Triad;
 use rshyper::EdgeId;
 
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 /// Represents a sequence of transformations from one triad to another
 #[derive(Clone, Debug, Default, PartialEq)]

@@ -4,8 +4,8 @@
 */
 use crate::transform::SearchNode;
 use crate::{LPR, Triad};
+use hashbrown::HashMap;
 use rshyper::EdgeId;
-use std::collections::HashMap;
 
 /// Represents a sequence of transformations from one triad to another
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
