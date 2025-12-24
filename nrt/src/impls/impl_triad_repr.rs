@@ -17,8 +17,11 @@ where
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
     /// augmented triad.
-    pub const fn augmented(chord: S) -> Self {
-        TriadBase::new(chord, Augmented)
+    pub fn augmented(root: T) -> Self
+    where
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    {
+        TriadBase::from_root_with_class(root, Augmented)
     }
 }
 
@@ -28,8 +31,11 @@ where
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
     /// diminished triad.
-    pub const fn diminished(chord: S) -> Self {
-        TriadBase::new(chord, Diminished)
+    pub fn diminished(root: T) -> Self
+    where
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    {
+        TriadBase::from_root_with_class(root, Diminished)
     }
 }
 
@@ -39,8 +45,11 @@ where
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
     /// triad.
-    pub const fn major(chord: S) -> Self {
-        TriadBase::new(chord, Major)
+    pub fn major(root: T) -> Self
+    where
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    {
+        TriadBase::from_root_with_class(root, Major)
     }
 }
 
@@ -50,8 +59,11 @@ where
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
     /// triad.
-    pub const fn minor(chord: S) -> Self {
-        TriadBase::new(chord, Minor)
+    pub fn minor(root: T) -> Self
+    where
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    {
+        TriadBase::from_root_with_class(root, Minor)
     }
 }
 

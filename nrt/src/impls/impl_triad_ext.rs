@@ -35,16 +35,6 @@ where
     }
 }
 
-impl<T, S, K> From<(S, K)> for TriadBase<S, K, T>
-where
-    S: RawTriad<Elem = T>,
-    K: TriadCls,
-{
-    fn from((chord, class): (S, K)) -> Self {
-        Self::new(chord, class)
-    }
-}
-
 impl<T, S, K> AsRef<S> for TriadBase<S, K, T>
 where
     S: RawTriad<Elem = T>,
@@ -180,5 +170,27 @@ where
 {
     fn eq(&self, other: &S) -> bool {
         self.chord() == other
+    }
+}
+
+impl<S1, T1, K1, S2, T2, K2> PartialEq<TriadBase<S2, K2, T2>> for TriadBase<S1, K1, T1>
+where
+    S1: RawTriad<Elem = T1> + PartialEq<S2>,
+    K1: TriadCls,
+    S2: RawTriad<Elem = T2>,
+    K2: TriadCls,
+{
+    fn eq(&self, other: &TriadBase<S2, K2, T2>) -> bool {
+        self.chord() == other.chord()
+    }
+}
+
+impl<T, S, K> From<(S, K)> for TriadBase<S, K, T>
+where
+    S: RawTriad<Elem = T>,
+    K: TriadCls,
+{
+    fn from((chord, class): (S, K)) -> Self {
+        Self::new(chord, class)
     }
 }
