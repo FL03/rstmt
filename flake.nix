@@ -1,5 +1,5 @@
 {
-  description = "A flake for the proton server";
+  description = "A flake for rstmt, a crate for exploring music theory";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -15,7 +15,7 @@
       {
         packages.default = rustPlatform.buildRustPackage {
           pname = "rstmt";
-          version = "0.0.6";
+          version = "0.0.7";
           src = "./.";
           # If Cargo.lock doesn't exist yet, remove or comment out this block:
           cargoLock = {
