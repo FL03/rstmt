@@ -6,9 +6,9 @@
 use crate::pitch::pitch_class::PitchClass;
 use crate::pitch::traits::{Accidental, PitchClassRepr};
 
-impl<N, K> AsRef<isize> for PitchClass<N, K>
+impl<P, K> AsRef<isize> for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
     fn as_ref(&self) -> &isize {
@@ -16,9 +16,9 @@ where
     }
 }
 
-impl<T, K> AsRef<str> for PitchClass<T, K>
+impl<P, K> AsRef<str> for PitchClass<P, K>
 where
-    T: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
     fn as_ref(&self) -> &str {
@@ -26,9 +26,9 @@ where
     }
 }
 
-impl<N, K> core::borrow::Borrow<isize> for PitchClass<N, K>
+impl<P, K> core::borrow::Borrow<isize> for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
     fn borrow(&self) -> &isize {
@@ -36,35 +36,35 @@ where
     }
 }
 
-impl<N, K> core::ops::Deref for PitchClass<N, K>
+impl<P, K> core::ops::Deref for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
-    type Target = N;
+    type Target = P;
 
     fn deref(&self) -> &Self::Target {
         self.get()
     }
 }
 
-unsafe impl<N, K> Send for PitchClass<N, K>
+unsafe impl<P, K> Send for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
 }
 
-unsafe impl<N, K> Sync for PitchClass<N, K>
+unsafe impl<P, K> Sync for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
 }
 
-impl<N, K> PartialEq<isize> for PitchClass<N, K>
+impl<P, K> PartialEq<isize> for PitchClass<P, K>
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
     fn eq(&self, other: &isize) -> bool {
@@ -72,12 +72,12 @@ where
     }
 }
 
-impl<N, K> PartialEq<PitchClass<N, K>> for isize
+impl<P, K> PartialEq<PitchClass<P, K>> for isize
 where
-    N: PitchClassRepr<Tag = K>,
+    P: PitchClassRepr<Tag = K>,
     K: Accidental,
 {
-    fn eq(&self, other: &PitchClass<N, K>) -> bool {
+    fn eq(&self, other: &PitchClass<P, K>) -> bool {
         *self == other.get().value()
     }
 }

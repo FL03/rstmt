@@ -77,7 +77,7 @@ impl LPR {
     }
     /// Apply a transformation to a triad
     pub fn try_apply(&self, triad: &Triad) -> Result<Triad, TriadError> {
-        let [x, y, z] = triad.notes;
+        let [x, y, z] = *triad.chord();
 
         let notes: [usize; 3];
         let class: TriadClass;
@@ -114,7 +114,7 @@ impl LPR {
         };
 
         Ok(Triad {
-            notes,
+            chord: notes,
             class,
             octave: triad.octave,
         })

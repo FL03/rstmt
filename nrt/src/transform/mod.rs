@@ -17,8 +17,12 @@ pub mod navigator;
 pub mod planner;
 
 mod types {
+    #[cfg(feature = "alloc")]
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::search_node::*;
+    #[doc(inline)]
+    #[cfg(feature = "std")]
+    pub use self::{chain::*, path::*};
 
     #[cfg(feature = "std")]
     mod chain;
@@ -26,18 +30,6 @@ mod types {
     mod path;
     #[cfg(feature = "alloc")]
     mod search_node;
-
-    pub(crate) mod prelude {
-        #[cfg(feature = "std")]
-        #[doc(inline)]
-        pub use super::chain::*;
-        #[cfg(feature = "std")]
-        #[doc(inline)]
-        pub use super::path::*;
-        #[cfg(feature = "alloc")]
-        #[doc(inline)]
-        pub use super::search_node::*;
-    }
 }
 
 pub(crate) mod prelude {
@@ -55,5 +47,5 @@ pub(crate) mod prelude {
     pub use super::planner::*;
     #[cfg(feature = "alloc")]
     #[doc(inline)]
-    pub use super::types::prelude::*;
+    pub use super::types::*;
 }

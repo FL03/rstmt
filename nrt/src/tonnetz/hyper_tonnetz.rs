@@ -110,7 +110,7 @@ impl HyperTonnetz {
     pub fn add_triad(&mut self, triad: Triad) -> crate::Result<EdgeId> {
         // Ensure we have vertices for all Note classes
         let vertices: Vec<VertexId> = triad
-            .notes()
+            .chord()
             .iter()
             .map(|&p| {
                 // Try to find existing vertex with this Note class

@@ -78,8 +78,8 @@ impl Triad {
         &mut self.class
     }
     /// returns copy of the notes currently composing the triad
-    pub const fn notes(&self) -> [usize; 3] {
-        self.notes
+    pub const fn notes(&self) -> &[usize; 3] {
+        &self.notes
     }
     /// returns a mutable reference to the notes of the triad
     pub const fn notes_mut(&mut self) -> &mut [usize; 3] {
@@ -125,21 +125,6 @@ impl Triad {
     /// returns a mutable reference to the fifth pitch of the triad
     pub fn fifth_mut(&mut self) -> &mut usize {
         &mut self[Factors::Fifth]
-    }
-    /// check if the triad contains a given pitch class
-    pub fn contains<Q>(&self, pitch: &Q) -> bool
-    where
-        Q: core::borrow::Borrow<usize>,
-    {
-        self.notes().contains(pitch.borrow())
-    }
-    /// returns some [`LPR`] transformation, iff they are within a single _step_ of one another
-    /// otherwise, returns [`None`](Option::None).
-    pub fn is_neighbor(&self, other: &Triad) -> Option<LPR> {
-        LPR::iter().find(|&t| {
-            let result = self.transform(t);
-            result == *other
-        })
     }
     /// returns true if the current instance is an augmented triad
     pub fn is_augmented(&self) -> bool {
@@ -214,6 +199,22 @@ impl Triad {
             .copied()
             .collect::<Vec<_>>()
     }
+
+    /// check if the triad contains a given pitch class
+    pub fn contains<Q>(&self, pitch: &Q) -> bool
+    where
+        Q: core::borrow::Borrow<usize>,
+    {
+        self.notes().contains(pitch.borrow())
+    }
+    /// returns some [`LPR`] transformation, iff they are within a single _step_ of one another
+    /// otherwise, returns [`None`](Option::None).
+    pub fn is_neighbor(&self, other: &Triad) -> Option<LPR> {
+        LPR::iter().find(|&t| {
+            let result = self.transform(t);
+            result == *other
+        })
+    }
     #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
     pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
@@ -262,13 +263,13 @@ impl core::fmt::Display for Triad {
 
 impl core::convert::AsRef<[usize; 3]> for Triad {
     fn as_ref(&self) -> &[usize; 3] {
-        &self.notes
+        self.notes()
     }
 }
 
 impl core::convert::AsMut<[usize; 3]> for Triad {
     fn as_mut(&mut self) -> &mut [usize; 3] {
-        &mut self.notes
+        self.notes_mut()
     }
 }
 
@@ -336,5 +337,14 @@ impl<'a> core::iter::IntoIterator for &'a mut Triad {
 
     fn into_iter(self) -> Self::IntoIter {
         self.notes.iter_mut()
+    }
+}
+
+impl<T> PartialEq<T> for Triad
+where
+    T: AsRef<[usize]>,
+{
+    fn eq(&self, other: &T) -> bool {
+        self.notes() == other.as_ref()
     }
 }

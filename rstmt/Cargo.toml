@@ -115,6 +115,15 @@ anyhow = [
   "rstmt-nrt?/anyhow",
 ]
 
+complex = [
+  "rstmt-core/complex",
+]
+
+hashbrown = [
+  "rstmt-core/hashbrown",
+  "rstmt-nrt?/hashbrown",
+]
+
 json = [
   "rstmt-core/json",
   "rstmt-nrt?/json",
@@ -123,6 +132,11 @@ json = [
 rand = [
   "rstmt-core/rand",
   "rstmt-nrt?/rand",
+]
+
+rayon = [
+  "rstmt-core/rayon",
+  "rstmt-nrt?/rayon",
 ]
 
 rng = [

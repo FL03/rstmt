@@ -140,11 +140,11 @@ impl<'a> MotionPlanner<'a> {
             edges: vec![Some(start_edge)],
         });
 
-        visited.insert(start_triad.notes(), 0);
+        visited.insert(*start_triad.chord(), 0);
 
         while let Some(node) = open_set.pop() {
             // Skip if we've found a shorter path to this triad
-            if let Some(&prev_cost) = visited.get(&node.triad.notes()) {
+            if let Some(&prev_cost) = visited.get(node.triad.chord()) {
                 if prev_cost < node.cost {
                     continue;
                 }
@@ -162,18 +162,18 @@ impl<'a> MotionPlanner<'a> {
                 let new_cost = node.cost + 1;
 
                 // Skip if we've found a shorter path to this triad
-                if let Some(&prev_cost) = visited.get(&next_triad.notes()) {
+                if let Some(&prev_cost) = visited.get(next_triad.chord()) {
                     if prev_cost <= new_cost {
                         continue;
                     }
                 }
 
                 // Update visited with this triad's path length
-                visited.insert(next_triad.notes(), new_cost);
+                visited.insert(*next_triad.chord(), new_cost);
 
                 // Find edge ID if this exists in the tonnetz
                 let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
-                    if facet.notes() == next_triad.notes() {
+                    if facet.chord() == next_triad.chord() {
                         Some(id)
                     } else {
                         None
@@ -338,7 +338,7 @@ impl<'a> MotionPlanner<'a> {
 
         // Track visited triads at each depth
         let mut visited = HashMap::<[usize; 3], HashSet<usize>>::new();
-        visited.entry(start_triad.notes()).or_default().insert(0);
+        visited.entry(*start_triad.chord()).or_default().insert(0);
 
         while let Some((current_triad, transforms, triads, edge_ids, depth)) = queue.pop_front() {
             // If we've reached max depth, skip this path
@@ -353,7 +353,7 @@ impl<'a> MotionPlanner<'a> {
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
-                let depths = visited.entry(next_triad.notes()).or_default();
+                let depths = visited.entry(*next_triad.chord()).or_default();
                 if depths.contains(&next_depth) {
                     continue;
                 }
@@ -363,7 +363,7 @@ impl<'a> MotionPlanner<'a> {
 
                 // Find edge ID if this triad exists in the tonnetz
                 let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
-                    if facet.notes() == next_triad.notes() {
+                    if facet.chord() == next_triad.chord() {
                         Some(id)
                     } else {
                         None
@@ -465,7 +465,7 @@ impl<'a> MotionPlanner<'a> {
 
         // Track visited triads at each depth
         let mut visited = HashMap::<[usize; 3], HashSet<usize>>::new();
-        visited.entry(start_triad.notes()).or_default().insert(0);
+        visited.entry(*start_triad.chord()).or_default().insert(0);
 
         while let Some((
             current_triad,
@@ -487,7 +487,7 @@ impl<'a> MotionPlanner<'a> {
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
-                let depths = visited.entry(next_triad.notes()).or_default();
+                let depths = visited.entry(*next_triad.chord()).or_default();
                 if depths.contains(&next_depth) {
                     continue;
                 }
@@ -497,7 +497,7 @@ impl<'a> MotionPlanner<'a> {
 
                 // Find edge ID if this triad exists in the tonnetz
                 let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
-                    if facet.notes() == next_triad.notes() {
+                    if facet.chord() == next_triad.chord() {
                         Some(id)
                     } else {
                         None
@@ -589,7 +589,7 @@ impl<'a> MotionPlanner<'a> {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
-                            if facet.notes() == next_triad.notes() {
+                            if facet.chord() == next_triad.chord() {
                                 Some(id)
                             } else {
                                 None
@@ -672,10 +672,10 @@ impl<'a> MotionPlanner<'a> {
             }
 
             // Calculate voice leading distance (semitone movement between triads)
-            for prev_note in prev.notes() {
+            for &prev_note in prev.chord() {
                 // Find the minimum distance to move from prev_note to any note in curr
                 let min_distance = curr
-                    .notes()
+                    .chord()
                     .iter()
                     .map(|&curr_note| {
                         let dist = (curr_note as isize - prev_note as isize).abs().pmod();

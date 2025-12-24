@@ -1,9 +1,11 @@
 /*
-    appellation: flags <module>
-    authors: @FL03
+    Appellation: class_enums <module>
+    Created At: 2025.12.23:14:44:47
+    Contrib: @FL03
 */
+//! a more dynamic approach to managing pitch classes using enums
 
-/// [`Accidental`] enumerates the two alternative states a note make take, either sharp or flat
+/// [`Accidentals`] enumerates the two alternative states a note make take, either sharp or flat
 /// and their respective states, single or double.
 #[derive(
     Clone,
@@ -24,55 +26,79 @@
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Accidentals {
-    Sharp(crate::pitch::Sharp),
-    Flat(crate::pitch::Flat),
+pub enum Pitches {
+    Sharp(Sharps),
+    Flat(Flats),
     #[default]
-    Natural(crate::pitch::Natural),
+    Natural(Naturals),
 }
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    strum::EnumCount,
-    strum::EnumDiscriminants,
-    strum::EnumIs,
-)]
-#[strum_discriminants(
-    name(AccidentalFlag),
-    derive(
-        Hash,
-        Ord,
-        PartialOrd,
-        strum::AsRefStr,
-        strum::Display,
-        strum::EnumCount,
-        strum::EnumIs,
-        strum::EnumIter,
-        strum::EnumString,
-        strum::VariantArray,
-        strum::VariantNames,
-    ),
-    strum(serialize_all = "lowercase")
-)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase"),
-    strum_discriminants(
-        derive(serde::Deserialize, serde::Serialize),
-        serde(rename_all = "lowercase")
-    )
-)]
-pub enum AccidentalState<T> {
-    /// A [`Single`](AccidentalState::Single) accidental state represents typical sharp/flat note
-    Single(T),
-    /// A [`Double`](AccidentalState::Double) accidental state represents a double sharp/flat note
-    Double(T),
+macro_rules! pitch_class_enums {
+    ($($(#[$meta:meta])? $vis:vis enum $name:ident {$($rest:tt)*});* $(;)?) => {
+        $(
+            $(#[$meta])?
+            #[derive(
+                Clone,
+                Copy,
+                Debug,
+                Default,
+                Eq,
+                Hash,
+                Ord,
+                PartialEq,
+                PartialOrd,
+                variants::VariantConstructors,
+                strum::AsRefStr,
+                strum::Display,
+                strum::EnumCount,
+                strum::EnumIs,
+                strum::EnumIter,
+                strum::EnumString,
+                strum::VariantArray,
+                strum::VariantNames,
+            )]
+            #[cfg_attr(
+                feature = "serde",
+                derive(serde::Deserialize, serde::Serialize),
+                serde(rename_all = "UPPERCASE")
+            )]
+            #[strum(serialize_all = "UPPERCASE")]
+            $vis enum $name {$($rest)*}
+        )*
+    };
+}
+
+/*
+ ************* Implementations *************
+*/
+pitch_class_enums! {
+    #[doc = "A representation of the natural pitch class"]
+    pub enum Naturals {
+        #[default]
+        C = 0,
+        D = 2,
+        E = 4,
+        F = 5,
+        G = 7,
+        A = 9,
+        B = 11,
+    };
+    #[doc = "A representation of the sharp pitch class"]
+    pub enum Sharps {
+        #[default]
+        C = 1,
+        D = 3,
+        F = 6,
+        G = 8,
+        A = 10,
+    };
+    #[doc = "A representation of the flat pitch class"]
+    pub enum Flats {
+        #[default]
+        D = 1,
+        E = 3,
+        G = 6,
+        A = 8,
+        B = 10,
+    };
 }

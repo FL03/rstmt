@@ -3,12 +3,11 @@
     Created At: 2025.12.20:10:36:11
     Contrib: @FL03
 */
+use rstmt_core::RawChord;
 
 /// [`RawTriadStore`] defines an interface for compatible representations of triads enabling
 /// the [`TriadBase`] instance to be generic over its _container_.
-pub trait RawTriadStore {
-    type Elem;
-
+pub trait RawTriad: RawChord {
     private! {}
     /// returns a reference to the root note of the triad.
     fn root(&self) -> &Self::Elem;
@@ -17,7 +16,7 @@ pub trait RawTriadStore {
     /// returns a reference to the fifth note of the triad.
     fn fifth(&self) -> &Self::Elem;
 }
-pub trait RawTriadStoreMut: RawTriadStore {
+pub trait RawTriadMut: RawTriad {
     /// returns a mutable reference to the root note of the triad.
     fn root_mut(&mut self) -> &mut Self::Elem;
     /// returns a mutable reference to the third note of the triad.
@@ -45,9 +44,7 @@ pub trait RawTriadStoreMut: RawTriadStore {
  ************* Implementations *************
 */
 
-impl<T> RawTriadStore for (T, T, T) {
-    type Elem = T;
-
+impl<T> RawTriad for (T, T, T) {
     seal! {}
 
     fn root(&self) -> &T {
@@ -63,7 +60,7 @@ impl<T> RawTriadStore for (T, T, T) {
     }
 }
 
-impl<T> RawTriadStoreMut for (T, T, T) {
+impl<T> RawTriadMut for (T, T, T) {
     fn root_mut(&mut self) -> &mut T {
         &mut self.0
     }
@@ -76,9 +73,7 @@ impl<T> RawTriadStoreMut for (T, T, T) {
     }
 }
 
-impl<T> RawTriadStore for [T; 3] {
-    type Elem = T;
-
+impl<T> RawTriad for [T; 3] {
     seal! {}
 
     fn root(&self) -> &T {
@@ -94,7 +89,7 @@ impl<T> RawTriadStore for [T; 3] {
     }
 }
 
-impl<T> RawTriadStoreMut for [T; 3] {
+impl<T> RawTriadMut for [T; 3] {
     fn root_mut(&mut self) -> &mut T {
         &mut self[0]
     }

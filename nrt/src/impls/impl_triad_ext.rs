@@ -5,10 +5,10 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriad, RawTriadStore, RawTriadStoreMut, TriadCls};
+use crate::traits::{RawTriad, RawTriadMut, TriadCls, Triadic};
 use crate::types::Factors;
 
-impl<T, K> RawTriad<T> for TriadBase<[T; 3], K, T>
+impl<T, K> Triadic<T> for TriadBase<[T; 3], K, T>
 where
     K: TriadCls,
 {
@@ -27,7 +27,7 @@ where
 
 impl<T, S, K> core::fmt::Display for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T> + core::fmt::Debug,
+    S: RawTriad<Elem = T> + core::fmt::Debug,
     K: TriadCls + core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -37,7 +37,7 @@ where
 
 impl<T, S, K> From<(S, K)> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn from((chord, class): (S, K)) -> Self {
@@ -47,7 +47,7 @@ where
 
 impl<T, S, K> AsRef<S> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn as_ref(&self) -> &S {
@@ -57,7 +57,7 @@ where
 
 impl<T, S, K> AsMut<S> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn as_mut(&mut self) -> &mut S {
@@ -67,7 +67,7 @@ where
 
 impl<T, S, K> core::borrow::Borrow<S> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn borrow(&self) -> &S {
@@ -77,7 +77,7 @@ where
 
 impl<T, S, K> core::borrow::BorrowMut<S> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn borrow_mut(&mut self) -> &mut S {
@@ -87,7 +87,7 @@ where
 
 impl<T, S, K> core::ops::Deref for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T> + RawTriad<T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     type Target = S;
@@ -99,7 +99,7 @@ where
 
 impl<T, S, K> core::ops::DerefMut for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T> + RawTriad<T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -109,7 +109,7 @@ where
 
 impl<T, S, K> core::ops::Index<Factors> for TriadBase<S, K, T>
 where
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
     K: TriadCls,
 {
     type Output = T;
@@ -125,7 +125,7 @@ where
 
 impl<T, S, K> core::ops::IndexMut<Factors> for TriadBase<S, K, T>
 where
-    S: RawTriadStoreMut<Elem = T>,
+    S: RawTriadMut<Elem = T>,
     K: TriadCls,
 {
     fn index_mut(&mut self, index: Factors) -> &mut Self::Output {
@@ -170,5 +170,15 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         self.chord_mut().iter_mut()
+    }
+}
+
+impl<S, T, K> PartialEq<S> for TriadBase<S, K, T>
+where
+    S: RawTriad<Elem = T> + PartialEq,
+    K: TriadCls,
+{
+    fn eq(&self, other: &S) -> bool {
+        self.chord() == other
     }
 }

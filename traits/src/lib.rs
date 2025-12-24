@@ -26,6 +26,7 @@ pub(crate) mod macros {
 #[cfg(feature = "alloc")]
 extern crate alloc;
 // modules
+pub mod chord;
 pub mod chroma;
 pub mod classify;
 pub mod num;
@@ -44,6 +45,7 @@ pub use self::prelude::*;
 // prelude
 #[doc(hidden)]
 pub mod prelude {
+    pub use crate::chord::*;
     pub use crate::chroma::*;
     pub use crate::classify::*;
     pub use crate::num::*;

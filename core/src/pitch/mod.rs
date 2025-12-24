@@ -37,9 +37,8 @@ mod traits {
 
 mod types {
     #[doc(inline)]
-    pub use self::{class_enums::*, flags::*, pitch_reprs::*};
+    pub use self::{flags::*, pitch_reprs::*};
 
-    mod class_enums;
     mod flags;
     mod pitch_reprs;
 }

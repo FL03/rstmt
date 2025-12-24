@@ -14,9 +14,7 @@
 //! // initialize a c-major triad: (0, 4, 7)
 //! let triad = Triad::major(0);
 //! // verify the composition
-//! assert_eq!(triad.root(), 0);
-//! assert_eq!(triad.third(), 4);
-//! assert_eq!(triad.fifth(), 7);
+//! assert_eq! { triad, [0, 4, 7] }
 //! assert!(triad.is_major());
 //! ```
 //!
@@ -32,25 +30,12 @@
 //! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
 
-use crate::traits::{RawTriadStore, TriadCls};
+use crate::traits::{RawTriad, TriadCls};
 use crate::types::TriadClass;
-use rstmt_core::{Major, Octave};
+use rstmt_core::{Major, Octave, RawChord};
 
-/// A triad is a particular chord composed of three notes that satify particular intervallic
-/// constrains with each other. Here, the triad materializes the facet of a hyperedge within a
-/// cluster of triads persisted in the Tonnetz. The triad is a fundamental entity in the
-/// substrate used to represent the _headspace_ of a plant. Each plant relies on these objects
-/// to transverse the surface of the tonnetz so that it may gaurantee the completion of a task.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Triad {
-    /// The type of triad (Major, Minor, Augmented, Diminished)
-    pub(crate) class: TriadClass,
-    /// the set of three pitch classes defining the triad
-    pub(crate) notes: [usize; 3],
-    /// The octave of the triad
-    pub(crate) octave: Octave,
-}
+/// The standard alias for a dynamic triad representation.
+pub type Triad = TriadBase<[usize; 3], TriadClass, usize>;
 
 /// The [`TriadBase`] implementation is a generic representation of a triad.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
@@ -59,11 +44,35 @@ pub struct Triad {
     derive(serde::Deserialize, serde::Serialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct TriadBase<S = [usize; 3], K = Major, T = <S as RawTriadStore>::Elem>
+pub struct TriadBase<S = [usize; 3], K = Major, T = <S as RawChord>::Elem>
 where
     K: TriadCls,
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
 {
     pub(crate) chord: S,
     pub(crate) class: K,
+    pub(crate) octave: Octave,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    /// Test: test initialization routines using a single root note, `C(0)`
+    fn test_traid_init_c_root() {
+        assert_eq! { Triad::major(0), [0, 4, 7] }
+        assert_eq! { Triad::minor(0), [0, 3, 7] }
+        assert_eq! { Triad::augmented(0), [0, 4, 8] }
+        assert_eq! { Triad::diminished(0), [0, 3, 6] }
+    }
+
+    #[test]
+    /// Test: test initialization routines using various root notes
+    fn test_triad_init_n_root() {
+        assert_eq! { Triad::major(1), [1, 5, 8] }
+        assert_eq! { Triad::minor(2), [2, 5, 9] }
+        assert_eq! { Triad::augmented(6), [6, 10, 2] }
+        assert_eq! { Triad::diminished(11), [11, 2, 5] }
+    }
 }

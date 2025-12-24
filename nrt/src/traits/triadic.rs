@@ -3,14 +3,14 @@
     Created At: 2025.12.20:10:36:11
     Contrib: @FL03
 */
-use crate::{RawTriadStore, RawTriadStoreMut};
-/// The [`RawTriad`] trait defines the interface for all implementations of triads.
-pub trait RawTriad<T>
+use crate::{RawTriad, RawTriadMut};
+/// The [`Triadic`] trait defines the interface for all implementations of triads.
+pub trait Triadic<T>
 where
-    Self::Store<T>: RawTriadStore<Elem = T>,
+    Self::Store<T>: RawTriad<Elem = T>,
 {
     /// the type of the item stored in the triad.
-    type Store<U>: RawTriadStore<Elem = U>;
+    type Store<U>: RawTriad<Elem = U>;
 
     private! {}
 
@@ -24,7 +24,7 @@ where
     /// returns a mutable reference to the root note of the triad.
     fn root_mut(&mut self) -> &mut T
     where
-        Self::Store<T>: RawTriadStoreMut,
+        Self::Store<T>: RawTriadMut,
     {
         self.store_mut().root_mut()
     }
@@ -35,7 +35,7 @@ where
     /// returns a mutable reference to the third note of the triad.
     fn third_mut(&mut self) -> &mut T
     where
-        Self::Store<T>: RawTriadStoreMut,
+        Self::Store<T>: RawTriadMut,
     {
         self.store_mut().third_mut()
     }
@@ -46,7 +46,7 @@ where
     /// returns a mutable reference to the fifth note of the triad.
     fn fifth_mut(&mut self) -> &mut T
     where
-        Self::Store<T>: RawTriadStoreMut,
+        Self::Store<T>: RawTriadMut,
     {
         self.store_mut().fifth_mut()
     }
@@ -56,7 +56,7 @@ where
  ************* Implementations *************
 */
 
-impl<T> RawTriad<T> for (T, T, T) {
+impl<T> Triadic<T> for (T, T, T) {
     type Store<U> = (U, U, U);
 
     seal! {}
@@ -70,7 +70,7 @@ impl<T> RawTriad<T> for (T, T, T) {
     }
 }
 
-impl<T> RawTriad<T> for [T; 3] {
+impl<T> Triadic<T> for [T; 3] {
     type Store<U> = [U; 3];
 
     seal! {}

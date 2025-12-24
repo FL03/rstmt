@@ -1090,6 +1090,7 @@ version = "0.0.6"
 dependencies = [
  "anyhow",
  "getrandom",
+ "hashbrown 0.16.1",
  "itertools 0.14.0",
  "num-traits",
  "paste",
@@ -1112,6 +1113,7 @@ name = "rstmt-traits"
 version = "0.0.6"
 dependencies = [
  "contained",
+ "hashbrown 0.16.1",
  "num-complex",
  "num-traits",
  "rayon-core",

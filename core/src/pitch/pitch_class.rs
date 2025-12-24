@@ -19,13 +19,13 @@ use super::{Accidental, CNote, Natural, PitchClassRepr};
     serde(rename_all = "lowercase")
 )]
 #[repr(C)]
-pub struct PitchClass<P = CNote, A = Natural>
+pub struct PitchClass<P = CNote, K = Natural>
 where
-    P: PitchClassRepr<Tag = A>,
-    A: Accidental,
+    P: PitchClassRepr<Tag = K>,
+    K: Accidental,
 {
     pub(crate) class: P,
-    pub(crate) kind: A,
+    pub(crate) kind: K,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]

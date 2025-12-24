@@ -49,8 +49,9 @@ pub mod consts {
 pub mod types {
     //! this module imimplements various types and other primitives used throughout the library
     #[doc(inline)]
-    pub use self::harmonic_funcs::*;
+    pub use self::{accents::*, harmonic_funcs::*};
 
+    mod accents;
     mod harmonic_funcs;
 }
 // re-exports

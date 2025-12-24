@@ -119,7 +119,10 @@ anyhow = ["dep:anyhow"]
 
 complex = ["dep:num-complex"]
 
-hashbrown = ["dep:hashbrown"]
+hashbrown = [
+  "dep:hashbrown", 
+  "rstmt-traits/hashbrown"
+]
 
 json = ["alloc", "serde_json"]
 

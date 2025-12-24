@@ -5,17 +5,21 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriadStore, RawTriadStoreMut, TriadCls};
-use rstmt_core::{Augmented, Diminished, Major, Minor};
+use crate::traits::{RawTriad, RawTriadMut, TriadCls};
+use rstmt_core::{Augmented, Diminished, Major, Minor, Octave};
 
 impl<T, S, K> TriadBase<S, K, T>
 where
     K: TriadCls,
-    S: RawTriadStore<Elem = T>,
+    S: RawTriad<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
     pub const fn new(chord: S, class: K) -> Self {
-        Self { chord, class }
+        Self {
+            chord,
+            class,
+            octave: Octave(0),
+        }
     }
     /// returns an immutable reference to the chord.
     pub const fn chord(&self) -> &S {
@@ -33,45 +37,51 @@ where
     pub const fn class_mut(&mut self) -> &mut K {
         &mut self.class
     }
+    pub const fn octave(&self) -> Octave {
+        self.octave
+    }
+    pub const fn octave_mut(&mut self) -> &mut Octave {
+        &mut self.octave
+    }
     /// returns a reference to the root note of the triad.
     pub fn root(&self) -> &T
     where
-        S: RawTriadStore,
+        S: RawTriad,
     {
         self.chord().root()
     }
     /// returns a mutable reference to the root note of the triad.
     pub fn root_mut(&mut self) -> &mut T
     where
-        S: RawTriadStoreMut,
+        S: RawTriadMut,
     {
         self.chord_mut().root_mut()
     }
     /// returns a reference to the third note of the triad.
     pub fn third(&self) -> &T
     where
-        S: RawTriadStore,
+        S: RawTriad,
     {
         self.chord().third()
     }
     /// returns a mutable reference to the third note of the triad.
     pub fn third_mut(&mut self) -> &mut T
     where
-        S: RawTriadStoreMut,
+        S: RawTriadMut,
     {
         self.chord_mut().third_mut()
     }
     /// returns a reference to the fifth note of the triad.
     pub fn fifth(&self) -> &T
     where
-        S: RawTriadStore,
+        S: RawTriad,
     {
         self.chord().fifth()
     }
     /// returns a mutable reference to the fifth note of the triad.
     pub fn fifth_mut(&mut self) -> &mut T
     where
-        S: RawTriadStoreMut,
+        S: RawTriadMut,
     {
         self.chord_mut().fifth_mut()
     }
@@ -85,16 +95,19 @@ where
         self.class = class;
         self
     }
+    #[inline]
     /// consumes the current instance to create another with the given chord
     pub fn with_chord<S2>(self, chord: S2) -> TriadBase<S2, K>
     where
-        S2: RawTriadStore<Elem = T>,
+        S2: RawTriad<Elem = T>,
     {
         TriadBase {
             chord,
             class: self.class,
+            octave: self.octave,
         }
     }
+    #[inline]
     /// consumes the current instance to create another with the given class
     pub fn with_class<K2>(self, class: K2) -> TriadBase<S, K2>
     where
@@ -103,7 +116,12 @@ where
         TriadBase {
             chord: self.chord,
             class,
+            octave: self.octave,
         }
+    }
+    #[inline]
+    pub fn with_octave(self, octave: Octave) -> Self {
+        Self { octave, ..self }
     }
     /// consumes the triad and returns the chord and class
     pub fn into_parts(self) -> (S, K) {

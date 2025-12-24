@@ -53,7 +53,7 @@ fn main() -> Result<(), TriadError> {
                     "    {}: {} {:?} {}",
                     j,
                     triad.class(),
-                    triad.notes(),
+                    triad.chord(),
                     edge_str
                 );
             }
@@ -63,7 +63,7 @@ fn main() -> Result<(), TriadError> {
             tracing::info!(
                 "  Final triad: {} {:?}",
                 final_triad.class(),
-                final_triad.notes()
+                final_triad.chord()
             );
             tracing::info!(
                 "  Target note {} is in final triad: {}",

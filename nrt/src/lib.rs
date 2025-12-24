@@ -20,7 +20,9 @@
 //!
 //! ## Examples
 //!
-//! ### _Example 1: Basic Usage of a Triad_
+//! ### _Basic Usage_
+//! 
+//! Create a C major triad and perform some basic operations.
 //!
 //! ```rust
 //! use rstmt_nrt::Triad;
@@ -29,16 +31,16 @@
 //! let mut triad = Triad::major(0);
 //!
 //! // verify the composition
-//! assert_eq!(triad.root(), 0);
-//! assert_eq!(triad.third(), 4);
-//! assert_eq!(triad.fifth(), 7);
+//! assert_eq!(triad.root(), &0);
+//! assert_eq!(triad.third(), &4);
+//! assert_eq!(triad.fifth(), &7);
 //! assert!(triad.is_major());
 //! // transform the triad using the parallel transformation
 //! let tp = triad.parallel();
 //! // verify the transformation
-//! assert_eq!(tp.root(), 0);
-//! assert_eq!(tp.third(), 3);
-//! assert_eq!(tp.fifth(), 7);
+//! assert_eq!(tp.root(), &0);
+//! assert_eq!(tp.third(), &3);
+//! assert_eq!(tp.fifth(), &7);
 //! assert!(tp.is_minor());
 //! // invert the transformation by applying it again
 //! assert_eq!(tp.parallel(), triad);
@@ -78,20 +80,22 @@ pub mod transform;
 pub mod triad;
 
 mod impls {
-    mod impl_std_triad;
     mod impl_triad_base;
     mod impl_triad_ext;
     mod impl_triad_repr;
+
+    // mod impl_dyn_triad_ext;
+    // mod impl_std_triad;
 }
 
 mod traits {
     //! this module implements various traits supporting the triad implementation
     #[doc(inline)]
-    pub use self::{raw_store::*, raw_triad::*, triad_kind::*};
+    pub use self::{raw_store::*, triad_kind::*, triadic::*};
 
     mod raw_store;
-    mod raw_triad;
     mod triad_kind;
+    mod triadic;
 }
 
 mod types {
