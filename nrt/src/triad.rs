@@ -42,7 +42,7 @@ pub type DefaultTriadChord<T = usize> = [T; 3];
 
 /// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its
 /// classification, and the element type used to represent a note within the triadic chord.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialOrd)]
+#[derive(Clone, Copy, Default, Eq, Hash, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
