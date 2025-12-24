@@ -505,7 +505,7 @@ impl<'a> MotionPlanner<'a> {
                 depths.insert(next_depth);
 
                 // Find edge ID if this triad exists in the tonnetz
-                let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
+                let next_edge_id = self.tonnetz().triads().iter().find_map(|(&id, facet)| {
                     if facet.chord() == next_triad.chord() {
                         Some(id)
                     } else {
@@ -527,7 +527,7 @@ impl<'a> MotionPlanner<'a> {
                 if next_triad.contains(&target_pitch) {
                     // Calculate path features
                     let features = self.analyze_path_features(&new_triads);
-                    let cost = features.distance + new_transforms.len();
+                    let cost = features.distance() + new_transforms.len();
 
                     // Create path
                     let path = Path {
@@ -560,7 +560,7 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Sort and return paths
-        result_paths.sort_by_key(|p| p.cost);
+        result_paths.sort_by_key(|p| p.cost());
         result_paths
     }
 

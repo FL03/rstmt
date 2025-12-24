@@ -28,11 +28,34 @@ pub struct Path {
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct PathFeatures {
     /// Smoothness of voice leading (sum of semitone movements)
-    pub(crate) distance: usize,
+    pub distance: usize,
     /// Changes in modality (i.e. major/minor or any other changes in classification)
-    pub(crate) modality_changes: usize,
+    pub modality_changes: usize,
     /// Count of each transformation type in the path
-    pub(crate) transform_counts: HashMap<LPR, usize>,
+    pub transform_counts: HashMap<LPR, usize>,
+}
+
+impl PathFeatures {
+    /// Creates a new, empty `PathFeatures` instance
+    pub fn new() -> Self {
+        Self {
+            distance: 0,
+            modality_changes: 0,
+            transform_counts: HashMap::new(),
+        }
+    }
+    /// Returns the total distance of the path
+    pub const fn distance(&self) -> usize {
+        self.distance
+    }
+    /// Returns the number of modality changes in the path
+    pub const fn modality_changes(&self) -> usize {
+        self.modality_changes
+    }
+    /// Returns a reference to the transformation counts
+    pub const fn transform_counts(&self) -> &HashMap<LPR, usize> {
+        &self.transform_counts
+    }
 }
 
 impl Path {
