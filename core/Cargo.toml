@@ -41,7 +41,7 @@ rayon-core = { optional = true, workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 # error-handling
-anyhow = { optional = true, workspace = true }
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # mathematics
 num-complex = { optional = true, workspace = true }
@@ -66,7 +66,6 @@ default = ["std"]
 
 full = [
   "default",
-  "anyhow",
   "complex",
   "json",
   "rand",
@@ -81,6 +80,7 @@ nightly = [
 # ************* [FF:Environments] *************
 std = [
   "alloc",
+  "anyhow/std",
   "contained/std",
   "hashbrown?/default",
   "num-complex?/std",
@@ -114,8 +114,6 @@ alloc = [
   "serde_json?/alloc",
   "variants/alloc",
 ]
-
-anyhow = ["dep:anyhow"]
 
 complex = ["dep:num-complex"]
 

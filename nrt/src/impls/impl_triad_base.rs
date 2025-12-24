@@ -6,7 +6,7 @@
 use crate::triad::TriadBase;
 
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
-use rstmt_core::{Augmented, Diminished, Major, Minor, Octave};
+use rstmt_core::Octave;
 
 impl<T, S, K> TriadBase<S, K, T>
 where
@@ -129,22 +129,18 @@ where
     }
     /// returns true if the triad is classified as an augmented triad.
     pub fn is_augmented(&self) -> bool {
-        use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<Augmented>()
+        self.class().is_augmented()
     }
     /// returns true if the triad is classified as a diminished triad.
     pub fn is_diminished(&self) -> bool {
-        use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<Diminished>()
+        self.class().is_diminished()
     }
     /// returns true if the triad is classified as a major triad.
     pub fn is_major(&self) -> bool {
-        use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<Major>()
+        self.class().is_major()
     }
     /// returns true if the triad is classified as a minor triad.
     pub fn is_minor(&self) -> bool {
-        use core::any::TypeId;
-        TypeId::of::<K>() == TypeId::of::<Minor>()
+        self.class().is_minor()
     }
 }

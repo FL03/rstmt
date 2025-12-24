@@ -64,12 +64,15 @@ impl TriadBase<[usize; 3], TriadClass, usize> {
         // all IntoNote implementations should* already compute pmod
         let note = root.into_aspn();
         let root = note.class();
-        let [a, .., c] = class.intervals();
-        let third = (root + a).pmod();
-        let fifth = (root + c).pmod();
+        // generate the chord factors from the root and class
+        let chord = [
+            root,
+            (root + class.root()).pmod(),
+            (root + class.fifth()).pmod(),
+        ];
         Self {
             class,
-            chord: [root, third, fifth],
+            chord,
             octave: note.octave(),
         }
     }

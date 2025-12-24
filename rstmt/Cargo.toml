@@ -42,7 +42,7 @@ path = "benches/default.rs"
 [[example]]
 doc-scrape-examples = true
 name = "motion"
-required-features = ["nrt", "std"]
+required-features = ["std", "tonnetz"]
 
 [[example]]
 doc-scrape-examples = true
@@ -69,9 +69,11 @@ default = [
 
 full = [
   "default",
-  "anyhow",
+  "complex",
+  "hashbrown",
   "rand",
   "serde",
+  "tonnetz",
 ]
 
 nightly = [
@@ -108,11 +110,6 @@ wasm = [
 alloc = [
   "rstmt-core/alloc",
   "rstmt-nrt?/alloc",
-]
-
-anyhow = [
-  "rstmt-core/anyhow",
-  "rstmt-nrt?/anyhow",
 ]
 
 complex = [

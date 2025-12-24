@@ -4,7 +4,8 @@
 */
 use rstmt::PitchMod;
 
-// Expanded triad types in Neo-Riemannian theory
+/// The [`TriadClass`] implementation enumerates the allowed triad classifications determined
+/// by the intervals between the chord factors.
 #[derive(
     Clone,
     Copy,
@@ -39,41 +40,28 @@ pub enum TriadClass {
 }
 
 impl TriadClass {
-    pub fn try_from_notes(a: usize, b: usize, c: usize) -> crate::Result<Self> {
-        let (a, b, c) = (a as isize, b as isize, c as isize);
-        let rt = (b - a).pmod();
-        let tf = (c - b).pmod();
-        let rf = (c - a).pmod();
-        if matches!(rt, 3 | 4) && matches!(tf, 3 | 4) && matches!(rf, 6..=8) && rt + tf == rf {
-            let class = match [rt, tf, rf] {
-                [4, 3, 7] => TriadClass::Major,
-                [3, 4, 7] => TriadClass::Minor,
-                [4, 4, 8] => TriadClass::Augmented,
-                [3, 3, 6] => TriadClass::Diminished,
-                _ => unreachable!(),
-            };
-            return Ok(class);
-        }
-        Err(crate::TriadError::InvalidTriad)
+    pub fn try_from_notes(a: isize, b: isize, c: isize) -> crate::Result<Self> {
+        Self::try_from_arr([a, b, c])
     }
+    #[cfg(feature = "alloc")]
     /// try to determine the class of a triad from an array of three notes
-    pub fn try_from_arr(arr: [usize; 3]) -> crate::Result<Self> {
+    pub fn try_from_arr(notes: [isize; 3]) -> crate::Result<Self> {
         use itertools::Itertools;
-        let mut res = Err(crate::TriadError::InvalidTriadClass);
-        for (&a, &b, &c) in arr
+        let intervals = notes
             .iter()
-            .circular_tuple_windows()
-            .chain(arr.iter().rev().circular_tuple_windows())
-        {
-            if let Ok(class) = Self::try_from_notes(a, b, c) {
-                res = Ok(class);
-                break;
-            }
+            .combinations(2)
+            .map(|v| (v[1] - v[0]).pmod())
+            .collect::<Vec<_>>();
+        match intervals[..] {
+            [4, 7, 3] => Ok(Self::Major),
+            [3, 7, 4] => Ok(Self::Minor),
+            [4, 8, 4] => Ok(Self::Augmented),
+            [3, 6, 3] => Ok(Self::Diminished),
+            _ => Err(crate::TriadError::InvalidTriad),
         }
-        res
     }
-    /// get the relative triad type
-    pub fn relative(self) -> Self {
+    /// returns the class variant that is _relative_ to the current one
+    pub const fn relative(&self) -> Self {
         match self {
             TriadClass::Major => TriadClass::Minor,
             TriadClass::Minor => TriadClass::Major,
@@ -81,46 +69,51 @@ impl TriadClass {
             TriadClass::Diminished => TriadClass::Augmented,
         }
     }
-    /// returns the intervals corresponding to the triad type
-    pub fn intervals(self) -> [usize; 3] {
+    /// returns the intervals corresponding to the triad type as arrays of three `usize` values
+    /// ordered as: [root_to_third, root_to_fifth, third_to_fifth]
+    pub const fn intervals(&self) -> [usize; 3] {
         match self {
-            TriadClass::Major => [4, 3, 7],
-            TriadClass::Minor => [3, 4, 7],
-            TriadClass::Augmented => [4, 4, 8],
-            TriadClass::Diminished => [3, 3, 6],
+            TriadClass::Major => [4, 7, 3],
+            TriadClass::Minor => [3, 7, 4],
+            TriadClass::Augmented => [4, 8, 4],
+            TriadClass::Diminished => [3, 6, 3],
         }
     }
-    pub fn thirds(&self) -> (usize, usize) {
-        use TriadClass::*;
+    /// returns the two third intervals defining the current variant
+    pub const fn thirds(&self) -> (usize, usize) {
+        (self.root(), self.third())
+    }
+    /// returns the **interval** between the root and third chord factors
+    pub const fn root(&self) -> usize {
         match self {
-            Augmented => (4, 4),
-            Diminished => (3, 3),
-            Major => (4, 3),
-            Minor => (3, 4),
+            TriadClass::Major => 4,
+            TriadClass::Minor => 3,
+            TriadClass::Augmented => 4,
+            TriadClass::Diminished => 3,
         }
     }
-    /// returns the interval from the root to the third chord factor; defined by the class
-    pub fn root_to_third(self) -> usize {
-        self.intervals()[0]
+    /// returns the **interval** between the third and fifth chord factors
+    pub const fn third(&self) -> usize {
+        match self {
+            TriadClass::Major => 3,
+            TriadClass::Minor => 4,
+            TriadClass::Augmented => 4,
+            TriadClass::Diminished => 3,
+        }
     }
-    /// returns the interval from the third to the fifth chord factor; defined by the class
-    pub fn third_to_fifth(self) -> usize {
-        self.intervals()[1]
+    /// returns the **interval** between the root and fifth chord factors
+    pub const fn fifth(&self) -> usize {
+        match self {
+            TriadClass::Major => 7,
+            TriadClass::Minor => 7,
+            TriadClass::Augmented => 8,
+            TriadClass::Diminished => 6,
+        }
     }
-    /// returns the interval from the root to the fifth chord factor; defined by the class
-    pub fn root_to_fifth(self) -> usize {
-        self.intervals()[2]
-    }
+    /// returns true if the given chord factors satisfy the requirements of the current class
     pub fn is_valid(&self, root: usize, third: usize, fifth: usize) -> bool {
-        let [a, b, c] = self.intervals();
-        // compute the interval between the root and third
-        let rt = third - root;
-        // compute the interval between the third and fifth
-        let tf = fifth - third;
-        // compute the interval between the root and fifth
-        let rf = fifth - root;
-
-        rt == a && tf == b && rf == c
+        let [rt, rf, tf] = self.intervals();
+        (third - root).pmod() == rt && (fifth - root).pmod() == rf && (fifth - third).pmod() == tf
     }
     /// validate a chord's composition satisfies the requirements of the current class
     pub fn validate(&self, notes: &[usize; 3]) -> bool {
@@ -128,7 +121,7 @@ impl TriadClass {
         let r = notes[0] as isize;
         let t = notes[1] as isize;
         let f = notes[2] as isize;
-        (t - r).pmod() as usize == a && (f - t).pmod() as usize == b && (f - r).pmod() as usize == c
+        (t - r).pmod() as usize == a && (f - t).pmod() as usize == c && (f - r).pmod() as usize == b
     }
 }
 
@@ -137,6 +130,34 @@ impl crate::TriadCls for TriadClass {
 
     fn new() -> Self {
         Self::default()
+    }
+
+    fn is_major(&self) -> bool {
+        matches!(self, TriadClass::Major)
+    }
+
+    fn is_minor(&self) -> bool {
+        matches!(self, TriadClass::Minor)
+    }
+
+    fn is_augmented(&self) -> bool {
+        matches!(self, TriadClass::Augmented)
+    }
+
+    fn is_diminished(&self) -> bool {
+        matches!(self, TriadClass::Diminished)
+    }
+
+    fn root(&self) -> usize {
+        self.root()
+    }
+
+    fn fifth(&self) -> usize {
+        self.fifth()
+    }
+
+    fn third(&self) -> usize {
+        self.third()
     }
 }
 
@@ -157,23 +178,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_class_creation() {
-        let class = TriadClass::try_from_arr([0, 4, 7]).unwrap();
+    fn test_class_creation() -> crate::Result<()> {
+        let class = TriadClass::try_from_arr([0, 4, 7])?;
         assert!(class.is_major());
-        let class = TriadClass::try_from_arr([0, 3, 7]).unwrap();
+        let class = TriadClass::try_from_arr([0, 3, 7])?;
         assert!(class.is_minor());
-        let class = TriadClass::try_from_arr([0, 4, 8]).unwrap();
+        let class = TriadClass::try_from_arr([0, 4, 8])?;
         assert!(class.is_augmented());
-        let class = TriadClass::try_from_arr([0, 3, 6]).unwrap();
+        let class = TriadClass::try_from_arr([0, 3, 6])?;
         assert!(class.is_diminished());
 
-        let class = TriadClass::try_from_arr([0, 7, 4]).unwrap();
-        assert!(class.is_major());
-        let class = TriadClass::try_from_arr([0, 7, 3]).unwrap();
-        assert!(class.is_minor());
-        let class = TriadClass::try_from_arr([8, 0, 4]).unwrap();
-        assert!(class.is_augmented());
-        let class = TriadClass::try_from_arr([6, 0, 3]).unwrap();
-        assert!(class.is_diminished());
+        assert!(TriadClass::try_from_arr([0, 7, 4]).is_err());
+        assert!(TriadClass::try_from_arr([0, 5, 9]).is_err());
+
+        Ok(())
     }
 }

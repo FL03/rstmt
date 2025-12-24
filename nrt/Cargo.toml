@@ -41,7 +41,7 @@ hashbrown = { optional = true, workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
 # error-handling
-anyhow = { optional = true, workspace = true }
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # mathematics
 num-traits = { workspace = true }
@@ -60,14 +60,10 @@ smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
 
 [features]
-default = [
-  "std",
-  "tonnetz",
-]
+default = ["std", "tonnetz"]
 
 full = [
   "default",
-  "anyhow",
   "hashbrown",
   "json",
   "rand",
@@ -90,7 +86,9 @@ tonnetz = [
 # ************* [FF:Environments] *************
 std = [
   "alloc",
+  "anyhow/std",
   "hashbrown?/default",
+  "itertools/use_std",
   "num-traits/std",
   "rand?/std",
   "rshyper/std",
@@ -112,17 +110,12 @@ wasm = [
 # ************* [FF:Dependencies] *************
 alloc = [
   "hashbrown?/alloc",
+  "itertools/use_alloc",
   "rshyper/alloc",
   "rstmt-core/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
-]
-
-anyhow = [
-  "dep:anyhow",
-  "rstmt-core/anyhow",
-  "rshyper/anyhow",
 ]
 
 hashbrown = [

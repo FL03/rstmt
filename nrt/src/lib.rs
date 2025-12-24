@@ -21,7 +21,7 @@
 //! ## Examples
 //!
 //! ### _Basic Usage_
-//! 
+//!
 //! Create a C major triad and perform some basic operations.
 //!
 //! ```rust
@@ -31,19 +31,15 @@
 //! let mut triad = Triad::major(0);
 //!
 //! // verify the composition
-//! assert_eq!(triad.root(), &0);
-//! assert_eq!(triad.third(), &4);
-//! assert_eq!(triad.fifth(), &7);
-//! assert!(triad.is_major());
+//! assert_eq! { triad, [0, 4, 7] };
+//! assert! { triad.is_major() };
 //! // transform the triad using the parallel transformation
 //! let tp = triad.parallel();
 //! // verify the transformation
-//! assert_eq!(tp.root(), &0);
-//! assert_eq!(tp.third(), &3);
-//! assert_eq!(tp.fifth(), &7);
-//! assert!(tp.is_minor());
+//! assert_eq! { tp, [0, 3, 7] };
+//! assert! { tp.is_minor() };
 //! // invert the transformation by applying it again
-//! assert_eq!(tp.parallel(), triad);
+//! assert_eq! { tp.parallel(), triad };
 //! ```
 //!
 //! ## Resources

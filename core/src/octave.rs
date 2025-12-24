@@ -23,7 +23,7 @@ pub trait IntoOctave<T> {
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(default, transparent)
+    serde(transparent)
 )]
 #[repr(transparent)]
 pub struct Octave<T = isize>(pub T);
