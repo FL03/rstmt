@@ -1092,6 +1092,7 @@ dependencies = [
  "getrandom",
  "hashbrown 0.16.1",
  "itertools 0.14.0",
+ "num-complex",
  "num-traits",
  "paste",
  "rand 0.9.2",

@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["alloc", "complex", "hashbrown", "serde", "std"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -44,6 +44,7 @@ rayon-core = { optional = true, workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 # mathematics
+num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
 # randomization
 getrandom = { optional = true, workspace = true }
@@ -64,8 +65,10 @@ default = ["std", "tonnetz"]
 
 full = [
   "default",
+  "complex",
   "hashbrown",
   "json",
+  "rand",
   "serde",
 ]
 
@@ -88,6 +91,7 @@ std = [
   "anyhow/std",
   "hashbrown?/default",
   "itertools/use_std",
+  "num-complex?/std",
   "num-traits/std",
   "rand?/std",
   "rshyper/std",
@@ -117,6 +121,11 @@ alloc = [
   "variants/alloc",
 ]
 
+complex = [
+  "dep:num-complex",
+  "rstmt-core/complex",
+]
+
 hashbrown = [
   "dep:hashbrown",
   "rstmt-core/hashbrown",
@@ -132,6 +141,7 @@ json = [
 rand = [
   "dep:rand",
   "dep:rand_distr",
+  "num-complex?/rand",
   "rng",
   "rshyper/rand",
   "rstmt-core/rand",
@@ -156,6 +166,7 @@ serde = [
   "dep:serde",
   "dep:serde_derive",
   "hashbrown?/serde",
+  "num-complex?/serde",
   "rshyper/serde",
   "rstmt-core/serde",
   "serde?/derive",
