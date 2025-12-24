@@ -42,7 +42,7 @@ pub type Triad = TriadBase<[usize; 3], TriadClass, usize>;
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(default, rename_all = "snake_case")
+    serde(rename_all = "snake_case")
 )]
 pub struct TriadBase<S = [usize; 3], K = Major, T = <S as RawChord>::Elem>
 where
