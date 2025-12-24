@@ -9,6 +9,10 @@ use rstmt_core::RawChord;
 /// the [`TriadBase`] instance to be generic over its _container_.
 pub trait RawTriad: RawChord {
     private! {}
+
+    fn from_arr(arr: [Self::Elem; 3]) -> Self
+    where
+        Self: Sized;
     /// returns a reference to the root note of the triad.
     fn root(&self) -> &Self::Elem;
     /// returns a reference to the third note of the triad.
@@ -47,6 +51,12 @@ pub trait RawTriadMut: RawTriad {
 impl<T> RawTriad for (T, T, T) {
     seal! {}
 
+    fn from_arr([a, b, c]: [Self::Elem; 3]) -> Self
+        where
+            Self: Sized {
+        (a, b, c)
+    }
+
     fn root(&self) -> &T {
         &self.0
     }
@@ -75,6 +85,13 @@ impl<T> RawTriadMut for (T, T, T) {
 
 impl<T> RawTriad for [T; 3] {
     seal! {}
+
+    fn from_arr(arr: [Self::Elem; 3]) -> Self
+    where
+        Self: Sized,
+    {
+        arr
+    }
 
     fn root(&self) -> &T {
         &self[0]

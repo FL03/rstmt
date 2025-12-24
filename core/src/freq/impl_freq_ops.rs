@@ -3,7 +3,7 @@
     authors: @FL03
 */
 use super::Frequency;
-use crate::freq::{classify_freq_by_scale, get_frequency_from_pitch_class};
+use crate::freq::{classify_freq_by_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive, Num, One, Zero};
 use rstmt_traits::ClassifyBy;
 
@@ -54,7 +54,7 @@ where
     /// F=\gamma\cdot{2^\frac{n}{12}}
     /// ```
     pub fn compute_freq_from_scale(n: isize, base: Option<T>) -> Option<Self> {
-        get_frequency_from_pitch_class(n, base).map(Frequency)
+        compute_freq_of_pitch(n, base).map(Frequency)
     }
     /// Compute the pitch class of a frequency (in hertz), using the formula:
     ///
@@ -62,7 +62,7 @@ where
     /// n = 12\cdot\log_2(\frac{F}{\gamma})
     /// ```
     pub fn classify_by(&self, base: Option<T>) -> Option<isize> {
-        classify_freq_by_scale(**self, base)
+        classify_freq_by_scale(*self, base)
     }
 }
 

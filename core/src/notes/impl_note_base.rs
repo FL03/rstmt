@@ -54,6 +54,15 @@ where
     }
 }
 
+impl<C, T> core::fmt::Debug for NoteBase<T, C>
+where
+    C: PitchClassRepr + core::fmt::Display,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{}.{}", self.class, self.octave)
+    }
+}
+
 impl<C, T> core::fmt::Display for NoteBase<T, C>
 where
     C: PitchClassRepr + core::fmt::Display,

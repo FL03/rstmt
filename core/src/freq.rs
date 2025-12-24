@@ -18,7 +18,7 @@ use num_traits::{Float, FromPrimitive};
 /// ```math
 /// F=\beta\cdot{2^{\frac{n}{12}}}
 /// ```
-pub(crate) fn get_frequency_from_pitch_class<T>(n: isize, base: Option<T>) -> Option<T>
+pub(crate) fn compute_freq_of_pitch<T>(n: isize, base: Option<T>) -> Option<T>
 where
     T: Float + FromPrimitive,
 {
@@ -32,7 +32,7 @@ where
 /// ```math
 /// n = 12\cdot\log_{2}(\frac{F}{\beta})
 /// ```
-pub(crate) fn classify_freq_by_scale<T>(freq: T, base: Option<T>) -> Option<isize>
+pub(crate) fn classify_freq_by_scale<T>(Frequency(freq): Frequency<T>, base: Option<T>) -> Option<isize>
 where
     T: Float + FromPrimitive,
 {
@@ -123,6 +123,6 @@ mod tests {
         let res = base.compute(n).unwrap();
 
         assert!((res - f_exp).abs() < 1e-5);
-        assert_eq!(base.from_scale_degree(res), Some(n));
+        assert_eq!(base.from_scale_degree(res.into_frequency()), Some(n));
     }
 }

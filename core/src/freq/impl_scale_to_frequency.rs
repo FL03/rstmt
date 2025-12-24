@@ -3,7 +3,7 @@
     Created At: 2025.12.21:08:58:02
     Contrib: @FL03
 */
-use super::{Frequency, ScaleToFrequency, classify_freq_by_scale, get_frequency_from_pitch_class};
+use super::{Frequency, ScaleToFrequency, classify_freq_by_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive};
 
 impl<T> ScaleToFrequency<T> {
@@ -17,7 +17,7 @@ impl<T> ScaleToFrequency<T> {
     /// ```math
     /// n = 12 * log2(f / base)
     /// ```
-    pub fn from_scale_degree(&self, freq: T) -> Option<isize>
+    pub fn from_scale_degree(&self, freq: Frequency<T>) -> Option<isize>
     where
         T: Float + FromPrimitive,
     {
@@ -46,6 +46,6 @@ impl<T> ScaleToFrequency<T> {
         T: Float + FromPrimitive,
     {
         let anchor = **self.anchor();
-        get_frequency_from_pitch_class(n, Some(anchor))
+        compute_freq_of_pitch(n, Some(anchor))
     }
 }
