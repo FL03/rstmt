@@ -1,5 +1,5 @@
 /*
-    Appellation: chord <module>
+    Appellation: raw_chord <module>
     Created At: 2025.12.23:17:32:04
     Contrib: @FL03
 */
@@ -9,6 +9,10 @@
 pub trait RawChord {
     type Elem;
 }
+
+/// The [`RawChordMut`] trait extends the [`RawChord`] trait to provide mutable access to the
+/// underlying elements of the chord representation.
+pub trait RawChordMut: RawChord {}
 
 pub trait ChordRepr: RawChord {
     /// returns the number of elements in the chord representation.

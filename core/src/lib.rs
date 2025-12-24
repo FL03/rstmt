@@ -31,6 +31,7 @@ pub(crate) mod macros {
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+pub mod chord;
 pub mod error;
 pub mod freq;
 pub mod intervals;
@@ -57,7 +58,15 @@ pub mod types {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    consts::*, error::*, freq::*, intervals::*, notes::*, octave::*, pitch::*, types::*,
+    chord::{RawChord, RawChordMut},
+    consts::*,
+    error::*,
+    freq::*,
+    intervals::*,
+    notes::*,
+    octave::*,
+    pitch::*,
+    types::*,
 };
 #[doc(inline)]
 pub use rstmt_traits as traits;
@@ -68,12 +77,12 @@ pub use rstmt_traits::prelude::*;
 pub mod prelude {
     pub use rstmt_traits::prelude::*;
 
+    pub use crate::chord::prelude::*;
     pub use crate::consts::*;
-    pub use crate::types::*;
-
     pub use crate::freq::*;
     pub use crate::intervals::prelude::*;
     pub use crate::notes::*;
     pub use crate::octave::*;
     pub use crate::pitch::prelude::*;
+    pub use crate::types::*;
 }

@@ -23,15 +23,14 @@ where
         }
     }
     /// Create a new triad from a root pitch and class
-    pub fn from_root_with_class(root: isize, class: K) -> Self
+    pub fn from_root_with_class(root: T, class: K) -> Self
     where
-        T: FromPrimitive,
-    {
-        // generate the chord factors from the root and class
+        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    {        // generate the chord factors from the root and class
         let chord = [
-            T::from_isize(root).unwrap(),
-            T::from_isize((root + class.root() as isize).pmod()).unwrap(),
-            T::from_isize((root + class.fifth() as isize).pmod()).unwrap(),
+            root,
+            (root + T::from_usize(class.root()).unwrap()).pmod(),
+            (root + T::from_usize(class.fifth()).unwrap()).pmod(),
         ];
         Self {
             class,

@@ -35,6 +35,8 @@ pub trait RawTriad: RawChord {
     /// returns a reference to the fifth note of the triad.
     fn fifth(&self) -> &Self::Elem;
 }
+/// The [`RawTriadMut`] trait is used to extend the [`RawTriad`] trait to provide mutable access
+/// to the elements of a triad.
 pub trait RawTriadMut: RawTriad {
     /// returns a mutable reference to the root note of the triad.
     fn root_mut(&mut self) -> &mut Self::Elem;
