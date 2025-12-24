@@ -5,25 +5,8 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriad, RawTriadMut, TriadCls, Triadic};
+use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::Factors;
-
-impl<T, K> Triadic<T> for TriadBase<[T; 3], K, T>
-where
-    K: TriadCls,
-{
-    type Store<U> = [U; 3];
-
-    seal!();
-
-    fn store(&self) -> &Self::Store<T> {
-        self.chord()
-    }
-
-    fn store_mut(&mut self) -> &mut Self::Store<T> {
-        self.chord_mut()
-    }
-}
 
 impl<T, S, K> core::fmt::Display for TriadBase<S, K, T>
 where

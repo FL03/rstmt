@@ -5,9 +5,10 @@
 */
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 
-pub trait ScalarNum
+pub trait Numerical
 where
     Self: Clone
+        + Copy
         + Default
         + PartialEq
         + PartialOrd
@@ -15,6 +16,7 @@ where
         + ToPrimitive
         + One
         + Zero
+        + core::fmt::Debug
         + core::ops::Add<Output = Self>
         + core::ops::Sub<Output = Self>
         + core::ops::Mul<Output = Self>
@@ -25,50 +27,36 @@ where
         + core::ops::MulAssign
         + core::ops::RemAssign
         + core::ops::SubAssign,
+{
+}
+
+pub trait MusicScalar
+where
+    Self: Numerical + crate::PyMod<Output = Self> + crate::PitchMod<Output = Self>,
 {
     private! {}
 }
-
 /*
  ************* Implementations *************
 */
-impl<T> ScalarNum for T
+
+impl<T> MusicScalar for T
 where
-    T: Clone
-        + Default
-        + PartialEq
-        + PartialOrd
-        + FromPrimitive
-        + ToPrimitive
-        + One
-        + Zero
-        + core::ops::Add<Output = Self>
-        + core::ops::Sub<Output = Self>
-        + core::ops::Mul<Output = Self>
-        + core::ops::Div<Output = Self>
-        + core::ops::Rem<Output = Self>
-        + core::ops::AddAssign
-        + core::ops::DivAssign
-        + core::ops::MulAssign
-        + core::ops::RemAssign
-        + core::ops::SubAssign,
+    T: Numerical + crate::PyMod<Output = Self> + crate::PitchMod<Output = Self>,
 {
     seal! {}
 }
-// macro_rules! impl_number {
-//     (impl $trait:ident for { $($T:ty),* $(,)? }) => {
-//         $(
-//             impl $trait for $T {
-//                 seal! {}
-//             }
-//         )*
-//     };
-// }
 
-// impl_number! {
-//     impl ScalarNum for {
-//         u8, u16, u32, u64, u128, usize,
-//         i8, i16, i32, i64, i128, isize,
-//         f32, f64
-//     }
-// }
+macro_rules! numerical {
+    (impl $trait:ident for { $($T:ty),* $(,)? }) => {
+        $(impl $trait for $T {})*
+    };
+}
+
+numerical! {
+    impl Numerical for {
+        u8, u16, u32, u64, u128, usize,
+        i8, i16, i32, i64, i128, isize,
+        f32, f64
+    }
+}

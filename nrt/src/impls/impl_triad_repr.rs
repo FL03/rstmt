@@ -5,11 +5,10 @@
 */
 use crate::triad::TriadBase;
 
-use crate::error::TriadError;
 use crate::traits::RawTriad;
 use crate::types::{LPR, TriadClass};
-use num_traits::{Float, FromPrimitive, ToPrimitive};
-use rstmt_core::{Augmented, Diminished, IntoAspn, Major, Minor, PitchMod};
+use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
+use rstmt_core::{Augmented, Diminished, Major, Minor, PitchMod};
 
 impl<S, T> TriadBase<S, Augmented, T>
 where
@@ -67,12 +66,12 @@ where
     }
 }
 
-impl<T> TriadBase<[T; 3], TriadClass, T> {
+impl<T> TriadBase<[T; 3], TriadClass, T>
+where
+    T: Copy + ToPrimitive + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
+{
     /// creates a new augmented triad from the given root
-    pub fn augmented(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
+    pub fn augmented(root: T) -> Self {
         Self::from_root_with_class(root, TriadClass::Augmented)
     }
     /// creates a new diminished triad from the given root
@@ -96,13 +95,12 @@ impl<T> TriadBase<[T; 3], TriadClass, T> {
     {
         Self::from_root_with_class(root, TriadClass::Minor)
     }
-    // return the barycentric coordinates of the given note w.r.t the current triad
+    /// return the barycentric coordinates of the given note w.r.t the current triad
     pub fn barycentric<N, U>(&self, p: N) -> [U; 3]
     where
-        T: ToPrimitive,
-        N: IntoAspn,
+        T: Copy + ToPrimitive,
+        N: rstmt_core::IntoAspn,
         U: Float + FromPrimitive,
-        [T; 3]: Copy,
     {
         let note = p.into_aspn();
         let px = U::from_usize(note.class().pmod()).unwrap();
@@ -129,52 +127,23 @@ impl<T> TriadBase<[T; 3], TriadClass, T> {
     {
         self.class().validate(self.chord())
     }
-}
-
-#[cfg(feature = "alloc")]
-impl<T> TriadBase<[T; 3], TriadClass> {
-    /// returns the number of common tones between two triads
-    pub fn common_tones(&self, other: &Self) -> Vec<T>
-    where
-        T: Clone + PartialEq,
-    {
-        self.chord()
-            .iter()
-            .cloned()
-            .filter(|n| other.contains(n))
-            .collect::<Vec<T>>()
-    }
-}
-
-impl TriadBase<[usize; 3], TriadClass> {
-    /// check if the triad contains a given pitch class
-    pub fn contains<Q>(&self, pitch: &Q) -> bool
-    where
-        Q: core::borrow::Borrow<usize>,
-    {
-        self.chord().contains(pitch.borrow())
-    }
     /// returns some [`LPR`] transformation, iff they are within a single _step_ of one another
     /// otherwise, returns [`None`](Option::None).
-    pub fn is_neighbor(&self, other: &Self) -> Option<LPR> {
+    pub fn is_neighbor(&self, other: &Self) -> Option<LPR>
+    where
+        T: Num,
+    {
         LPR::iter().find(|&t| {
-            let result = self.transform(t);
+            let result = self.transform(t).expect("transformation failed");
             result == *other
         })
     }
-    #[cfg(feature = "alloc")]
-    /// creates an instance of the transformer for the current triad
-    pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
-        crate::transform::TriadNavigator::new(self)
-    }
-    /// apply a single [LPR] transformation to a triad
-    pub fn transform(&self, transform: LPR) -> Self {
-        transform.apply(self)
-    }
-    /// apply a single transformation to a triad in-place, mutating the current instance
-    pub fn transform_inplace(&mut self, transform: LPR) {
-        *self = self.transform(transform);
-    }
+}
+impl<T> TriadBase<[T; 3], TriadClass, T>
+where
+    T: Copy + ToPrimitive + FromPrimitive + Num + PitchMod<Output = T>,
+{
+    // TODO: create a `Walk` iterator using the given transformations and
     /// apply a series of transformations to a triad
     pub fn walk<I>(&self, path: I) -> Self
     where
@@ -190,20 +159,16 @@ impl TriadBase<[usize; 3], TriadClass> {
     {
         *self = self.walk(path);
     }
-    /// try to apply a single transformation to a triad
-    pub fn try_transform(&self, transform: LPR) -> Result<Self, TriadError> {
-        transform.try_apply(self)
+}
+
+impl TriadBase<[usize; 3], TriadClass> {
+    #[cfg(feature = "alloc")]
+    /// creates an instance of the transformer for the current triad
+    pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
+        crate::transform::TriadNavigator::new(self)
     }
-    /// apply the leading transformation to the triad
-    pub fn leading(&self) -> Result<Self, TriadError> {
-        self.try_transform(LPR::Leading)
-    }
-    /// apply the parallel transformation to the triad
-    pub fn parallel(&self) -> Result<Self, TriadError> {
-        self.try_transform(LPR::Parallel)
-    }
-    /// apply the relative transformation to the triad
-    pub fn relative(&self) -> Result<Self, TriadError> {
-        self.try_transform(LPR::Relative)
+    /// apply a single transformation to a triad in-place, mutating the current instance
+    pub fn transform_inplace(&mut self, transform: LPR) {
+        *self = self.transform(transform).expect("transformation failed");
     }
 }

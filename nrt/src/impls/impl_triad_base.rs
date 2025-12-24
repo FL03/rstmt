@@ -6,7 +6,8 @@
 use crate::triad::TriadBase;
 
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
-use num_traits::{Float, FromPrimitive, ToPrimitive};
+use crate::types::LPR;
+use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
 use rstmt_core::{Octave, PitchMod};
 
 impl<T, S, K> TriadBase<S, K, T>
@@ -25,8 +26,9 @@ where
     /// Create a new triad from a root pitch and class
     pub fn from_root_with_class(root: T, class: K) -> Self
     where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {        // generate the chord factors from the root and class
+        T: Copy + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
+    {
+        // generate the chord factors from the root and class
         let chord = [
             root,
             (root + T::from_usize(class.root()).unwrap()).pmod(),
@@ -169,5 +171,66 @@ where
         let y = U::from_isize(*self.octave)?;
         let x = self.chord().clone().into_iter().sum::<U>() / U::from_u8(3)?;
         Some([x, y])
+    }
+
+    /// returns true if the triad contains the given note
+    pub fn contains<Q>(&self, note: &Q) -> bool
+    where
+        for<'a> &'a S: IntoIterator<Item = &'a T>,
+        T: PartialEq,
+        Q: core::borrow::Borrow<T>,
+    {
+        self.chord().into_iter().any(|n| n == note.borrow())
+    }
+    /// returns a collection containing any tones common to both triads
+    pub fn common_tones(&self, other: &Self) -> Vec<T>
+    where
+        T: Clone + PartialEq,
+        for<'a> &'a S: IntoIterator<Item = &'a T>,
+    {
+        self.chord()
+            .into_iter()
+            .cloned()
+            .filter(|n| other.contains(n))
+            .collect::<Vec<T>>()
+    }
+}
+
+impl<S, T, K> TriadBase<S, K, T>
+where
+    S: RawTriad<Elem = T>,
+    K: TriadCls,
+    T: Copy + PitchMod<Output = T> + Num + FromPrimitive + ToPrimitive,
+{
+    pub fn transform<Q>(&self, step: LPR) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    where
+        K: TriadCls<Rel = Q>,
+        Q: TriadCls<Rel = K>,
+    {
+        step.try_apply(self)
+    }
+    /// apply the leading transformation to the triad
+    pub fn leading<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    where
+        K: TriadCls<Rel = Q>,
+        Q: TriadCls<Rel = K>,
+    {
+        self.transform(LPR::Leading)
+    }
+    /// apply the parallel transformation to the triad
+    pub fn parallel<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    where
+        K: TriadCls<Rel = Q>,
+        Q: TriadCls<Rel = K>,
+    {
+        self.transform(LPR::Parallel)
+    }
+    /// apply the relative transformation to the triad
+    pub fn relative<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    where
+        K: TriadCls<Rel = Q>,
+        Q: TriadCls<Rel = K>,
+    {
+        self.transform(LPR::Relative)
     }
 }

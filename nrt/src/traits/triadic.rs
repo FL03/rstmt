@@ -1,10 +1,10 @@
 /*
-    Appellation: raw_triad <module>
-    Created At: 2025.12.20:10:36:11
+    Appellation: triadic <module>
+    Created At: 2025.12.24:15:24:47
     Contrib: @FL03
 */
 #![allow(deprecated)]
-use crate::{RawTriad, RawTriadMut};
+use crate::{RawTriad, RawTriadMut, TriadBase};
 
 #[doc(hidden)]
 /// The [`Triadic`] trait defines the interface for all implementations of triads.
@@ -81,5 +81,22 @@ impl<T> Triadic<T> for [T; 3] {
 
     fn store_mut(&mut self) -> &mut Self::Store<T> {
         self
+    }
+}
+
+impl<T, K> Triadic<T> for TriadBase<[T; 3], K, T>
+where
+    K: crate::TriadCls,
+{
+    type Store<U> = [U; 3];
+
+    seal! {}
+
+    fn store(&self) -> &Self::Store<T> {
+        self.chord()
+    }
+
+    fn store_mut(&mut self) -> &mut Self::Store<T> {
+        self.chord_mut()
     }
 }

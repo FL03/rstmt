@@ -2,7 +2,11 @@
     Appellation: transform <module>
     Contrib: @FL03
 */
-use crate::{Triad, TriadClass, TriadError};
+use crate::error::TriadError;
+use crate::traits::{RawTriad, TriadCls};
+use crate::triad::{Triad, TriadBase};
+use crate::types::TriadClass;
+use num_traits::{FromPrimitive, Num, ToPrimitive};
 use rstmt::PitchMod;
 
 /// Enumerates primary available transformations in Neo-Riemannian theory.
@@ -37,7 +41,6 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
-    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -67,51 +70,133 @@ pub enum LPR {
 }
 
 impl LPR {
+    /// a functional constructor returning a [`Leading`](LPR::Leading) transformation
+    pub const fn leading() -> Self {
+        LPR::Leading
+    }
+    /// a functional constructor returning a [`Parallel`](LPR::Parallel) transformation
+    pub const fn parallel() -> Self {
+        LPR::Parallel
+    }
+    /// a functional constructor returning a [`Relative`](LPR::Relative) transformation
+    pub const fn relative() -> Self {
+        LPR::Relative
+    }
     pub fn iter() -> LPRIter {
         use strum::IntoEnumIterator;
         <LPR as IntoEnumIterator>::iter()
     }
     /// applies the current transformation onto the given triad, returning a new triad
-    pub fn apply(&self, triad: &Triad) -> Triad {
-        self.try_apply(triad).unwrap()
+    pub fn apply<S, T, K, K2>(&self, triad: &TriadBase<S, K, T>) -> TriadBase<[T; 3], K::Rel, T>
+    where
+        S: RawTriad<Elem = T>,
+        K: TriadCls<Rel = K2>,
+        K2: TriadCls<Rel = K>,
+        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+    {
+        self.try_apply(triad)
+            .expect("Failed to apply the transformation onto the triad.")
     }
+    #[doc(hidden)]
     /// Apply a transformation to a triad
-    pub fn try_apply(&self, triad: &Triad) -> Result<Triad, TriadError> {
-        let [x, y, z] = *triad.chord();
+    pub fn try_apply<S, T, K, K2>(
+        &self,
+        triad: &TriadBase<S, K, T>,
+    ) -> Result<TriadBase<[T; 3], K::Rel, T>, TriadError>
+    where
+        S: RawTriad<Elem = T>,
+        K: TriadCls<Rel = K2>,
+        K2: TriadCls<Rel = K>,
+        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+    {
+        let x = *triad.chord().root();
+        let y = *triad.chord().third();
+        let z = *triad.chord().fifth();
 
-        let notes: [usize; 3];
+        let notes: [T; 3];
+        if triad.is_major() {
+            match self {
+                LPR::Leading => {
+                    notes = [y, z, (x - T::one()).pmod()];
+                }
+                LPR::Parallel => {
+                    notes = [x, (y - T::one()).pmod(), z];
+                }
+                LPR::Relative => {
+                    notes = [(z + T::from_u8(2).unwrap()).pmod(), x, y];
+                }
+            }
+        } else if triad.is_minor() {
+            match self {
+                LPR::Leading => {
+                    notes = [(z + T::one()).pmod(), x, y];
+                }
+                LPR::Parallel => {
+                    notes = [x, (y + T::one()).pmod(), z];
+                }
+                LPR::Relative => {
+                    notes = [y, z, (x - T::from_u8(2).unwrap()).pmod()];
+                }
+            }
+        } else {
+            return Err(TriadError::InvalidTriadClass);
+        }
+
+        Ok(TriadBase {
+            chord: notes,
+            class: triad.class().rel(),
+            octave: triad.octave,
+        })
+    }
+    /// Applies the transformation onto a generic triad, returning a new triad
+    pub fn try_apply_dyn<S, T, K>(
+        &self,
+        triad: &TriadBase<S, K, T>,
+    ) -> Result<TriadBase<[T; 3], TriadClass, T>, TriadError>
+    where
+        S: RawTriad<Elem = T>,
+        K: TriadCls,
+        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+    {
+        let x = *triad.chord().root();
+        let y = *triad.chord().third();
+        let z = *triad.chord().fifth();
+
+        let notes: [T; 3];
         let class: TriadClass;
-        match triad.class() {
-            TriadClass::Major => match self {
+        if triad.is_major() {
+            match self {
                 LPR::Leading => {
-                    notes = [y, z, (x as isize - 1).pmod() as usize];
+                    notes = [y, z, (x - T::one()).pmod()];
                     class = TriadClass::Minor;
                 }
                 LPR::Parallel => {
-                    notes = [x, (y as isize - 1).pmod() as usize, z];
+                    notes = [x, (y - T::one()).pmod(), z];
                     class = TriadClass::Minor;
                 }
                 LPR::Relative => {
-                    notes = [(z + 2).pmod(), x, y];
+                    notes = [(z + T::from_u8(2).unwrap()).pmod(), x, y];
                     class = TriadClass::Minor;
                 }
-            },
-            TriadClass::Minor => match self {
+            }
+        } else if triad.is_minor() {
+            match self {
                 LPR::Leading => {
-                    notes = [(z + 1).pmod(), x, y];
+                    notes = [(z + T::one()).pmod(), x, y];
                     class = TriadClass::Major;
                 }
                 LPR::Parallel => {
-                    notes = [x, (y + 1).pmod(), z];
+                    notes = [x, (y + T::one()).pmod(), z];
                     class = TriadClass::Major;
                 }
                 LPR::Relative => {
-                    notes = [y, z, (x as isize - 2).pmod() as usize];
+                    notes = [y, z, (x - T::from_u8(2).unwrap()).pmod()];
                     class = TriadClass::Major;
                 }
-            },
-            _ => return Err(TriadError::InvalidTriadClass),
-        };
+            }
+        } else {
+            return Err(TriadError::InvalidTriadClass);
+        }
 
         Ok(Triad {
             chord: notes,
@@ -121,35 +206,45 @@ impl LPR {
     }
 }
 
-impl From<char> for LPR {
-    fn from(value: char) -> Self {
+impl TryFrom<char> for LPR {
+    type Error = TriadError;
+    fn try_from(value: char) -> Result<Self, Self::Error> {
+        use LPR::*;
         match value.to_ascii_lowercase() {
-            'l' => LPR::Leading,
-            'p' => LPR::Parallel,
-            'r' => LPR::Relative,
-            _ => panic!("Invalid LPR transformation; character must be 'L', 'P', or 'R'"),
+            'l' => Ok(Leading),
+            'p' => Ok(Parallel),
+            'r' => Ok(Relative),
+            v => Err(TriadError::ParseTransformationCharError(v)),
         }
     }
 }
 
-impl From<usize> for LPR {
-    fn from(value: usize) -> Self {
-        use strum::EnumCount;
-        match value % Self::COUNT {
-            0 => LPR::Leading,
-            1 => LPR::Parallel,
-            2 => LPR::Relative,
-            _ => unreachable!(),
+macro_rules! impl_from_lpr {
+    ($($T:ty),* $(,)?) => {
+        $(impl_from_lpr! { @impl $T })*
+    };
+    (@impl $T:ty) => {
+        impl From<LPR> for $T {
+            fn from(value: LPR) -> Self {
+                match value {
+                    LPR::Leading => 0,
+                    LPR::Parallel => 1,
+                    LPR::Relative => 2,
+                }
+            }
         }
-    }
+
+        impl From<$T> for LPR {
+            fn from(value: $T) -> Self {
+                match value % 3 {
+                    0 => LPR::Leading,
+                    1 => LPR::Parallel,
+                    2 => LPR::Relative,
+                    _ => unreachable!("Modular arithmetic failed"),
+                }
+            }
+        }
+    };
 }
 
-impl From<LPR> for usize {
-    fn from(value: LPR) -> Self {
-        match value {
-            LPR::Leading => 0,
-            LPR::Parallel => 1,
-            LPR::Relative => 2,
-        }
-    }
-}
+impl_from_lpr! { u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize }
