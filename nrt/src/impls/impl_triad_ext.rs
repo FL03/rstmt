@@ -8,13 +8,24 @@ use crate::triad::TriadBase;
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::Factors;
 
+impl<T, S, K> core::fmt::Debug for TriadBase<S, K, T>
+where
+    S: RawTriad<Elem = T> + core::fmt::Debug,
+    K: TriadCls,
+    T: core::fmt::Debug,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:?}-{:?} ({:?})", self.root(), self.class, self.chord)
+    }
+}
+
 impl<T, S, K> core::fmt::Display for TriadBase<S, K, T>
 where
     S: RawTriad<Elem = T> + core::fmt::Debug,
     K: TriadCls + core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{{ chord: {:?}, class: {} }}", self.chord, self.class)
+        write!(f, "{{ chord: {:?}, class: {}, octave: {} }}", self.chord, self.class, self.octave)
     }
 }
 
