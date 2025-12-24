@@ -62,12 +62,11 @@ smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
 
 [features]
-default = ["std", "tonnetz"]
+default = ["hashbrown", "std", "tonnetz"]
 
 full = [
   "default",
   "complex",
-  "hashbrown",
   "json",
   "rand",
   "serde",
