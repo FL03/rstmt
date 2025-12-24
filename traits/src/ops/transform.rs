@@ -11,3 +11,12 @@ pub trait Transform<Rhs> {
 
     fn transform(&self, rhs: Rhs) -> Self::Output;
 }
+
+
+pub trait TryTransform<Rhs> {
+    type Output;
+    type Error;
+
+    fn try_transform(&self, rhs: Rhs) -> Result<Self::Output, Self::Error>;
+}
+

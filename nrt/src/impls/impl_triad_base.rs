@@ -10,7 +10,7 @@ use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
 use rstmt_core::{Octave, PitchMod};
 
-impl<T, S, K> TriadBase<S, K, T>
+impl<S, T, K> TriadBase<S, K, T>
 where
     K: TriadCls,
     S: RawTriad<Elem = T>,
@@ -202,31 +202,34 @@ where
     K: TriadCls,
     T: Copy + PitchMod<Output = T> + Num + FromPrimitive + ToPrimitive,
 {
-    pub fn transform<Q>(&self, step: LPR) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
+    /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if
+    /// transforming a major triad, then the resulting triad will be minor (and vice versa).
+    pub fn transform<Q>(&self, step: LPR) -> crate::Result<TriadBase<S, Q, T>>
     where
         K: TriadCls<Rel = Q>,
         Q: TriadCls<Rel = K>,
     {
         step.try_apply(self)
     }
-    /// apply the leading transformation to the triad
-    pub fn leading<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    /// apply the [`:eading`](LPR::Leading) transformation to the triad
+    pub fn leading<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
     where
         K: TriadCls<Rel = Q>,
         Q: TriadCls<Rel = K>,
     {
         self.transform(LPR::Leading)
     }
-    /// apply the parallel transformation to the triad
-    pub fn parallel<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    /// apply the [`Parallel`](LPR::Parallel) transformation to the triad
+    pub fn parallel<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
     where
         K: TriadCls<Rel = Q>,
         Q: TriadCls<Rel = K>,
     {
         self.transform(LPR::Parallel)
     }
-    /// apply the relative transformation to the triad
-    pub fn relative<Q>(&self) -> crate::Result<TriadBase<[T; 3], Q, T>>
+    /// apply the [`Relative`](LPR::Relative) transformation to the triad
+    pub fn relative<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
     where
         K: TriadCls<Rel = Q>,
         Q: TriadCls<Rel = K>,
