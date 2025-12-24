@@ -99,6 +99,7 @@ rand = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "hashbrown?/serde",
   "serde?/derive",
   "num-complex/serde",
 ]

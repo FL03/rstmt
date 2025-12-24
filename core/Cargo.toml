@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "complex", "hashbrown", "serde", "std"]
+features = ["alloc", "complex", "hashbrown", "std"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -91,6 +91,7 @@ std = [
   "rand_distr?/std",
   "rstmt-traits/std",
   "serde?/std",
+  "serde_json?/std",
   "strum/std",
   "variants/std",
 ]
@@ -111,7 +112,7 @@ alloc = [
   "hashbrown?/alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
-  "serde?/alloc",
+  "serde?/alloc", 
   "serde_json?/alloc",
   "variants/alloc",
 ]
