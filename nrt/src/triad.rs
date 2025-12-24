@@ -42,7 +42,7 @@ pub type DefaultTriadChord<T = usize> = [T; 3];
 
 /// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its
 /// classification, and the element type used to represent a note within the triadic chord.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
@@ -61,6 +61,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstmt_core::Major;
 
     #[test]
     /// Test: test initialization routines using a single root note, `C(0)`
@@ -74,7 +75,9 @@ mod tests {
     #[test]
     /// Test: test initialization routines using various root notes
     fn test_triad_init_n_root() {
-        assert_eq! { Triad::major(1), [1, 5, 8] }
+        let d_major = TriadBase::<DefaultTriadChord, Major>::major(1);
+        assert_eq! { d_major, [1, 5, 8] }
+        assert_eq! { Triad::major(1), d_major}
         assert_eq! { Triad::minor(2), [2, 5, 9] }
         assert_eq! { Triad::augmented(6), [6, 10, 2] }
         assert_eq! { Triad::diminished(11), [11, 2, 5] }
