@@ -1,5 +1,6 @@
 /*
-    Appellation: transform <module>
+    Appellation: lpr <module>
+    Created At: 2025.12.25:17:21:05
     Contrib: @FL03
 */
 use crate::error::TriadError;
@@ -8,28 +9,28 @@ use crate::triad::TriadBase;
 use num_traits::{FromPrimitive, Num, ToPrimitive};
 use rstmt::{PitchMod, TryApply};
 
-/// Enumerates primary available transformations in Neo-Riemannian theory.
+/// The [`LPR`] implementation enumerates the primary transformations considered within the
+/// Neo-Riemannian theory. Each transformation is its own inverse (meaning consecutive
+/// applications of the same transformation will return the original triad) and may be chained
+/// together in both disctrete and continuous space to explore relationships between triads.
+/// These transformation act on the given triad based on the quality of the interval between
+/// the first and second notes (i.e., the root and third chord factors) meaning the effect of
+/// the transformation is dictated by whether the triad starts with a major or minor third.
 ///
-/// Each transformation is invertible, meaning that consecutive applications of any
-/// transformation will return the original triad. Furthermore, LPR transformations may be
-/// chained together in discrete or continuous sequences to create complex harmonic
-/// progressions.
-///
-/// The transformations are:
+/// With The transformations are:
 ///
 /// - Leading (L):
-///   - [Major] given a major triad, subtract a semitone from the root and move it to the fifth
-///   - [Minor] given a minor triad, add a semitone to the fifth and move it to the root
+///   - [Major] subtract a semitone from the root and move it to the fifth
+///   - [Minor] add a semitone to the fifth and move it to the root
 /// - Parallel (P):
-///   - [Major] given a major triad, subtract a semitone from the third
-///   - [Minor] given a minor triad, add a semitone to the third
+///   - [Major] subtract a semitone from the third
+///   - [Minor] add a semitone to the third
 /// - Relative (R):
-///   - [Major] given a major triad, add a tone to the fifth and move it to the root
-///   - [Minor] given a minor triad, subtract a tone from the root and move it to the fifth
+///   - [Major] add a tone to the fifth and move it to the root
+///   - [Minor] subtract a tone from the root and move it to the fifth
 ///
-/// These transformations can be described categorically as morphisms between various triads.
-/// More specifically, they are contravariant functors between categories of triads.
-///
+/// Mathematically speaking, we could describe these transformations catagorically as
+/// contravariant functors mapping between categories of triads.
 #[derive(
     Clone,
     Copy,
