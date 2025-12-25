@@ -17,7 +17,6 @@ use rstmt::PitchMod;
     Ord,
     PartialEq,
     PartialOrd,
-    variants::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumIs,
@@ -29,7 +28,7 @@ use rstmt::PitchMod;
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase")
+    serde(untagged, rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum TriadClass {
@@ -41,6 +40,23 @@ pub enum TriadClass {
 }
 
 impl TriadClass {
+    /// a functional constructor for the [`Major`](TriadClass::Major) variant
+    pub const fn major() -> Self {
+        Self::Major
+    }
+    /// a functional constructor for the [`Minor`](TriadClass::Minor) variant
+    pub const fn minor() -> Self {
+        Self::Minor
+    }
+    /// a functional constructor for the [`Augmented`](TriadClass::Augmented) variant
+    pub const fn augmented() -> Self {
+        Self::Augmented
+    }
+    /// a functional constructor for the [`Diminished`](TriadClass::Diminished) variant
+    pub const fn diminished() -> Self {
+        Self::Diminished
+    }
+    /// try to derive a classification for a triad from three notes
     pub fn try_from_notes(a: isize, b: isize, c: isize) -> crate::Result<Self> {
         Self::try_from_arr([a, b, c])
     }
@@ -61,6 +77,7 @@ impl TriadClass {
             _ => Err(crate::TriadError::InvalidTriad),
         }
     }
+    // TODO: ensure augmented & diminished are handled correctly
     /// returns the class variant that is _relative_ to the current one
     pub const fn relative(&self) -> Self {
         match self {
