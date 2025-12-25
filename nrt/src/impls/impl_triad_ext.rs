@@ -5,8 +5,25 @@
 */
 use crate::triad::TriadBase;
 
+use crate::error::TriadError;
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
-use crate::types::Factors;
+use crate::types::{Factors, LPR};
+use num_traits::{FromPrimitive, Num, ToPrimitive};
+use rstmt_core::{PitchMod, TryTransform};
+
+impl<S, T, K> TryTransform<LPR> for TriadBase<S, K, T>
+where
+    K: TriadCls,
+    S: RawTriad<Elem = T>,
+    T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+    type Error = TriadError;
+
+    fn try_transform(&self, transformation: LPR) -> Result<Self::Output, Self::Error> {
+        self.transform(transformation)
+    }
+}
 
 impl<T, S, K> core::fmt::Debug for TriadBase<S, K, T>
 where
@@ -25,7 +42,11 @@ where
     K: TriadCls + core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{{ chord: {:?}, class: {}, octave: {} }}", self.chord, self.class, self.octave)
+        write!(
+            f,
+            "{{ chord: {:?}, class: {}, octave: {} }}",
+            self.chord, self.class, self.octave
+        )
     }
 }
 
