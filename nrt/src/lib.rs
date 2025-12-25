@@ -113,9 +113,9 @@ mod traits {
 
 mod types {
     #[doc(inline)]
-    pub use self::{class::*, factors::*, lpr::*};
+    pub use self::{kinds::*, factors::*, lpr::*};
 
-    mod class;
+    mod kinds;
     mod factors;
     mod lpr;
 }
