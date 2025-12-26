@@ -2,7 +2,7 @@
     Appellation: classes <module>
     Contrib: @FL03
 */
-use num_traits::ToPrimitive;
+use num_traits::{FromPrimitive, ToPrimitive};
 use rstmt::PitchMod;
 
 /// The [`TriadClass`] implementation enumerates the allowed triad classifications determined
@@ -33,10 +33,10 @@ use rstmt::PitchMod;
 #[strum(serialize_all = "lowercase")]
 pub enum TriadClass {
     #[default]
-    Major,
-    Minor,
-    Augmented,
-    Diminished,
+    Major = 0,
+    Minor = 1,
+    Augmented = 2,
+    Diminished = 3,
 }
 
 impl TriadClass {
@@ -78,7 +78,8 @@ impl TriadClass {
         }
     }
     // TODO: ensure augmented & diminished are handled correctly
-    /// returns the class variant that is _relative_ to the current one
+    /// returns the class _relative_ to the current variant; for major and minor triads its
+    /// rather straightforward
     pub const fn relative(&self) -> Self {
         match self {
             TriadClass::Major => TriadClass::Minor,
@@ -110,6 +111,15 @@ impl TriadClass {
             TriadClass::Diminished => 3,
         }
     }
+    /// returns a reference to the **interval** between the root and third chord factors
+    pub const fn root_ref(&self) -> &usize {
+        match self {
+            TriadClass::Major => &4,
+            TriadClass::Minor => &3,
+            TriadClass::Augmented => &4,
+            TriadClass::Diminished => &3,
+        }
+    }
     /// returns the **interval** between the third and fifth chord factors
     pub const fn third(&self) -> usize {
         match self {
@@ -117,6 +127,15 @@ impl TriadClass {
             TriadClass::Minor => 4,
             TriadClass::Augmented => 4,
             TriadClass::Diminished => 3,
+        }
+    }
+    /// returns a reference to the **interval** between the third and fifth chord factors
+    pub const fn third_ref(&self) -> &usize {
+        match self {
+            TriadClass::Major => &3,
+            TriadClass::Minor => &4,
+            TriadClass::Augmented => &4,
+            TriadClass::Diminished => &3,
         }
     }
     /// returns the **interval** between the root and fifth chord factors
@@ -128,21 +147,34 @@ impl TriadClass {
             TriadClass::Diminished => 6,
         }
     }
+    /// returns a reference to the **interval** between the root and fifth chord factors
+    pub const fn fifth_ref(&self) -> &usize {
+        match self {
+            TriadClass::Major => &7,
+            TriadClass::Minor => &7,
+            TriadClass::Augmented => &8,
+            TriadClass::Diminished => &6,
+        }
+    }
     /// returns true if the given chord factors satisfy the requirements of the current class
     pub fn is_valid(&self, root: usize, third: usize, fifth: usize) -> bool {
         let [rt, rf, tf] = self.intervals();
         (third - root).pmod() == rt && (fifth - root).pmod() == rf && (fifth - third).pmod() == tf
     }
     /// validate a chord's composition satisfies the requirements of the current class
-    pub fn validate<T>(&self, notes: &[T; 3]) -> bool
+    pub fn validate<T>(&self, &[r, t, f]: &[T; 3]) -> bool
     where
-        T: ToPrimitive,
+        T: Copy
+            + PartialEq
+            + FromPrimitive
+            + ToPrimitive
+            + PitchMod<Output = T>
+            + core::ops::Sub<Output = T>,
     {
-        let [a, b, c] = self.intervals();
-        let r = <T>::to_isize(&notes[0]).unwrap();
-        let t = <T>::to_isize(&notes[1]).unwrap();
-        let f = <T>::to_isize(&notes[2]).unwrap();
-        (t - r).pmod() as usize == a && (f - t).pmod() as usize == c && (f - r).pmod() as usize == b
+        let a = T::from_usize(self.root()).unwrap();
+        let b = T::from_usize(self.fifth()).unwrap();
+        let c = T::from_usize(self.third()).unwrap();
+        (t - r).pmod() == a && (f - t).pmod() == c && (f - r).pmod() == b
     }
 }
 
@@ -188,14 +220,40 @@ impl crate::TriadCls for TriadClass {
     }
 }
 
-impl From<usize> for TriadClass {
-    fn from(value: usize) -> Self {
-        match value {
-            0 => TriadClass::Major,
-            1 => TriadClass::Minor,
-            2 => TriadClass::Augmented,
-            3 => TriadClass::Diminished,
-            _ => TriadClass::Major,
+macro_rules! impl_from_triad_class {
+    ($($T:ty),* $(,)?) => {
+        $(
+            impl From<$T> for TriadClass {
+                fn from(value: $T) -> Self {
+                    match value % 4 {
+                        0 => TriadClass::Major,
+                        1 => TriadClass::Minor,
+                        2 => TriadClass::Augmented,
+                        3 => TriadClass::Diminished,
+                        _ => unreachable! { "invalid modulo operation" },
+                    }
+                }
+            }
+
+            impl From<TriadClass> for $T {
+                fn from(value: TriadClass) -> Self {
+                    value as $T
+                }
+            }
+        )*
+    };
+}
+
+impl_from_triad_class! { u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize }
+
+impl core::ops::Index<super::Factors> for TriadClass {
+    type Output = usize;
+
+    fn index(&self, index: super::Factors) -> &Self::Output {
+        match index {
+            super::Factors::Root => self.root_ref(),
+            super::Factors::Third => self.third_ref(),
+            super::Factors::Fifth => self.fifth_ref(),
         }
     }
 }

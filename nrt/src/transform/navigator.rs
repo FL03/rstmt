@@ -3,19 +3,30 @@
     Contrib: @FL03
 */
 use super::{ChainFeatures, PathFinderConfig, TransformationChain};
-use crate::{LPR, Triad};
+use crate::traits::{RawTriad, TriadCls};
+use crate::triad::{Triad, TriadBase};
+use crate::types::LPR;
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
+use rstmt_core::RawChord;
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
 #[derive(Debug)]
-pub struct TriadNavigator<'a> {
-    triad: &'a Triad,
+pub struct TriadNavigator<'a, S, K, T = <S as RawChord>::Elem>
+where
+    K: TriadCls,
+    S: RawTriad<Elem = T>,
+{
+    triad: &'a TriadBase<S, K, T>,
     config: PathFinderConfig,
 }
 
-impl<'a> TriadNavigator<'a> {
-    pub(crate) fn new(triad: &'a Triad) -> Self {
+impl<'a, S, K, T> TriadNavigator<'a, S, K, T>
+where
+    K: TriadCls,
+    S: RawTriad<Elem = T>,
+{
+    pub(crate) fn new(triad: &'a TriadBase<S, K, T>) -> Self {
         Self {
             triad,
             config: PathFinderConfig::default(),
@@ -37,7 +48,7 @@ impl<'a> TriadNavigator<'a> {
         self.config().max_paths()
     }
     /// returns a copy of the triad being navigated
-    pub const fn triad(&self) -> &Triad {
+    pub const fn triad(&self) -> &TriadBase<S, K, T> {
         self.triad
     }
     /// set the maximum depth for pathfinding
@@ -64,6 +75,9 @@ impl<'a> TriadNavigator<'a> {
             ..self
         }
     }
+}
+
+impl<'a> TriadNavigator<'a, [usize; 3], crate::TriadClass, usize> {
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> crate::Result<Vec<TransformationChain>> {
         let mut result_paths = Vec::new();

@@ -10,8 +10,11 @@ fn main() -> Result<(), TriadError> {
     // Set up tracing
     tracing_subscriber::fmt()
         .with_ansi(true)
-        .with_max_level(tracing::Level::INFO)
+        .with_file(false)
+        .with_line_number(false)
+        .with_max_level(tracing::Level::DEBUG)
         .with_target(false)
+        .with_timer(tracing_subscriber::fmt::time::uptime())
         .init();
 
     tracing::info!("Motion Planning Example");
@@ -33,10 +36,10 @@ fn main() -> Result<(), TriadError> {
     let target_note = 1; // C#
     let paths = planner.find_paths_to_pitch(c_major_idx, target_note);
 
-    tracing::info!(
+    tracing::info! {
         "Found {} paths from C Major to triads containing C# (1):",
         paths.len()
-    );
+    }
     tracing::info_span!("paths", count = paths.len()).in_scope(|| {
         for (i, path) in paths.iter().enumerate() {
             tracing::info!("Path {}", i + 1);
@@ -50,7 +53,7 @@ fn main() -> Result<(), TriadError> {
                 };
 
                 tracing::info!(
-                    "    {}: {} {:?} {}",
+                    "\t\t{}: {} {:?} {}",
                     j,
                     triad.class(),
                     triad.chord(),
@@ -61,12 +64,12 @@ fn main() -> Result<(), TriadError> {
             // Show the final triad that contains the target note
             let final_triad = path.triads().last().unwrap();
             tracing::info!(
-                "  Final triad: {} {:?}",
+                "\t\tFinal triad: {} {:?}",
                 final_triad.class(),
                 final_triad.chord()
             );
             tracing::info!(
-                "  Target note {} is in final triad: {}",
+                "\t\tTarget note {} is in final triad: {}",
                 target_note,
                 final_triad.contains(&target_note)
             );

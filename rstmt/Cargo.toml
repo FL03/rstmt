@@ -82,7 +82,10 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
-nrt = ["dep:rstmt-nrt"]
+nrt = [
+  "dep:rstmt-nrt",
+  "hashbrown",
+]
 
 tonnetz = [
   "nrt",
@@ -118,7 +121,6 @@ complex = [
 
 hashbrown = [
   "rstmt-core/hashbrown",
-  "rstmt-nrt?/hashbrown",
 ]
 
 json = [

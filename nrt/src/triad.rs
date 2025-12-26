@@ -12,10 +12,10 @@
 //! use rstmt_nrt::Triad;
 //!
 //! // initialize a c-major triad: (0, 4, 7)
-//! let triad = Triad::major(0);
+//! let c_major = Triad::major(0);
 //! // verify the composition
-//! assert_eq! { triad, [0, 4, 7] }
-//! assert!(triad.is_major());
+//! assert_eq! { c_major, [0, 4, 7] }
+//! assert! { c_major.is_major() && !c_major.is_minor() }
 //! ```
 //!
 //! # Background
@@ -81,5 +81,12 @@ mod tests {
         assert_eq! { Triad::minor(2), [2, 5, 9] }
         assert_eq! { Triad::augmented(6), [6, 10, 2] }
         assert_eq! { Triad::diminished(11), [11, 2, 5] }
+    }
+
+    #[test]
+    fn test_triad_properties() {
+        let fsharp_minor = Triad::minor(6);
+        assert! { fsharp_minor.is_minor() && !fsharp_minor.is_major() }
+        assert_eq! { fsharp_minor.class(), TriadClass::Minor }
     }
 }

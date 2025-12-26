@@ -113,10 +113,10 @@ mod traits {
 
 mod types {
     #[doc(inline)]
-    pub use self::{kinds::*, factors::*, lpr::*};
+    pub use self::{factors::*, kinds::*, lpr::*};
 
-    mod kinds;
     mod factors;
+    mod kinds;
     mod lpr;
 }
 // re-exports
