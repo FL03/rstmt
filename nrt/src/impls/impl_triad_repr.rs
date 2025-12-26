@@ -123,7 +123,12 @@ where
     /// returns true if the pitches within the triad match its classification
     pub fn is_valid(&self) -> bool
     where
-        T: ToPrimitive,
+        T: Copy
+            + PartialEq
+            + FromPrimitive
+            + ToPrimitive
+            + PitchMod<Output = T>
+            + core::ops::Sub<Output = T>,
     {
         self.class().validate(self.chord())
     }
@@ -164,7 +169,9 @@ where
 impl TriadBase<[usize; 3], TriadClass> {
     #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
-    pub fn path_finder(&self) -> crate::transform::TriadNavigator<'_> {
+    pub fn path_finder(
+        &self,
+    ) -> crate::transform::TriadNavigator<'_, [usize; 3], crate::TriadClass, usize> {
         crate::transform::TriadNavigator::new(self)
     }
     /// apply a single transformation to a triad in-place, mutating the current instance

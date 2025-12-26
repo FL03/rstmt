@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "complex", "hashbrown", "serde", "std"]
+features = ["alloc", "complex", "serde", "std"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -32,12 +32,12 @@ doctest = true
 test = true
 
 [dependencies]
-rstmt-core = { workspace = true }
+rstmt-core = { features = ["hashbrown"], workspace = true }
 # custom
 rshyper = { workspace = true }
 variants = { workspace = true }
 # data structures
-hashbrown = { optional = true, workspace = true }
+hashbrown = { workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
 rayon = { optional = true, workspace = true }
@@ -62,7 +62,7 @@ smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
 
 [features]
-default = ["hashbrown", "std", "tonnetz"]
+default = ["std", "tonnetz"]
 
 full = [
   "default",
@@ -73,7 +73,7 @@ full = [
 ]
 
 nightly = [
-  "hashbrown?/nightly",
+  "hashbrown/nightly",
   "rshyper/nightly",
   "rstmt-core/nightly",
 ]
@@ -89,7 +89,7 @@ tonnetz = [
 std = [
   "alloc",
   "anyhow/std",
-  "hashbrown?/default",
+  "hashbrown/default",
   "itertools/use_std",
   "num-complex?/std",
   "num-traits/std",
@@ -112,7 +112,7 @@ wasm = [
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "hashbrown?/alloc",
+  "hashbrown/alloc",
   "itertools/use_alloc",
   "rshyper/alloc",
   "rstmt-core/alloc",
@@ -124,11 +124,6 @@ alloc = [
 complex = [
   "dep:num-complex",
   "rstmt-core/complex",
-]
-
-hashbrown = [
-  "dep:hashbrown",
-  "rstmt-core/hashbrown",
 ]
 
 json = [
@@ -150,7 +145,7 @@ rand = [
 rayon = [
   "dep:rayon",
   "dep:rayon-core",
-  "hashbrown?/rayon",
+  "hashbrown/rayon",
   "rshyper/rayon",
   "rstmt-core/rayon",
 ]
@@ -166,7 +161,7 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
-  "hashbrown?/serde",
+  "hashbrown/serde",
   "num-complex?/serde",
   "rshyper/serde",
   "rstmt-core/serde",
