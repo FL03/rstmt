@@ -1336,15 +1336,12 @@ dependencies = [
 name = "rstmt-traits"
 version = "0.0.7"
 dependencies = [
- "contained",
  "hashbrown 0.16.1",
  "num-complex",
  "num-traits",
- "rayon-core",
+ "paste",
  "rspace",
  "serde",
- "serde_derive",
- "variants",
  "wasm-bindgen",
 ]
 

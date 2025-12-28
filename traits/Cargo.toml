@@ -33,21 +33,18 @@ test = true
 
 [dependencies]
 # custom
-contained = { workspace = true }
 rspace = { workspace = true }
-variants = { workspace = true }
-# concurrency & parallelism
-rayon-core = { optional = true, workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 # mathematics
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
 # serialization
-serde = { features = ["derive"], optional = true, workspace = true }
-serde_derive = { optional = true, workspace = true }
+serde = { optional = true, workspace = true }
 # WebAssembly
 wasm-bindgen = { optional = true, workspace = true }
+# macros & utilities
+paste = { workspace = true }
 
 [features]
 default = ["std"]
@@ -68,13 +65,11 @@ nightly = [
 # ************* [FF:Environments] *************
 std = [
   "alloc",
-  "contained/std",
   "hashbrown?/default",
   "rspace/std",
   "num-complex?/std",
   "num-traits/std",
   "serde?/std",
-  "variants/std",
 ]
 
 wasi = [
@@ -83,15 +78,13 @@ wasi = [
 
 wasm = [
   "wasm_bindgen",
-  "rayon-core?/web_spin_lock",
+  "rspace/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "contained/alloc",
   "hashbrown?/alloc",
   "rspace/alloc",
   "serde?/alloc",
-  "variants/alloc",
 ]
 
 complex = [
@@ -105,18 +98,17 @@ hashbrown = [
 ]
 
 rayon = [
-  "dep:rayon-core",
   "hashbrown?/rayon",
+  "rspace/rayon",
 ]
 
 rand = [
   "num-complex?/rand",
+  "rspace/rand",
 ]
 
 serde = [
   "dep:serde",
-  "dep:serde_derive",
-  "serde?/derive",
   "hashbrown?/serde",
   "rspace/serde",
   "num-complex/serde",
