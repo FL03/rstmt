@@ -9,15 +9,11 @@ env:
   RUST_BACKTRACE: full
 
 on:
+  release:
+    types: [published]
   repository_dispatch:
     types: [crates-io, cargo-publish]
   workflow_dispatch:
-    inputs:
-      publish:
-        default: false
-        description: "Publish the crate(s) to crates.io?"
-        required: true
-        type: boolean
 
 jobs:
   crates-io:
