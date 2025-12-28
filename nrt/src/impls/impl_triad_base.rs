@@ -7,8 +7,8 @@ use crate::triad::TriadBase;
 
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::LPR;
-use num_traits::{Float, FromPrimitive, One, ToPrimitive};
-use rstmt_core::{Octave, PitchMod};
+use num_traits::{Float, FromPrimitive, ToPrimitive};
+use rstmt_core::{Octave, PitchMod, TryTransform};
 
 impl<S, T, K> TriadBase<S, K, T>
 where
@@ -195,51 +195,34 @@ where
             .filter(|n| other.contains(n))
             .collect::<Vec<T>>()
     }
-}
-
-impl<S, T, K> TriadBase<S, K, T>
-where
-    S: RawTriad<Elem = T>,
-    K: TriadCls,
-    T: Copy
-        + FromPrimitive
-        + One
-        + PitchMod<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Sub<Output = T>,
-{
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if
     /// transforming a major triad, then the resulting triad will be minor (and vice versa).
-    pub fn transform<Q>(&self, step: LPR) -> crate::Result<TriadBase<S, Q, T>>
+    pub fn transform<X, Y, E>(&self, step: X) -> Result<Y, E>
     where
-        K: TriadCls<Rel = Q>,
-        Q: TriadCls<Rel = K>,
+        Self: TryTransform<X, Output = Y, Error = E>,
     {
-        step.try_apply(self)
+        self.try_transform(step)
     }
-    /// apply the [`:eading`](LPR::Leading) transformation to the triad
-    pub fn leading<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
+    /// apply the [`Leading`](LPR::Leading) transformation to the triad
+    pub fn leading<Y, E>(&self) -> Result<Y, E>
     where
-        K: TriadCls<Rel = Q>,
-        Q: TriadCls<Rel = K>,
+        Self: TryTransform<LPR, Output = Y, Error = E>,
     {
-        self.transform(LPR::Leading)
+        self.try_transform(LPR::Leading)
     }
     /// apply the [`Parallel`](LPR::Parallel) transformation to the triad
-    pub fn parallel<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
+    pub fn parallel<Y, E>(&self) -> Result<Y, E>
     where
-        K: TriadCls<Rel = Q>,
-        Q: TriadCls<Rel = K>,
+        Self: TryTransform<LPR, Output = Y, Error = E>,
     {
-        self.transform(LPR::Parallel)
+        self.try_transform(LPR::Parallel)
     }
     /// apply the [`Relative`](LPR::Relative) transformation to the triad
-    pub fn relative<Q>(&self) -> crate::Result<TriadBase<S, Q, T>>
+    pub fn relative<Y, E>(&self) -> Result<Y, E>
     where
-        K: TriadCls<Rel = Q>,
-        Q: TriadCls<Rel = K>,
+        Self: TryTransform<LPR, Output = Y, Error = E>,
     {
-        self.transform(LPR::Relative)
+        self.try_transform(LPR::Relative)
     }
 }

@@ -11,10 +11,26 @@ pub trait Transform<Rhs> {
 
     fn transform(&self, rhs: Rhs) -> Self::Output;
 }
-
+/// [`TryTransform`] defines a fallible transformation operation that can fail, producing an 
 pub trait TryTransform<Rhs> {
     type Output;
     type Error;
 
     fn try_transform(&self, rhs: Rhs) -> Result<Self::Output, Self::Error>;
+}
+
+/*
+ ************* Implementations *************
+*/
+
+impl<X, Y, A> TryTransform<X> for A
+where
+    A: Transform<X, Output = Y>,
+{
+    type Output = Y;
+    type Error = core::convert::Infallible;
+
+    fn try_transform(&self, rhs: X) -> Result<Y, Self::Error> {
+        Ok(<A as Transform<X>>::transform(self, rhs))
+    }
 }
