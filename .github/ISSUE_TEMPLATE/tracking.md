@@ -7,12 +7,23 @@ title: 'Tracking Issue for '
 type: feature
 ---
 
-_Describe the proposal or feature that this issue is tracking._
+<!-- a concise summary that provides critical insight and context into the proposal and its purpose -->
 
-## Issues
+_**Goals**_
 
-- [ ]
+The goals of this proposal:
 
-## Pull Requests
+- [x] **Goal 1**: ...
+- [ ] **Goal 2**: ...
 
-- [ ]
+## Overview
+
+<!-- A detailed description of the proposal or feature being tracked -->
+
+## References
+
+<!-- Include any relevant links, documents, or resources related to this proposal or feature -->
+
+- [Google](https://google.com)
+- [Wikipedia](https://wikipedia.org)
+- [GitHub](https://github.com)
