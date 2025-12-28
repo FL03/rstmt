@@ -1,0 +1,38 @@
+name: nix
+
+concurrency:
+  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  pull_request:
+    branches: [main, master]
+    types: [closed, opened, reopened]
+  push:
+    branches: [main, master]
+    tags: [latest, v*.*.*, "*-nightly"]
+    paths:
+      - "**.nix"
+      - "flake.nix"
+      - "nix/**"
+  repository_dispatch:
+    types: [nix, nix-build]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: nix build
+      - name: Check the flake
+        run: nix flake check

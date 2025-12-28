@@ -1,9 +1,9 @@
+# This workflow is used to benchmark a Rust project
 name: cargo-bench
-# This workflow is used to benchmark a Rust project.
-# It is automatically run whenever:
-# - a pull-request is closed (to capture the final state of the PR),
-# - a new tag is pushed (to capture release performance),
-# and can also be triggered manually or via repository dispatch.
+# The workflow may be manually triggered and is run automatically when:
+# - a pull request is closed on the default branch (main/master)
+# - a release is published
+# - a repository_dispatch event with the type "cargo-bench" is received
 
 concurrency:
   cancel-in-progress: false
@@ -12,15 +12,9 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, synchronize, reopened]
-    paths:
-      - ".github/workflows/cargo-bench.yml"
-      - "**.rs"
-      - "Cargo.toml"
-      - "Cargo.lock"
-  push:
-    branches: [main, master]
-    tags: [latest, v*, "*-nightly"]
+    types: [closed]
+  release:
+    types: [published]
   repository_dispatch:
     types: [cargo-bench]
   workflow_dispatch:
