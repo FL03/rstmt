@@ -152,6 +152,7 @@ rand = [
   "dep:rand",
   "dep:rand_core",
   "dep:rand_distr",
+  "rspace/rand",
   "rstmt-traits/rand",
   "num-complex?/rand",
 ]
