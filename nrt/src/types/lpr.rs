@@ -6,7 +6,7 @@
 use crate::error::TriadError;
 use crate::traits::{RawTriad, TriadCls};
 use crate::triad::TriadBase;
-use num_traits::{FromPrimitive, Num, One, ToPrimitive};
+use num_traits::{FromPrimitive, One};
 use rstmt::{PitchMod, TryApply};
 
 /// The [`LPR`] implementation enumerates the primary transformations considered within the
@@ -60,13 +60,13 @@ pub enum LPR {
     /// Leading (L) transformation
     #[default]
     #[cfg_attr(feature = "serde", serde(alias = "L", alias = "l", alias = "lead"))]
-    Leading,
+    Leading = 0,
     /// Parallel (P) transformation
     #[cfg_attr(feature = "serde", serde(alias = "P", alias = "p", alias = "par"))]
-    Parallel,
+    Parallel = 1,
     /// Relative (R) transformation
     #[cfg_attr(feature = "serde", serde(alias = "R", alias = "r", alias = "rel"))]
-    Relative,
+    Relative = 2,
 }
 
 impl LPR {
@@ -92,7 +92,12 @@ impl LPR {
         S: RawTriad<Elem = T>,
         K: TriadCls<Rel = K2>,
         K2: TriadCls<Rel = K>,
-        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+        T: Copy
+            + FromPrimitive
+            + One
+            + PitchMod<Output = T>
+            + core::ops::Add<Output = T>
+            + core::ops::Sub<Output = T>,
     {
         self.try_apply(triad)
             .expect("Failed to apply the transformation onto the triad.")
@@ -159,7 +164,12 @@ where
     K: TriadCls<Rel = Q>,
     Q: TriadCls<Rel = K>,
     S: RawTriad<Elem = T>,
-    T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
 {
     type Output = TriadBase<S, K::Rel, T>;
     type Error = TriadError;
@@ -189,11 +199,7 @@ macro_rules! impl_from_lpr {
     (@impl $T:ty) => {
         impl From<LPR> for $T {
             fn from(value: LPR) -> Self {
-                match value {
-                    LPR::Leading => 0,
-                    LPR::Parallel => 1,
-                    LPR::Relative => 2,
-                }
+                value as $T
             }
         }
 
