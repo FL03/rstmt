@@ -15,7 +15,7 @@
       {
         packages.default = rustPlatform.buildRustPackage {
           pname = "rstmt";
-          version = "0.0.7";
+          version = "0.0.8";
           src = self; # "./.";
           # If Cargo.lock doesn't exist yet, remove or comment out this block:
           cargoLock = {
