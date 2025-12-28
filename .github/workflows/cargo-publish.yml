@@ -1,4 +1,4 @@
-name: crates-io
+name: cargo-publish
 
 concurrency:
   cancel-in-progress: false
