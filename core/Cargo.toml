@@ -26,11 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = [
-  "cdylib", 
-  "rlib", 
-  "staticlib",
-]
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
@@ -39,7 +35,7 @@ test = true
 rstmt-traits = { workspace = true }
 # custom
 contained = { workspace = true }
-rspace = { workspace = true }
+rspace-traits = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
@@ -96,7 +92,7 @@ std = [
   "num-traits/std",
   "rand?/std",
   "rand_distr?/std",
-  "rspace/std",
+  "rspace-traits/std",
   "rstmt-traits/std",
   "serde?/std",
   "serde_json?/std",
@@ -105,13 +101,13 @@ std = [
 ]
 
 wasi = [
-  "rspace/wasi",
+  "rspace-traits/wasi",
   "rstmt-traits/wasi",
 ]
 
 wasm = [
   "wasm_bindgen",
-  "rspace/wasm",
+  "rspace-traits/wasm",
   "rstmt-traits/wasm",
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
@@ -123,28 +119,27 @@ alloc = [
   "hashbrown?/alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
-  "rspace/alloc",
-  "serde?/alloc", 
+  "rspace-traits/alloc",
+  "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
 ]
 
 complex = [
   "dep:num-complex",
-  "rspace/complex",
+  "rspace-traits/complex",
 ]
 
 hashbrown = [
-  "dep:hashbrown", 
-  "rspace/hashbrown",
-  "rstmt-traits/hashbrown"
+  "dep:hashbrown",
+  "rspace-traits/hashbrown",
+  "rstmt-traits/hashbrown",
 ]
 
 json = [
-  "alloc", 
+  "alloc",
   "serde",
   "serde_json",
-  "rspace/json",
 ]
 
 rand = [
@@ -152,7 +147,7 @@ rand = [
   "dep:rand",
   "dep:rand_core",
   "dep:rand_distr",
-  "rspace/rand",
+  "rspace-traits/rand",
   "rstmt-traits/rand",
   "num-complex?/rand",
 ]
@@ -175,7 +170,7 @@ serde = [
   "serde?/derive",
   "hashbrown?/serde",
   "num-complex/serde",
-  "rspace/serde",
+  "rspace-traits/serde",
   "rstmt-traits/serde",
   "rand?/serde",
   "rand_core?/serde",
@@ -186,6 +181,6 @@ serde_json = ["dep:serde_json"]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",
-  "rspace/wasm_bindgen",
+  "rspace-traits/wasm_bindgen",
   "rstmt-traits/wasm_bindgen",
 ]

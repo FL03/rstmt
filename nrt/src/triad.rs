@@ -32,7 +32,7 @@
 
 use crate::traits::{RawTriad, TriadCls};
 use crate::types::TriadClass;
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 use rstmt_core::{Major, Octave};
 
 /// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     /// Test: test initialization routines using a single root note, `C(0)`
-    fn test_traid_init_c_root() {
+    fn test_triad_create() {
         assert_eq! { Triad::major(0), [0, 4, 7] }
         assert_eq! { Triad::minor(0), [0, 3, 7] }
         assert_eq! { Triad::augmented(0), [0, 4, 8] }
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     /// Test: test initialization routines using various root notes
-    fn test_triad_init_n_root() {
+    fn test_triad_create_with_n() {
         let d_major = TriadBase::<DefaultTriadChord, Major>::major(1);
         assert_eq! { d_major, [1, 5, 8] }
         assert_eq! { Triad::major(1), d_major}
@@ -89,5 +89,32 @@ mod tests {
         let fsharp_minor = Triad::minor(6);
         assert! { fsharp_minor.is_minor() && !fsharp_minor.is_major() }
         assert_eq! { fsharp_minor.class(), TriadClass::Minor }
+    }
+
+    #[test]
+    fn test_triad_transform_c_major() -> crate::Result<()> {
+        let c_major = Triad::major(0);
+        let leading = Triad::minor(4);
+        let parallel = Triad::minor(0);
+        let relative = Triad::minor(9);
+        // leading
+        assert! {
+            c_major.leading()? == leading &&
+            leading.leading()? == c_major &&
+            c_major.leading()?.leading()? == leading.leading()?
+        }
+        // parallel
+        assert! {
+            c_major.parallel()? == parallel &&
+            parallel.parallel()? == c_major &&
+            c_major.parallel()?.parallel()? == parallel.parallel()?
+        }
+        // relative
+        assert! {
+            c_major.relative()? == relative &&
+            relative.relative()? == c_major &&
+            c_major.relative()?.relative()? == relative.relative()?
+        }
+        Ok(())
     }
 }

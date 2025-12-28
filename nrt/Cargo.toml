@@ -26,11 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = [
-  "cdylib", 
-  "rlib", 
-  "staticlib",
-]
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
@@ -38,14 +34,14 @@ test = true
 [dependencies]
 rstmt-core = { features = ["hashbrown"], workspace = true }
 # custom
-rspace = { workspace = true }
 rshyper = { workspace = true }
+rspace-traits = { workspace = true }
 variants = { workspace = true }
 # data structures
 hashbrown = { workspace = true }
 # concurrency & parallelism
-rayon-core = { optional = true, workspace = true }
 rayon = { optional = true, workspace = true }
+rayon-core = { optional = true, workspace = true }
 # error-handling
 anyhow = { workspace = true }
 thiserror = { workspace = true }
@@ -70,7 +66,7 @@ wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
-  "std", 
+  "std",
   "tonnetz",
 ]
 
@@ -106,7 +102,7 @@ std = [
   "rand?/std",
   "rand?/std_rng",
   "rand_distr?/std",
-  "rspace/std",
+  "rspace-traits/std",
   "rshyper/std",
   "rstmt-core/std",
   "serde?/std",
@@ -116,14 +112,14 @@ std = [
 ]
 
 wasi = [
-  "rspace/wasi",
+  "rspace-traits/wasi",
   "rstmt-core/wasi",
 ]
 
 wasm = [
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
-  "rspace/wasm",
+  "rspace-traits/wasm",
   "rstmt-core/wasm",
 ]
 # ************* [FF:Dependencies] *************
@@ -133,7 +129,7 @@ alloc = [
   "rand?/alloc",
   "rand_distr?/alloc",
   "rshyper/alloc",
-  "rspace/alloc",
+  "rspace-traits/alloc",
   "rstmt-core/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
@@ -142,7 +138,7 @@ alloc = [
 
 complex = [
   "dep:num-complex",
-  "rspace/complex",
+  "rspace-traits/complex",
   "rstmt-core/complex",
 ]
 
@@ -150,7 +146,6 @@ json = [
   "alloc",
   "serde",
   "serde_json",
-  "rspace/json",
   "rshyper/json",
   "rstmt-core/json",
 ]
@@ -187,7 +182,7 @@ serde = [
   "num-complex?/serde",
   "rand?/serde",
   "rand_distr?/serde",
-  "rspace/serde",
+  "rspace-traits/serde",
   "rshyper/serde",
   "rstmt-core/serde",
   "serde?/derive",
@@ -197,6 +192,6 @@ serde_json = ["dep:serde_json"]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",
-  "rspace/wasm_bindgen",
+  "rspace-traits/wasm_bindgen",
   "rstmt-core/wasm_bindgen",
 ]

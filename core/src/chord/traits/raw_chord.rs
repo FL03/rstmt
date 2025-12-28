@@ -3,7 +3,7 @@
     Created At: 2025.12.23:17:32:04
     Contrib: @FL03
 */
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 /// The [`RawChord`] trait works to define a basic interface shared by all compatible
 /// reprsentations of a chord. Since a chord is essentially a sequence of pitches, the trait
 /// captures this behavior through association with an element type.
