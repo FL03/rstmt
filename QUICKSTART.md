@@ -1,7 +1,6 @@
----
-title: Quickstart
-description: A detailed guide on how to get started with the rshyper project.
----
+# Quickstart Guide
+
+This guide will help you set up your development environment and get started with building and running the project.
 
 ## Prerequisites
 
@@ -39,13 +38,13 @@ rustup target add wasm32-unknown-unknown wasm32-wasip1 wasm32-wasip2
 Get started by cloning the repository:
 
 ```bash
-git clone https://github.com/FL03/rshyper.git --branch main
+git clone git@github.com:FL03/rstmt.git -b main --depth 1
 ```
 
 Then, navigate to the project directory:
 
 ```bash
-cd rshyper
+cd rstmt
 ```
 
 #### Native
@@ -71,13 +70,13 @@ cargo build --locked --workspace --release --features wasi --target wasm32-wasip
 You can also build the project using Docker. Start by building the Docker image:
 
 ```bash
-docker buildx build --platform linux/amd64 -t jo3mccain/rshyper:latest -f ./Dockerfile .
+docker buildx build --platform linux/amd64 -t jo3mccain/rstmt:latest -f ./Dockerfile .
 ```
 
 Then, run the Docker container:
 
 ```bash
-docker run -d -it --rm -p 8080:8080 -v $(pwd):/app jo3mccain/rshyper:latest
+docker run -d -it --rm -p 8080:8080 -v $(pwd):/app jo3mccain/rstmt:latest
 ```
 
 This will start the server and bind it to port 8080 on your host machine. You can access the server by navigating to `http://localhost:8080` in your web browser.
