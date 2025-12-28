@@ -1,38 +1,13 @@
 /*
-    Appellation: tonnetz <module>
+    Appellation: impl_hyper_tonnetz <module>
+    Created At: 2025.12.28:10:45:40
     Contrib: @FL03
 */
-use crate::{LPR, Triad};
+use crate::tonnetz::{HyperTonnetz, LprMap, TriadMap};
+use crate::triad::Triad;
 use hashbrown::HashMap;
-use rshyper::idx::{EdgeId, VertexId};
-use rshyper::{HyperMap, Weight};
-use rstmt::{Aspn, Octave};
-
-/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`Triad`]
-pub(crate) type TriadMap<I = usize> = HashMap<EdgeId<I>, Triad>;
-/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
-/// transformations.
-pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
-
-/// The tonnetz is a representation of tonal space in-which every facet is a valid triad.
-/// Here, we use the tonnetz to define the topology of the runtime as well as the cluster.
-/// Each instance of the runtime orchestrates a _fragment_ of the Tonnetz and glues it to the
-/// cluster with various networking protocols.
-#[derive(Clone, Debug)]
-pub struct HyperTonnetz {
-    /// The underlying hypergraph structure
-    pub(crate) graph: HyperMap<Aspn>,
-    /// Maps EdgeIds to Triad for efficient access
-    pub(crate) triads: TriadMap,
-    /// Tracks adjacency between triads via transformations
-    pub(crate) transformations: LprMap,
-}
-
-impl Default for HyperTonnetz {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+use rshyper::{EdgeId, HyperMap, VertexId, Weight};
+use rstmt_core::{Aspn, Octave};
 
 impl HyperTonnetz {
     /// returns a new [`Tonnetz`] structure initialized with empty stores
@@ -192,5 +167,11 @@ impl HyperTonnetz {
             .iter()
             .find(|(_, node)| node.weight().class() == note)
             .map(|(id, _)| *id)
+    }
+}
+
+impl Default for HyperTonnetz {
+    fn default() -> Self {
+        Self::new()
     }
 }

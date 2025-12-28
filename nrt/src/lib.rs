@@ -120,20 +120,20 @@ mod types {
     mod lpr;
 }
 // re-exports
-#[cfg(feature = "std")]
 #[doc(inline)]
+#[cfg(feature = "std")]
 pub use self::transform::TriadNavigator;
 #[doc(inline)]
 pub use self::{error::*, iter::prelude::*, traits::*, triad::*, types::*};
-#[cfg(feature = "tonnetz")]
 #[doc(inline)]
+#[cfg(feature = "tonnetz")]
 pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::iter::prelude::*;
     #[cfg(feature = "tonnetz")]
-    pub use crate::tonnetz::prelude::*;
+    pub use crate::tonnetz::*;
     pub use crate::traits::*;
     #[cfg(feature = "alloc")]
     pub use crate::transform::prelude::*;

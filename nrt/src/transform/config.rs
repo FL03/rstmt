@@ -25,7 +25,7 @@ impl PathFinderConfig {
     pub const DEFAULT_MAX_PATHS: usize = 5;
 
     /// returns a new instance of the [`PathFinderConfig`] with the given values
-    pub fn new(depth: usize, paths: usize) -> Self {
+    pub const fn new(depth: usize, paths: usize) -> Self {
         Self {
             depth, // Default search depth
             paths, // default number of paths to find
@@ -33,7 +33,7 @@ impl PathFinderConfig {
     }
     /// returns a new instance of the [`PathFinderConfig`] with the given depth and default
     /// [`paths`](Self::DEFAULT_MAX_PATHS)
-    pub fn from_depth(depth: usize) -> Self {
+    pub const fn from_depth(depth: usize) -> Self {
         Self {
             depth,                          // Default search depth
             paths: Self::DEFAULT_MAX_PATHS, // default number of paths to find
@@ -41,7 +41,7 @@ impl PathFinderConfig {
     }
     /// returns a new instance of the [`PathFinderConfig`] with the given paths and default
     /// [`depth`](Self::DEFAULT_MAX_DEPTH)
-    pub fn from_paths(paths: usize) -> Self {
+    pub const fn from_paths(paths: usize) -> Self {
         Self {
             depth: Self::DEFAULT_MAX_DEPTH, // Default search depth
             paths,                          // default number of paths to find
@@ -63,20 +63,32 @@ impl PathFinderConfig {
     pub const fn max_paths_mut(&mut self) -> &mut usize {
         &mut self.paths
     }
+    /// [`replace`](core::mem::replace) the maximum depth for pathfinding, returning the previous value
+    pub const fn replace_max_depth(&mut self, depth: usize) -> usize {
+        core::mem::replace(self.max_depth_mut(), depth)
+    }
+    /// [`replace`](core::mem::replace) the maximum number of paths to find, returning the previous value
+    pub const fn replace_max_paths(&mut self, paths: usize) -> usize {
+        core::mem::replace(self.max_paths_mut(), paths)
+    }
+    /// [`replace`](core::mem::replace) the current values with that of another instance
+    pub const fn replace(&mut self, other: Self) -> Self {
+        core::mem::replace(self, other)
+    }
     /// set the maximum depth for pathfinding
-    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
-        self.depth = depth;
-        self
+    pub const fn set_max_depth(&mut self, depth: usize) {
+        self.depth = depth
     }
     /// set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
-        self.paths = paths;
-        self
+    pub const fn set_max_paths(&mut self, paths: usize) {
+        self.paths = paths
     }
+    #[inline]
     /// consumes the current instance to create another with the given maximum depth
     pub fn with_max_depth(self, depth: usize) -> Self {
         Self { depth, ..self }
     }
+    #[inline]
     /// consumes the current instance to create another with the given maximum number of paths
     pub fn with_max_paths(self, paths: usize) -> Self {
         Self { paths, ..self }
