@@ -4,7 +4,7 @@
 */
 use strum::IntoEnumIterator;
 
-/// The [`ChordFactor`] implementation enumerates the various notes within a triad, essentially 
+/// The [`ChordFactor`] implementation enumerates the various notes within a triad, essentially
 /// providing an _index_ for each of the chord's components.
 #[derive(
     Clone,
