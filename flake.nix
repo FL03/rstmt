@@ -1,5 +1,5 @@
 {
-  description = "A flake for rstmt, a crate for exploring music theory";
+  description = "A flake for develooping Rust crates";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -16,7 +16,7 @@
         packages.default = rustPlatform.buildRustPackage {
           pname = "rstmt";
           version = "0.0.7";
-          src = "./.";
+          src = self; # "./.";
           # If Cargo.lock doesn't exist yet, remove or comment out this block:
           cargoLock = {
             lockFile = ./Cargo.lock;
