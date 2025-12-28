@@ -15,81 +15,23 @@ _**Warning: expect heavy changes to the API as the library is currently in the e
 - [ ] American Standard Pitch Notation (ASPN)
 - [ ] The Neo-Riemannian Theory
 
-## Getting Started
-
-### Prerequisites
-
-Ensure you have the latest version of Rust installed. You can install Rust using [rustup](https://rustup.rs/).
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-After installation, I always recommend ensuring that rustup is updated to the latest version:
-
-```bash
-rustup update
-```
-
-#### _Setting up for WebAssembly_
-
-If you plan to compile this library for WebAssembly, ensure you have the appropriate targets installed. You can check your current targets with:
-
-```bash
-rustup target list --installed
-```
-
-If necessary, add the `wasm32-*` target(s) if you plan to compile for WebAssembly:
-
-```bash
-rustup target add wasm32-unknown-unknown wasm32-wasip1 wasm32-wasip2
-```
-
-### Building from the source
-
-Start by cloning the repository
-
-```bash
-git clone https://github.com/FL03/rstmt.git -b main --depth 1
-```
-
-Then, navigate to the project directory:
-
-```bash
-cd rstmt
-```
-
-Once you're in the project directory, you can build the project using `cargo`:
-
-```bash
-cargo build -r --workspace --all-features
-```
-
-Or, if you want to run the tests, you can use:
-
-```bash
-cargo test -r --workspace --all-features
-```
-
 ## Usage
 
 Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies.rstmt]
-features = [
-    "nrt",
-]
+features = ["full"]
 version = "0.0.x"
 ```
 
 ### Examples
 
-#### _Example #1:_ Basic Usage
+#### _Example #1:_ Using the `Triad` implementation
 
 ```rust
     extern crate rstmt;
-    
+
     use rstmt::Note;
     use rstmt::nrt::Triad;
 
@@ -113,3 +55,7 @@ Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+## Getting Started
+
+For more information on getting an environment setup to develop the crate view the [QUICKSTART](QUICKSTART.md) file.
