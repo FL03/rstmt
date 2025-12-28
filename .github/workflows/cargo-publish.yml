@@ -9,8 +9,6 @@ env:
   RUST_BACKTRACE: full
 
 on:
-  release:
-    types: [published]
   repository_dispatch:
     types: [crates-io, cargo-publish]
   workflow_dispatch:
