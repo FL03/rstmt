@@ -1197,9 +1197,9 @@ dependencies = [
 
 [[package]]
 name = "rspace"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e83933695ec7f733b96b81d6523c55245a6e54b55d804b52fbac2b542e7a2394"
+checksum = "8942767d00b9b126babcbce899b7c94a3e73f25e2c1f59b9b9994a406b97dec5"
 dependencies = [
  "rspace-core",
  "rspace-derive",
@@ -1208,9 +1208,9 @@ dependencies = [
 
 [[package]]
 name = "rspace-core"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef0ded8dabf46593e42734dd2866886820c233aa6d004ce24fe3bb595fe9435d"
+checksum = "0c61fb07dc89f85ac9a3fefcce68f5128f37a0f8740041f5aea9ba5d79984f08"
 dependencies = [
  "getrandom",
  "hashbrown 0.16.1",
@@ -1229,9 +1229,9 @@ dependencies = [
 
 [[package]]
 name = "rspace-derive"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c2235b29899c6abecde2959bf192df89a1e3bc8982609d98814f4f4d21775d8"
+checksum = "73a7a1b764802df23230dd7d7854a2bb3f1f5cb5b665ace0d259fe46efe54dff"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1240,9 +1240,9 @@ dependencies = [
 
 [[package]]
 name = "rspace-macros"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b238010c603209bc3e3abc316288366de9f1bff9fcb5c102d277352fcde0869"
+checksum = "5fca305ce4bc6951a0c8390db44c13a306d093db371575d3362442de97df9662"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1251,16 +1251,14 @@ dependencies = [
 
 [[package]]
 name = "rspace-traits"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0523697a1a68df4d4be71263dec09e0fad4c641540c1433575451284d62e8547"
+checksum = "9425062c47de6c48cd2e3387997ee3b7dad7ee9ad996afb5a7b776293ca2efb6"
 dependencies = [
  "hashbrown 0.16.1",
  "num-complex",
  "num-traits",
  "paste",
- "rayon-core",
- "serde",
  "wasm-bindgen",
 ]
 
@@ -1303,6 +1301,7 @@ dependencies = [
  "strum",
  "thiserror",
  "variants",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1330,6 +1329,7 @@ dependencies = [
  "strum",
  "thiserror",
  "variants",
+ "wasm-bindgen",
 ]
 
 [[package]]

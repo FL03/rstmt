@@ -38,7 +38,7 @@ rstmt-traits = { default-features = false, path = "traits", version = "0.0.7" }
 # custom
 contained = { default-features = false, features = ["macros"], version = "0.2.3" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-rspace = { default-features = false, features = ["macros"], version = "0.0.3" }
+rspace = { default-features = false, features = ["macros"], version = "0.0.4" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }

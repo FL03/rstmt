@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "complex", "hashbrown", "std"]
+features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -61,6 +61,8 @@ serde_json = { optional = true, workspace = true }
 paste = { workspace = true }
 smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
+# WebAssembly
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
@@ -90,6 +92,7 @@ std = [
   "num-traits/std",
   "rand?/std",
   "rand_distr?/std",
+  "rspace/std",
   "rstmt-traits/std",
   "serde?/std",
   "serde_json?/std",
@@ -103,6 +106,7 @@ wasi = [
 ]
 
 wasm = [
+  "wasm_bindgen",
   "rspace/wasm",
   "rstmt-traits/wasm",
   "getrandom?/wasm_js",
@@ -174,3 +178,9 @@ serde = [
 ]
 
 serde_json = ["dep:serde_json"]
+
+wasm_bindgen = [
+  "dep:wasm-bindgen",
+  "rspace/wasm_bindgen",
+  "rstmt-traits/wasm_bindgen",
+]

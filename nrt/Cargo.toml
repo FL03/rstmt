@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "complex", "serde", "std"]
+features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -61,6 +61,8 @@ itertools = { workspace = true }
 paste = { workspace = true }
 smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
+# WebAssembly
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
@@ -82,7 +84,7 @@ nightly = [
   "rstmt-core/nightly",
 ]
 
-# ************* [FF:Features] *************
+# ********* [FF] Flags *********
 
 tonnetz = [
   "rshyper/hyper_map",
@@ -188,3 +190,9 @@ serde = [
 ]
 
 serde_json = ["dep:serde_json"]
+
+wasm_bindgen = [
+  "dep:wasm-bindgen",
+  "rspace/wasm_bindgen",
+  "rstmt-core/wasm_bindgen",
+]

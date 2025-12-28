@@ -155,3 +155,8 @@ serde_json = [
   "rstmt-core/serde_json",
   "rstmt-nrt?/serde_json",
 ]
+
+wasm_bindgen = [
+  "rstmt-core/wasm_bindgen",
+  "rstmt-nrt?/wasm_bindgen",
+]
