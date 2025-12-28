@@ -119,6 +119,7 @@ where
     pub fn with_chord<S2>(self, chord: S2) -> TriadBase<S2, K>
     where
         S2: RawTriad<Elem = T>,
+        T: Sized,
     {
         TriadBase {
             chord,

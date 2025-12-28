@@ -58,14 +58,7 @@ pub mod types {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    chord::{RawChord, RawChordMut},
-    consts::*,
-    error::*,
-    freq::*,
-    intervals::*,
-    notes::*,
-    octave::*,
-    pitch::*,
+    chord::prelude::*, consts::*, error::*, freq::*, intervals::*, notes::*, octave::*, pitch::*,
     types::*,
 };
 #[doc(inline)]

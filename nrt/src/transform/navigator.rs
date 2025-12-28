@@ -8,11 +8,11 @@ use crate::triad::{Triad, TriadBase};
 use crate::types::LPR;
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
-use rstmt_core::RawChord;
+use rspace::RawSpace;
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
 #[derive(Debug)]
-pub struct TriadNavigator<'a, S, K, T = <S as RawChord>::Elem>
+pub struct TriadNavigator<'a, S, K, T = <S as RawSpace>::Elem>
 where
     K: TriadCls,
     S: RawTriad<Elem = T>,

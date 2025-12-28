@@ -3,11 +3,14 @@
     Created At: 2025.12.20:10:36:11
     Contrib: @FL03
 */
-use rstmt_core::RawChord;
+use rspace::RawSpace;
 
 /// The [`RawTriad`] trait is used to restrict and extend the [`RawChord`] trait to define valid  
 /// representations of a triad.
-pub trait RawTriad: RawChord {
+pub trait RawTriad: RawSpace
+where
+    Self::Elem: Sized,
+{
     private! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self
@@ -37,7 +40,10 @@ pub trait RawTriad: RawChord {
 }
 /// The [`RawTriadMut`] trait is used to extend the [`RawTriad`] trait to provide mutable access
 /// to the elements of a triad.
-pub trait RawTriadMut: RawTriad {
+pub trait RawTriadMut: RawTriad
+where
+    Self::Elem: Sized,
+{
     /// returns a mutable reference to the root note of the triad.
     fn root_mut(&mut self) -> &mut Self::Elem;
     /// returns a mutable reference to the third note of the triad.

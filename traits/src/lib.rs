@@ -42,16 +42,12 @@ pub mod ops {
 
 // re-exports
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::{chroma::*, classify::*, num::*, ops::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    #[doc(inline)]
     pub use crate::chroma::*;
-    #[doc(inline)]
     pub use crate::classify::*;
-    #[doc(inline)]
     pub use crate::num::*;
-    #[doc(inline)]
     pub use crate::ops::*;
 }

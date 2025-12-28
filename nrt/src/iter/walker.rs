@@ -6,9 +6,9 @@
 #![allow(dead_code)]
 use crate::types::LPR;
 use crate::{RawTriad, TriadBase, TriadCls};
-use rstmt_core::RawChord;
+use rspace::RawSpace;
 
-pub struct Walk<'a, P, S, K, T = <S as RawChord>::Elem>
+pub struct Walk<'a, P, S, K, T = <S as RawSpace>::Elem>
 where
     S: RawTriad<Elem = T>,
     K: TriadCls,
