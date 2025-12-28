@@ -5,7 +5,6 @@
 */
 use crate::triad::TriadBase;
 
-use crate::error::TriadError;
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::{Factors, LPR};
 use num_traits::{FromPrimitive, One};
@@ -22,8 +21,8 @@ where
         + core::ops::Add<Output = T>
         + core::ops::Sub<Output = T>,
 {
+    type Error = crate::TriadError;
     type Output = TriadBase<S, K::Rel, T>;
-    type Error = TriadError;
 
     fn try_transform(&self, transformation: LPR) -> Result<Self::Output, Self::Error> {
         LPR::try_apply(&transformation, self)
