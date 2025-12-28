@@ -8,7 +8,7 @@ use crate::triad::{Triad, TriadBase};
 use crate::types::LPR;
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 /// The transformer allows one triad to find valid transformation chains capable of taking the
 /// instance to another based on some critieria.
 #[derive(Debug)]

@@ -26,14 +26,14 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib", "staticlib"]
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
 
 [dependencies]
 # custom
-rspace = { workspace = true }
+rspace-traits = { workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 # mathematics
@@ -59,58 +59,58 @@ full = [
 
 nightly = [
   "hashbrown?/nightly",
-  "rspace/nightly",
+  "rspace-traits/nightly",
 ]
 
 # ************* [FF:Environments] *************
 std = [
   "alloc",
   "hashbrown?/default",
-  "rspace/std",
+  "rspace-traits/std",
   "num-complex?/std",
   "num-traits/std",
   "serde?/std",
 ]
 
 wasi = [
-  "rspace/wasi",
+  "rspace-traits/wasi",
 ]
 
 wasm = [
   "wasm_bindgen",
-  "rspace/wasm",
+  "rspace-traits/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
   "hashbrown?/alloc",
-  "rspace/alloc",
+  "rspace-traits/alloc",
   "serde?/alloc",
 ]
 
 complex = [
   "dep:num-complex",
-  "rspace/complex",
+  "rspace-traits/complex",
 ]
 
 hashbrown = [
   "dep:hashbrown",
-  "rspace/hashbrown",
+  "rspace-traits/hashbrown",
 ]
 
 rayon = [
   "hashbrown?/rayon",
-  "rspace/rayon",
+  "rspace-traits/rayon",
 ]
 
 rand = [
   "num-complex?/rand",
-  "rspace/rand",
+  "rspace-traits/rand",
 ]
 
 serde = [
   "dep:serde",
   "hashbrown?/serde",
-  "rspace/serde",
+  "rspace-traits/serde",
   "num-complex/serde",
 ]
 

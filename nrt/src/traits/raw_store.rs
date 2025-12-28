@@ -3,7 +3,7 @@
     Created At: 2025.12.20:10:36:11
     Contrib: @FL03
 */
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 
 /// The [`RawTriad`] trait is used to restrict and extend the [`RawChord`] trait to define valid  
 /// representations of a triad.

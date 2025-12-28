@@ -6,7 +6,7 @@
 #![allow(dead_code)]
 use crate::types::LPR;
 use crate::{RawTriad, TriadBase, TriadCls};
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 
 pub struct Walk<'a, P, S, K, T = <S as RawSpace>::Elem>
 where
