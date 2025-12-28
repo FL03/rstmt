@@ -3,20 +3,44 @@
     Created At: 2025.12.23:17:32:04
     Contrib: @FL03
 */
+use rspace::RawSpace;
 /// The [`RawChord`] trait works to define a basic interface shared by all compatible
 /// reprsentations of a chord. Since a chord is essentially a sequence of pitches, the trait
 /// captures this behavior through association with an element type.
-pub trait RawChord {
-    type Elem;
+pub trait RawChord: RawSpace
+where
+    Self::Elem: Sized,
+{
+    /// returns a slice representation of the chord.
+    fn as_slice(&self) -> &[Self::Elem];
+    /// returns the number of elements in the chord representation.
+    fn len(&self) -> usize;
 }
 
 /// The [`RawChordMut`] trait extends the [`RawChord`] trait to provide mutable access to the
 /// underlying elements of the chord representation.
-pub trait RawChordMut: RawChord {}
+pub trait RawChordMut: RawSpace
+where
+    Self::Elem: Sized,
+{
+    /// returns a mutable slice representation of the chord.
+    fn as_mut_slice(&mut self) -> &mut [Self::Elem];
+}
 
-pub trait ChordRepr: RawChord {
-    /// returns the number of elements in the chord representation.
-    fn len(&self) -> usize;
+pub trait ChordRepr: RawSpace
+where
+    Self::Elem: Sized,
+{
+}
+/// The [`RawChordIter`] trait extends the [`RawChord`] trait to provide an iterator over
+/// the elements of the chord representation.
+pub trait RawChordIter: RawSpace {
+    type Iter<'b>: Iterator<Item = &'b Self::Elem>
+    where
+        Self::Elem: 'b,
+        Self: 'b;
+
+    fn iter(&self) -> Self::Iter<'_>;
 }
 
 /*
@@ -27,139 +51,114 @@ impl<C, T> RawChord for &C
 where
     C: RawChord<Elem = T>,
 {
-    type Elem = C::Elem;
+    fn as_slice(&self) -> &[T] {
+        C::as_slice(*self)
+    }
+
+    fn len(&self) -> usize {
+        C::len(*self)
+    }
 }
 
 impl<C, T> RawChord for &mut C
 where
     C: RawChord<Elem = T>,
 {
-    type Elem = C::Elem;
-}
+    fn as_slice(&self) -> &[T] {
+        C::as_slice(*self)
+    }
 
-macro_rules! impl_raw_chord  {
-    (impl<Elem = $elem:ident> $trait:ident for {$(
-        $($cont:ident)::*<$($T:ident),*> $({where $($rest:tt)*})?
-    ),* $(,)?}) => {
-        $(impl_raw_chord! {
-            @impl<Elem = $elem> $trait for $($cont)::*<$($T),*> $(where $($rest)*)?
-        })*
-    };
-    (@impl<Elem = $elem:ident> $trait:ident for $($cont:ident)::*<$($T:ident),*> $(where $($rest:tt)*)?) => {
-        impl<$($T),*> $trait for $($cont)::*<$($T),*> $(where $($rest)*)? {
-            type Elem = $elem;
-        }
-    };
-}
-
-impl_raw_chord! {
-    impl<Elem = T> RawChord for {
-        core::option::Option<T>,
-        core::cell::Cell<T>,
-        core::cell::OnceCell<T>,
-        core::cell::RefCell<T>,
-        core::cell::UnsafeCell<T>,
-        core::ops::Range<T>,
-        core::result::Result<T, E>,
+    fn len(&self) -> usize {
+        C::len(*self)
     }
 }
 
-#[cfg(feature = "alloc")]
-impl_raw_chord! {
-    impl<Elem = T> RawChord for {
-        alloc::boxed::Box<T>,
-        alloc::rc::Rc<T>,
-        alloc::sync::Arc<T>,
-        alloc::vec::Vec<T>,
-        alloc::collections::BTreeSet<T>,
-        alloc::collections::LinkedList<T>,
-        alloc::collections::VecDeque<T>,
-        alloc::collections::BinaryHeap<T>,
-        alloc::collections::BTreeMap<K, T>,
+impl<T> RawChord for (T, T, T) {
+    fn as_slice(&self) -> &[T] {
+        unsafe { core::slice::from_raw_parts(self as *const (T, T, T) as *const T, 3) }
     }
-}
 
-#[cfg(feature = "std")]
-impl_raw_chord! {
-    impl<Elem = T> RawChord for {
-        std::sync::Mutex<T>,
-        std::sync::RwLock<T>,
-        std::sync::LazyLock<T>,
-        std::collections::HashMap<K, T>,
-        std::collections::HashSet<T>,
-    }
-}
-
-#[cfg(feature = "hashbrown")]
-impl_raw_chord! {
-    impl<Elem = T> RawChord for {
-        hashbrown::HashMap<K, T, S>,
-        hashbrown::HashSet<T, S>,
+    fn len(&self) -> usize {
+        3
     }
 }
 
 impl<T> RawChord for [T] {
-    type Elem = T;
-}
-
-impl<T> RawChord for &[T] {
-    type Elem = T;
-}
-
-impl<T> RawChord for &mut [T] {
-    type Elem = T;
-}
-
-impl<const N: usize, T> RawChord for [T; N] {
-    type Elem = T;
-}
-
-macro_rules! impl_raw_chord_tuple {
-    (@impl<$T:ident> ($($name:ident),+ $(,)?)) => {
-        impl<$T> RawChord for ($($name),+) {
-            type Elem = $T;
-        }
-    };
-    (impl<$T:ident> {$(($($name:ident),+)),* $(,)?}) => {
-        $(impl_raw_chord_tuple! { @impl<$T> ($($name),+) } )*
-    };
-}
-
-impl_raw_chord_tuple! {
-    impl<T> {
-        (T, T),
-        (T, T, T),
-        (T, T, T, T),
-        (T, T, T, T, T),
-        (T, T, T, T, T, T),
-        (T, T, T, T, T, T, T),
-        (T, T, T, T, T, T, T, T),
-        (T, T, T, T, T, T, T, T, T),
-        (T, T, T, T, T, T, T, T, T, T),
+    fn as_slice(&self) -> &[T] {
+        &self
     }
-}
 
-impl<T> ChordRepr for [T] {
     fn len(&self) -> usize {
         self.len()
     }
 }
 
-impl<T> ChordRepr for &[T] {
+impl<T> RawChord for &[T] {
+    fn as_slice(&self) -> &[T] {
+        self
+    }
+
     fn len(&self) -> usize {
         (*self).len()
     }
 }
 
-impl<T> ChordRepr for &mut [T] {
+impl<T> RawChord for &mut [T] {
+    fn as_slice(&self) -> &[T] {
+        *self
+    }
+
     fn len(&self) -> usize {
         (**self).len()
     }
 }
 
-#[cfg(feature = "alloc")]
-impl<T> ChordRepr for alloc::vec::Vec<T> {
+impl<T> RawChordMut for [T] {
+    fn as_mut_slice(&mut self) -> &mut [T] {
+        &mut *self
+    }
+}
+
+impl<T> RawChordMut for &mut [T] {
+    fn as_mut_slice(&mut self) -> &mut [T] {
+        *self
+    }
+}
+
+impl<const N: usize, T> RawChord for [T; N] {
+    fn as_slice(&self) -> &[T] {
+        &self[..]
+    }
+
     fn len(&self) -> usize {
-        self.len()
+        N
+    }
+}
+
+impl<const N: usize, T> RawChordMut for [T; N] {
+    fn as_mut_slice(&mut self) -> &mut [T] {
+        &mut self[..]
+    }
+}
+
+#[cfg(feature = "alloc")]
+mod impl_alloc {
+    use super::{RawChord, RawChordMut};
+    use alloc::vec::Vec;
+
+    impl<T> RawChord for Vec<T> {
+        fn as_slice(&self) -> &[T] {
+            self.as_slice()
+        }
+
+        fn len(&self) -> usize {
+            self.len()
+        }
+    }
+
+    impl<T> RawChordMut for Vec<T> {
+        fn as_mut_slice(&mut self) -> &mut [T] {
+            self.as_mut_slice()
+        }
     }
 }

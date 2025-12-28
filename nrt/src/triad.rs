@@ -32,7 +32,8 @@
 
 use crate::traits::{RawTriad, TriadCls};
 use crate::types::TriadClass;
-use rstmt_core::{Major, Octave, RawChord};
+use rspace::RawSpace;
+use rstmt_core::{Major, Octave};
 
 /// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
 /// its storage
@@ -48,7 +49,7 @@ pub type DefaultTriadChord<T = usize> = [T; 3];
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
-pub struct TriadBase<S = DefaultTriadChord<isize>, K = Major, T = <S as RawChord>::Elem>
+pub struct TriadBase<S = DefaultTriadChord<isize>, K = Major, T = <S as RawSpace>::Elem>
 where
     K: TriadCls,
     S: RawTriad<Elem = T>,

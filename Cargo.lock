@@ -222,9 +222,9 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "contained"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a0a9ba5ab57000eeb80eb10b61b1f6a537efd57375049050b6d20a32fc601cd"
+checksum = "a8a1ab5394ad9555b4ede356ee384f97380d9af10c85292dffbfcc842fae8150"
 dependencies = [
  "contained-core",
  "contained-derive",
@@ -233,10 +233,16 @@ dependencies = [
 
 [[package]]
 name = "contained-core"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "864867f1a5d3cbb62643bd141eeb6e37aa4d7fe9bc742b35fbe1cfebb1546eb8"
+checksum = "10cda86cb77598cde9b724e93c10434cf07c3a173703d825fdc3e64d6b46c34b"
 dependencies = [
+ "hashbrown 0.16.1",
+ "num-complex",
+ "num-traits",
+ "rand 0.9.2",
+ "rand_core 0.9.3",
+ "rand_distr",
  "serde",
  "serde_json",
  "thiserror",
@@ -244,9 +250,9 @@ dependencies = [
 
 [[package]]
 name = "contained-derive"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a0d713fb46a1a26564417a4a1d1c0fd40597a6c2409cd2cb0ea32be74ba38bd"
+checksum = "8c1038ad52c789cc609bec0bde671ccc229041b48525744295b46bde94d0103b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -255,9 +261,9 @@ dependencies = [
 
 [[package]]
 name = "contained-macros"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31a65fefd06ee0347d67c0d43ada8679ad0d6becf75c826be7f0fb3f3cc98aa7"
+checksum = "b24b213c630b8ecea73dc39b48103e631a4953abe852b670faff1d9513a6a96e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1190,6 +1196,63 @@ dependencies = [
 ]
 
 [[package]]
+name = "rspace"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e83933695ec7f733b96b81d6523c55245a6e54b55d804b52fbac2b542e7a2394"
+dependencies = [
+ "rspace-core",
+ "rspace-macros",
+]
+
+[[package]]
+name = "rspace-core"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef0ded8dabf46593e42734dd2866886820c233aa6d004ce24fe3bb595fe9435d"
+dependencies = [
+ "getrandom",
+ "hashbrown 0.16.1",
+ "num-complex",
+ "num-traits",
+ "rand 0.9.2",
+ "rand_core 0.9.3",
+ "rand_distr",
+ "rspace-traits",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "thiserror",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "rspace-macros"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b238010c603209bc3e3abc316288366de9f1bff9fcb5c102d277352fcde0869"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "rspace-traits"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0523697a1a68df4d4be71263dec09e0fad4c641540c1433575451284d62e8547"
+dependencies = [
+ "hashbrown 0.16.1",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rayon-core",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "rstmt"
 version = "0.0.7"
 dependencies = [
@@ -1219,6 +1282,7 @@ dependencies = [
  "rand_core 0.9.3",
  "rand_distr",
  "rayon-core",
+ "rspace",
  "rstmt-traits",
  "serde",
  "serde_derive",
@@ -1245,6 +1309,7 @@ dependencies = [
  "rayon",
  "rayon-core",
  "rshyper",
+ "rspace",
  "rstmt-core",
  "serde",
  "serde_derive",

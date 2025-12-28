@@ -35,6 +35,7 @@ test = true
 rstmt-traits = { workspace = true }
 # custom
 contained = { workspace = true }
+rspace = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
@@ -97,10 +98,12 @@ std = [
 ]
 
 wasi = [
+  "rspace/wasi",
   "rstmt-traits/wasi",
 ]
 
 wasm = [
+  "rspace/wasm",
   "rstmt-traits/wasm",
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
@@ -112,19 +115,29 @@ alloc = [
   "hashbrown?/alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
+  "rspace/alloc",
   "serde?/alloc", 
   "serde_json?/alloc",
   "variants/alloc",
 ]
 
-complex = ["dep:num-complex"]
+complex = [
+  "dep:num-complex",
+  "rspace/complex",
+]
 
 hashbrown = [
   "dep:hashbrown", 
+  "rspace/hashbrown",
   "rstmt-traits/hashbrown"
 ]
 
-json = ["alloc", "serde_json"]
+json = [
+  "alloc", 
+  "serde",
+  "serde_json",
+  "rspace/json",
+]
 
 rand = [
   "rng",
@@ -150,10 +163,14 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
-  "hashbrown?/serde",
-  "rstmt-traits/serde",
   "serde?/derive",
+  "hashbrown?/serde",
   "num-complex/serde",
+  "rspace/serde",
+  "rstmt-traits/serde",
+  "rand?/serde",
+  "rand_core?/serde",
+  "rand_distr?/serde",
 ]
 
 serde_json = ["dep:serde_json"]

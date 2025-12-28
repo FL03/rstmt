@@ -34,6 +34,7 @@ test = true
 [dependencies]
 rstmt-core = { features = ["hashbrown"], workspace = true }
 # custom
+rspace = { workspace = true }
 rshyper = { workspace = true }
 variants = { workspace = true }
 # data structures
@@ -62,7 +63,10 @@ smart-default = { workspace = true }
 strum = { features = ["derive"], workspace = true }
 
 [features]
-default = ["std", "tonnetz"]
+default = [
+  "std", 
+  "tonnetz",
+]
 
 full = [
   "default",
@@ -94,27 +98,36 @@ std = [
   "num-complex?/std",
   "num-traits/std",
   "rand?/std",
+  "rand?/std_rng",
+  "rand_distr?/std",
+  "rspace/std",
   "rshyper/std",
   "rstmt-core/std",
   "serde?/std",
+  "serde_json?/std",
   "strum/std",
   "variants/std",
 ]
 
 wasi = [
+  "rspace/wasi",
   "rstmt-core/wasi",
 ]
 
 wasm = [
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
+  "rspace/wasm",
   "rstmt-core/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
   "hashbrown/alloc",
   "itertools/use_alloc",
+  "rand?/alloc",
+  "rand_distr?/alloc",
   "rshyper/alloc",
+  "rspace/alloc",
   "rstmt-core/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
@@ -123,21 +136,24 @@ alloc = [
 
 complex = [
   "dep:num-complex",
+  "rspace/complex",
   "rstmt-core/complex",
 ]
 
 json = [
   "alloc",
+  "serde",
+  "serde_json",
+  "rspace/json",
   "rshyper/json",
   "rstmt-core/json",
-  "serde_json",
 ]
 
 rand = [
   "dep:rand",
   "dep:rand_distr",
-  "num-complex?/rand",
   "rng",
+  "num-complex?/rand",
   "rshyper/rand",
   "rstmt-core/rand",
 ]
@@ -163,6 +179,9 @@ serde = [
   "dep:serde_derive",
   "hashbrown/serde",
   "num-complex?/serde",
+  "rand?/serde",
+  "rand_distr?/serde",
+  "rspace/serde",
   "rshyper/serde",
   "rstmt-core/serde",
   "serde?/derive",
