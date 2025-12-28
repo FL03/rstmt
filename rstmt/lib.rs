@@ -1,7 +1,5 @@
-/*
-    Appellation: rstmt <library>
-    Contrib: FL03 <jo3mccain@icloud.com>
-*/
+#![crate_name = "rstmt"]
+#![crate_type = "lib"]
 //! # rstmt
 //!
 //! [![crates.io](https://img.shields.io/crates/v/rstmt?style=for-the-badge&logo=rust)](https://crates.io/crates/rstmt)
@@ -48,25 +46,30 @@
 //!
 //!
 #![allow(
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::should_implement_trait
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_name = "rstmt"]
-#![crate_type = "lib"]
-
+// compile time checks
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error! { "Either the 'std' or 'alloc' feature must be enabled for this crate." }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-#[doc(inline)]
-pub use rstmt_core::*;
-/// tthis module works to implement the various aspects of the neo-Riemannian theory
+// external modules
 #[doc(inline)]
 #[cfg(feature = "nrt")]
 pub use rstmt_nrt as nrt;
-
+// re-exports
+#[doc(inline)]
+pub use rstmt_core::*;
+// prelude
+#[doc(hidden)]
 pub mod prelude {
     pub use rstmt_core::prelude::*;
     #[cfg(feature = "nrt")]
