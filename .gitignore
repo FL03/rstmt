@@ -65,7 +65,7 @@
 # Language Specific
 
 ## Rust
-**/debug/
+**/debug
 **/target/
 
 **/*.bk
