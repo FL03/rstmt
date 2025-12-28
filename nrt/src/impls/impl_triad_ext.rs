@@ -21,7 +21,7 @@ where
     type Error = TriadError;
 
     fn try_transform(&self, transformation: LPR) -> Result<Self::Output, Self::Error> {
-        self.transform(transformation)
+        LPR::try_apply(&transformation, self)
     }
 }
 
@@ -142,39 +142,47 @@ where
     }
 }
 
-impl<T, K> IntoIterator for TriadBase<[T; 3], K>
+impl<S, T, K, I> IntoIterator for TriadBase<S, K, T>
 where
+    S: RawTriad<Elem = T> + IntoIterator<Item = I::Item, IntoIter = I>,
     K: TriadCls,
+    I: core::iter::Iterator<Item = T>,
 {
     type Item = T;
-    type IntoIter = core::array::IntoIter<T, 3>;
+    type IntoIter = I;
 
     fn into_iter(self) -> Self::IntoIter {
         self.chord.into_iter()
     }
 }
 
-impl<'a, T, K> IntoIterator for &'a TriadBase<[T; 3], K>
+impl<'a, S, T, K, I> IntoIterator for &'a TriadBase<S, K, T>
 where
+    S: RawTriad<Elem = T>,
     K: TriadCls,
+    I: core::iter::Iterator<Item = &'a T>,
+    &'a S: IntoIterator<Item = I::Item, IntoIter = I>,
 {
     type Item = &'a T;
-    type IntoIter = core::slice::Iter<'a, T>;
+    type IntoIter = I;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.chord().iter()
+        self.chord().into_iter()
     }
 }
 
-impl<'a, T, K> IntoIterator for &'a mut TriadBase<[T; 3], K>
+impl<'a, S, T, K, I> IntoIterator for &'a mut TriadBase<S, K, T>
 where
+    S: RawTriad<Elem = T>,
     K: TriadCls,
+    I: core::iter::Iterator<Item = &'a T>,
+    &'a mut S: IntoIterator<Item = I::Item, IntoIter = I>,
 {
-    type Item = &'a mut T;
-    type IntoIter = core::slice::IterMut<'a, T>;
+    type Item = &'a T;
+    type IntoIter = I;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.chord_mut().iter_mut()
+        self.chord_mut().into_iter()
     }
 }
 

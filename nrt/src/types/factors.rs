@@ -4,9 +4,8 @@
 */
 use strum::IntoEnumIterator;
 
-/// A [chord factor](Components) describes the position of a note within a [triad](crate::Triad).
-/// The `root` factor is the first note of the triad, the `third` factor is the
-/// second note of the triad, and the `fifth` factor is the third note of the triad.
+/// The [`ChordFactor`] implementation enumerates the various notes within a triad, essentially 
+/// providing an _index_ for each of the chord's components.
 #[derive(
     Clone,
     Copy,
@@ -49,7 +48,7 @@ use strum::IntoEnumIterator;
     )
 )]
 #[repr(usize)]
-pub enum Components<T = usize> {
+pub enum ChordFactor<T = usize> {
     #[strum(serialize = "r", serialize = "root")]
     Root(T) = 0,
     #[strum(serialize = "t", serialize = "third")]
@@ -58,7 +57,7 @@ pub enum Components<T = usize> {
     Fifth(T) = 2,
 }
 
-impl<T> Components<T> {
+impl<T> ChordFactor<T> {
     pub fn new(data: T, factor: Factors) -> Self {
         match factor {
             Factors::Root => Self::Root(data),
