@@ -1,9 +1,9 @@
 /*
-    Appellation: rstmt-core <library>
+    Appellation: rstmt-traits <library>
+    Created At: 2025.12.28:13:36:36
     Contrib: @FL03
 */
-//! Various traits and interfaces designed to enable the development of a type-base musical
-//! framework.
+//! A collection of useful traits focused on musical abstractions, composition, and operations.
 #![allow(
     clippy::missing_errors_doc,
     clippy::missing_safety_doc,
@@ -13,6 +13,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
