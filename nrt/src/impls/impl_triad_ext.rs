@@ -8,14 +8,19 @@ use crate::triad::TriadBase;
 use crate::error::TriadError;
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::{Factors, LPR};
-use num_traits::{FromPrimitive, Num, ToPrimitive};
+use num_traits::{FromPrimitive, One};
 use rstmt_core::{PitchMod, TryTransform};
 
 impl<S, T, K> TryTransform<LPR> for TriadBase<S, K, T>
 where
     K: TriadCls,
     S: RawTriad<Elem = T>,
-    T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
 {
     type Output = TriadBase<S, K::Rel, T>;
     type Error = TriadError;

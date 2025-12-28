@@ -7,7 +7,7 @@ use crate::triad::TriadBase;
 
 use crate::traits::{RawTriad, RawTriadMut, TriadCls};
 use crate::types::LPR;
-use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
+use num_traits::{Float, FromPrimitive, One, ToPrimitive};
 use rstmt_core::{Octave, PitchMod};
 
 impl<S, T, K> TriadBase<S, K, T>
@@ -201,7 +201,12 @@ impl<S, T, K> TriadBase<S, K, T>
 where
     S: RawTriad<Elem = T>,
     K: TriadCls,
-    T: Copy + PitchMod<Output = T> + Num + FromPrimitive + ToPrimitive,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
 {
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if

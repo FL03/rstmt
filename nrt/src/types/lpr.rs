@@ -6,7 +6,7 @@
 use crate::error::TriadError;
 use crate::traits::{RawTriad, TriadCls};
 use crate::triad::TriadBase;
-use num_traits::{FromPrimitive, Num, ToPrimitive};
+use num_traits::{FromPrimitive, Num, One, ToPrimitive};
 use rstmt::{PitchMod, TryApply};
 
 /// The [`LPR`] implementation enumerates the primary transformations considered within the
@@ -106,7 +106,12 @@ impl LPR {
         S: RawTriad<Elem = T>,
         K: TriadCls<Rel = K2>,
         K2: TriadCls<Rel = K>,
-        T: Copy + FromPrimitive + ToPrimitive + Num + PitchMod<Output = T>,
+        T: Copy
+            + FromPrimitive
+            + One
+            + PitchMod<Output = T>
+            + core::ops::Add<Output = T>
+            + core::ops::Sub<Output = T>,
     {
         let x = *triad.chord().root();
         let y = *triad.chord().third();
