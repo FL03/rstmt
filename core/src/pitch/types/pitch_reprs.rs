@@ -4,21 +4,21 @@
     Contrib: @FL03
 */
 
-macro_rules! pitch_class {
-    {$($(#[$meta:meta])* $vis:vis $i:ident $name:ident<$tag:ty>::($c:literal));* $(;)?} => {
-        $(pitch_class! {@impl $(#[$meta])* $vis $i $name<$tag>::($c) })*
+macro_rules! pitch_repr {
+    [$vis:vis $i:ident {$( $(#[$meta:meta])* $name:ident<$tag:ty>: $c:literal),* $(,)?}] => {
+        $(pitch_repr! {@impl $(#[$meta])* $vis $i $name<$tag>($c) })*
     };
-    {@def $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>::($c:literal)} => {
+    {@def $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>($c:literal)} => {
         $(#[$meta])*
         $vis struct $name<const N: isize = $c>;
     };
-    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>::($c:literal)) => {
-
-        pitch_class! { @def
+    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>($c:literal)) => {
+        pitch_repr! { @def
+            $(#[$meta])*
             #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "UPPERCASE"))]
             #[repr(transparent)]
-            pub struct $name<$tag>::($c)
+            pub struct $name<$tag>($c)
         }
 
         impl<const N: isize> $name<N> {
@@ -125,22 +125,24 @@ macro_rules! pitch_class {
     };
 }
 
-pitch_class! {
-    pub struct CNote<crate::Natural>::(0);
-    pub struct DNote<crate::Natural>::(2);
-    pub struct ENote<crate::Natural>::(4);
-    pub struct FNote<crate::Natural>::(5);
-    pub struct GNote<crate::Natural>::(7);
-    pub struct ANote<crate::Natural>::(9);
-    pub struct BNote<crate::Natural>::(11);
-    pub struct CSharpNote<crate::Sharp>::(1);
-    pub struct DSharpNote<crate::Sharp>::(3);
-    pub struct FSharpNote<crate::Sharp>::(6);
-    pub struct GSharpNote<crate::Sharp>::(8);
-    pub struct ASharpNote<crate::Sharp>::(10);
-    pub struct DFlatNote<crate::Flat>::(1);
-    pub struct EFlatNote<crate::Flat>::(3);
-    pub struct GFlatNote<crate::Flat>::(6);
-    pub struct AFlatNote<crate::Flat>::(8);
-    pub struct BFlatNote<crate::Flat>::(10);
+pitch_repr! {
+    pub struct {
+        CNote<crate::Natural>: 0,
+        CSharpNote<crate::Sharp>: 1,
+        DFlatNote<crate::Flat>: 1,
+        DNote<crate::Natural>: 2,
+        DSharpNote<crate::Sharp>: 3,
+        EFlatNote<crate::Flat>: 3,
+        ENote<crate::Natural>: 4,
+        FNote<crate::Natural>: 5,
+        FSharpNote<crate::Sharp>: 6,
+        GFlatNote<crate::Flat>: 6,
+        GNote<crate::Natural>: 7,
+        GSharpNote<crate::Sharp>: 8,
+        AFlatNote<crate::Flat>: 8,
+        ANote<crate::Natural>: 9,
+        ASharpNote<crate::Sharp>: 10,
+        BFlatNote<crate::Flat>: 10,
+        BNote<crate::Natural>: 11,
+    }
 }

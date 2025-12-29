@@ -1,7 +1,7 @@
 #![crate_name = "rstmt_traits"]
 //! A collection of useful traits focused on musical abstractions, composition, and operations.
-//! 
-//! 
+//!
+//!
 #![allow(
     clippy::derivable_impls,
     clippy::len_without_is_empty,
@@ -12,7 +12,7 @@
     clippy::needless_doctest_main,
     clippy::non_canonical_partial_ord_impl,
     clippy::should_implement_trait,
-    clippy::upper_case_acronyms,
+    clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
