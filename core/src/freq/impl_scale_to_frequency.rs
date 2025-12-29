@@ -12,12 +12,20 @@ impl<T> ScaleToFrequency<T> {
             anchor: Frequency(anchor),
         }
     }
+    /// returns a reference to the base frequency
+    pub const fn anchor(&self) -> &Frequency<T> {
+        &self.anchor
+    }
+    /// returns a mutable reference to the base frequency
+    pub const fn anchor_mut(&mut self) -> &mut Frequency<T> {
+        &mut self.anchor
+    }
     /// calculate the position (in semitones) of a given frequency, using the formula:
     ///
     /// ```math
     /// n=12\cdot{log_2{\big(\frac{f}{base}\big)}}
     /// ```
-    pub fn from_scale_degree(&self, freq: Frequency<T>) -> Option<isize>
+    pub fn get_position_of_freq(&self, freq: Frequency<T>) -> Option<isize>
     where
         T: Float + FromPrimitive,
     {
@@ -27,14 +35,6 @@ impl<T> ScaleToFrequency<T> {
         }
         let anchor = self.anchor().get();
         classify_freq_with_scale(freq, Some(*anchor))
-    }
-    /// returns a reference to the base frequency
-    pub const fn anchor(&self) -> &Frequency<T> {
-        &self.anchor
-    }
-    /// returns a mutable reference to the base frequency
-    pub const fn anchor_mut(&mut self) -> &mut Frequency<T> {
-        &mut self.anchor
     }
     /// calculate the frequency (in hertz) of a given pitch class, using the formula:
     ///

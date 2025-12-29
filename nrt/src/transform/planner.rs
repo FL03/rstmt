@@ -107,7 +107,7 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Get the starting triad
-        let start_triad = match self.tonnetz().get_triad(start_edge) {
+        let start_triad = match self.tonnetz().get_triad(&start_edge) {
             Some(&triad) => triad,
             None => return Vec::new(),
         };
@@ -262,12 +262,12 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Get the starting and goal triads
-        let start_triad = match self.tonnetz.get_triad(start_edge) {
+        let start_triad = match self.tonnetz().get_triad(&start_edge) {
             Some(triad) => *triad,
             None => return Vec::new(),
         };
 
-        // let goal_triad = match self.tonnetz.get_triad(goal_edge) {
+        // let goal_triad = match self.tonnetz().get_triad(goal_edge) {
         //     Some(triad) => triad.clone(),
         //     None => return Vec::new(),
         // };
@@ -326,7 +326,7 @@ impl<'a> MotionPlanner<'a> {
         let mut result_paths = Vec::new();
 
         // Get the starting triad
-        let start_triad = match self.tonnetz.get_triad(start_edge) {
+        let start_triad = match self.tonnetz().get_triad(&start_edge) {
             Some(&triad) => triad,
             None => return Vec::new(),
         };
@@ -570,7 +570,7 @@ impl<'a> MotionPlanner<'a> {
         use rayon::iter::{ParallelBridge, ParallelIterator};
 
         // Get the starting triad
-        let start_triad = match self.tonnetz.get_triad(start_edge) {
+        let start_triad = match self.tonnetz().get_triad(&start_edge) {
             Some(triad) => *triad,
             None => return Vec::new(),
         };

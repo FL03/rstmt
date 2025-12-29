@@ -126,6 +126,6 @@ mod tests {
         let res = base.compute(n).unwrap();
 
         assert!((res - f_exp).abs() < 1e-5);
-        assert_eq!(base.from_scale_degree(res.into_frequency()), Some(n));
+        assert_eq!(base.get_position_of_freq(res.into_frequency()), Some(n));
     }
 }
