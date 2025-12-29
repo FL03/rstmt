@@ -68,8 +68,10 @@
 **/debug
 **/target/
 
-**/*.bk
-**/*.bk.*
+*.bk
+*.bk.*
+
+*-clippy-results.*
 
 !Cargo.lock
 
