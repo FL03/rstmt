@@ -5,7 +5,6 @@
 */
 mod impl_freq;
 mod impl_freq_ext;
-#[cfg(feature = "rand")]
 mod impl_freq_rand;
 mod impl_freq_repr;
 

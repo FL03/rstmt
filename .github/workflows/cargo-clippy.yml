@@ -7,9 +7,8 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, reopened, ready_for_review]
+    types: [opened, reopened, ready_for_review, synchronize]
   push:
-    branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
     types: [clippy, cargo-clippy]
