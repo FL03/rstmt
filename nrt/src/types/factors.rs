@@ -58,7 +58,7 @@ pub enum ChordFactor<T = usize> {
 }
 
 impl<T> ChordFactor<T> {
-    pub fn new(data: T, factor: Factors) -> Self {
+    pub const fn new(data: T, factor: Factors) -> Self {
         match factor {
             Factors::Root => Self::Root(data),
             Factors::Third => Self::Third(data),
@@ -66,7 +66,7 @@ impl<T> ChordFactor<T> {
         }
     }
     /// Returns the [factor](Factors) of the chord.
-    pub fn factor(&self) -> Factors {
+    pub const fn factor(&self) -> Factors {
         match self {
             Self::Root(_) => Factors::Root,
             Self::Third(_) => Factors::Third,
@@ -74,16 +74,41 @@ impl<T> ChordFactor<T> {
         }
     }
     /// Initialize a new [fifth](Factors::Fifth) factor.
-    pub fn fifth(data: T) -> Self {
+    pub const fn fifth(data: T) -> Self {
         Self::Fifth(data)
     }
     /// Initialize a new [root](Factors::Root) factor.
-    pub fn root(data: T) -> Self {
+    pub const fn root(data: T) -> Self {
         Self::Root(data)
     }
     /// Initialize a new [third](Factors::Third) factor.
-    pub fn third(data: T) -> Self {
+    pub const fn third(data: T) -> Self {
         Self::Third(data)
+    }
+    #[inline]
+    /// consumes the current instance to reveal the inner value.
+    pub fn value(self) -> T {
+        match self {
+            Self::Root(inner) => inner,
+            Self::Third(inner) => inner,
+            Self::Fifth(inner) => inner,
+        }
+    }
+    /// returns a reference to the value of the current factor
+    pub const fn get(&self) -> &T {
+        match self {
+            Self::Root(inner) => inner,
+            Self::Third(inner) => inner,
+            Self::Fifth(inner) => inner,
+        }
+    }
+    /// returns a mutable reference to the value of the current factor
+    pub const fn get_mut(&mut self) -> &mut T {
+        match self {
+            Self::Root(inner) => inner,
+            Self::Third(inner) => inner,
+            Self::Fifth(inner) => inner,
+        }
     }
 }
 

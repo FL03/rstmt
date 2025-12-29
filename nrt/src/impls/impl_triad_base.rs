@@ -183,17 +183,18 @@ where
     {
         self.chord().into_iter().any(|n| n == note.borrow())
     }
+    #[cfg(feature = "alloc")]
     /// returns a collection containing any tones common to both triads
-    pub fn common_tones(&self, other: &Self) -> Vec<T>
+    pub fn common_tones(&self, other: &Self) -> alloc::vec::Vec<T>
     where
         T: Clone + PartialEq,
         for<'a> &'a S: IntoIterator<Item = &'a T>,
     {
         self.chord()
             .into_iter()
-            .cloned()
             .filter(|n| other.contains(n))
-            .collect::<Vec<T>>()
+            .cloned()
+            .collect::<alloc::vec::Vec<_>>()
     }
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if

@@ -1,21 +1,21 @@
-/*
-    Appellation: rstmt-core <library>
-    Contrib: @FL03
-*/
+#![crate_name = "rstmt_core"]
 //! This crate provides the core functionality for the `rstmt` library, including [`Aspn`],
 //! [`NoteBase`], [`Pitch`], and [`Octave`]. Additionally, the crate provides a host of
 //! other primitives and utilities designed to manifest and manipulate musical concepts.
 #![allow(
+    clippy::derivable_impls,
+    clippy::len_without_is_empty,
     clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
+    clippy::non_canonical_partial_ord_impl,
     clippy::should_implement_trait,
-    clippy::upper_case_acronyms
+    clippy::upper_case_acronyms,
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(const_trait_impl))]
-
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }

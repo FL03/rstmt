@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "std"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -81,6 +81,7 @@ nightly = [
 ]
 
 # ************* [FF:Environments] *************
+
 std = [
   "alloc",
   "anyhow/std",
@@ -111,7 +112,9 @@ wasm = [
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
 ]
+
 # ************* [FF:Dependencies] *************
+
 alloc = [
   "rstmt-traits/alloc",
   "contained/alloc",

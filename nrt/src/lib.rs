@@ -46,12 +46,16 @@
 //!
 //! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 #![allow(
+    clippy::derivable_impls,
+    clippy::len_without_is_empty,
     clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
+    clippy::non_canonical_partial_ord_impl,
     clippy::should_implement_trait,
-    clippy::upper_case_acronyms
+    clippy::upper_case_acronyms,
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 // compiler check

@@ -7,10 +7,7 @@ use rspace_traits::RawSpace;
 
 /// [`TriadRepr`] is a sealed trait extending the [`RawSpace`] trait to establish basic
 /// behaviors of compatible representations of a triad.
-pub trait TriadRepr: RawSpace
-where
-    Self::Elem: Sized,
-{
+pub trait TriadRepr: RawSpace {
     private! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self
@@ -28,6 +25,7 @@ where
         let c = it.next()?;
         Some(Self::from_arr([a, b, c]))
     }
+    /// returns the length of the triad, which is always 3
     fn len(&self) -> usize {
         3
     }
