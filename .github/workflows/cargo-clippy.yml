@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, reopened, ready_for_review, synchronize]
+    types: [ready_for_review, synchronize]
   push:
     tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
