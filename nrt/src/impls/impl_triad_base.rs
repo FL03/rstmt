@@ -5,15 +5,15 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriad, RawTriadMut, TriadCls};
+use crate::traits::{RawTriadMut, TriadRepr, TriadType};
 use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_core::{Octave, PitchMod, TryTransform};
 
 impl<S, T, K> TriadBase<S, K, T>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
     pub const fn new(chord: S, class: K) -> Self {
@@ -65,7 +65,7 @@ where
     /// returns a reference to the root note of the triad.
     pub fn root(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().root()
     }
@@ -79,7 +79,7 @@ where
     /// returns a reference to the third note of the triad.
     pub fn third(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().third()
     }
@@ -93,7 +93,7 @@ where
     /// returns a reference to the fifth note of the triad.
     pub fn fifth(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().fifth()
     }
@@ -118,7 +118,7 @@ where
     /// consumes the current instance to create another with the given chord
     pub fn with_chord<S2>(self, chord: S2) -> TriadBase<S2, K>
     where
-        S2: RawTriad<Elem = T>,
+        S2: TriadRepr<Elem = T>,
         T: Sized,
     {
         TriadBase {
@@ -131,7 +131,7 @@ where
     /// consumes the current instance to create another with the given class
     pub fn with_class<K2>(self, class: K2) -> TriadBase<S, K2>
     where
-        K2: TriadCls,
+        K2: TriadType,
     {
         TriadBase {
             chord: self.chord,
@@ -183,17 +183,18 @@ where
     {
         self.chord().into_iter().any(|n| n == note.borrow())
     }
+    #[cfg(feature = "alloc")]
     /// returns a collection containing any tones common to both triads
-    pub fn common_tones(&self, other: &Self) -> Vec<T>
+    pub fn common_tones(&self, other: &Self) -> alloc::vec::Vec<T>
     where
         T: Clone + PartialEq,
         for<'a> &'a S: IntoIterator<Item = &'a T>,
     {
         self.chord()
             .into_iter()
-            .cloned()
             .filter(|n| other.contains(n))
-            .collect::<Vec<T>>()
+            .cloned()
+            .collect::<alloc::vec::Vec<_>>()
     }
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if

@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::{ChainFeatures, PathFinderConfig, TransformationChain};
-use crate::traits::{RawTriad, TriadCls};
+use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{Triad, TriadBase};
 use crate::types::LPR;
 use alloc::collections::VecDeque;
@@ -14,8 +14,8 @@ use rspace_traits::RawSpace;
 #[derive(Debug)]
 pub struct TriadNavigator<'a, S, K, T = <S as RawSpace>::Elem>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     triad: &'a TriadBase<S, K, T>,
     config: PathFinderConfig,
@@ -23,8 +23,8 @@ where
 
 impl<'a, S, K, T> TriadNavigator<'a, S, K, T>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     pub(crate) fn new(triad: &'a TriadBase<S, K, T>) -> Self {
         Self {

@@ -2,12 +2,15 @@
     appellation: impl_freq <module>
     authors: @FL03
 */
-use super::Frequency;
-use crate::freq::{classify_freq_with_scale, compute_freq_of_pitch};
+use super::{Frequency, RawFrequency};
+use crate::utils::{classify_freq_with_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive};
 use rstmt_traits::ClassifyBy;
 
-impl<T> Frequency<T> {
+impl<T> Frequency<T>
+where
+    T: RawFrequency,
+{
     /// returns a new instance of the [`Frequency`] wrapping the given value
     pub const fn new(index: T) -> Self {
         Frequency(index)
@@ -17,11 +20,13 @@ impl<T> Frequency<T> {
     /// ```math
     /// F=\gamma\cdot{2^\frac{n}{12}}
     /// ```
-    pub fn from_pitch_class_with_scale(n: isize, base: Option<T>) -> Option<Self>
+    pub fn from_pitch_class_with_scale(n: isize, root: Option<T>) -> Self
     where
         T: Float + FromPrimitive,
     {
-        compute_freq_of_pitch(n, base).map(Frequency)
+        let anchor = root.unwrap_or_else(|| T::from_u16(440).unwrap());
+        let res = compute_freq_of_pitch(n, anchor);
+        Self(res)
     }
     /// initializes a new frequency by capturing the result of the given function
     pub fn init<F>(f: F) -> Self
@@ -73,8 +78,17 @@ impl<T> Frequency<T> {
     {
         Frequency(f(self.value()))
     }
+    #[inline]
+    /// apply a function to a reference of the current frequency, capturing the result in a
+    /// new instance
+    pub fn apply<U, F>(&self, mut f: F) -> Frequency<U>
+    where
+        F: FnMut(&T) -> U,
+    {
+        Frequency(f(self.get()))
+    }
     /// applies the given function to m
-    pub fn map_mut<F>(&mut self, f: F) -> &mut Self
+    pub fn apply_inplace<F>(&mut self, f: F) -> &mut Self
     where
         F: FnOnce(&mut T),
     {
@@ -122,21 +136,21 @@ impl<T> Frequency<T> {
     /// ```math
     /// n = 12\cdot\log_2(\frac{F}{\gamma})
     /// ```
-    pub fn classify_by(&self, base: Option<T>) -> Option<isize>
+    pub fn classify_by(&self, base: T) -> Option<isize>
     where
         T: Float + FromPrimitive,
     {
-        classify_freq_with_scale(*self, base)
+        classify_freq_with_scale(self.value(), base)
     }
 }
 
 impl<T> ClassifyBy<T> for Frequency<T>
 where
-    T: Float + FromPrimitive,
+    T: RawFrequency + Float + FromPrimitive,
 {
     type Output = Option<isize>;
 
     fn classify_by(&self, base: T) -> Self::Output {
-        self.classify_by(Some(base))
+        self.classify_by(base)
     }
 }

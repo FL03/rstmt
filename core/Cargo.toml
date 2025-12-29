@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -51,7 +51,6 @@ num-traits = { workspace = true }
 # randomization
 getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
-rand_core = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # serialization
 serde = { features = ["derive"], optional = true, workspace = true }
@@ -82,6 +81,7 @@ nightly = [
 ]
 
 # ************* [FF:Environments] *************
+
 std = [
   "alloc",
   "anyhow/std",
@@ -112,7 +112,9 @@ wasm = [
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
 ]
+
 # ************* [FF:Dependencies] *************
+
 alloc = [
   "rstmt-traits/alloc",
   "contained/alloc",
@@ -145,7 +147,6 @@ json = [
 rand = [
   "rng",
   "dep:rand",
-  "dep:rand_core",
   "dep:rand_distr",
   "rspace-traits/rand",
   "rstmt-traits/rand",
@@ -160,8 +161,8 @@ rayon = [
 
 rng = [
   "dep:getrandom",
+  "rand?/os_rng",
   "rand?/small_rng",
-  "rand?/thread_rng",
 ]
 
 serde = [
@@ -169,11 +170,10 @@ serde = [
   "dep:serde_derive",
   "serde?/derive",
   "hashbrown?/serde",
-  "num-complex/serde",
+  "num-complex?/serde",
   "rspace-traits/serde",
   "rstmt-traits/serde",
   "rand?/serde",
-  "rand_core?/serde",
   "rand_distr?/serde",
 ]
 

@@ -46,10 +46,14 @@
 //!
 //! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 #![allow(
+    clippy::derivable_impls,
+    clippy::len_without_is_empty,
     clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
+    clippy::non_canonical_partial_ord_impl,
     clippy::should_implement_trait,
     clippy::upper_case_acronyms
 )]
@@ -104,11 +108,10 @@ pub mod iter {
 
 mod traits {
     #[doc(inline)]
-    pub use self::{raw_store::*, triad_kind::*, triadic::*};
+    pub use self::{raw_triad::*, triad_type::*};
 
-    mod raw_store;
-    mod triad_kind;
-    mod triadic;
+    mod raw_triad;
+    mod triad_type;
 }
 
 mod types {

@@ -35,11 +35,12 @@ where
     serde(rename_all = "lowercase")
 )]
 #[repr(transparent)]
-pub struct ConstPitchClass<const N: usize, A = Natural>
+pub struct ConstPitchClass<const N: usize, P, K>
 where
-    A: Accidental,
+    P: PitchClassRepr<Tag = K>,
+    K: Accidental,
 {
-    pub(crate) _marker: core::marker::PhantomData<A>,
+    pub(crate) _class: PitchClass<P, K>,
 }
 
 /*

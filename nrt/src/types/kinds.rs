@@ -178,7 +178,7 @@ impl TriadClass {
     }
 }
 
-impl crate::TriadCls for TriadClass {
+impl crate::TriadType for TriadClass {
     type Rel = Self;
 
     seal! {}

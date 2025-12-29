@@ -28,18 +28,17 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/rstmt.git"
 rust-version = "1.85.0"
-version = "0.0.8"
+version = "0.0.9"
 
 [workspace.dependencies]
-rstmt = { default-features = false, path = "rstmt", version = "0.0.8" }
-rstmt-core = { default-features = false, path = "core", version = "0.0.8" }
-rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.8" }
-rstmt-traits = { default-features = false, path = "traits", version = "0.0.8" }
+rstmt = { default-features = false, path = "rstmt", version = "0.0.9" }
+rstmt-core = { default-features = false, path = "core", version = "0.0.9" }
+rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.9" }
+rstmt-traits = { default-features = false, path = "traits", version = "0.0.9" }
 # custom
 contained = { default-features = false, features = ["macros"], version = "0.2.3" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-rspace = { default-features = false, version = "0.0.4" }
-rspace-traits = { default-features = false, version = "0.0.4" }
+rspace-traits = { default-features = false, version = "0.0.6" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }

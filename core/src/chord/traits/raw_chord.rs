@@ -7,31 +7,25 @@ use rspace_traits::RawSpace;
 /// The [`RawChord`] trait works to define a basic interface shared by all compatible
 /// reprsentations of a chord. Since a chord is essentially a sequence of pitches, the trait
 /// captures this behavior through association with an element type.
-pub trait RawChord: RawSpace
-where
-    Self::Elem: Sized,
-{
+pub trait RawChord: RawSpace {
     /// returns a slice representation of the chord.
     fn as_slice(&self) -> &[Self::Elem];
     /// returns the number of elements in the chord representation.
     fn len(&self) -> usize;
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 /// The [`RawChordMut`] trait extends the [`RawChord`] trait to provide mutable access to the
 /// underlying elements of the chord representation.
-pub trait RawChordMut: RawSpace
-where
-    Self::Elem: Sized,
-{
+pub trait RawChordMut: RawSpace {
     /// returns a mutable slice representation of the chord.
     fn as_mut_slice(&mut self) -> &mut [Self::Elem];
 }
 
-pub trait ChordRepr: RawSpace
-where
-    Self::Elem: Sized,
-{
-}
+pub trait ChordRepr: RawSpace {}
 /// The [`RawChordIter`] trait extends the [`RawChord`] trait to provide an iterator over
 /// the elements of the chord representation.
 pub trait RawChordIter: RawSpace {
@@ -85,7 +79,7 @@ impl<T> RawChord for (T, T, T) {
 
 impl<T> RawChord for [T] {
     fn as_slice(&self) -> &[T] {
-        &self
+        self
     }
 
     fn len(&self) -> usize {
@@ -105,7 +99,7 @@ impl<T> RawChord for &[T] {
 
 impl<T> RawChord for &mut [T] {
     fn as_slice(&self) -> &[T] {
-        *self
+        self
     }
 
     fn len(&self) -> usize {
@@ -115,19 +109,19 @@ impl<T> RawChord for &mut [T] {
 
 impl<T> RawChordMut for [T] {
     fn as_mut_slice(&mut self) -> &mut [T] {
-        &mut *self
+        self
     }
 }
 
 impl<T> RawChordMut for &mut [T] {
     fn as_mut_slice(&mut self) -> &mut [T] {
-        *self
+        self
     }
 }
 
 impl<const N: usize, T> RawChord for [T; N] {
     fn as_slice(&self) -> &[T] {
-        &self[..]
+        self
     }
 
     fn len(&self) -> usize {
@@ -137,7 +131,7 @@ impl<const N: usize, T> RawChord for [T; N] {
 
 impl<const N: usize, T> RawChordMut for [T; N] {
     fn as_mut_slice(&mut self) -> &mut [T] {
-        &mut self[..]
+        self
     }
 }
 

@@ -4,13 +4,18 @@
     Contrib: @FL03
 */
 use crate::tonnetz::{HyperTonnetz, LprMap, TriadMap};
-use crate::triad::Triad;
+use crate::traits::{TriadRepr, TriadType};
+use crate::triad::{Triad, TriadBase};
 use hashbrown::HashMap;
 use rshyper::{EdgeId, HyperMap, VertexId, Weight};
 use rstmt_core::{Aspn, Octave};
 
-impl HyperTonnetz {
-    /// returns a new [`Tonnetz`] structure initialized with empty stores
+impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
+where
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
+{
+    /// initialize a new, empty instance of the [`HyperTonnetz`]
     pub fn new() -> Self {
         HyperTonnetz {
             graph: HyperMap::new(),
@@ -36,36 +41,56 @@ impl HyperTonnetz {
         &mut self.graph
     }
     /// returns a reference to the triads map
-    pub const fn triads(&self) -> &TriadMap {
+    pub const fn triads(&self) -> &TriadMap<S, K, T, Ix> {
         &self.triads
     }
     /// returns a mutable reference to the triads map
-    pub fn triads_mut(&mut self) -> &mut TriadMap {
+    pub const fn triads_mut(&mut self) -> &mut TriadMap<S, K, T, Ix> {
         &mut self.triads
     }
     /// returns a reference to the transformations map
-    pub const fn transformations(&self) -> &LprMap {
+    pub const fn transformations(&self) -> &LprMap<Ix> {
         &self.transformations
     }
     /// returns a mutable reference to the transformations map
-    pub fn transformations_mut(&mut self) -> &mut LprMap {
+    pub const fn transformations_mut(&mut self) -> &mut LprMap<Ix> {
         &mut self.transformations
     }
+    #[inline]
     /// overwrite the current graph and return a mutable reference to the instance
-    pub fn set_graph(&mut self, graph: HyperMap<Aspn>) -> &mut Self {
-        self.graph = graph;
-        self
+    pub fn set_graph(&mut self, graph: HyperMap<Aspn>) {
+        self.graph = graph
     }
+    #[inline]
     /// overwrite the current triads and return a mutable reference to the instance
-    pub fn set_triads(&mut self, triads: TriadMap) -> &mut Self {
-        self.triads = triads;
-        self
+    pub fn set_triads(&mut self, triads: TriadMap<S, K, T, Ix>) {
+        self.triads = triads
     }
+    #[inline]
     /// overwrite the current transformations and return a mutable reference to the instance
-    pub fn set_transformations(&mut self, transformations: LprMap) -> &mut Self {
-        self.transformations = transformations;
-        self
+    pub fn set_transformations(&mut self, transformations: LprMap<Ix>) {
+        self.transformations = transformations
     }
+    /// returns a reference to the triad associated with the given edge index
+    pub fn get_triad<Q>(&self, key: &Q) -> Option<&TriadBase<S, K, T>>
+    where
+        Q: Eq + core::hash::Hash,
+        Ix: Eq + core::hash::Hash,
+        EdgeId<Ix>: core::borrow::Borrow<Q>,
+    {
+        self.triads().get(key)
+    }
+    /// returns a mutable reference to the triad associated with the given edge index
+    pub fn get_triad_mut<Q>(&mut self, key: &Q) -> Option<&mut TriadBase<S, K, T>>
+    where
+        Q: Eq + core::hash::Hash,
+        Ix: Eq + core::hash::Hash,
+        EdgeId<Ix>: core::borrow::Borrow<Q>,
+    {
+        self.triads_mut().get_mut(key)
+    }
+}
+impl HyperTonnetz {
     /// add a new note class vertex to the Tonnetz
     pub fn add_note(&mut self, note: Aspn) -> crate::Result<VertexId> {
         let id = self.graph_mut().add_node(Weight(note))?;
@@ -108,14 +133,6 @@ impl HyperTonnetz {
         self.triads.insert(edge_id, triad);
 
         Ok(edge_id)
-    }
-    /// returns a reference to the triad associated with the given edge index
-    pub fn get_triad(&self, edge_id: EdgeId) -> Option<&Triad> {
-        self.triads().get(&edge_id)
-    }
-    /// returns a mutable reference to the triad associated with the given edge index
-    pub fn get_triad_mut(&mut self, edge_id: EdgeId) -> Option<&mut Triad> {
-        self.triads_mut().get_mut(&edge_id)
     }
     /// Compute and store all possible transformations between triads
     pub fn compute_transformations(&mut self) {

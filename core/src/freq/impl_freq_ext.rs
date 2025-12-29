@@ -1,8 +1,10 @@
 /*
-    appellation: impl_freq_ops <module>
-    authors: @FL03
+    Appellation: impl_freq_ext <module>
+    Created At: 2025.12.29:17:36:58
+    Contrib: @FL03
 */
 use super::Frequency;
+use crate::RawFrequency;
 use num_traits::{Num, One, Zero};
 
 contained::fmt_wrapper! {
@@ -79,7 +81,10 @@ impl<T> core::ops::DerefMut for Frequency<T> {
     }
 }
 
-impl<T> From<T> for Frequency<T> {
+impl<T> From<T> for Frequency<T>
+where
+    T: RawFrequency,
+{
     fn from(value: T) -> Self {
         Frequency(value)
     }

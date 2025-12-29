@@ -11,7 +11,7 @@ pub trait Transform<Rhs> {
 
     fn transform(&self, rhs: Rhs) -> Self::Output;
 }
-/// [`TryTransform`] defines a fallible transformation operation that can fail, producing an 
+/// [`TryTransform`] defines a fallible transformation operation that can fail, producing an
 pub trait TryTransform<Rhs> {
     type Output;
     type Error;

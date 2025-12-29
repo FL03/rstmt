@@ -2,7 +2,8 @@
     appellation: impl_freq_rand <module>
     authors: @FL03
 */
-use super::Frequency;
+#![cfg(feature = "rand")]
+use crate::freq::Frequency;
 use rand_distr::uniform::{SampleRange, SampleUniform};
 use rand_distr::{Distribution, StandardUniform};
 
