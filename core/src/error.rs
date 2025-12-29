@@ -13,6 +13,8 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 /// The [`Error`] enum represents various errors that can occur in the application.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Unable to parse the string into the configured type")]
+    FromStrParseError,
     #[error("Invalid Chord")]
     InvalidChord,
     #[cfg(feature = "alloc")]

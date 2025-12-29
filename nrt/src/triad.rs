@@ -30,7 +30,7 @@
 //! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
 
-use crate::traits::{RawTriad, TriadCls};
+use crate::traits::{TriadRepr, TriadType};
 use crate::types::TriadClass;
 use rspace_traits::RawSpace;
 use rstmt_core::{Major, Octave};
@@ -51,8 +51,8 @@ pub type DefaultTriadChord<T = usize> = [T; 3];
 )]
 pub struct TriadBase<S = DefaultTriadChord<isize>, K = Major, T = <S as RawSpace>::Elem>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     pub(crate) chord: S,
     pub(crate) class: K,

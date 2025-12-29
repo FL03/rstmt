@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::error::TriadError;
-use crate::traits::{RawTriad, TriadCls};
+use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use num_traits::{FromPrimitive, One};
 use rstmt::{PitchMod, TryApply};
@@ -89,9 +89,9 @@ impl LPR {
     /// applies the current transformation onto the given triad, returning a new triad
     pub fn apply<S, T, K, K2>(&self, triad: &TriadBase<S, K, T>) -> TriadBase<S, K::Rel, T>
     where
-        S: RawTriad<Elem = T>,
-        K: TriadCls<Rel = K2>,
-        K2: TriadCls<Rel = K>,
+        S: TriadRepr<Elem = T>,
+        K: TriadType<Rel = K2>,
+        K2: TriadType<Rel = K>,
         T: Copy
             + FromPrimitive
             + One
@@ -108,9 +108,9 @@ impl LPR {
         triad: &TriadBase<S, K, T>,
     ) -> Result<TriadBase<S, K::Rel, T>, TriadError>
     where
-        S: RawTriad<Elem = T>,
-        K: TriadCls<Rel = K2>,
-        K2: TriadCls<Rel = K>,
+        S: TriadRepr<Elem = T>,
+        K: TriadType<Rel = K2>,
+        K2: TriadType<Rel = K>,
         T: Copy
             + FromPrimitive
             + One
@@ -161,9 +161,9 @@ impl LPR {
 
 impl<S, T, K, Q> TryApply<&TriadBase<S, K, T>> for LPR
 where
-    K: TriadCls<Rel = Q>,
-    Q: TriadCls<Rel = K>,
-    S: RawTriad<Elem = T>,
+    K: TriadType<Rel = Q>,
+    Q: TriadType<Rel = K>,
+    S: TriadRepr<Elem = T>,
     T: Copy
         + FromPrimitive
         + One

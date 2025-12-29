@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::tonnetz::{HyperTonnetz, LprMap, TriadMap};
-use crate::traits::{RawTriad, TriadCls};
+use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{Triad, TriadBase};
 use hashbrown::HashMap;
 use rshyper::{EdgeId, HyperMap, VertexId, Weight};
@@ -12,8 +12,8 @@ use rstmt_core::{Aspn, Octave};
 
 impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     /// initialize a new, empty instance of the [`HyperTonnetz`]
     pub fn new() -> Self {

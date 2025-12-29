@@ -5,14 +5,14 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::RawTriad;
+use crate::traits::TriadRepr;
 use crate::types::{LPR, TriadClass};
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
 use rstmt_core::{Augmented, Diminished, Major, Minor, PitchMod};
 
 impl<S, T> TriadBase<S, Augmented, T>
 where
-    S: RawTriad<Elem = T>,
+    S: TriadRepr<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as an
     /// augmented triad.
@@ -26,7 +26,7 @@ where
 
 impl<S, T> TriadBase<S, Diminished, T>
 where
-    S: RawTriad<Elem = T>,
+    S: TriadRepr<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a
     /// diminished triad.
@@ -40,7 +40,7 @@ where
 
 impl<S, T> TriadBase<S, Major, T>
 where
-    S: RawTriad<Elem = T>,
+    S: TriadRepr<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a major
     /// triad.
@@ -54,7 +54,7 @@ where
 
 impl<S, T> TriadBase<S, Minor, T>
 where
-    S: RawTriad<Elem = T>,
+    S: TriadRepr<Elem = T>,
 {
     /// returns a new instance of the [`TriadBase`] with the given chord and kind as a minor
     /// triad.

@@ -50,6 +50,17 @@ macro_rules! impl_raw_quality {
             }
         }
 
+        impl core::str::FromStr for $name {
+            type Err = crate::Error;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                if s.to_lowercase() == stringify!($name).to_lowercase() {
+                    return Ok(Self);
+                }
+                Err(crate::Error::FromStrParseError)
+            }
+        }
+
         unsafe impl Send for $name {}
 
         unsafe impl Sync for $name {}

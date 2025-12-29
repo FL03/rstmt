@@ -104,11 +104,10 @@ pub mod iter {
 
 mod traits {
     #[doc(inline)]
-    pub use self::{raw_store::*, triad_kind::*, triadic::*};
+    pub use self::{raw_triad::*, triad_type::*};
 
-    mod raw_store;
-    mod triad_kind;
-    mod triadic;
+    mod raw_triad;
+    mod triad_type;
 }
 
 mod types {

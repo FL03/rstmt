@@ -5,15 +5,15 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriad, RawTriadMut, TriadCls};
+use crate::traits::{RawTriadMut, TriadRepr, TriadType};
 use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_core::{Octave, PitchMod, TryTransform};
 
 impl<S, T, K> TriadBase<S, K, T>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
     pub const fn new(chord: S, class: K) -> Self {
@@ -65,7 +65,7 @@ where
     /// returns a reference to the root note of the triad.
     pub fn root(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().root()
     }
@@ -79,7 +79,7 @@ where
     /// returns a reference to the third note of the triad.
     pub fn third(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().third()
     }
@@ -93,7 +93,7 @@ where
     /// returns a reference to the fifth note of the triad.
     pub fn fifth(&self) -> &T
     where
-        S: RawTriad,
+        S: TriadRepr,
     {
         self.chord().fifth()
     }
@@ -118,7 +118,7 @@ where
     /// consumes the current instance to create another with the given chord
     pub fn with_chord<S2>(self, chord: S2) -> TriadBase<S2, K>
     where
-        S2: RawTriad<Elem = T>,
+        S2: TriadRepr<Elem = T>,
         T: Sized,
     {
         TriadBase {
@@ -131,7 +131,7 @@ where
     /// consumes the current instance to create another with the given class
     pub fn with_class<K2>(self, class: K2) -> TriadBase<S, K2>
     where
-        K2: TriadCls,
+        K2: TriadType,
     {
         TriadBase {
             chord: self.chord,

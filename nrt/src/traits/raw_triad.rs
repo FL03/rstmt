@@ -5,9 +5,9 @@
 */
 use rspace_traits::RawSpace;
 
-/// The [`RawTriad`] trait is used to restrict and extend the [`RawChord`] trait to define valid  
-/// representations of a triad.
-pub trait RawTriad: RawSpace
+/// [`TriadRepr`] is a sealed trait extending the [`RawSpace`] trait to establish basic
+/// behaviors of compatible representations of a triad.
+pub trait TriadRepr: RawSpace
 where
     Self::Elem: Sized,
 {
@@ -40,7 +40,7 @@ where
 }
 /// The [`RawTriadMut`] trait is used to extend the [`RawTriad`] trait to provide mutable access
 /// to the elements of a triad.
-pub trait RawTriadMut: RawTriad
+pub trait RawTriadMut: TriadRepr
 where
     Self::Elem: Sized,
 {
@@ -71,7 +71,7 @@ where
  ************* Implementations *************
 */
 
-impl<T> RawTriad for (T, T, T) {
+impl<T> TriadRepr for (T, T, T) {
     seal! {}
 
     fn from_arr([a, b, c]: [Self::Elem; 3]) -> Self
@@ -107,7 +107,7 @@ impl<T> RawTriadMut for (T, T, T) {
     }
 }
 
-impl<T> RawTriad for [T; 3] {
+impl<T> TriadRepr for [T; 3] {
     seal! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self

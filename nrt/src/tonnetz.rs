@@ -17,7 +17,7 @@
 mod impl_hyper_tonnetz;
 
 use crate::triad::TriadBase;
-use crate::{LPR, RawTriad, TriadClass, TriadCls};
+use crate::{LPR, TriadClass, TriadRepr, TriadType};
 use hashbrown::HashMap;
 use rshyper::{EdgeId, HyperMap};
 use rspace_traits::RawSpace;
@@ -39,8 +39,8 @@ pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 #[derive(Clone, Debug)]
 pub struct HyperTonnetz<S = [usize; 3], K = TriadClass, T = <S as RawSpace>::Elem, Ix = usize>
 where
-    K: TriadCls,
-    S: RawTriad<Elem = T>,
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
 {
     /// The underlying hypergraph structure
     pub(crate) graph: HyperMap<Aspn>,
