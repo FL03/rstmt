@@ -15,11 +15,9 @@ on:
       - "**/*.rs"
   push:
     branches: [main, master]
-    tags: [latest, v*, "*-nightly"]
+    tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
     types: [rust, rust-ci]
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
       nightly:

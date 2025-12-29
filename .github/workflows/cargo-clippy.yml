@@ -11,10 +11,8 @@ on:
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
-  release:
-    types: [created, edited]
   repository_dispatch:
-    types: [clippy]
+    types: [clippy, cargo-clippy]
   workflow_dispatch:
 
 jobs:
@@ -26,8 +24,7 @@ jobs:
       security-events: write
       statuses: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -37,11 +34,15 @@ jobs:
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           components: clippy,rustfmt
-      - name: Setup the for sarif output
-        run: cargo install clippy-sarif sarif-fmt
+      - name: Setup cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+      - name: Install additional tools for clippy
+        run: cargo binstall -q -y --force clippy-sarif sarif-fmt
       - name: Run Clippy
         run: |
-          cargo clippy --features full --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
+          cargo clippy \
+          --features full \
+          --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
       - name: Upload analysis
         uses: github/codeql-action/upload-sarif@v4
         with:
