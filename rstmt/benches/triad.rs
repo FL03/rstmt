@@ -4,7 +4,7 @@
 */
 use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion};
-use rstmt::nrt::{Triad, TriadBase};
+use rstmt::nrt::Triad;
 use rstmt::{Augmented, Diminished, Major, Minor};
 
 const SAMPLES: usize = 50;
@@ -21,16 +21,16 @@ fn bench_triad_create(c: &mut Criterion) {
     // benchmark the inverse chain on a major triad created using different root notes
     for n in 0..12 {
         group.bench_function(BenchmarkId::new("major", n), |b| {
-            b.iter(|| TriadBase::from_root_with_class(black_box(n), Major));
+            b.iter(|| Triad::from_root_with_class(black_box(n), Major));
         });
         group.bench_function(BenchmarkId::new("minor", n), |b| {
-            b.iter(|| TriadBase::from_root_with_class(black_box(n), Minor));
+            b.iter(|| Triad::from_root_with_class(black_box(n), Minor));
         });
         group.bench_function(BenchmarkId::new("diminished", n), |b| {
-            b.iter(|| TriadBase::from_root_with_class(black_box(n), Diminished));
+            b.iter(|| Triad::from_root_with_class(black_box(n), Diminished));
         });
         group.bench_function(BenchmarkId::new("augmented", n), |b| {
-            b.iter(|| TriadBase::from_root_with_class(black_box(n), Augmented));
+            b.iter(|| Triad::from_root_with_class(black_box(n), Augmented));
         });
     }
 

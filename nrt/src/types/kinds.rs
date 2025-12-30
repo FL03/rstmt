@@ -2,7 +2,7 @@
     Appellation: classes <module>
     Contrib: @FL03
 */
-use crate::traits::{Relative, TriadType};
+use crate::traits::TriadType;
 use num_traits::{FromPrimitive, ToPrimitive};
 use rstmt::PitchMod;
 
@@ -16,7 +16,6 @@ use rstmt::PitchMod;
     Eq,
     Hash,
     Ord,
-    PartialEq,
     PartialOrd,
     strum::AsRefStr,
     strum::Display,
@@ -41,6 +40,30 @@ pub enum TriadClass {
 }
 
 impl TriadClass {
+    pub fn from_class<C>(class: C) -> Self
+    where
+        C: TriadType,
+    {
+        if class.is_major() {
+            Self::Major
+        } else if class.is_minor() {
+            Self::Minor
+        } else if class.is_augmented() {
+            Self::Augmented
+        } else if class.is_diminished() {
+            Self::Diminished
+        } else {
+            panic!("invalid triad class")
+        }
+    }
+    pub fn is<T: TriadType>(&self, class: T) -> bool {
+        match self {
+            TriadClass::Major => class.is_major(),
+            TriadClass::Minor => class.is_minor(),
+            TriadClass::Augmented => class.is_augmented(),
+            TriadClass::Diminished => class.is_diminished(),
+        }
+    }
     /// a functional constructor for the [`Major`](TriadClass::Major) variant
     pub const fn major() -> Self {
         Self::Major
@@ -179,52 +202,6 @@ impl TriadClass {
     }
 }
 
-impl Relative for TriadClass {
-    type Rel = TriadClass;
-
-    seal! {}
-
-    fn rel(&self) -> Self::Rel {
-        self.relative()
-    }
-}
-
-impl TriadType for TriadClass {
-    seal! {}
-
-    fn new() -> Self {
-        Self::default()
-    }
-
-    fn is_major(&self) -> bool {
-        matches!(self, TriadClass::Major)
-    }
-
-    fn is_minor(&self) -> bool {
-        matches!(self, TriadClass::Minor)
-    }
-
-    fn is_augmented(&self) -> bool {
-        matches!(self, TriadClass::Augmented)
-    }
-
-    fn is_diminished(&self) -> bool {
-        matches!(self, TriadClass::Diminished)
-    }
-
-    fn root(&self) -> usize {
-        self.root()
-    }
-
-    fn fifth(&self) -> usize {
-        self.fifth()
-    }
-
-    fn third(&self) -> usize {
-        self.third()
-    }
-}
-
 macro_rules! impl_from_triad_class {
     ($($T:ty),* $(,)?) => {
         $(
@@ -259,6 +236,50 @@ impl core::ops::Index<super::Factors> for TriadClass {
             super::Factors::Root => self.root_ref(),
             super::Factors::Third => self.third_ref(),
             super::Factors::Fifth => self.fifth_ref(),
+        }
+    }
+}
+
+macro_rules! interval_to_class {
+    (@impl $T:ident) => {
+            // impl PartialEq<rstmt_core::$T> for TriadClass {
+            //     fn eq(&self, _other: &rstmt_core::$T) -> bool {
+            //         matches! { self, TriadClass::$T }
+            //     }
+            // }
+
+            impl From<rstmt_core::$T> for TriadClass {
+                fn from(_value: rstmt_core::$T) -> Self {
+                    TriadClass::$T
+                }
+            }
+
+            impl TryFrom<TriadClass> for rstmt_core::$T {
+                type Error = $crate::TriadError;
+
+                fn try_from(value: TriadClass) -> Result<Self, Self::Error> {
+                    if matches!(value, TriadClass::$T) {
+                        Ok(Self)
+                    } else {
+                        Err($crate::TriadError::IncompatibleTriadClasses)
+                    }
+                }
+            }
+    };
+    ($($T:ident),* $(,)?) => {
+        $(interval_to_class! { @impl $T })*
+    };
+}
+
+interval_to_class! { Major, Minor, Augmented, Diminished }
+
+impl<C: crate::TriadType> PartialEq<C> for TriadClass {
+    fn eq(&self, other: &C) -> bool {
+        match self {
+            TriadClass::Major => other.is_major(),
+            TriadClass::Minor => other.is_minor(),
+            TriadClass::Augmented => other.is_augmented(),
+            TriadClass::Diminished => other.is_diminished(),
         }
     }
 }

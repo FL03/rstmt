@@ -71,31 +71,31 @@ impl<T> TriadBase<[T; 3], TriadClass, T>
 where
     T: Copy + ToPrimitive + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
 {
-    /// creates a new augmented triad from the given root
-    pub fn augmented(root: T) -> Self {
-        Self::from_root_with_class(root, TriadClass::Augmented)
-    }
-    /// creates a new diminished triad from the given root
-    pub fn diminished(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Diminished)
-    }
-    /// Create a new major triad from the given root
-    pub fn major(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Major)
-    }
-    /// creates a new minor triad from the given root
-    pub fn minor(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Minor)
-    }
+    // /// creates a new augmented triad from the given root
+    // pub fn augmented(root: T) -> Self {
+    //     Self::from_root_with_class(root, TriadClass::Augmented)
+    // }
+    // /// creates a new diminished triad from the given root
+    // pub fn diminished(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Diminished)
+    // }
+    // /// Create a new major triad from the given root
+    // pub fn major(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Major)
+    // }
+    // /// creates a new minor triad from the given root
+    // pub fn minor(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Minor)
+    // }
     /// return the barycentric coordinates of the given note w.r.t the current triad
     pub fn barycentric<N, U>(&self, p: N) -> [U; 3]
     where

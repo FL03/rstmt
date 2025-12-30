@@ -93,11 +93,7 @@ where
  ************* Implementations *************
 */
 
-impl<T> OrderedNum for T
-where
-    T: PartialEq + PartialOrd + One + Zero,
-{
-}
+impl<T> OrderedNum for T where T: PartialEq + PartialOrd + One + Zero {}
 
 impl<T> Numerical for T
 where

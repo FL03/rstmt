@@ -40,6 +40,15 @@ where
             octave: rstmt_core::Octave(0),
         }
     }
+    #[inline]
+    /// consumes the instance to use a dynamic classification enum
+    pub fn dynamic(self) -> TriadBase<S, crate::TriadClass, T> {
+        TriadBase {
+            chord: self.chord,
+            class: crate::TriadClass::from_class(self.class),
+            octave: self.octave,
+        }
+    }
     /// returns an immutable reference to the chord.
     pub const fn chord(&self) -> &S {
         &self.chord
