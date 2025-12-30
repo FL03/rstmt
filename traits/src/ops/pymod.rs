@@ -39,7 +39,6 @@ pub trait PitchMod {
 /*
  ************* Implementations *************
 */
-
 impl<A, B, C> PyMod<B> for A
 where
     B: OrderedNum,
