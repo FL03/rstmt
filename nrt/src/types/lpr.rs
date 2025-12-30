@@ -29,8 +29,8 @@ use rstmt_core::{PitchMod, TryTransform};
 ///   - [Major] add a tone to the fifth and move it to the root
 ///   - [Minor] subtract a tone from the root and move it to the fifth
 ///
-/// Mathematically speaking, we could describe these transformations catagorically as
-/// contravariant functors mapping between categories of triads.
+/// Using category theory we could define these transformations to be contravariant functors 
+/// mapping between _categories_ of triads.
 #[derive(
     Clone,
     Copy,
