@@ -34,6 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        features: [full]
         target: [x86_64-unknown-linux-gnu]
     outputs:
       id: ${{ steps.artifacts.outputs.artifact-id }}
@@ -50,8 +51,12 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          target: ${{ matrix.target }}
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-criterion
       - name: Benchmark the workspace (${{ matrix.target }})
-        run: cargo bench --locked --verbose --workspace --features full --target ${{ matrix.target }} --
+        run: cargo criterion -v --benches --locked --workspace --features ${{ matrix.features }} --target ${{ matrix.target }}
       - name: Upload the results
         id: artifacts
         uses: actions/upload-artifact@v6
