@@ -92,29 +92,28 @@ mod tests {
     }
 
     #[test]
-    fn test_triad_transform_c_major() -> crate::Result<()> {
+    fn test_triad_transform_c_major() {
         let c_major = Triad::major(0);
         let leading = Triad::minor(4);
         let parallel = Triad::minor(0);
         let relative = Triad::minor(9);
         // leading
         assert! {
-            c_major.leading()? == leading &&
-            leading.leading()? == c_major &&
-            c_major.leading()?.leading()? == leading.leading()?
+            c_major.leading() == leading &&
+            leading.leading() == c_major &&
+            c_major.leading().leading() == leading.leading()
         }
         // parallel
         assert! {
-            c_major.parallel()? == parallel &&
-            parallel.parallel()? == c_major &&
-            c_major.parallel()?.parallel()? == parallel.parallel()?
+            c_major.parallel() == parallel &&
+            parallel.parallel() == c_major &&
+            c_major.parallel().parallel() == parallel.parallel()
         }
         // relative
         assert! {
-            c_major.relative()? == relative &&
-            relative.relative()? == c_major &&
-            c_major.relative()?.relative()? == relative.relative()?
+            c_major.relative() == relative &&
+            relative.relative() == c_major &&
+            c_major.relative().relative() == relative.relative()
         }
-        Ok(())
     }
 }

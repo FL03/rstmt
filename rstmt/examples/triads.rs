@@ -11,8 +11,8 @@ fn main() -> anyhow::Result<()> {
     assert_eq! { triad, [0, 4, 7] }
     assert! { triad.is_major() }
     // test the parallel transformation and verify that it is its own inverse
-    assert_eq! { triad.parallel()?, [0, 3, 7] }
-    assert_eq! { triad.parallel()?.parallel()?, triad }
+    assert_eq! { triad.parallel(), [0, 3, 7] }
+    assert_eq! { triad.parallel().parallel(), triad }
 
     Ok(())
 }

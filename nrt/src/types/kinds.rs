@@ -2,6 +2,7 @@
     Appellation: classes <module>
     Contrib: @FL03
 */
+use crate::traits::{Relative, TriadType};
 use num_traits::{FromPrimitive, ToPrimitive};
 use rstmt::PitchMod;
 
@@ -178,17 +179,21 @@ impl TriadClass {
     }
 }
 
-impl crate::TriadType for TriadClass {
-    type Rel = Self;
+impl Relative for TriadClass {
+    type Rel = TriadClass;
 
+    seal! {}
+
+    fn rel(&self) -> Self::Rel {
+        self.relative()
+    }
+}
+
+impl TriadType for TriadClass {
     seal! {}
 
     fn new() -> Self {
         Self::default()
-    }
-
-    fn rel(&self) -> Self::Rel {
-        self.relative()
     }
 
     fn is_major(&self) -> bool {

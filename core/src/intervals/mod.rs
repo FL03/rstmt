@@ -4,7 +4,7 @@
 */
 //! this module implements intervallic relationships in music theory
 #[doc(inline)]
-pub use self::{interval_base::*, traits::*};
+pub use self::{interval_base::*, types::*};
 
 mod interval_base;
 
@@ -12,16 +12,17 @@ mod impls {
     mod impl_interval_base;
 }
 
-mod traits {
+mod types {
     #[doc(inline)]
-    pub use self::qualities::*;
+    pub use self::{kinds::*, qualities::*};
 
+    mod kinds;
     mod qualities;
 }
 
 pub(crate) mod prelude {
     pub use super::interval_base::*;
-    pub use super::traits::*;
+    pub use super::types::*;
 }
 
 #[cfg(test)]

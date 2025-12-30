@@ -34,12 +34,10 @@
 //! assert_eq! { triad, [0, 4, 7] }
 //! assert! { triad.is_major() }
 //! // transform the triad using the parallel transformation
-//! let tp = triad.parallel().unwrap();
-//! // verify the transformation
-//! assert_eq! { tp, [0, 3, 7] }
-//! assert! { tp.is_minor() }
-//! // invert the transformation by applying it again
-//! assert_eq! { tp.parallel().unwrap(), triad }
+//! let tp = triad.parallel();
+//! // verify the transformation and the self-invertability
+//! assert_eq! { triad.parallel(), [0, 3, 7] }
+//! assert_eq! { triad.parallel().parallel(), triad }
 //! ```
 //!
 //! ## Resources

@@ -3,14 +3,20 @@
     Created At: 2025.12.23:14:15:46
     Contrib: @FL03
 */
+pub trait Relative {
+    type Rel;
+
+    private! {}
+
+    fn rel(&self) -> Self::Rel;
+}
 
 /// The [`TriadType`] trait is used to represent the various classifications of a triad
 /// considered by the Neo-Riemannian theory.
-pub trait TriadType:
-    'static + Copy + Default + Send + Sync + core::fmt::Debug + core::fmt::Display
+pub trait TriadType: Relative
+where
+    Self: 'static + Copy + Default + Send + Sync + core::fmt::Debug + core::fmt::Display,
 {
-    type Rel: TriadType<Rel = Self>;
-
     private! {}
 
     fn new() -> Self
@@ -20,15 +26,19 @@ pub trait TriadType:
         Self::default()
     }
 
+    fn rel<R>(&self) -> R
+    where
+        Self: Relative<Rel = R>,
+        R: TriadType,
+    {
+        <R>::new()
+    }
+
     fn root(&self) -> usize;
 
     fn fifth(&self) -> usize;
 
     fn third(&self) -> usize;
-
-    fn rel(&self) -> Self::Rel {
-        Self::Rel::new()
-    }
 
     fn is_major(&self) -> bool {
         false
@@ -57,7 +67,7 @@ macro_rules! triad_kind {
     };
     (@impl $trait:ident for $($name:ident)::* <Rel = $rel:ty>::<[$r:literal, $f:literal, $t:literal]> $({$($rest:tt)*})?) => {
         impl $trait for $($name)::* {
-            type Rel = $rel;
+            // type Rel = $rel;
 
             seal! {}
 
@@ -74,6 +84,16 @@ macro_rules! triad_kind {
             }
 
             $($($rest)*)?
+        }
+
+        impl Relative for $($name)::* {
+            type Rel = $rel;
+
+            seal! {}
+
+            fn rel(&self) -> Self::Rel {
+                <$rel>::default()
+            }
         }
     };
 }

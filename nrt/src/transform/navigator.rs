@@ -121,7 +121,7 @@ impl<'a> TriadNavigator<'a, [usize; 3], crate::TriadClass, usize> {
             // Try each transformation: Leading, Parallel, Relative
             for transform in LPR::iter() {
                 // Apply the transformation to get a new triad
-                let next_triad = current_triad.transform(transform)?;
+                let next_triad = current_triad.transform(transform);
 
                 // Skip if we've already visited this triad
                 if visited_triads.contains(&next_triad.chord) {

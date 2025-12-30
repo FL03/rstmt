@@ -8,7 +8,8 @@ use crate::triad::TriadBase;
 use crate::traits::TriadRepr;
 use crate::types::{LPR, TriadClass};
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
-use rstmt_core::{Augmented, Diminished, Major, Minor, PitchMod};
+use rstmt_core::traits::{PitchMod, Transform};
+use rstmt_core::{Augmented, Diminished, Major, Minor};
 
 impl<S, T> TriadBase<S, Augmented, T>
 where
@@ -136,12 +137,10 @@ where
     /// otherwise, returns [`None`](Option::None).
     pub fn is_neighbor(&self, other: &Self) -> Option<LPR>
     where
-        T: Num,
+        Self: Transform<LPR, Output = Self>,
+        T: PartialEq,
     {
-        LPR::iter().find(|&t| {
-            let result = self.transform(t).expect("transformation failed");
-            result == *other
-        })
+        LPR::iter().find(|&dirac| self.transform(dirac) == *other)
     }
 }
 impl<T> TriadBase<[T; 3], TriadClass, T>
@@ -154,8 +153,9 @@ where
     where
         I: IntoIterator<Item = LPR>,
     {
-        path.into_iter()
-            .fold(*self, |triad, transform| transform.apply(&triad))
+        path.into_iter().fold(*self, |triad, dirac| {
+            dirac.transform(triad).expect("transformation failed")
+        })
     }
     /// apply a chain of transformations to a triad in-place
     pub fn walk_inplace<I>(&mut self, path: I)
@@ -176,6 +176,6 @@ impl TriadBase<[usize; 3], TriadClass> {
     }
     /// apply a single transformation to a triad in-place, mutating the current instance
     pub fn transform_inplace(&mut self, transform: LPR) {
-        *self = self.transform(transform).expect("transformation failed");
+        *self = self.transform(transform);
     }
 }
