@@ -2,16 +2,17 @@
     Appellation: num <module>
     Contrib: @FL03
 */
+use crate::OrderedNum;
 use num_traits::{FromPrimitive, Zero};
 
 /// a functional implementation of python's modulo operator
 fn _pymod<A, B, C>(lhs: A, rhs: B) -> C
 where
-    A: core::ops::Rem<B, Output = C>,
-    B: Copy + PartialOrd + Zero,
+    B: PartialOrd + Zero,
     C: PartialOrd + Zero + core::ops::Add<B, Output = C>,
+    for<'a> A: core::ops::Rem<&'a B, Output = C>,
 {
-    let r = lhs % rhs;
+    let r = lhs % &rhs;
     if (r < <C>::zero() && rhs > <B>::zero()) || (r > <C>::zero() && rhs < <B>::zero()) {
         r + rhs
     } else {
@@ -41,14 +42,19 @@ pub trait PitchMod {
 
 impl<A, B, C> PyMod<B> for A
 where
-    A: core::ops::Rem<B, Output = C>,
-    B: Copy + PartialOrd + Zero,
-    C: PartialOrd + Zero + core::ops::Add<B, Output = C>,
+    B: OrderedNum,
+    C: OrderedNum + core::ops::Add<B, Output = C>,
+    for<'a> A: core::ops::Rem<&'a B, Output = C>,
 {
     type Output = C;
 
     fn pymod(self, rhs: B) -> Self::Output {
-        _pymod(self, rhs)
+        let r = self % &rhs;
+        if (r.is_negative() && rhs.is_positive()) || (r.is_positive() && rhs.is_negative()) {
+            r + rhs
+        } else {
+            r
+        }
     }
 }
 
