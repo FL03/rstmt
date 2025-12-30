@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use rstmt::Octave;
-use rstmt::nrt::transform::MotionPlanner;
+use rstmt::nrt::motion::MotionPlanner;
 use rstmt::nrt::{HyperTonnetz, Triad, TriadError};
 
 fn main() -> Result<(), TriadError> {

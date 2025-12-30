@@ -2,7 +2,7 @@
     Appellation: path <module>
     Contrib: @FL03
 */
-use crate::transform::SearchNode;
+use crate::motion::SearchNode;
 use crate::{LPR, Triad};
 use hashbrown::HashMap;
 use rshyper::EdgeId;

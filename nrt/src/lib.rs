@@ -26,17 +26,13 @@
 //!
 //! ```rust
 //! use rstmt_nrt::Triad;
-//!
 //! // initialize a c-major triad: (0, 4, 7)
-//! let mut triad = Triad::major(0);
-//!
+//! let triad = Triad::major(0);
 //! // verify the composition
-//! assert_eq! { triad, [0, 4, 7] }
-//! assert! { triad.is_major() }
-//! // transform the triad using the parallel transformation
-//! let tp = triad.parallel();
-//! // verify the transformation and the self-invertability
+//! assert_eq! { triad.is_major(), triad == [0, 4, 7] }
+//! // apply a single, parallel transformation and verify
 //! assert_eq! { triad.parallel(), [0, 3, 7] }
+//! // chain together two parallel transformations to confirm inversion
 //! assert_eq! { triad.parallel().parallel(), triad }
 //! ```
 //!
@@ -72,9 +68,9 @@ pub(crate) mod macros {
 }
 /// this module defines the standard error type, [`TriadError`], for the crate
 pub mod error;
+pub mod motion;
 #[cfg(feature = "tonnetz")]
 pub mod tonnetz;
-pub mod transform;
 pub mod triad;
 
 mod impls {
@@ -123,21 +119,21 @@ mod types {
 // re-exports
 #[doc(inline)]
 #[cfg(feature = "std")]
-pub use self::transform::TriadNavigator;
+pub use self::motion::Navigator;
 #[doc(inline)]
 pub use self::{error::*, iter::prelude::*, traits::*, triad::*, types::*};
 #[doc(inline)]
 #[cfg(feature = "tonnetz")]
-pub use self::{tonnetz::HyperTonnetz, transform::MotionPlanner};
+pub use self::{motion::MotionPlanner, tonnetz::HyperTonnetz};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::iter::prelude::*;
+    #[cfg(feature = "alloc")]
+    pub use crate::motion::prelude::*;
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::*;
     pub use crate::traits::*;
-    #[cfg(feature = "alloc")]
-    pub use crate::transform::prelude::*;
     pub use crate::triad::*;
     pub use crate::types::*;
 }

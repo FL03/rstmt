@@ -171,8 +171,8 @@ impl TriadBase<[usize; 3], TriadClass> {
     /// creates an instance of the transformer for the current triad
     pub fn path_finder(
         &self,
-    ) -> crate::transform::TriadNavigator<'_, [usize; 3], crate::TriadClass, usize> {
-        crate::transform::TriadNavigator::new(self)
+    ) -> crate::motion::Navigator<'_, [usize; 3], crate::TriadClass, usize> {
+        crate::motion::Navigator::new(self)
     }
     /// apply a single transformation to a triad in-place, mutating the current instance
     pub fn transform_inplace(&mut self, transform: LPR) {
