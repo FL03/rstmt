@@ -3,8 +3,27 @@
     Created At: 2025.12.23:16:16:05
     Contrib: @FL03
 */
+use crate::error::Error;
 use crate::pitch::pitch_class::PitchClass;
 use crate::pitch::traits::{Accidental, PitchClassRepr};
+
+impl<P, K> TryFrom<isize> for PitchClass<P, K>
+where
+    P: PitchClassRepr<Tag = K>,
+    K: Accidental,
+{
+    type Error = Error;
+
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if P::is(value) {
+            return Ok(Self {
+                class: P::new(),
+                kind: K::default(),
+            });
+        }
+        Err(Error::InvalidPitchClass(value))
+    }
+}
 
 impl<P, K> AsRef<isize> for PitchClass<P, K>
 where

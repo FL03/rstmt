@@ -27,6 +27,11 @@ macro_rules! pitch_repr {
             pub const fn new() -> Self {
                 $name::<N>
             }
+            #[inline]
+            /// returns true if the pitch class corresponds to the given value
+            pub fn is(value: isize) -> bool {
+                rstmt_traits::PitchMod::pmod(value) == N
+            }
             /// returns a reference to the assigned index
             pub const fn get(&self) -> &isize {
                 &N
@@ -120,6 +125,18 @@ macro_rules! pitch_repr {
         impl<const N: isize> PartialOrd<$name<N>> for isize {
             fn partial_cmp(&self, other: &$name<N>) -> Option<core::cmp::Ordering> {
                 Some(self.cmp(&other.get()))
+            }
+        }
+
+        impl<const N: isize> TryFrom<isize> for $name<N> {
+            type Error = crate::error::Error;
+
+            fn try_from(value: isize) -> Result<Self, Self::Error> {
+                if Self::is(value) {
+                    Ok(Self::new())
+                } else {
+                    Err(crate::error::Error::InvalidPitchClass(value))
+                }
             }
         }
     };

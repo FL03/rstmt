@@ -4,6 +4,7 @@
     Contrib: @FL03
 */
 use crate::pitch::Accidental;
+use rstmt_traits::PitchMod;
 
 /// [`PitchClassRepr`] is a sealed trait used to define compatible pitch representations
 /// (a.k.a pitch classes).
@@ -14,6 +15,7 @@ pub trait PitchClassRepr:
     + core::fmt::Debug
     + core::fmt::Display
     + core::borrow::Borrow<isize>
+    + TryFrom<isize>
 {
     const IDX: isize;
     type Tag: Accidental;
@@ -23,6 +25,13 @@ pub trait PitchClassRepr:
     fn new() -> Self
     where
         Self: Sized;
+    /// returns true if the given value corresponds to this pitch class
+    fn is(value: isize) -> bool
+    where
+        Self: Sized,
+    {
+        value.pmod() == Self::IDX
+    }
 
     fn value(&self) -> isize {
         Self::IDX

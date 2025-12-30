@@ -13,6 +13,8 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 /// The [`Error`] enum represents various errors that can occur in the application.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Attempted to name an invalid pitch class: {0}")]
+    InvalidPitchClass(isize),
     #[error("Unable to parse the string into the configured type")]
     FromStrParseError,
     #[error("Invalid Chord")]
@@ -24,6 +26,8 @@ pub enum Error {
     InvalidNote,
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
+    #[error("The impossible has occurred")]
+    Infallible(#[from] core::convert::Infallible),
     #[error(transparent)]
     FmtError(#[from] core::fmt::Error),
     #[cfg(feature = "alloc")]
