@@ -44,7 +44,7 @@ jobs:
         with:
           fetch-depth: 0
           repository: ${{ github.repository }}
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.client_payload.ref || github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1

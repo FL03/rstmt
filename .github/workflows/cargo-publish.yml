@@ -13,16 +13,16 @@ on:
     types: [crates-io, cargo-publish]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   crates-io:
+    environment: crates-io
     runs-on: ubuntu-latest
-    environment:
-      name: crates-io
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-    permissions:
-      contents: read
-      deployments: write
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -33,8 +33,12 @@ jobs:
           - rstmt-nrt
           - rstmt
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
