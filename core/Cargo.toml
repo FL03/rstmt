@@ -26,7 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib", "rlib", "staticlib"]
 doc = true
 doctest = true
 test = true
@@ -38,7 +38,7 @@ contained = { workspace = true }
 rspace-traits = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
-rayon-core = { optional = true, workspace = true }
+rayon = { optional = true, workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 # error-handling
@@ -73,6 +73,12 @@ full = [
   "json",
   "rand",
   "serde",
+]
+
+json = [
+  "alloc",
+  "serde",
+  "serde_json",
 ]
 
 nightly = [
@@ -110,7 +116,7 @@ wasm = [
   "rspace-traits/wasm",
   "rstmt-traits/wasm",
   "getrandom?/wasm_js",
-  "rayon-core?/web_spin_lock",
+  "rayon?/web_spin_lock",
 ]
 
 # ************* [FF:Dependencies] *************
@@ -138,12 +144,6 @@ hashbrown = [
   "rstmt-traits/hashbrown",
 ]
 
-json = [
-  "alloc",
-  "serde",
-  "serde_json",
-]
-
 rand = [
   "rng",
   "dep:rand",
@@ -154,7 +154,7 @@ rand = [
 ]
 
 rayon = [
-  "dep:rayon-core",
+  "dep:rayon",
   "hashbrown?/rayon",
   "rstmt-traits/rayon",
 ]
@@ -171,10 +171,10 @@ serde = [
   "serde?/derive",
   "hashbrown?/serde",
   "num-complex?/serde",
-  "rspace-traits/serde",
-  "rstmt-traits/serde",
   "rand?/serde",
   "rand_distr?/serde",
+  "rspace-traits/serde",
+  "rstmt-traits/serde",
 ]
 
 serde_json = ["dep:serde_json"]

@@ -41,9 +41,7 @@ rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
 rspace-traits = { default-features = false, version = "0.0.6" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # concurrency & parallelism
-crossbeam = { default-features = false, version = "0.8" }
 rayon = { default-features = false, version = "1" }
-rayon-core = { default-features = false, version = "1" }
 # data structures
 hashbrown = { default-features = false, version = "0.16" }
 # error-handling
@@ -56,7 +54,6 @@ num-traits = { default-features = false, version = "0.2" }
 # randomization
 getrandom = { default-features = false, version = "0.3" }
 rand = { default-features = false, version = "0.9" }
-rand_core = { default-features = false, version = "0.9" }
 rand_distr = { default-features = false, version = "0.5" }
 # data & serialization
 serde = { default-features = false, features = ["derive"], version = "1" }
