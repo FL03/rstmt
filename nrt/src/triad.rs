@@ -37,7 +37,7 @@ use rstmt_core::{Major, Octave};
 
 /// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
 /// its storage
-pub type Triad<T = usize> = TriadBase<DefaultTriadChord<T>, TriadClass, T>;
+pub type Triad<K = TriadClass, T = usize> = TriadBase<DefaultTriadChord<T>, K, T>;
 /// The default representation of a triadic chord
 pub type DefaultTriadChord<T = usize> = [T; 3];
 
