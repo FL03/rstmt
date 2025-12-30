@@ -21,18 +21,6 @@ where
 
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct CompoundInterval<Q, T>
-where
-    Q: Quality,
-{
-    /// the quality of the interval
-    pub quality: Q,
-    /// the total number of steps, or semitones, in the interval
-    pub steps: T,
-}
-
-#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct ConstInterval<const N: isize, Q>
 where
     Q: Quality,
