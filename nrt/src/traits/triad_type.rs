@@ -3,6 +3,8 @@
     Created At: 2025.12.23:14:15:46
     Contrib: @FL03
 */
+/// The [`Relative`] trait is used to define a relationship between two distinct triad
+/// classifications
 pub trait Relative {
     type Rel;
 
@@ -15,7 +17,7 @@ pub trait Relative {
 /// considered by the Neo-Riemannian theory.
 pub trait TriadType: Relative
 where
-    Self: 'static + Copy + Default + Send + Sync + core::fmt::Debug + core::fmt::Display,
+    Self: 'static + Copy + Default + Relative + Send + Sync + core::fmt::Debug + core::fmt::Display,
 {
     private! {}
 
@@ -24,14 +26,6 @@ where
         Self: Sized,
     {
         Self::default()
-    }
-
-    fn rel<R>(&self) -> R
-    where
-        Self: Relative<Rel = R>,
-        R: TriadType,
-    {
-        <R>::new()
     }
 
     fn root(&self) -> usize;

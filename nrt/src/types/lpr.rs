@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::error::TriadError;
-use crate::traits::{TriadRepr, TriadType};
+use crate::traits::{Relative, TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use num_traits::{FromPrimitive, One};
 use rstmt_core::{PitchMod, TryTransform};
@@ -95,10 +95,10 @@ impl LPR {
     }
 }
 
-impl<S, T, K, Q> TryTransform<TriadBase<S, K, T>> for LPR
+impl<S, T, K> TryTransform<TriadBase<S, K, T>> for LPR
 where
-    K: TriadType<Rel = Q>,
-    Q: TriadType<Rel = K>,
+    K: TriadType,
+    K::Rel: TriadType<Rel = K>,
     S: TriadRepr<Elem = T>,
     T: Copy
         + FromPrimitive
@@ -111,40 +111,14 @@ where
     type Error = TriadError;
 
     fn try_transform(&self, rhs: TriadBase<S, K, T>) -> Result<Self::Output, Self::Error> {
-        use LPR::*;
-        if rhs.is_augmented() || rhs.is_diminished() {
-            return Err(TriadError::InvalidTriadClass);
-        }
-        let &x = rhs.chord().root();
-        let &y = rhs.chord().third();
-        let &z = rhs.chord().fifth();
-
-        let notes: [T; 3] = if rhs.is_major() {
-            match self {
-                Leading => [y, z, (x - T::one()).pmod()],
-                Parallel => [x, (y - T::one()).pmod(), z],
-                Relative => [(z + T::from_u8(2).unwrap()).pmod(), x, y],
-            }
-        } else {
-            match self {
-                Leading => [(z + T::one()).pmod(), x, y],
-                Parallel => [x, (y + T::one()).pmod(), z],
-                Relative => [y, z, (x - T::from_u8(2).unwrap()).pmod()],
-            }
-        };
-
-        Ok(TriadBase {
-            chord: S::from_arr(notes),
-            class: <K as TriadType>::rel(&rhs.class()),
-            octave: rhs.octave,
-        })
+        self.try_transform(&rhs)
     }
 }
 
-impl<S, T, K, Q> TryTransform<&TriadBase<S, K, T>> for LPR
+impl<S, T, K> TryTransform<&TriadBase<S, K, T>> for LPR
 where
-    K: TriadType<Rel = Q>,
-    Q: TriadType<Rel = K>,
+    K::Rel: TriadType<Rel = K>,
+    K: TriadType,
     S: TriadRepr<Elem = T>,
     T: Copy
         + FromPrimitive
@@ -157,7 +131,6 @@ where
     type Error = TriadError;
 
     fn try_transform(&self, rhs: &TriadBase<S, K, T>) -> Result<Self::Output, Self::Error> {
-        use LPR::*;
         if rhs.is_augmented() || rhs.is_diminished() {
             return Err(TriadError::InvalidTriadClass);
         }
@@ -167,21 +140,21 @@ where
 
         let notes: [T; 3] = if rhs.is_major() {
             match self {
-                Leading => [y, z, (x - T::one()).pmod()],
-                Parallel => [x, (y - T::one()).pmod(), z],
-                Relative => [(z + T::from_u8(2).unwrap()).pmod(), x, y],
+                LPR::Leading => [y, z, (x - T::one()).pmod()],
+                LPR::Parallel => [x, (y - T::one()).pmod(), z],
+                LPR::Relative => [(z + T::from_u8(2).unwrap()).pmod(), x, y],
             }
         } else {
             match self {
-                Leading => [(z + T::one()).pmod(), x, y],
-                Parallel => [x, (y + T::one()).pmod(), z],
-                Relative => [y, z, (x - T::from_u8(2).unwrap()).pmod()],
+                LPR::Leading => [(z + T::one()).pmod(), x, y],
+                LPR::Parallel => [x, (y + T::one()).pmod(), z],
+                LPR::Relative => [y, z, (x - T::from_u8(2).unwrap()).pmod()],
             }
         };
 
         Ok(TriadBase {
             chord: S::from_arr(notes),
-            class: <K as TriadType>::rel(&rhs.class()),
+            class: <K as Relative>::rel(&rhs.class()),
             octave: rhs.octave(),
         })
     }
