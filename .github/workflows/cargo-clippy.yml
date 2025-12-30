@@ -38,10 +38,6 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: clippy-sarif sarif-fmt
-      # - name: Setup cargo-binstall
-      #   uses: cargo-bins/cargo-binstall@main
-      # - name: Install clippy-sarif
-      #   run: cargo binstall -y --force -q clippy-sarif sarif-fmt
       - name: Run Clippy
         run: |
           cargo clippy \
