@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [closed, opened, ready_for_review, reopened]
+    # types: [closed, opened, ready_for_review, reopened]
   push:
     tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
@@ -35,10 +35,9 @@ jobs:
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           components: clippy,rustfmt
-      - name: Setup cargo-binstall
-        uses: cargo-bins/cargo-binstall@main
-      - name: Install additional tools for clippy
-        run: cargo binstall -q -y --force clippy-sarif sarif-fmt
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: clippy sarif sarif-fmt
       - name: Run Clippy
         run: |
           cargo clippy \
