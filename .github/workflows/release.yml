@@ -32,13 +32,13 @@ jobs:
           ref: ${{ github.ref }}
           repository: ${{ github.repository }}
           token: ${{ github.token }}
-      - name: Dispatch the cargo publish workflow
+      - name: Dispatch & Publish to crates.io
         uses: peter-evans/repository-dispatch@v4
         with:
           event-type: cargo-publish
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
           token: ${{ github.token }}
-      - name: Create release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
