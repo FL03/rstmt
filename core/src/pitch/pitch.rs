@@ -22,7 +22,10 @@ where
     private! {}
 }
 /// The [`Pitched`] trait is used to denote objects that have an associated pitch.
-pub trait Pitched<T> {
+pub trait Pitched<T>
+where
+    T: RawPitch,
+{
     fn pitch(&self) -> &Pitch<T>;
 }
 

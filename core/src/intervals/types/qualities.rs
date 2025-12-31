@@ -92,7 +92,7 @@ macro_rules! impl_raw_quality {
             }
         }
 
-        impl<Q> PartialEq<Q> for $name 
+        impl<Q> PartialEq<Q> for $name
         where
             str: PartialEq<Q>,
         {

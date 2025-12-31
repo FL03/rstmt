@@ -9,13 +9,7 @@ pub trait OrderedNum
 where
     Self: PartialEq + PartialOrd + One + Zero,
 {
-    fn is_zero(&self) -> bool {
-        *self == Self::zero()
-    }
-
-    fn is_one(&self) -> bool {
-        *self == Self::one()
-    }
+    private! {}
 
     fn is_positive(&self) -> bool {
         *self > Self::zero()
@@ -28,15 +22,12 @@ where
 
 pub trait Numerical
 where
-    Self: Clone
+    Self: OrderedNum
+        + Clone
         + Copy
         + Default
-        + PartialEq
-        + PartialOrd
         + FromPrimitive
         + ToPrimitive
-        + One
-        + Zero
         + core::fmt::Debug
         + core::fmt::Display
         + core::ops::Add<Output = Self>
@@ -51,22 +42,6 @@ where
         + core::ops::SubAssign,
 {
     private! {}
-
-    fn is_zero(&self) -> bool {
-        *self == Self::zero()
-    }
-
-    fn is_one(&self) -> bool {
-        *self == Self::one()
-    }
-
-    fn is_positive(&self) -> bool {
-        *self > Self::zero()
-    }
-
-    fn is_negative(&self) -> bool {
-        *self < Self::zero()
-    }
 
     fn apply<F, U>(self, f: F) -> U
     where
@@ -93,7 +68,12 @@ where
  ************* Implementations *************
 */
 
-impl<T> OrderedNum for T where T: PartialEq + PartialOrd + One + Zero {}
+impl<T> OrderedNum for T
+where
+    T: PartialEq + PartialOrd + One + Zero,
+{
+    seal! {}
+}
 
 impl<T> Numerical for T
 where

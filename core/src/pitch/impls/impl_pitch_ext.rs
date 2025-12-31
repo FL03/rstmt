@@ -115,13 +115,19 @@ where
     }
 }
 
-impl<T> PartialEq<T> for Pitch<T> where T: PartialEq {
+impl<T> PartialEq<T> for Pitch<T>
+where
+    T: PartialEq,
+{
     fn eq(&self, other: &T) -> bool {
         self.0 == *other
     }
 }
 
-impl<T> PartialOrd<T> for Pitch<T> where T: PartialOrd {
+impl<T> PartialOrd<T> for Pitch<T>
+where
+    T: PartialOrd,
+{
     fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
         self.0.partial_cmp(other)
     }
