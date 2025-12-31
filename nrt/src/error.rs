@@ -19,7 +19,7 @@ pub enum TriadError {
     #[error(
         "Invalid transformation character ({0}); character must be 'L', 'P', or 'R' (case-insensitive)"
     )]
-    ParseTransformationCharError(char),
+    TransformationParseCharError(char),
     #[error("Invalid triad")]
     InvalidTriad,
     #[error("Invalid Triad Class")]

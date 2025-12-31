@@ -3,9 +3,12 @@
     Created At: 2025.12.20:09:09:08
     Contrib: @FL03
 */
-use crate::pitch::Pitch;
+use crate::pitch::{Pitch, RawPitch};
 
-impl<T> Pitch<T> {
+impl<T> Pitch<T>
+where
+    T: RawPitch,
+{
     /// returns a new instance of the [`Pitch`] wrapping the given value
     pub const fn new(value: T) -> Self {
         Pitch(value)
@@ -57,7 +60,7 @@ impl<T> Pitch<T> {
     where
         F: FnOnce(T) -> U,
     {
-        Pitch::new(f(self.value()))
+        Pitch(f(self.value()))
     }
     #[inline]
     /// applies the function onto a mutable reference of the inner value
@@ -91,11 +94,11 @@ impl<T> Pitch<T> {
     }
     /// returns a new instance containing a reference to the inner value
     pub const fn view(&self) -> Pitch<&T> {
-        Pitch::new(self.get())
+        Pitch(self.get())
     }
     /// returns a new instance containing a mutable reference to the inner value
     pub const fn view_mut(&mut self) -> Pitch<&mut T> {
-        Pitch::new(self.get_mut())
+        Pitch(self.get_mut())
     }
     #[inline]
     /// consumes the current instance to create another with the given value

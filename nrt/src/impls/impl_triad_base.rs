@@ -42,10 +42,10 @@ where
     }
     #[inline]
     /// consumes the instance to use a dynamic classification enum
-    pub fn dynamic(self) -> TriadBase<S, crate::TriadClass, T> {
+    pub fn dynamic(self) -> TriadBase<S, crate::Triads, T> {
         TriadBase {
             chord: self.chord,
-            class: crate::TriadClass::from_class(self.class),
+            class: crate::Triads::from_class(self.class),
             octave: self.octave,
         }
     }
@@ -182,7 +182,6 @@ where
         let x = self.chord().clone().into_iter().sum::<U>() / U::from_u8(3)?;
         Some([x, y])
     }
-
     /// returns true if the triad contains the given note
     pub fn contains<Q>(&self, note: &Q) -> bool
     where

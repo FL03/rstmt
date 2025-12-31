@@ -21,7 +21,7 @@ pub enum Error {
     InvalidChord,
     #[cfg(feature = "alloc")]
     #[error("Invalid Intervals: {0}")]
-    InvalidIntervals(String),
+    IncompatibleIntervals(String),
     #[error("Invalid Note")]
     InvalidNote,
     #[error(transparent)]

@@ -69,7 +69,7 @@ where
     }
 }
 
-impl<'a> Navigator<'a, [usize; 3], crate::TriadClass, usize> {
+impl<'a> Navigator<'a, [usize; 3], crate::Triads, usize> {
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> crate::Result<Vec<TransformationChain>> {
         let mut result_paths = Vec::new();

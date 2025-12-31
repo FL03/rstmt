@@ -11,7 +11,7 @@ use super::{Accidental, CNote, Natural, PitchClassRepr};
 /// natural, etc.).
 ///
 /// **Note**: This struct isn't designed to be used directly, rather through type aliases such
-/// as [`C`](super::C), [`DSharp`](super::DSharp), [`EFlat`](super::EFlat), etc.
+/// as [`C`], [`DSharp`], [`EFlat`], etc.
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",

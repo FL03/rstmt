@@ -6,7 +6,7 @@ use crate::traits::TriadType;
 use num_traits::{FromPrimitive, ToPrimitive};
 use rstmt::PitchMod;
 
-/// The [`TriadClass`] implementation enumerates the allowed triad classifications determined
+/// The [`Triads`] implementation enumerates the allowed triad classifications determined
 /// by the intervals between the chord factors.
 #[derive(
     Clone,
@@ -31,7 +31,7 @@ use rstmt::PitchMod;
     serde(untagged, rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum TriadClass {
+pub enum Triads {
     #[default]
     Major = 0,
     Minor = 1,
@@ -39,7 +39,7 @@ pub enum TriadClass {
     Diminished = 3,
 }
 
-impl TriadClass {
+impl Triads {
     pub fn from_class<C>(class: C) -> Self
     where
         C: TriadType,
@@ -58,25 +58,25 @@ impl TriadClass {
     }
     pub fn is<T: TriadType>(&self, class: T) -> bool {
         match self {
-            TriadClass::Major => class.is_major(),
-            TriadClass::Minor => class.is_minor(),
-            TriadClass::Augmented => class.is_augmented(),
-            TriadClass::Diminished => class.is_diminished(),
+            Triads::Major => class.is_major(),
+            Triads::Minor => class.is_minor(),
+            Triads::Augmented => class.is_augmented(),
+            Triads::Diminished => class.is_diminished(),
         }
     }
-    /// a functional constructor for the [`Major`](TriadClass::Major) variant
+    /// a functional constructor for the [`Major`](Triads::Major) variant
     pub const fn major() -> Self {
         Self::Major
     }
-    /// a functional constructor for the [`Minor`](TriadClass::Minor) variant
+    /// a functional constructor for the [`Minor`](Triads::Minor) variant
     pub const fn minor() -> Self {
         Self::Minor
     }
-    /// a functional constructor for the [`Augmented`](TriadClass::Augmented) variant
+    /// a functional constructor for the [`Augmented`](Triads::Augmented) variant
     pub const fn augmented() -> Self {
         Self::Augmented
     }
-    /// a functional constructor for the [`Diminished`](TriadClass::Diminished) variant
+    /// a functional constructor for the [`Diminished`](Triads::Diminished) variant
     pub const fn diminished() -> Self {
         Self::Diminished
     }
@@ -106,20 +106,20 @@ impl TriadClass {
     /// rather straightforward
     pub const fn relative(&self) -> Self {
         match self {
-            TriadClass::Major => TriadClass::Minor,
-            TriadClass::Minor => TriadClass::Major,
-            TriadClass::Augmented => TriadClass::Diminished,
-            TriadClass::Diminished => TriadClass::Augmented,
+            Triads::Major => Triads::Minor,
+            Triads::Minor => Triads::Major,
+            Triads::Augmented => Triads::Diminished,
+            Triads::Diminished => Triads::Augmented,
         }
     }
     /// returns the intervals corresponding to the triad type as arrays of three `usize` values
     /// ordered as: [root_to_third, root_to_fifth, third_to_fifth]
     pub const fn intervals(&self) -> [usize; 3] {
         match self {
-            TriadClass::Major => [4, 7, 3],
-            TriadClass::Minor => [3, 7, 4],
-            TriadClass::Augmented => [4, 8, 4],
-            TriadClass::Diminished => [3, 6, 3],
+            Triads::Major => [4, 7, 3],
+            Triads::Minor => [3, 7, 4],
+            Triads::Augmented => [4, 8, 4],
+            Triads::Diminished => [3, 6, 3],
         }
     }
     /// returns the two third intervals defining the current variant
@@ -129,55 +129,55 @@ impl TriadClass {
     /// returns the **interval** between the root and third chord factors
     pub const fn root(&self) -> usize {
         match self {
-            TriadClass::Major => 4,
-            TriadClass::Minor => 3,
-            TriadClass::Augmented => 4,
-            TriadClass::Diminished => 3,
+            Triads::Major => 4,
+            Triads::Minor => 3,
+            Triads::Augmented => 4,
+            Triads::Diminished => 3,
         }
     }
     /// returns a reference to the **interval** between the root and third chord factors
     pub const fn root_ref(&self) -> &usize {
         match self {
-            TriadClass::Major => &4,
-            TriadClass::Minor => &3,
-            TriadClass::Augmented => &4,
-            TriadClass::Diminished => &3,
+            Triads::Major => &4,
+            Triads::Minor => &3,
+            Triads::Augmented => &4,
+            Triads::Diminished => &3,
         }
     }
     /// returns the **interval** between the third and fifth chord factors
     pub const fn third(&self) -> usize {
         match self {
-            TriadClass::Major => 3,
-            TriadClass::Minor => 4,
-            TriadClass::Augmented => 4,
-            TriadClass::Diminished => 3,
+            Triads::Major => 3,
+            Triads::Minor => 4,
+            Triads::Augmented => 4,
+            Triads::Diminished => 3,
         }
     }
     /// returns a reference to the **interval** between the third and fifth chord factors
     pub const fn third_ref(&self) -> &usize {
         match self {
-            TriadClass::Major => &3,
-            TriadClass::Minor => &4,
-            TriadClass::Augmented => &4,
-            TriadClass::Diminished => &3,
+            Triads::Major => &3,
+            Triads::Minor => &4,
+            Triads::Augmented => &4,
+            Triads::Diminished => &3,
         }
     }
     /// returns the **interval** between the root and fifth chord factors
     pub const fn fifth(&self) -> usize {
         match self {
-            TriadClass::Major => 7,
-            TriadClass::Minor => 7,
-            TriadClass::Augmented => 8,
-            TriadClass::Diminished => 6,
+            Triads::Major => 7,
+            Triads::Minor => 7,
+            Triads::Augmented => 8,
+            Triads::Diminished => 6,
         }
     }
     /// returns a reference to the **interval** between the root and fifth chord factors
     pub const fn fifth_ref(&self) -> &usize {
         match self {
-            TriadClass::Major => &7,
-            TriadClass::Minor => &7,
-            TriadClass::Augmented => &8,
-            TriadClass::Diminished => &6,
+            Triads::Major => &7,
+            Triads::Minor => &7,
+            Triads::Augmented => &8,
+            Triads::Diminished => &6,
         }
     }
     /// returns true if the given chord factors satisfy the requirements of the current class
@@ -205,20 +205,20 @@ impl TriadClass {
 macro_rules! impl_from_triad_class {
     ($($T:ty),* $(,)?) => {
         $(
-            impl From<$T> for TriadClass {
+            impl From<$T> for Triads {
                 fn from(value: $T) -> Self {
                     match value % 4 {
-                        0 => TriadClass::Major,
-                        1 => TriadClass::Minor,
-                        2 => TriadClass::Augmented,
-                        3 => TriadClass::Diminished,
+                        0 => Triads::Major,
+                        1 => Triads::Minor,
+                        2 => Triads::Augmented,
+                        3 => Triads::Diminished,
                         _ => unreachable! { "invalid modulo operation" },
                     }
                 }
             }
 
-            impl From<TriadClass> for $T {
-                fn from(value: TriadClass) -> Self {
+            impl From<Triads> for $T {
+                fn from(value: Triads) -> Self {
                     value as $T
                 }
             }
@@ -228,7 +228,7 @@ macro_rules! impl_from_triad_class {
 
 impl_from_triad_class! { u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize }
 
-impl core::ops::Index<super::Factors> for TriadClass {
+impl core::ops::Index<super::Factors> for Triads {
     type Output = usize;
 
     fn index(&self, index: super::Factors) -> &Self::Output {
@@ -242,23 +242,23 @@ impl core::ops::Index<super::Factors> for TriadClass {
 
 macro_rules! interval_to_class {
     (@impl $T:ident) => {
-            // impl PartialEq<rstmt_core::$T> for TriadClass {
+            // impl PartialEq<rstmt_core::$T> for Triads {
             //     fn eq(&self, _other: &rstmt_core::$T) -> bool {
-            //         matches! { self, TriadClass::$T }
+            //         matches! { self, Triads::$T }
             //     }
             // }
 
-            impl From<rstmt_core::$T> for TriadClass {
+            impl From<rstmt_core::$T> for Triads {
                 fn from(_value: rstmt_core::$T) -> Self {
-                    TriadClass::$T
+                    Triads::$T
                 }
             }
 
-            impl TryFrom<TriadClass> for rstmt_core::$T {
+            impl TryFrom<Triads> for rstmt_core::$T {
                 type Error = $crate::TriadError;
 
-                fn try_from(value: TriadClass) -> Result<Self, Self::Error> {
-                    if matches!(value, TriadClass::$T) {
+                fn try_from(value: Triads) -> Result<Self, Self::Error> {
+                    if matches!(value, Triads::$T) {
                         Ok(Self)
                     } else {
                         Err($crate::TriadError::IncompatibleTriadClasses)
@@ -273,13 +273,13 @@ macro_rules! interval_to_class {
 
 interval_to_class! { Major, Minor, Augmented, Diminished }
 
-impl<C: crate::TriadType> PartialEq<C> for TriadClass {
+impl<C: crate::TriadType> PartialEq<C> for Triads {
     fn eq(&self, other: &C) -> bool {
         match self {
-            TriadClass::Major => other.is_major(),
-            TriadClass::Minor => other.is_minor(),
-            TriadClass::Augmented => other.is_augmented(),
-            TriadClass::Diminished => other.is_diminished(),
+            Triads::Major => other.is_major(),
+            Triads::Minor => other.is_minor(),
+            Triads::Augmented => other.is_augmented(),
+            Triads::Diminished => other.is_diminished(),
         }
     }
 }
@@ -290,17 +290,17 @@ mod tests {
 
     #[test]
     fn test_class_creation() -> crate::Result<()> {
-        let class = TriadClass::try_from_arr([0, 4, 7])?;
+        let class = Triads::try_from_arr([0, 4, 7])?;
         assert!(class.is_major());
-        let class = TriadClass::try_from_arr([0, 3, 7])?;
+        let class = Triads::try_from_arr([0, 3, 7])?;
         assert!(class.is_minor());
-        let class = TriadClass::try_from_arr([0, 4, 8])?;
+        let class = Triads::try_from_arr([0, 4, 8])?;
         assert!(class.is_augmented());
-        let class = TriadClass::try_from_arr([0, 3, 6])?;
+        let class = Triads::try_from_arr([0, 3, 6])?;
         assert!(class.is_diminished());
 
-        assert!(TriadClass::try_from_arr([0, 7, 4]).is_err());
-        assert!(TriadClass::try_from_arr([0, 5, 9]).is_err());
+        assert!(Triads::try_from_arr([0, 7, 4]).is_err());
+        assert!(Triads::try_from_arr([0, 5, 9]).is_err());
 
         Ok(())
     }

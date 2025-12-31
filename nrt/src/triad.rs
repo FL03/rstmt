@@ -31,15 +31,15 @@
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
 
 use crate::traits::{TriadRepr, TriadType};
-use crate::types::TriadClass;
+use crate::types::Triads;
 use rspace_traits::RawSpace;
 use rstmt_core::{Major, Octave};
 
 /// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
 /// its storage
-pub type Triad<K = TriadClass, T = usize> = TriadBase<DefaultTriadChord<T>, K, T>;
+pub type Triad<K = Triads, T = usize> = TriadBase<DefaultTriadChord<T>, K, T>;
 
-pub type DynTriad<T = usize> = Triad<TriadClass, T>;
+pub type DynTriad<T = usize> = Triad<Triads, T>;
 /// The default representation of a triadic chord
 pub type DefaultTriadChord<T = isize> = [T; 3];
 
@@ -63,8 +63,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use rstmt_core::Minor;
+    use super::Triad;
 
     #[test]
     /// Test: test initialization routines using a single root note, `C(0)`
@@ -94,7 +93,7 @@ mod tests {
     fn test_triad_properties() {
         let fsharp_minor = Triad::minor(6);
         assert! { fsharp_minor.is_minor() && !fsharp_minor.is_major() }
-        assert_eq! { fsharp_minor.class(), Minor }
+        assert_eq! { fsharp_minor.class(), rstmt_core::Minor }
     }
 
     #[test]

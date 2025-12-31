@@ -168,7 +168,7 @@ impl TryFrom<char> for LPR {
             'l' => Ok(Leading),
             'p' => Ok(Parallel),
             'r' => Ok(Relative),
-            v => Err(TriadError::ParseTransformationCharError(v)),
+            v => Err(TriadError::TransformationParseCharError(v)),
         }
     }
 }

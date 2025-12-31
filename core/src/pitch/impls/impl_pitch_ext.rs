@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:06:46
     Contrib: @FL03
 */
-use crate::pitch::Pitch;
+use crate::pitch::{Pitch, RawPitch};
 use num_traits::{Num, One, Zero};
 
 contained::fmt_wrapper! {
@@ -41,27 +41,30 @@ contained::unary_wrapper! {
     }
 }
 
-impl<T> AsRef<T> for Pitch<T> {
+impl<T> AsRef<T> for Pitch<T>
+where
+    T: RawPitch,
+{
     fn as_ref(&self) -> &T {
-        self.get()
+        &self.0
     }
 }
 
 impl<T> AsMut<T> for Pitch<T> {
     fn as_mut(&mut self) -> &mut T {
-        self.get_mut()
+        &mut self.0
     }
 }
 
 impl<T> core::borrow::Borrow<T> for Pitch<T> {
     fn borrow(&self) -> &T {
-        self.get()
+        &self.0
     }
 }
 
 impl<T> core::borrow::BorrowMut<T> for Pitch<T> {
     fn borrow_mut(&mut self) -> &mut T {
-        self.get_mut()
+        &mut self.0
     }
 }
 
@@ -69,13 +72,13 @@ impl<T> core::ops::Deref for Pitch<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        self.get()
+        &self.0
     }
 }
 
 impl<T> core::ops::DerefMut for Pitch<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.get_mut()
+        &mut self.0
     }
 }
 
@@ -84,7 +87,7 @@ where
     T: One,
 {
     fn one() -> Self {
-        Pitch::new(T::one())
+        Pitch(T::one())
     }
 }
 
@@ -93,17 +96,17 @@ where
     T: Zero,
 {
     fn zero() -> Self {
-        Pitch::new(T::zero())
+        Pitch(T::zero())
     }
 
     fn is_zero(&self) -> bool {
-        self.get().is_zero()
+        self.0.is_zero()
     }
 }
 
 impl<T, E> Num for Pitch<T>
 where
-    T: Num<FromStrRadixErr = E>,
+    T: Num<FromStrRadixErr = E> + RawPitch,
 {
     type FromStrRadixErr = T::FromStrRadixErr;
 
@@ -112,14 +115,14 @@ where
     }
 }
 
-impl<T: PartialEq> PartialEq<T> for Pitch<T> {
+impl<T> PartialEq<T> for Pitch<T> where T: PartialEq {
     fn eq(&self, other: &T) -> bool {
-        self.get() == other
+        self.0 == *other
     }
 }
 
-impl<T: PartialOrd> PartialOrd<T> for Pitch<T> {
+impl<T> PartialOrd<T> for Pitch<T> where T: PartialOrd {
     fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
-        self.get().partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }

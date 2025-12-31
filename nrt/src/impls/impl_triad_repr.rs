@@ -6,7 +6,7 @@
 use crate::triad::TriadBase;
 
 use crate::traits::TriadRepr;
-use crate::types::{LPR, TriadClass};
+use crate::types::{LPR, Triads};
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
 use rstmt_core::traits::{PitchMod, Transform};
 use rstmt_core::{Augmented, Diminished, Major, Minor};
@@ -67,7 +67,7 @@ where
     }
 }
 
-impl<T> TriadBase<[T; 3], TriadClass, T>
+impl<T> TriadBase<[T; 3], Triads, T>
 where
     T: Copy + ToPrimitive + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
 {
@@ -143,7 +143,7 @@ where
         LPR::iter().find(|&dirac| self.transform(dirac) == *other)
     }
 }
-impl<T> TriadBase<[T; 3], TriadClass, T>
+impl<T> TriadBase<[T; 3], Triads, T>
 where
     T: Copy + ToPrimitive + FromPrimitive + Num + PitchMod<Output = T>,
 {
@@ -166,12 +166,10 @@ where
     }
 }
 
-impl TriadBase<[usize; 3], TriadClass> {
+impl TriadBase<[usize; 3], Triads> {
     #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
-    pub fn path_finder(
-        &self,
-    ) -> crate::motion::Navigator<'_, [usize; 3], crate::TriadClass, usize> {
+    pub fn path_finder(&self) -> crate::motion::Navigator<'_, [usize; 3], crate::Triads, usize> {
         crate::motion::Navigator::new(self)
     }
     /// apply a single transformation to a triad in-place, mutating the current instance

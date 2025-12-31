@@ -3,7 +3,7 @@
     Created At: 2025.12.23:14:15:46
     Contrib: @FL03
 */
-use crate::TriadClass;
+use crate::Triads;
 /// The [`Relative`] trait is used to define a relationship between two distinct triad
 /// classifications
 pub trait Relative {
@@ -35,8 +35,8 @@ where
 
     fn third(&self) -> usize;
     /// consumes the instance, returning a variant of the [`TriadClass`] enum
-    fn dynamic(self) -> crate::TriadClass {
-        crate::TriadClass::from_class(self)
+    fn dynamic(self) -> crate::Triads {
+        crate::Triads::from_class(self)
     }
 
     fn is_major(&self) -> bool {
@@ -60,8 +60,8 @@ where
  ************* Implementations *************
 */
 
-impl Relative for TriadClass {
-    type Rel = TriadClass;
+impl Relative for Triads {
+    type Rel = Triads;
 
     seal! {}
 
@@ -70,7 +70,7 @@ impl Relative for TriadClass {
     }
 }
 
-impl TriadType for TriadClass {
+impl TriadType for Triads {
     seal! {}
 
     fn new() -> Self {
@@ -78,19 +78,19 @@ impl TriadType for TriadClass {
     }
 
     fn is_major(&self) -> bool {
-        matches!(self, TriadClass::Major)
+        matches!(self, Triads::Major)
     }
 
     fn is_minor(&self) -> bool {
-        matches!(self, TriadClass::Minor)
+        matches!(self, Triads::Minor)
     }
 
     fn is_augmented(&self) -> bool {
-        matches!(self, TriadClass::Augmented)
+        matches!(self, Triads::Augmented)
     }
 
     fn is_diminished(&self) -> bool {
-        matches!(self, TriadClass::Diminished)
+        matches!(self, Triads::Diminished)
     }
 
     fn root(&self) -> usize {

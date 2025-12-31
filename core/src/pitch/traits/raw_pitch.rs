@@ -7,8 +7,14 @@
 /// [`RawPitch`] defines an interface for all raw pitch types.
 ///
 /// **note:** This trait is sealed and cannot be implemented outside of this crate.
-pub trait RawPitch:
-    'static + Default + Send + Sync + core::fmt::Debug + core::fmt::Display
+pub trait RawPitch
+where
+    Self: Send
+        + Sync
+        + core::fmt::Debug
+        + core::fmt::Display
+        + PartialEq
+        + PartialOrd
 {
     private!();
 }
@@ -16,31 +22,27 @@ pub trait RawPitch:
 /// and traits.
 pub trait PitchNum: RawPitch + Sized
 where
-    Self: Copy
-        + Eq
-        + PartialEq
-        + PartialOrd
-        + core::ops::Add<Output = Self>
-        + core::ops::Sub<Output = Self>
-        + core::ops::Mul<Output = Self>
-        + core::ops::Div<Output = Self>
-        + core::ops::Rem<Output = Self>
-        + core::ops::Neg<Output = Self>
-        + core::ops::AddAssign
-        + core::ops::SubAssign
-        + core::ops::MulAssign
-        + core::ops::DivAssign
-        + core::ops::RemAssign
-        + num_traits::FromPrimitive
-        + num_traits::ToPrimitive
-        + num_traits::Zero
-        + num_traits::One,
+    Self: num_traits::FromPrimitive + num_traits::ToPrimitive + num_traits::Zero + num_traits::One,
 {
 }
 
 /*
  ************* Implementations *************
 */
+
+impl<T> RawPitch for &T
+where
+    T: RawPitch,
+{
+    seal! {}
+}
+
+impl<T> RawPitch for &mut T
+where
+    T: RawPitch,
+{
+    seal! {}
+}
 
 macro_rules! impl_raw_pitch {
     ($($tgt:ty),* $(,)?) => {
