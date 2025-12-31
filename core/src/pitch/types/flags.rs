@@ -26,7 +26,7 @@
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Pitches {
+pub enum Accidentals {
     Sharp(Sharps),
     Flat(Flats),
     #[default]

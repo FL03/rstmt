@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:31:05
     Contrib: @FL03
 */
-use super::{Accidental, CNote, Natural, PitchClassRepr};
+use crate::pitch::{Accidental, PitchClassRepr};
 
 /// The [`PitchClass`] implementations works to generically define the structure for a pitch
 /// class. This is accomplished through the use of two type parameters: `N`, which defines the
@@ -19,7 +19,7 @@ use super::{Accidental, CNote, Natural, PitchClassRepr};
     serde(rename_all = "lowercase")
 )]
 #[repr(C)]
-pub struct PitchClass<P = CNote, K = Natural>
+pub struct PitchClass<P = super::CNote, K = <P as PitchClassRepr>::Tag>
 where
     P: PitchClassRepr<Tag = K>,
     K: Accidental,
@@ -35,7 +35,7 @@ where
     serde(rename_all = "lowercase")
 )]
 #[repr(transparent)]
-pub struct ConstPitchClass<const N: usize, P, K>
+pub struct ConstPitchClass<const N: usize = 0, P = super::CNote<N>, K = <P as PitchClassRepr>::Tag>
 where
     P: PitchClassRepr<Tag = K>,
     K: Accidental,
@@ -73,4 +73,18 @@ classes! {
     G::<Flat, Sharp>,
     A::<Flat, Sharp>,
     B::<Flat>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pitch_class() {
+        let c = C::new();
+        // verify the type checkers
+        assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
+        // check the index
+        assert_eq! { c, 0 }
+    }
 }

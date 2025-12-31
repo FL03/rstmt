@@ -18,6 +18,10 @@ pub trait IntoOctave<T> {
     fn into_octave(self) -> Octave<T>;
 }
 
+pub trait RawOctave {
+    private! {}
+}
+
 /// A type defining an octave
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -32,9 +36,24 @@ pub struct Octave<T = isize>(pub T);
  ************* Implementations *************
 */
 
+macro_rules! impl_raw_octave {
+    ($($t:ty),* $(,)?) => {
+        $(
+            impl RawOctave for $t {
+                seal! {}
+            }
+        )*
+    };
+}
+
+impl_raw_octave! {
+    u8, u16, u32, u64, u128, usize,
+    i8, i16, i32, i64, i128, isize,
+}
+
 impl<U, T> AsOctave<T> for U
 where
-    U: Clone + IntoOctave<T>,
+    U: Clone + IntoOctave<T> + RawOctave,
 {
     fn as_octave(&self) -> Octave<T> {
         self.clone().into_octave()
