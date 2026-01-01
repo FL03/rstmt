@@ -114,7 +114,6 @@ impl<T> core::ops::DerefMut for Octave<T> {
     }
 }
 
-
 impl<T> From<T> for Octave<T>
 where
     T: RawOctave,

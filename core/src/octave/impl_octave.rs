@@ -95,4 +95,3 @@ where
         Octave(self.get_mut())
     }
 }
-

@@ -5,8 +5,8 @@
 mod impl_aspn;
 mod impl_aspn_ext;
 mod impl_note_base;
-mod impl_note_repr;
 mod impl_note_ext;
+mod impl_note_repr;
 
 use crate::octave::Octave;
 use crate::pitch::{self, Accidental, PitchClass, RawPitchClass};
@@ -79,8 +79,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::NoteBase;
-    use crate::pitch::C;
     use crate::octave::Octave;
+    use crate::pitch::C;
 
     #[test]
     fn test_note_base_debug() {

@@ -33,4 +33,3 @@ where
         &mut self.octave
     }
 }
-

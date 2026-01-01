@@ -1,7 +1,6 @@
-
 use crate::note::NoteBase;
-use crate::pitch::{PitchClass, Natural, Sharp, Flat, RawPitchClass};
 use crate::octave::Octave;
+use crate::pitch::{Flat, Natural, PitchClass, RawPitchClass, Sharp};
 
 impl<P> NoteBase<P>
 where

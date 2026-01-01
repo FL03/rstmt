@@ -6,7 +6,7 @@
 use crate::note::NoteBase;
 use crate::pitch::{Accidental, RawPitchClass};
 
-impl<P, K> core::fmt::Debug for NoteBase<P, K>  
+impl<P, K> core::fmt::Debug for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
     K: Accidental,
@@ -16,7 +16,7 @@ where
     }
 }
 
-impl<P, K> core::fmt::Display for NoteBase<P, K>  
+impl<P, K> core::fmt::Display for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
     K: Accidental,

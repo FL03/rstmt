@@ -48,7 +48,6 @@ impl<T> Octave<*const T>
 where
     T: RawOctave,
 {
-    
     /// returns a new instance of the [`Octave`] with a copied instance of the current value
     pub const fn copied(&self) -> Octave<T>
     where

@@ -9,7 +9,13 @@ use rstmt_traits::PitchMod;
 /// The [`RawPitchClass`] is a sealed trait used to define raw pitch class types.
 pub trait RawPitchClass
 where
-    Self: Send + Sync + PartialEq<isize> + PartialEq<str>  + core::borrow::Borrow<isize>  + core::fmt::Debug + core::fmt::Display
+    Self: Send
+        + Sync
+        + PartialEq<isize>
+        + PartialEq<str>
+        + core::borrow::Borrow<isize>
+        + core::fmt::Debug
+        + core::fmt::Display,
 {
     type Tag: Accidental;
 
