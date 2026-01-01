@@ -86,8 +86,8 @@ nightly = [
 # ********* [FF] Flags *********
 
 tonnetz = [
+  "alloc",
   "hashbrown",
-  "std",
   "rshyper/hyper_map",
 ]
 
