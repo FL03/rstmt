@@ -6,7 +6,7 @@ concurrency:
 
 on:
   pull_request:
-    types: [opened, ready_for_review, reopened]
+    types: [auto_merge_enabled, opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
@@ -41,8 +41,8 @@ jobs:
       - name: Run Clippy
         run: |
           cargo clippy \
-          --features full \
-          --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
+            --features full \
+            --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
       - name: Upload analysis
         uses: github/codeql-action/upload-sarif@v4
         with:
