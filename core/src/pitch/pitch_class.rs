@@ -72,4 +72,19 @@ mod tests {
         // check the index
         assert_eq! { c, 0 }
     }
+
+    #[test]
+    fn test_parse_pitch_class() {
+        let d_sharp: DSharp = "D#".parse().unwrap();
+        assert! { d_sharp.is_sharp() }
+        assert_eq! { d_sharp.index(), 3 }
+
+        let e_flat: EFlat = "Eb".parse().unwrap();
+        assert! { e_flat.is_flat() }
+        assert_eq! { e_flat.index(), 3 }
+
+        let f: F = "F".parse().unwrap();
+        assert! { f.is_natural() }
+        assert_eq! { f.index(), 5 }
+    }
 }
