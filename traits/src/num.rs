@@ -6,7 +6,7 @@
 use crate::{PitchMod, PyMod};
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 
-/// The [`OrderedNum`] trait defines the behavior of ordered numerical types, providing methods 
+/// The [`OrderedNum`] trait defines the behavior of ordered numerical types, providing methods
 /// for establishing the sign of a number and other fundamental numerical operations.
 pub trait OrderedNum
 where

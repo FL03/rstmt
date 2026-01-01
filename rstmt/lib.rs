@@ -1,4 +1,5 @@
 #![crate_name = "rstmt"]
+#![crate_type = "lib"]
 //! # rstmt
 //!
 //! [![crates.io](https://img.shields.io/crates/v/rstmt?style=for-the-badge&logo=rust)](https://crates.io/crates/rstmt)
