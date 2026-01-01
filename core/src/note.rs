@@ -89,7 +89,7 @@ mod tests {
     #[test]
     #[ignore = "need to fix"]
     fn test_note_parse() {
-        let exp = NoteBase::new(C::new(), Octave(4));
+        let exp = NoteBase::new(C::default(), Octave(4));
         assert_eq! { "C.4".parse::<NoteBase<_, _>>().unwrap(), exp }
     }
 }

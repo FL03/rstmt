@@ -44,6 +44,9 @@ where
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(pc) = s.parse::<P>() {
+            return Ok(Self::from_class(pc));
+        }
         let (lex_class, lex_kind) = if s.len() > 1 {
             let (head, tail) = s.split_at(s.len() - 1);
             (head, tail)
@@ -51,8 +54,11 @@ where
             (s, "Natural")
         };
         let class = lex_class.parse::<P>()?;
-        let kind = lex_kind.parse::<K>()?;
-        Ok(Self { class, kind })
+        let _kind = lex_kind.parse::<K>()?;
+        Ok(Self {
+            class,
+            kind: K::default(),
+        })
     }
 }
 impl<P, K> TryFrom<isize> for PitchClass<P, K>

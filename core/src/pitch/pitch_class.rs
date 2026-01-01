@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_pitch_class() {
-        let c = C::new();
+        let c = C::default();
         // verify the type checkers
         assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
         // check the index
