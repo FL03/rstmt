@@ -11,4 +11,4 @@ pub const C_MAJOR_SCALE: [usize; 7] = [0, 2, 4, 5, 7, 9, 11];
 /// Defines the frequency of the A4 note in Hertz.
 pub const A4_FREQUENCY: f64 = 440.0;
 /// Defines the frequency of the C4 note in Hertz.
-pub const C4_FREQUENCY: f64 = 261.6255653005986;
+pub const C4_FREQUENCY: f64 = 261.625565;
