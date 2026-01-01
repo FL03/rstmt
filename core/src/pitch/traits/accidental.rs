@@ -64,6 +64,7 @@ macro_rules! accidental {
         }
 
         impl $crate::pitch::Accidental for $name {
+            
 
         }
 
