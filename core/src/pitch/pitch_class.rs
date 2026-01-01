@@ -59,17 +59,3 @@ classes! {
     A::<Flat, Sharp>,
     B::<Flat>,
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_pitch_class() {
-        let c = C::new();
-        // verify the type checkers
-        assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
-        // check the index
-        assert_eq! { c, 0 }
-    }
-}

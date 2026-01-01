@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::freq::{Frequency, RawFrequency};
-use crate::pitch::{Accidental, Flat, Natural, PitchClass, RawAccidental, RawPitchClass, Sharp};
+use crate::pitch::{Flat, Natural, PitchClass, RawAccidental, RawPitchClass, Sharp};
 use num_traits::{Float, FromPrimitive};
 
 impl<P, K> PitchClass<P, K>
@@ -15,10 +15,20 @@ where
     pub fn new() -> Self
     where
         P: Default,
-        K: Accidental,
+        K: Default,
     {
         Self {
             class: P::default(),
+            kind: K::default(),
+        }
+    }
+
+    pub fn from_class(class: P) -> Self
+    where
+        K: Default,
+    {
+        Self {
+            class,
             kind: K::default(),
         }
     }
@@ -30,7 +40,8 @@ where
     pub const fn as_mut_ptr(&mut self) -> *mut P {
         core::ptr::from_mut(self.get_mut())
     }
-    pub fn into_frequency<T>(&self) -> Frequency<T>
+    /// convert the pitch class into a [`Frequency`] based on the standard A4 tuning
+    pub fn as_frequency<T>(&self) -> Frequency<T>
     where
         P: RawPitchClass<Tag = K>,
         K: RawAccidental,

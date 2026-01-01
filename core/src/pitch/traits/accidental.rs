@@ -65,24 +65,12 @@ macro_rules! accidental {
 
         impl $crate::pitch::Accidental for $name {
 
+
         }
 
         impl AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 stringify!($name)
-            }
-        }
-
-        #[cfg(feature = "alloc")]
-        impl ::core::str::FromStr for $name {
-            type Err = $crate::error::Error;
-
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
-                if s == stringify!($name) || s == $sym.to_string() {
-                    Ok(Self::default())
-                } else {
-                    Err($crate::error::Error::FromStrParseError)
-                }
             }
         }
 
@@ -188,10 +176,10 @@ impl core::str::FromStr for Natural {
     type Err = crate::error::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.to_lowercase() == "natural" || s == '♮'.to_string() || s == "" {
+        if s.is_empty() || s.to_lowercase() == "natural" || s == "♮" {
             Ok(Natural)
         } else {
-            Err(crate::error::Error::FromStrParseError)
+            Err(anyhow::anyhow!("Unable to parse a natural note : {}", s).into())
         }
     }
 }
@@ -205,5 +193,31 @@ impl core::fmt::Debug for Natural {
 impl core::fmt::Display for Natural {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.symbol())
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl ::core::str::FromStr for Flat {
+    type Err = crate::error::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.to_lowercase() == "flat" || s == "♭" || s == "b" {
+            Ok(Self::default())
+        } else {
+            Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
+        }
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl ::core::str::FromStr for Sharp {
+    type Err = crate::error::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.to_lowercase() == "sharp" || s == "♯" || s == "#" {
+            Ok(Self::default())
+        } else {
+            Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
+        }
     }
 }

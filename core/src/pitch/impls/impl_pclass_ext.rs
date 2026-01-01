@@ -39,7 +39,6 @@ impl<P, K> core::str::FromStr for PitchClass<P, K>
 where
     P: PitchClassRepr<Tag = K>,
     K: Accidental,
-    <P as core::str::FromStr>::Err: core::fmt::Debug,
 {
     type Err = Error;
 

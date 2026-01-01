@@ -36,7 +36,7 @@ required-features = ["nrt", "std"]
 
 [[example]]
 name = "motion"
-required-features = ["std", "tonnetz"]
+required-features = ["hashbrown", "std", "tonnetz"]
 
 [[example]]
 name = "triads"
@@ -81,6 +81,8 @@ nrt = [
 ]
 
 tonnetz = [
+  "alloc",
+  "hashbrown",
   "nrt",
   "rstmt-nrt?/tonnetz",
 ]
