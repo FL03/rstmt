@@ -65,6 +65,7 @@ wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
+  "hashbrown",
   "std",
   "tonnetz",
 ]

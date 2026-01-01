@@ -81,7 +81,7 @@ nrt = [
 ]
 
 tonnetz = [
-  "alloc",
+  "std",
   "hashbrown",
   "nrt",
   "rstmt-nrt?/tonnetz",

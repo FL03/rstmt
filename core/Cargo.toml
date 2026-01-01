@@ -64,12 +64,14 @@ strum = { features = ["derive"], workspace = true }
 wasm-bindgen = { optional = true, workspace = true }
 
 [features]
-default = ["std"]
+default = [
+  "hashbrown",
+  "std",
+]
 
 full = [
   "default",
   "complex",
-  "hashbrown",
   "json",
   "rand",
   "serde",
