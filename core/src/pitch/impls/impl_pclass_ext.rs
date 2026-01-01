@@ -48,7 +48,7 @@ where
             let (head, tail) = s.split_at(s.len() - 1);
             (head, tail)
         } else {
-            (s, "")
+            (s, "Natural")
         };
         let class = lex_class
             .parse::<P>()

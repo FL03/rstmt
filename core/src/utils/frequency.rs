@@ -28,10 +28,8 @@ pub fn classify_freq_with_scale<T>(freq: T, root: T) -> Option<isize>
 where
     T: Float + FromPrimitive,
 {
-    // Ensure frequency is positive
-    debug_assert! { freq.is_sign_negative(), "Frequency must be positive" }
     let log_base = T::from_u8(2)?;
     let modulus = T::from_u8(12)?;
     // Calculate pitch class: round(12 * log2(frequency / 440))
-    (modulus * (freq / root).log(log_base)).round().to_isize()
+    (modulus * (freq.abs() / root).log(log_base)).round().to_isize()
 }
