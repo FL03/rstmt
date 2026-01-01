@@ -59,4 +59,3 @@ classes! {
     A::<Flat, Sharp>,
     B::<Flat>,
 }
-

@@ -51,10 +51,7 @@ where
         };
         let class = lex_class.parse::<P>()?;
         let kind = lex_kind.parse::<K>()?;
-        Ok(Self {
-            class,
-            kind,
-        })
+        Ok(Self { class, kind })
     }
 }
 impl<P, K> TryFrom<isize> for PitchClass<P, K>

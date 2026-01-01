@@ -64,7 +64,7 @@ macro_rules! accidental {
         }
 
         impl $crate::pitch::Accidental for $name {
-            
+
 
         }
 
@@ -196,28 +196,28 @@ impl core::fmt::Display for Natural {
     }
 }
 
-    #[cfg(feature = "alloc")]
-    impl ::core::str::FromStr for Flat {
-        type Err = crate::error::Error;
+#[cfg(feature = "alloc")]
+impl ::core::str::FromStr for Flat {
+    type Err = crate::error::Error;
 
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
-            if s.to_lowercase() == "flat" || s == "♭" || s == "b" {
-                Ok(Self::default())
-            } else {
-                Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
-            }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.to_lowercase() == "flat" || s == "♭" || s == "b" {
+            Ok(Self::default())
+        } else {
+            Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
         }
     }
+}
 
-    #[cfg(feature = "alloc")]
-    impl ::core::str::FromStr for Sharp {
-        type Err = crate::error::Error;
+#[cfg(feature = "alloc")]
+impl ::core::str::FromStr for Sharp {
+    type Err = crate::error::Error;
 
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
-            if s.to_lowercase() == "sharp" || s == "♯" || s == "#" {
-                Ok(Self::default())
-            } else {
-                Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
-            }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.to_lowercase() == "sharp" || s == "♯" || s == "#" {
+            Ok(Self::default())
+        } else {
+            Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
         }
     }
+}
