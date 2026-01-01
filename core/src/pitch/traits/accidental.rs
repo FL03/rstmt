@@ -14,17 +14,19 @@ pub trait Accidental: 'static + Default + Send + Sync + core::fmt::Debug {
     fn name(&self) -> &str {
         Self::NAME
     }
+
+    fn symbol(&self) -> char;
 }
 
 /*
  ************* Implementations *************
 */
 macro_rules! accidental {
-    (@impl $(#[$meta:meta])* $vis:vis $type:ident $name:ident $(;)?) => {
+    (@impl $(#[$meta:meta])* $vis:vis $type:ident $name:ident = $sym:literal $(;)?) => {
         unit_type! {
             $(#[$meta])*
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-            $vis $type $name;
+            $vis $type $name
         }
 
         impl $name {
@@ -36,6 +38,14 @@ macro_rules! accidental {
             {
                 ::core::any::TypeId::of::<T>() == ::core::any::TypeId::of::<Self>()
             }
+            /// returns the symbol of the accidental
+            pub const fn symbol(&self) -> char {
+                $sym
+            }
+            /// returns the name of the accidental
+            pub fn name(&self) -> &str {
+                stringify!($name)
+            }
         }
 
         impl $crate::pitch::Accidental for $name {
@@ -43,7 +53,11 @@ macro_rules! accidental {
             seal! {}
 
             fn name(&self) -> &str {
-                Self::NAME
+                self.name()
+            }
+
+            fn symbol(&self) -> char {
+                self.symbol()
             }
         }
 
@@ -53,28 +67,40 @@ macro_rules! accidental {
             }
         }
 
+        #[cfg(feature = "alloc")]
+        impl ::core::str::FromStr for $name {
+            type Err = $crate::error::Error;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                if s == stringify!($name) || s == $sym.to_string() {
+                    Ok(Self::default())
+                } else {
+                    Err($crate::error::Error::FromStrParseError)
+                }
+            }
+        }
+
         impl ::core::fmt::Debug for $name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                f.write_str(self.as_ref())
+                write!(f, "{}", self.symbol())
             }
         }
 
         impl ::core::fmt::Display for $name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                f.write_str(self.as_ref())
+                write!(f, "{}", self.symbol())
             }
         }
-
     };
-    ($($vis:vis $type:ident $name:ident);* $(;)?) => {
-        $(accidental! { @impl $vis $type $name })*
+    ($($vis:vis $type:ident $name:ident $(= $sym:literal)?);* $(;)?) => {
+        $(accidental! { @impl $vis $type $name $(= $sym)? })*
     };
 }
 
 accidental! {
-    pub struct Flat;
-    pub struct Sharp;
-    pub struct Natural;
+    pub struct Flat = '♭';
+    pub struct Sharp = '♯';
+    pub struct Natural = '♮';
 }
 
 impl<T> Accidental for core::marker::PhantomData<T>
@@ -87,5 +113,9 @@ where
 
     fn name(&self) -> &str {
         <T>::NAME
+    }
+
+    fn symbol(&self) -> char {
+        T::default().symbol()
     }
 }

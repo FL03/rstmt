@@ -13,6 +13,8 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 /// The [`Error`] enum represents various errors that can occur in the application.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Attempted to use an invalid accidental")]
+    InvalidAccidental,
     #[error("Attempted to name an invalid pitch class: {0}")]
     InvalidPitchClass(isize),
     #[error("Mismatched pitch classes, received {0} while expecting {1}")]

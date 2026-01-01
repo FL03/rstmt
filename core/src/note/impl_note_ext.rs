@@ -12,7 +12,7 @@ where
     K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class().name(), self.octave().value())
+        f.write_str(self.aspn().as_str())
     }
 }
 
@@ -22,6 +22,18 @@ where
     K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class().name(), self.octave().value())
+        f.write_str(self.aspn().as_str())
+    }
+}
+
+impl<P, K> NoteBase<P, K>
+where
+    P: RawPitchClass<Tag = K>,
+    K: Accidental,
+{
+    /// returns string formatted following the American Standard Pitch Notation (ASPN) of:
+    /// "C.4", "D#.5", etc.
+    pub fn aspn(&self) -> String {
+        format!("{}.{}", self.class().name(), self.octave().value())
     }
 }

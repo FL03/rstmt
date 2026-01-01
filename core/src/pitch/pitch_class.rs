@@ -28,21 +28,6 @@ where
     pub(crate) kind: K,
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase")
-)]
-#[repr(transparent)]
-pub struct ConstPitchClass<const N: usize = 0, P = super::CNote<N>, K = <P as RawPitchClass>::Tag>
-where
-    P: RawPitchClass<Tag = K>,
-    K: Accidental,
-{
-    pub(crate) _class: PitchClass<P, K>,
-}
-
 /*
  ************* Types *************
 */

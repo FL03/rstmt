@@ -68,26 +68,30 @@ where
     }
 }
 
-impl<N, K> core::fmt::Debug for PitchClass<N, K>
+impl<P, K> core::fmt::Debug for PitchClass<P, K>
 where
-    N: RawPitchClass<Tag = K> + core::fmt::Debug,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if self.is_natural() {
-            write!(f, "{:?}", self.class)
+            write!(f, "{}", self.get())
         } else {
-            write!(f, "{:?}[{:?}]", self.class, self.kind.name())
+            write!(f, "{}{}", self.get(), self.kind.symbol())
         }
     }
 }
 
-impl<N, K> core::fmt::Display for PitchClass<N, K>
+impl<P, K> core::fmt::Display for PitchClass<P, K>
 where
-    N: RawPitchClass<Tag = K> + core::fmt::Display,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.class)
+        if self.is_natural() {
+            write!(f, "{}", self.get())
+        } else {
+            write!(f, "{}{}", self.get(), self.kind.symbol())
+        }
     }
 }
