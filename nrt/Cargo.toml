@@ -98,12 +98,13 @@ nightly = [
 # ********* [FF] Flags *********
 
 motion = [
-  "tonnetz",
+  "alloc",
+  "hashbrown",
 ]
 
 tonnetz = [
-  "std",
   "hashbrown",
+  "std",
   "rshyper/hyper_map",
 ]
 
