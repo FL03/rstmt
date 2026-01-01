@@ -27,7 +27,7 @@ where
 
 impl<P, K> AsRef<isize> for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn as_ref(&self) -> &isize {
@@ -47,7 +47,7 @@ where
 
 impl<P, K> core::borrow::Borrow<isize> for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn borrow(&self) -> &isize {

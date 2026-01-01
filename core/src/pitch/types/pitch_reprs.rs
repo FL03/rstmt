@@ -41,7 +41,7 @@ macro_rules! pitch_repr {
                 N
             }
             /// returns the name of the pitch class
-            pub fn name(&self) -> &str {
+            pub const fn name(&self) -> &str {
                 $r
             }
         }
@@ -60,8 +60,12 @@ macro_rules! pitch_repr {
 
             seal! {}
 
+            fn new() -> Self {
+                Self::new()
+            }
+
             fn name(&self) -> &str {
-                stringify!($name)
+                self.name()
             }
 
             fn index(&self) -> isize {
@@ -69,14 +73,8 @@ macro_rules! pitch_repr {
             }
         }
 
-                impl<const N: isize> $crate::pitch::PitchClassRepr for $name<N> {
+        impl<const N: isize> $crate::pitch::PitchClassRepr for $name<N> {
             const IDX: isize = N;
-
-            seal! {}
-
-            fn new() -> Self {
-                Self::new()
-            }
         }
 
         impl<const N: isize> PartialEq<str> for $name<N> {

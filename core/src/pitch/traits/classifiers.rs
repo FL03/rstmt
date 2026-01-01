@@ -11,6 +11,8 @@ pub trait RawPitchClass
 where
     Self: Send
         + Sync
+        + AsRef<str>
+        + AsRef<isize>
         + PartialEq<isize>
         + PartialEq<str>
         + core::borrow::Borrow<isize>
@@ -21,25 +23,22 @@ where
 
     private! {}
 
+    fn new() -> Self
+    where
+        Self: Sized;
     /// returns the name of the pitch class
     fn name(&self) -> &str;
     /// returns the value associated with the pitch class
     fn index(&self) -> isize;
 }
 
-/// [`PitchClassRepr`] extends [`RawPitchClass`] with additional methods for constructing and
-/// identifying pitch class representations.
+/// [`PitchClassRepr`] extends [`RawPitchClass`], providing various initialization routines,
+/// defaults, and other methods useful for pitch class representations.
 pub trait PitchClassRepr: RawPitchClass
 where
-    Self: AsRef<str> + AsRef<isize> + Default + core::str::FromStr + TryFrom<isize>,
+    Self: Default + core::str::FromStr + TryFrom<isize>,
 {
     const IDX: isize;
-
-    private! {}
-
-    fn new() -> Self
-    where
-        Self: Sized;
 
     /// returns true if the given value corresponds to this pitch class
     fn is(value: isize) -> bool
