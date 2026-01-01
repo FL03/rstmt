@@ -28,7 +28,7 @@
 //! # References
 //!
 //! - [Continuous Transformations](https://www.mtosmt.org/issues/mto.04.10.3/mto.04.10.3.callender.pdf)
-//! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
+//! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)
 
 use crate::traits::{TriadRepr, TriadType};
 use crate::types::Triads;
