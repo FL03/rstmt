@@ -33,7 +33,11 @@ test = true
 
 [[test]]
 name = "pathfinder"
-required-features = ["motion", "tonnetz"]
+required-features = ["motion"]
+
+[[test]]
+name = "planner"
+required-features = ["motion"]
 
 [dependencies]
 rstmt-core = { workspace = true }
