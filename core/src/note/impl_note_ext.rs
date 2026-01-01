@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::note::NoteBase;
-use crate::pitch::{Accidental, RawPitchClass};
+use crate::pitch::{Accidental, PitchClassRepr, RawPitchClass};
 
 impl<P, K> core::fmt::Debug for NoteBase<P, K>
 where
@@ -26,14 +26,47 @@ where
     }
 }
 
-impl<P, K> NoteBase<P, K>
+impl<P, K> PartialEq<str> for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
-    /// returns string formatted following the American Standard Pitch Notation (ASPN) of:
-    /// "C.4", "D#.5", etc.
-    pub fn aspn(&self) -> String {
-        format!("{}.{}", self.class().name(), self.octave().value())
+    fn eq(&self, other: &str) -> bool {
+        self.aspn() == other
+    }
+}
+
+impl<P, K> PartialEq<&str> for NoteBase<P, K>
+where
+    P: RawPitchClass<Tag = K>,
+    K: Accidental,
+{
+    fn eq(&self, other: &&str) -> bool {
+        self.aspn() == *other
+    }
+}
+
+impl<P, K> core::str::FromStr for NoteBase<P, K>
+where
+    P: PitchClassRepr<Tag = K>,
+    K: Accidental,
+    <P as core::str::FromStr>::Err: core::fmt::Debug,
+{
+    type Err = crate::error::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts: Vec<&str> = s.split('.').collect();
+        if parts.len() != 2 {
+            return Err(anyhow::anyhow!("Invalid ASPN format: {}", s).into());
+        }
+        let class_str = parts[0];
+        let octave_str = parts[1];
+        let _symbol = class_str
+            .parse::<P>()
+            .map_err(|e| anyhow::anyhow!("Failed to parse pitch class: {:?}", e))?;
+        let octave = octave_str
+            .parse::<isize>()
+            .map_err(|e| anyhow::anyhow!("Failed to parse octave: {:?}", e))?;
+        Ok(Self::from_octave(crate::octave::Octave(octave)))
     }
 }

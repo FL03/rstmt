@@ -5,7 +5,7 @@
 */
 use super::NoteBase;
 use crate::octave::Octave;
-use crate::pitch::{Accidental, PitchClass, RawPitchClass};
+use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawPitchClass};
 
 impl<P, K> NoteBase<P, K>
 where
@@ -15,6 +15,16 @@ where
     /// constructs a new [`NoteBase`] instance
     pub const fn new(class: PitchClass<P, K>, octave: Octave) -> Self {
         Self { class, octave }
+    }
+    /// initialize a new instance of the note from the given octave
+    pub fn from_octave(octave: Octave) -> Self
+    where
+        P: PitchClassRepr,
+    {
+        Self {
+            class: PitchClass::new(),
+            octave,
+        }
     }
     /// returns a reference to the current class
     pub const fn class(&self) -> &PitchClass<P, K> {
@@ -31,5 +41,10 @@ where
     /// returns a mutable reference to the current octave
     pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
+    }
+    /// returns string formatted following the American Standard Pitch Notation (ASPN) of:
+    /// "C.4", "D#.5", etc.
+    pub fn aspn(&self) -> String {
+        format!("{}.{}", self.class().name(), self.octave().value())
     }
 }
