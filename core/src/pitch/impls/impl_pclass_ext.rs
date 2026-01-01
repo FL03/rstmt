@@ -43,9 +43,6 @@ where
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Ok(pc) = s.parse::<P>() {
-            return Ok(Self::from_class(pc));
-        }
         let (lex_class, lex_kind) = if s.len() > 1 {
             let (head, tail) = s.split_at(s.len() - 1);
             (head, tail)
