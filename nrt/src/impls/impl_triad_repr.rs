@@ -167,11 +167,6 @@ where
 }
 
 impl TriadBase<[usize; 3], Triads> {
-    #[cfg(feature = "alloc")]
-    /// creates an instance of the transformer for the current triad
-    pub fn path_finder(&self) -> crate::motion::Navigator<'_, [usize; 3], crate::Triads, usize> {
-        crate::motion::Navigator::new(self)
-    }
     /// apply a single transformation to a triad in-place, mutating the current instance
     pub fn transform_inplace(&mut self, transform: LPR) {
         *self = self.transform(transform);

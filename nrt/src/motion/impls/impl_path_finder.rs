@@ -3,7 +3,7 @@
     Created At: 2025.12.29:20:28:57
     Contrib: @FL03
 */
-use crate::motion::navigator::{Navigator, NavigatorConfig};
+use crate::motion::path_finder::{NavigatorConfig, PathFinder};
 use crate::motion::types::{ChainFeatures, TransformationChain};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{Triad, TriadBase};
@@ -11,7 +11,7 @@ use crate::types::LPR;
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
 
-impl<'a, S, K, T> Navigator<'a, S, K, T>
+impl<'a, S, K, T> PathFinder<'a, S, K, T>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,
@@ -69,7 +69,7 @@ where
     }
 }
 
-impl<'a> Navigator<'a, [usize; 3], crate::Triads, usize> {
+impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
     /// find all possible chains that are capable of transforming the given instance to the target symbol
     pub fn find_paths_to_target(&self, target: usize) -> crate::Result<Vec<TransformationChain>> {
         let mut result_paths = Vec::new();

@@ -1,9 +1,25 @@
 /*
-    Appellation: config <module>
+    Appellation: navigator <module>
     Contrib: @FL03
 */
 
-/// The [`PathfinderConfig`] object provides a standard interface for configuring various
+use crate::traits::{TriadRepr, TriadType};
+use crate::triad::TriadBase;
+use rspace_traits::RawSpace;
+
+/// The transformer allows one triad to find valid transformation chains capable of taking the
+/// instance to another based on some critieria.
+#[derive(Debug)]
+pub struct PathFinder<'a, S, K, T = <S as RawSpace>::Elem>
+where
+    K: TriadType,
+    S: TriadRepr<Elem = T>,
+{
+    pub(crate) triad: &'a TriadBase<S, K, T>,
+    pub(crate) config: NavigatorConfig,
+}
+
+/// The [`PathFinderConfig`] object provides a standard interface for configuring various
 /// implemented transformers.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -11,27 +27,27 @@
     derive(serde::Serialize, serde::Deserialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct PathfinderConfig {
+pub struct NavigatorConfig {
     /// Maximum search depth for pathfinding
     pub max_depth: usize,
     /// Maximum number of paths to find
     pub max_paths: usize,
 }
 
-impl PathfinderConfig {
+impl NavigatorConfig {
     /// the default maximum search depth for pathfinding
     pub const DEFAULT_MAX_DEPTH: usize = 5;
     /// the default maximum number of paths to find
     pub const DEFAULT_MAX_PATHS: usize = 5;
 
-    /// returns a new instance of the [`PathfinderConfig`] with the given values
+    /// returns a new instance of the [`PathFinderConfig`] with the given values
     pub const fn new(depth: usize, paths: usize) -> Self {
         Self {
             max_depth: depth, // Default search depth
             max_paths: paths, // default number of paths to find
         }
     }
-    /// returns a new instance of the [`PathfinderConfig`] with the given depth and default
+    /// returns a new instance of the [`PathFinderConfig`] with the given depth and default
     /// [`paths`](Self::DEFAULT_MAX_PATHS)
     pub const fn from_depth(depth: usize) -> Self {
         Self {
@@ -39,7 +55,7 @@ impl PathfinderConfig {
             max_paths: Self::DEFAULT_MAX_PATHS, // default number of paths to find
         }
     }
-    /// returns a new instance of the [`PathfinderConfig`] with the given paths and default
+    /// returns a new instance of the [`PathFinderConfig`] with the given paths and default
     /// [`depth`](Self::DEFAULT_MAX_DEPTH)
     pub const fn from_paths(paths: usize) -> Self {
         Self {
@@ -101,7 +117,7 @@ impl PathfinderConfig {
     }
 }
 
-impl Default for PathfinderConfig {
+impl Default for NavigatorConfig {
     fn default() -> Self {
         Self {
             max_depth: Self::DEFAULT_MAX_DEPTH,
@@ -110,7 +126,7 @@ impl Default for PathfinderConfig {
     }
 }
 
-impl core::fmt::Display for PathfinderConfig {
+impl core::fmt::Display for NavigatorConfig {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,

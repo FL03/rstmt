@@ -40,6 +40,8 @@ contained = { default-features = false, features = ["macros"], version = "0.2.3"
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
 rspace-traits = { default-features = false, version = "0.0.6" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
+# benchmarking & testing
+criterion = { default-features = false, features = ["plotters"], version = "0.8" }
 # concurrency & parallelism
 rayon = { default-features = false, version = "1" }
 # data structures
@@ -65,6 +67,9 @@ lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = { version = "0.7" }
 strum = { default-features = false, features = ["derive"], version = "0.27" }
+# logging
+tracing = { default-features = false, features = ["attributes"], version = "0.1" }
+tracing-subscriber = {features = ["env-filter", "fmt"], version = "0.3" }
 # WebAssembly
 wasm-bindgen = { default-features = false, version = "0.2" }
 

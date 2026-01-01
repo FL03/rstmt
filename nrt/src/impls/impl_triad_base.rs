@@ -234,4 +234,9 @@ where
     {
         self.transform(LPR::Relative)
     }
+    #[cfg(feature = "motion")]
+    /// returns a path finder for the current triad
+    pub fn path_finder(&self) -> crate::motion::PathFinder<'_, S, K, T> {
+        crate::motion::PathFinder::new(self)
+    }
 }

@@ -25,7 +25,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib", "staticlib"]
+crate-type = ["cdylib", "rlib"]
 path = "lib.rs"
 test = true
 
@@ -36,7 +36,7 @@ required-features = ["nrt", "std"]
 
 [[example]]
 name = "motion"
-required-features = ["hashbrown", "std", "tonnetz"]
+required-features = ["motion", "std", "tonnetz"]
 
 [[example]]
 name = "triads"
@@ -48,11 +48,11 @@ rstmt-nrt = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
-criterion = { features = ["plotters"], version = "0.8" }
+criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
 num = { features = ["std"], version = "0.4" }
-tracing = { features = ["attributes", "std"], version = "0.1" }
-tracing-subscriber = { features = ["ansi", "serde", "std"], version = "0.3" }
+tracing = { features = ["attributes", "std"], workspace = true }
+tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
 
 [features]
 default = [
@@ -75,14 +75,16 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
-nrt = [
-  "alloc",
-  "rstmt_nrt",
+motion = [
+  "rstmt-nrt?/motion",
 ]
+
+nrt = ["rstmt_nrt"]
 
 tonnetz = [
   "std",
   "hashbrown",
+  "motion",
   "nrt",
   "rstmt-nrt?/tonnetz",
 ]

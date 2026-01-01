@@ -8,15 +8,14 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
-pub mod config;
 #[cfg(feature = "std")]
-pub mod navigator;
+pub mod path_finder;
 #[cfg(feature = "tonnetz")]
 pub mod planner;
 
 mod impls {
     mod impl_motion_planner;
-    mod impl_navigator;
+    mod impl_path_finder;
 }
 #[cfg(feature = "alloc")]
 mod types {
@@ -30,12 +29,10 @@ mod types {
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
-    pub use super::config::*;
 
     #[doc(inline)]
     #[cfg(feature = "alloc")]
-    pub use super::navigator::*;
+    pub use super::path_finder::*;
     #[doc(inline)]
     #[cfg(feature = "tonnetz")]
     pub use super::planner::*;
