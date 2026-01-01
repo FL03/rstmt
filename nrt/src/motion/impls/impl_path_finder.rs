@@ -1,9 +1,9 @@
 /*
-    Appellation: impl_navigator <module>
-    Created At: 2025.12.29:20:28:57
+    Appellation: impl_path_finder <module>
+    Created At: 2026.01.01:09:17:02
     Contrib: @FL03
 */
-use crate::motion::path_finder::{NavigatorConfig, PathFinder};
+use crate::motion::path_finder::{PathFinder, PathFinderConfig};
 use crate::motion::types::{ChainFeatures, TransformationChain};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{Triad, TriadBase};
@@ -22,14 +22,14 @@ where
     pub(crate) fn new(triad: &'a TriadBase<S, K, T>) -> Self {
         Self {
             triad,
-            config: NavigatorConfig::new(Self::DEFAULT_MAX_DEPTH, Self::DEFAULT_MAX_PATHS),
+            config: PathFinderConfig::new(Self::DEFAULT_MAX_DEPTH, Self::DEFAULT_MAX_PATHS),
         }
     }
-    pub const fn config(&self) -> &NavigatorConfig {
+    pub const fn config(&self) -> &PathFinderConfig {
         &self.config
     }
     /// returns a mutable reference to the configuration of the navigator
-    pub const fn config_mut(&mut self) -> &mut NavigatorConfig {
+    pub const fn config_mut(&mut self) -> &mut PathFinderConfig {
         &mut self.config
     }
     /// returns the maximum depth for pathfinding
