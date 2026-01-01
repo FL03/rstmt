@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::note::NoteBase;
-use crate::pitch::{Accidental, PitchClassRepr, RawAccidental, RawPitchClass};
+use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawAccidental, RawPitchClass};
 
 impl<P, K> core::fmt::Debug for NoteBase<P, K>
 where
@@ -61,12 +61,12 @@ where
         }
         let class_str = parts[0];
         let octave_str = parts[1];
-        let _symbol = class_str
-            .parse::<P>()
+        let class = class_str
+            .parse::<PitchClass<P, K>>()
             .map_err(|e| anyhow::anyhow!("Failed to parse pitch class: {:?}", e))?;
         let octave = octave_str
             .parse::<isize>()
             .map_err(|e| anyhow::anyhow!("Failed to parse octave: {:?}", e))?;
-        Ok(Self::from_octave(crate::octave::Octave(octave)))
+        Ok(Self::new(class, crate::octave::Octave(octave)))
     }
 }
