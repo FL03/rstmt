@@ -5,7 +5,7 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriadMut, TriadRepr, TriadType};
+use crate::traits::{TriadRepr, TriadReprMut, TriadType};
 use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_core::{Octave, PitchMod, Transform};
@@ -81,7 +81,7 @@ where
     /// returns a mutable reference to the root note of the triad.
     pub fn root_mut(&mut self) -> &mut T
     where
-        S: RawTriadMut,
+        S: TriadReprMut,
     {
         self.chord_mut().root_mut()
     }
@@ -95,7 +95,7 @@ where
     /// returns a mutable reference to the third note of the triad.
     pub fn third_mut(&mut self) -> &mut T
     where
-        S: RawTriadMut,
+        S: TriadReprMut,
     {
         self.chord_mut().third_mut()
     }
@@ -109,7 +109,7 @@ where
     /// returns a mutable reference to the fifth note of the triad.
     pub fn fifth_mut(&mut self) -> &mut T
     where
-        S: RawTriadMut,
+        S: TriadReprMut,
     {
         self.chord_mut().fifth_mut()
     }

@@ -5,7 +5,7 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriadMut, Relative, TriadRepr, TriadType};
+use crate::traits::{Relative, TriadRepr, TriadReprMut, TriadType};
 use crate::types::{Factors, LPR};
 use num_traits::{FromPrimitive, One};
 use rstmt_core::{PitchMod, Transform};
@@ -134,7 +134,7 @@ where
 
 impl<T, S, K> core::ops::IndexMut<Factors> for TriadBase<S, K, T>
 where
-    S: RawTriadMut<Elem = T>,
+    S: TriadReprMut<Elem = T>,
     K: TriadType,
 {
     fn index_mut(&mut self, index: Factors) -> &mut Self::Output {
