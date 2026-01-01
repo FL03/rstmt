@@ -3,11 +3,11 @@
     Created At: 2025.12.22:13:13:42
     Contrib: @FL03
 */
-use crate::intervals::{IntervalBase, Quality};
+use crate::intervals::{IntervalBase, RawQuality};
 
 impl<Q, T> IntervalBase<Q, T>
 where
-    Q: Quality,
+    Q: RawQuality,
 {
     pub const fn new(quality: Q, distance: T) -> Self {
         Self {

@@ -32,12 +32,12 @@ where
     }
     /// a shorthand method for creating a new frequency from the given pitch class using A4 as
     /// the base frequency
-    pub fn from_class<N>(note: N) -> Self
+    pub fn from_class_on_a4<N>(note: N) -> Self
     where
         N: ToPrimitive,
         T: Float + FromPrimitive,
     {
-        let root = <T>::from_f32(A4_FREQUENCY).unwrap();
+        let root = <T>::from_f64(A4_FREQUENCY).unwrap();
         Self::from_class_with_scale(note, root)
     }
     /// a method for directly converting an instance of the [`PitchClass`] into a frequency

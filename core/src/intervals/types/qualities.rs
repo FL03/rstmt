@@ -4,15 +4,27 @@
 */
 
 /// [`Quality`] is a sealed marker trait used to define compatible intervallic qualities.
-pub trait Quality
+pub trait RawQuality
 where
-    Self: Send + Sync + AsRef<str> + core::fmt::Debug + core::fmt::Display,
+    Self: Send
+        + Sync
+        + AsRef<str>
+        + core::borrow::Borrow<str>
+        + core::fmt::Debug
+        + core::fmt::Display,
 {
     private! {}
 
-    fn new() -> Self;
     /// returns the name of the current quality
     fn name(&self) -> &str;
+}
+
+pub trait Quality: RawQuality
+where
+    Self: Clone + Copy + Default,
+{
+    /// initialize a new instance of the interval quality.
+    fn new() -> Self;
 }
 
 /*
@@ -111,15 +123,17 @@ macro_rules! impl_raw_quality {
 
         unsafe impl Sync for $name {}
 
-        impl Quality for $name {
+        impl $crate::intervals::RawQuality for $name {
             seal! {}
 
+            fn name(&self) -> &str {
+                self.name()
+            }
+        }
+
+        impl $crate::intervals::Quality for $name {
             fn new() -> Self {
                 Self
-            }
-
-            fn name(&self) -> &str {
-                self.as_ref()
             }
         }
     };

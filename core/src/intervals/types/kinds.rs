@@ -12,7 +12,7 @@ pub trait IntervalKind {
 macro_rules! interval_kind {
     (@def $(#[$meta:meta])* $vis:vis enum $name:ident) => {
         $(#[$meta])*
-        $vis struct $name;
+        $vis enum $name {}
     };
     (@def $(#[$meta:meta])* $vis:vis struct $name:ident) => {
         $(#[$meta])*
@@ -37,9 +37,8 @@ macro_rules! interval_kind {
 }
 
 interval_kind! {
-   pub struct Unison,
-   pub struct Tone,
    pub struct HalfTone,
+   pub struct Tone,
    pub struct Third,
    pub struct Fourth,
    pub struct Fifth,

@@ -3,7 +3,18 @@
     Created At: 2025.12.31:17:57:08
     Contrib: @FL03
 */
-
+/// A musical unison is the identity interval in music theory, representing no pitch difference.
+pub trait Unison {
+    /// returns a single unison
+    fn unison() -> Self;
+    /// returns true if the caller's value is equivalent to a single unison.
+    fn is_unison(&self) -> bool
+    where
+        Self: Sized + PartialEq,
+    {
+        *self == Self::unison()
+    }
+}
 /// Similar to the [`One`](num_traits::One) trait, the [`Semitone`] is an identity and unit for
 /// musical contexts.
 pub trait Semitone {
@@ -31,13 +42,19 @@ macro_rules! impl_semitone {
         $(impl_semitone! { @impl $T })*
     };
     (@impl $T:ty) => {
-        impl Semitone for $T {
+        impl $crate::intervals::traits::Unison for $T {
+            fn unison() -> Self {
+                0 as $T
+            }
+        }
+
+        impl $crate::intervals::traits::Semitone for $T {
             fn semitone() -> Self {
                 1 as $T
             }
         }
 
-        impl WholeTone for $T {
+        impl $crate::intervals::traits::WholeTone for $T {
             fn tone() -> Self {
                 2 as $T
             }
