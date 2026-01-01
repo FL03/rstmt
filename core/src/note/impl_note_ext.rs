@@ -60,12 +60,10 @@ where
         if parts.len() != 2 {
             return Err(crate::error::Error::FromStrParseError);
         }
-        let class_str = parts[0];
-        let octave_str = parts[1];
-        let class = class_str
-            .parse::<PitchClass<P, K>>()
-            .expect("Failed to parse pitch class");
-        let octave = octave_str.parse::<isize>().expect("Failed to parse octave");
+        let lex_class = parts[0];
+        let lex_octave = parts[1];
+        let class = lex_class.parse::<PitchClass<P, K>>()?;
+        let octave = lex_octave.parse::<isize>().expect("Failed to parse octave");
         Ok(Self::new(class, Octave(octave)))
     }
 }
