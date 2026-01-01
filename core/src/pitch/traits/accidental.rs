@@ -189,7 +189,7 @@ impl core::str::FromStr for Natural {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.to_lowercase() == "natural" || s == '♮'.to_string() || s == "" {
-            Ok(Self::default())
+            Ok(Natural)
         } else {
             Err(crate::error::Error::FromStrParseError)
         }
