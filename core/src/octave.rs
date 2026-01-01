@@ -1,10 +1,10 @@
 /*
-    Appellation: octave <types>
+    Appellation: octave <module>
+    Created At: 2025.12.31:16:11:45
     Contrib: @FL03
 */
 mod impl_octave;
 mod impl_octave_ext;
-mod impl_octave_ops;
 #[cfg(feature = "rand")]
 mod impl_octave_rand;
 mod impl_octave_repr;
@@ -17,7 +17,8 @@ pub trait AsOctave<T> {
 pub trait IntoOctave<T> {
     fn into_octave(self) -> Octave<T>;
 }
-
+/// [`RawOctave`] is a marker trait denoting objects allowed to define octaves; it is
+/// implemented for all (un)signed integer types.
 pub trait RawOctave {
     private! {}
 }

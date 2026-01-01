@@ -7,7 +7,7 @@ mod impl_aspn_ext;
 mod impl_note_base;
 
 use crate::octave::Octave;
-use crate::pitch::{self, Pitch, PitchClassRepr};
+use crate::pitch::{self, Accidental, PitchClass, RawPitchClass};
 
 /// The [`AsAspn`] trait is used to convert a reference into a [`Aspn`]
 pub trait AsAspn {
@@ -44,13 +44,13 @@ pub struct Aspn {
     serde(rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct NoteBase<P, K = pitch::C>
+pub struct NoteBase<P = pitch::CNote, K = <P as RawPitchClass>::Tag>
 where
-    K: PitchClassRepr,
+    P: RawPitchClass<Tag = K>,
+    K: Accidental,
 {
-    pub(crate) class: K,
+    pub(crate) class: PitchClass<P, K>,
     pub(crate) octave: Octave,
-    pub(crate) pitch: Pitch<P>,
 }
 
 /*

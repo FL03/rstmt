@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_freq_classification() {
-        let f = Frequency(C4);
+        let f = Frequency::new(C4);
         let p_class = f.classify_by(A4);
         assert_eq! { p_class, -9 }
     }

@@ -37,9 +37,8 @@ mod traits {
 
 mod types {
     #[doc(inline)]
-    pub use self::{flags::*, pitch_reprs::*};
+    pub use self::pitch_reprs::*;
 
-    mod flags;
     mod pitch_reprs;
 }
 // prelude (local)

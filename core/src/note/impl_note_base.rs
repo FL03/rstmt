@@ -5,69 +5,58 @@
 */
 use super::NoteBase;
 use crate::octave::Octave;
-use crate::pitch::{Pitch, PitchClassRepr};
+use crate::pitch::{Accidental, Flat, Natural, PitchClass, RawPitchClass, Sharp};
 
-impl<T, Cls> NoteBase<T, Cls>
+impl<P, K> NoteBase<P, K>
 where
-    Cls: PitchClassRepr,
+    P: RawPitchClass<Tag = K>,
+    K: Accidental,
 {
-    pub fn new(pitch: Pitch<T>, octave: Octave) -> Self {
-        Self {
-            class: Cls::new(),
-            octave,
-            pitch,
-        }
+    /// constructs a new [`NoteBase`] instance
+    pub const fn new(class: PitchClass<P, K>, octave: Octave) -> Self {
+        Self { class, octave }
     }
-    /// returns a copy to the index of the note's class
-    pub const fn class(&self) -> &Cls {
+    /// returns a reference to the current class
+    pub const fn class(&self) -> &PitchClass<P, K> {
         &self.class
     }
-    /// returns a copy to the octave of the note
-    pub const fn octave(&self) -> Octave {
-        self.octave
+    /// returns a mutable reference to the current class
+    pub const fn class_mut(&mut self) -> &mut PitchClass<P, K> {
+        &mut self.class
+    }
+    /// returns a reference to the current octave
+    pub const fn octave(&self) -> &Octave {
+        &self.octave
     }
     /// returns a mutable reference to the current octave
     pub const fn octave_mut(&mut self) -> &mut Octave {
         &mut self.octave
     }
-    /// set the pitch class of the note
-    pub fn set_class(&mut self, class: Cls) -> &mut Self {
-        self.class = class;
-        self
-    }
-    /// set the octave of the note
-    pub fn set_octave(&mut self, octave: Octave) -> &mut Self {
-        self.octave = octave;
-        self
-    }
-    /// consumes the current instance to create another with the given pitch class
-    pub fn with_class<Pc: PitchClassRepr>(self) -> NoteBase<T, Pc> {
-        NoteBase {
-            class: Pc::new(),
-            octave: self.octave,
-            pitch: self.pitch,
-        }
-    }
-    /// consumes the current instance to create another with the given octave
-    pub fn with_octave(self, octave: Octave) -> Self {
-        Self { octave, ..self }
-    }
 }
 
-impl<C, T> core::fmt::Debug for NoteBase<T, C>
+impl<P> NoteBase<P>
 where
-    C: PitchClassRepr + core::fmt::Display,
+    P: RawPitchClass,
 {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class, self.octave)
+    /// returns a new natural note of the given class and octave
+    pub fn natural(class: P, octave: Octave) -> NoteBase<P, Natural>
+    where
+        P: RawPitchClass<Tag = Natural>,
+    {
+        NoteBase::new(PitchClass::natural(class), octave)
     }
-}
-
-impl<C, T> core::fmt::Display for NoteBase<T, C>
-where
-    C: PitchClassRepr + core::fmt::Display,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}.{}", self.class, self.octave)
+    /// returns a new sharp note of the given class and octave
+    pub fn sharp(class: P, octave: Octave) -> NoteBase<P, Sharp>
+    where
+        P: RawPitchClass<Tag = Sharp>,
+    {
+        NoteBase::new(PitchClass::sharp(class), octave)
+    }
+    /// returns a new flat note of the given class and octave
+    pub fn flat(class: P, octave: Octave) -> NoteBase<P, Flat>
+    where
+        P: RawPitchClass<Tag = Flat>,
+    {
+        NoteBase::new(PitchClass::flat(class), octave)
     }
 }

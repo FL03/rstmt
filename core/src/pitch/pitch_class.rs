@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:31:05
     Contrib: @FL03
 */
-use crate::pitch::{Accidental, PitchClassRepr};
+use crate::pitch::{Accidental, RawPitchClass};
 
 /// The [`PitchClass`] implementations works to generically define the structure for a pitch
 /// class. This is accomplished through the use of two type parameters: `N`, which defines the
@@ -19,9 +19,9 @@ use crate::pitch::{Accidental, PitchClassRepr};
     serde(rename_all = "lowercase")
 )]
 #[repr(C)]
-pub struct PitchClass<P = super::CNote, K = <P as PitchClassRepr>::Tag>
+pub struct PitchClass<P = super::CNote, K = <P as RawPitchClass>::Tag>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     pub(crate) class: P,
@@ -35,9 +35,9 @@ where
     serde(rename_all = "lowercase")
 )]
 #[repr(transparent)]
-pub struct ConstPitchClass<const N: usize = 0, P = super::CNote<N>, K = <P as PitchClassRepr>::Tag>
+pub struct ConstPitchClass<const N: usize = 0, P = super::CNote<N>, K = <P as RawPitchClass>::Tag>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     pub(crate) _class: PitchClass<P, K>,

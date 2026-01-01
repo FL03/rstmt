@@ -5,6 +5,19 @@
 */
 use rstmt_traits::Numerical;
 
+/// The [`Pitch`] implementation is a generic wrapper used to represent a musical pitch. A
+/// pitch is defined to be a perceptual property of sounds that enables one to define the
+/// _highness_ or _lowness_ of a sound. In music, pitch is often associated with the
+/// frequency of a sound wave, with higher frequencies corresponding to higher pitches.
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(transparent)
+)]
+#[repr(transparent)]
+pub struct Pitch<T = f64>(pub T);
+
 /// [`RawPitch`] defines an interface for all raw pitch types.
 ///
 /// **note:** This trait is sealed and cannot be implemented outside of this crate.
@@ -16,11 +29,7 @@ where
 }
 /// [`NumPitch`] extends the `RawPitch` trait with additional capabilities for numerical types.
 /// The trait is automatically implemented for all
-pub trait NumPitch
-where
-    Self: RawPitch + Numerical,
-{
-}
+pub trait NumPitch: RawPitch + Numerical {}
 
 /// A trait for converting a reference into a [`Pitch`].
 pub trait AsPitch<T>
@@ -38,26 +47,13 @@ where
 
     private! {}
 }
-/// The [`Pitched`] trait is used to denote objects that have an associated pitch.
+/// The [`Pitched`] trait provides a method for viewing the pitch of the implementor.
 pub trait Pitched<T>
 where
     T: RawPitch,
 {
-    fn pitch(&self) -> &Pitch<T>;
+    fn pitch(&self) -> Pitch<&T>;
 }
-
-/// The [`Pitch`] implementation is a generic wrapper used to represent a musical pitch. A
-/// pitch is defined to be a perceptual property of sounds that enables one to define the
-/// _highness_ or _lowness_ of a sound. In music, pitch is often associated with the
-/// frequency of a sound wave, with higher frequencies corresponding to higher pitches.
-#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(transparent)
-)]
-#[repr(transparent)]
-pub struct Pitch<T = f64>(pub T);
 
 /*
  ************* Implementations *************
@@ -84,8 +80,6 @@ where
     seal! {}
 }
 
-impl<T> NumPitch for T where T: RawPitch + Numerical {}
-
 impl<T> RawPitch for &T
 where
     T: RawPitch,
@@ -99,6 +93,8 @@ where
 {
     seal! {}
 }
+
+impl<T> NumPitch for T where T: RawPitch + Numerical {}
 
 macro_rules! impl_raw_pitch {
     ($($tgt:ty),* $(,)?) => {

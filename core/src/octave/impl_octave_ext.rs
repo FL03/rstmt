@@ -3,9 +3,83 @@
     Created At: 2025.12.21:08:48:17
     Contrib: @FL03
 */
-use super::Octave;
+use super::{Octave, RawOctave};
+use num_traits::{Num, One, Zero};
 
-impl<T> From<T> for Octave<T> {
+contained::fmt_wrapper! {
+    impl Octave<T> {
+        Binary,
+        Debug,
+        Display,
+        LowerExp,
+        LowerHex,
+        Octal,
+        Pointer,
+        UpperExp,
+        UpperHex
+    }
+
+}
+
+contained::binary_wrapper! {
+    impl Octave {
+        Add.add,
+        Div.div,
+        Mul.mul,
+        Rem.rem,
+        Sub.sub,
+        BitAnd.bitand,
+        BitOr.bitor,
+        BitXor.bitxor,
+        Shl.shl,
+        Shr.shr
+    }
+}
+
+contained::unary_wrapper! {
+    impl Octave {
+        Neg.neg,
+        Not.not,
+    }
+}
+
+impl<T> One for Octave<T>
+where
+    T: One,
+{
+    fn one() -> Self {
+        Octave(T::one())
+    }
+}
+
+impl<T> Zero for Octave<T>
+where
+    T: Zero,
+{
+    fn zero() -> Self {
+        Octave(T::zero())
+    }
+
+    fn is_zero(&self) -> bool {
+        self.0.is_zero()
+    }
+}
+
+impl<T> Num for Octave<T>
+where
+    T: Num,
+{
+    type FromStrRadixErr = T::FromStrRadixErr;
+
+    fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+        T::from_str_radix(str, radix).map(Octave)
+    }
+}
+
+impl<T> From<T> for Octave<T>
+where
+    T: RawOctave,
+{
     fn from(index: T) -> Self {
         Octave(index)
     }

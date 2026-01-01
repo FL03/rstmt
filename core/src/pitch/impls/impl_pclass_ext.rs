@@ -5,7 +5,7 @@
 */
 use crate::error::Error;
 use crate::pitch::pitch_class::PitchClass;
-use crate::pitch::traits::{Accidental, PitchClassRepr};
+use crate::pitch::traits::{Accidental, PitchClassRepr, RawPitchClass};
 
 impl<P, K> TryFrom<isize> for PitchClass<P, K>
 where
@@ -21,7 +21,7 @@ where
                 kind: K::default(),
             });
         }
-        Err(Error::InvalidPitchClass(value))
+        Err(Error::MismatchedPitchClasses(value, <P>::IDX))
     }
 }
 
@@ -37,11 +37,11 @@ where
 
 impl<P, K> AsRef<str> for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn as_ref(&self) -> &str {
-        self.class.as_ref()
+        self.get().name()
     }
 }
 
@@ -57,7 +57,7 @@ where
 
 impl<P, K> core::ops::Deref for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     type Target = P;
@@ -69,34 +69,34 @@ where
 
 unsafe impl<P, K> Send for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
 }
 
 unsafe impl<P, K> Sync for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
 }
 
 impl<P, K> PartialEq<isize> for PitchClass<P, K>
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn eq(&self, other: &isize) -> bool {
-        self.get().value() == *other
+        self.get().index() == *other
     }
 }
 
 impl<P, K> PartialEq<PitchClass<P, K>> for isize
 where
-    P: PitchClassRepr<Tag = K>,
+    P: RawPitchClass<Tag = K>,
     K: Accidental,
 {
     fn eq(&self, other: &PitchClass<P, K>) -> bool {
-        *self == other.get().value()
+        *self == other.get().index()
     }
 }

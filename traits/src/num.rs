@@ -3,6 +3,7 @@
     Created At: 2025.12.20:06:02:11
     Contrib: @FL03
 */
+use crate::{PitchMod, PyMod};
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 
 pub trait OrderedNum
@@ -28,6 +29,7 @@ where
         + Default
         + FromPrimitive
         + ToPrimitive
+        + PyMod<Output = Self>
         + core::fmt::Debug
         + core::fmt::Display
         + core::ops::Add<Output = Self>
@@ -86,6 +88,8 @@ where
         + ToPrimitive
         + One
         + Zero
+        + PitchMod<Output = Self>
+        + PyMod<Output = Self>
         + core::fmt::Debug
         + core::fmt::Display
         + core::ops::Add<Output = Self>
@@ -104,7 +108,7 @@ where
 
 impl<T> MusicScalar for T
 where
-    T: Numerical + crate::PyMod<Output = Self> + crate::PitchMod<Output = Self>,
+    T: Numerical + PyMod<Output = Self> + PitchMod<Output = Self>,
 {
     seal! {}
 }

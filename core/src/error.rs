@@ -15,6 +15,8 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 pub enum Error {
     #[error("Attempted to name an invalid pitch class: {0}")]
     InvalidPitchClass(isize),
+    #[error("Mismatched pitch classes, received {0} while expecting {1}")]
+    MismatchedPitchClasses(isize, isize),
     #[error("Unable to parse the string into the configured type")]
     FromStrParseError,
     #[error("Invalid Chord")]

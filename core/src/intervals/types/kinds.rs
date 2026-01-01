@@ -39,7 +39,7 @@ macro_rules! interval_kind {
 interval_kind! {
    pub struct Unison,
    pub struct Tone,
-   pub struct Semitone,
+   pub struct HalfTone,
    pub struct Third,
    pub struct Fourth,
    pub struct Fifth,

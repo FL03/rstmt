@@ -21,7 +21,8 @@ where
 }
 
 /// [`PyMod`] is a modulo operator inspired by Python's `%` operator, which handles negative
-/// values differently than rust's built-in `%` operator.
+/// values differently than rust's built-in `%` operator. Specifically, the sign of the result
+/// will **always** match the sign of the divisor.
 pub trait PyMod<Rhs = Self> {
     type Output;
 

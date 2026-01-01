@@ -4,6 +4,7 @@
 */
 use super::{Frequency, RawFrequency};
 use crate::consts::A4_FREQUENCY;
+use crate::pitch::{Accidental, PitchClass, RawPitchClass};
 use crate::utils::{classify_freq_with_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_traits::ClassifyBy;
@@ -25,6 +26,16 @@ where
     {
         let root = <T>::from_f32(A4_FREQUENCY).unwrap();
         Self::from_pitch_class_with_scale(note, root)
+    }
+
+    pub fn from_pitch_class<P, K>(class: PitchClass<P, K>, root: T) -> Self
+    where
+        P: RawPitchClass<Tag = K>,
+        K: Accidental,
+        T: RawFrequency + Float + FromPrimitive,
+    {
+        let semitones = class.get().index();
+        Self(compute_freq_of_pitch(semitones, root))
     }
     /// calculate the frequency (in hertz) of a given pitch class, using the formula:
     ///

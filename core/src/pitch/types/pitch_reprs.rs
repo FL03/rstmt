@@ -37,7 +37,7 @@ macro_rules! pitch_repr {
                 &N
             }
             /// returns the assigned index value
-            pub const fn value(&self) -> isize {
+            pub const fn value(self) -> isize {
                 N
             }
         }
@@ -93,9 +93,22 @@ macro_rules! pitch_repr {
             }
         }
 
+        impl<const N: isize> $crate::pitch::RawPitchClass for $name<N> {
+            type Tag = $tag;
+
+            seal! {}
+
+            fn name(&self) -> &str {
+                stringify!($name)
+            }
+
+            fn index(&self) -> isize {
+                N
+            }
+        }
+
         impl<const N: isize> $crate::pitch::PitchClassRepr for $name<N> {
             const IDX: isize = N;
-            type Tag = $tag;
 
             seal! {}
 

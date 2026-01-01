@@ -5,36 +5,40 @@
 */
 use crate::pitch::pitch_class::PitchClass;
 
-use crate::pitch::{Flat, Natural, PitchClassRepr, Sharp};
+use crate::pitch::{Flat, Natural, RawPitchClass, Sharp};
 
 impl<N> PitchClass<N>
 where
-    N: PitchClassRepr,
+    N: RawPitchClass,
 {
-    pub fn natural() -> PitchClass<N, Natural>
+    /// initialize a new, _natural_ pitch class
+    pub const fn natural(class: N) -> PitchClass<N, Natural>
     where
-        N: PitchClassRepr<Tag = Natural>,
+        N: RawPitchClass<Tag = Natural>,
     {
-        PitchClass::<N, Natural>::new()
+        PitchClass {
+            class,
+            kind: Natural,
+        }
     }
-
-    pub fn sharp(self) -> PitchClass<N, Sharp>
+    /// initialize a _sharp_ instance of the given class
+    pub const fn sharp(class: N) -> PitchClass<N, Sharp>
     where
-        N: PitchClassRepr<Tag = Sharp>,
+        N: RawPitchClass<Tag = Sharp>,
     {
-        PitchClass::<N, Sharp>::new()
+        PitchClass { class, kind: Sharp }
     }
-
-    pub fn flat(self) -> PitchClass<N, Flat>
+    /// initialize a _flat_ instance of the given class
+    pub const fn flat(class: N) -> PitchClass<N, Flat>
     where
-        N: PitchClassRepr<Tag = Flat>,
+        N: RawPitchClass<Tag = Flat>,
     {
-        PitchClass::<N, Flat>::new()
+        PitchClass { class, kind: Flat }
     }
 }
 
-impl<N> PitchClass<N, Natural> where N: PitchClassRepr<Tag = Natural> {}
+impl<N> PitchClass<N, Natural> where N: RawPitchClass<Tag = Natural> {}
 
-impl<N> PitchClass<N, Sharp> where N: PitchClassRepr<Tag = Sharp> {}
+impl<N> PitchClass<N, Sharp> where N: RawPitchClass<Tag = Sharp> {}
 
-impl<N> PitchClass<N, Flat> where N: PitchClassRepr<Tag = Flat> {}
+impl<N> PitchClass<N, Flat> where N: RawPitchClass<Tag = Flat> {}
