@@ -17,14 +17,14 @@
 mod impl_hyper_tonnetz;
 
 use crate::triad::TriadBase;
-use crate::{LPR, TriadClass, TriadRepr, TriadType};
+use crate::{LPR, TriadRepr, TriadType, Triads};
 use hashbrown::HashMap;
 use rshyper::{EdgeId, HyperMap};
 use rspace_traits::RawSpace;
 use rstmt_core::Aspn;
 
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase `]
-pub(crate) type TriadMap<S = [usize; 3], K = TriadClass, T = <S as RawSpace>::Elem, Ix = usize> =
+pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
     HashMap<EdgeId<Ix>, TriadBase<S, K, T>>;
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
 /// transformations.
@@ -37,7 +37,7 @@ pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 /// of a graph by allowing edges to connect any number of vertices, making them well-suited
 /// for modeling complex relationships and topologies such as those found in music theory.
 #[derive(Clone, Debug)]
-pub struct HyperTonnetz<S = [usize; 3], K = TriadClass, T = <S as RawSpace>::Elem, Ix = usize>
+pub struct HyperTonnetz<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,

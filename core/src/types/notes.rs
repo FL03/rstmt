@@ -5,8 +5,9 @@
 */
 //! a more dynamic approach to managing pitch classes using enums
 
-/// [`Accidentals`] enumerates the two alternative states a note make take, either sharp or flat
-/// and their respective states, single or double.
+/// [`Notes`] is an enumeration of all allowed symbolic representations of pitch classes
+/// considered in music theory. For us, it provides a dynamic way of managing the different
+/// pitch classes whiole providing a direct mapping to a static index
 #[derive(
     Clone,
     Copy,
@@ -26,7 +27,7 @@
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Pitches {
+pub enum Notes {
     Sharp(Sharps),
     Flat(Flats),
     #[default]

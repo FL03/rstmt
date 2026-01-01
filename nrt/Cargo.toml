@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["alloc", "std", "tonnetz"]
+features = ["default", "tonnetz"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -26,22 +26,21 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib", "rlib", "staticlib"]
 doc = true
 doctest = true
 test = true
 
 [dependencies]
-rstmt-core = { features = ["hashbrown"], workspace = true }
+rstmt-core = { workspace = true }
 # custom
 rshyper = { workspace = true }
 rspace-traits = { workspace = true }
 variants = { workspace = true }
 # data structures
-hashbrown = { workspace = true }
+hashbrown = { optional = true, workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
-rayon-core = { optional = true, workspace = true }
 # error-handling
 anyhow = { workspace = true }
 thiserror = { workspace = true }
@@ -79,7 +78,7 @@ full = [
 ]
 
 nightly = [
-  "hashbrown/nightly",
+  "hashbrown?/nightly",
   "rshyper/nightly",
   "rstmt-core/nightly",
 ]
@@ -87,15 +86,16 @@ nightly = [
 # ********* [FF] Flags *********
 
 tonnetz = [
-  "rshyper/hyper_map",
+  "hashbrown",
   "std",
+  "rshyper/hyper_map",
 ]
 
 # ************* [FF:Environments] *************
 std = [
   "alloc",
   "anyhow/std",
-  "hashbrown/default",
+  "hashbrown?/default",
   "itertools/use_std",
   "num-complex?/std",
   "num-traits/std",
@@ -118,13 +118,13 @@ wasi = [
 
 wasm = [
   "getrandom?/wasm_js",
-  "rayon-core?/web_spin_lock",
+  "rayon?/web_spin_lock",
   "rspace-traits/wasm",
   "rstmt-core/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "hashbrown/alloc",
+  "hashbrown?/alloc",
   "itertools/use_alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
@@ -150,6 +150,12 @@ json = [
   "rstmt-core/json",
 ]
 
+hashbrown = [
+  "dep:hashbrown",
+  "rspace-traits/hashbrown",
+  "rstmt-core/hashbrown",
+]
+
 rand = [
   "dep:rand",
   "dep:rand_distr",
@@ -161,8 +167,7 @@ rand = [
 
 rayon = [
   "dep:rayon",
-  "dep:rayon-core",
-  "hashbrown/rayon",
+  "hashbrown?/rayon",
   "rshyper/rayon",
   "rstmt-core/rayon",
 ]
@@ -178,7 +183,7 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
-  "hashbrown/serde",
+  "hashbrown?/serde",
   "num-complex?/serde",
   "rand?/serde",
   "rand_distr?/serde",
@@ -188,7 +193,10 @@ serde = [
   "serde?/derive",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "rstmt-core/serde_json",
+]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",

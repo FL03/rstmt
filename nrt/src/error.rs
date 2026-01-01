@@ -14,10 +14,12 @@ pub(crate) type Result<T = ()> = core::result::Result<T, TriadError>;
 /// within the crate.
 #[derive(Debug, thiserror::Error)]
 pub enum TriadError {
+    #[error("Incompatible triad classes")]
+    IncompatibleTriadClasses,
     #[error(
         "Invalid transformation character ({0}); character must be 'L', 'P', or 'R' (case-insensitive)"
     )]
-    ParseTransformationCharError(char),
+    TransformationParseCharError(char),
     #[error("Invalid triad")]
     InvalidTriad,
     #[error("Invalid Triad Class")]

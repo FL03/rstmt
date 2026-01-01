@@ -8,7 +8,7 @@ use crate::triad::TriadBase;
 use crate::traits::{RawTriadMut, TriadRepr, TriadType};
 use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, ToPrimitive};
-use rstmt_core::{Octave, PitchMod, TryTransform};
+use rstmt_core::{Octave, PitchMod, Transform};
 
 impl<S, T, K> TriadBase<S, K, T>
 where
@@ -38,6 +38,15 @@ where
             class,
             chord: S::from_arr(chord),
             octave: rstmt_core::Octave(0),
+        }
+    }
+    #[inline]
+    /// consumes the instance to use a dynamic classification enum
+    pub fn dynamic(self) -> TriadBase<S, crate::Triads, T> {
+        TriadBase {
+            chord: self.chord,
+            class: crate::Triads::from_class(self.class),
+            octave: self.octave,
         }
     }
     /// returns an immutable reference to the chord.
@@ -173,7 +182,6 @@ where
         let x = self.chord().clone().into_iter().sum::<U>() / U::from_u8(3)?;
         Some([x, y])
     }
-
     /// returns true if the triad contains the given note
     pub fn contains<Q>(&self, note: &Q) -> bool
     where
@@ -199,31 +207,31 @@ where
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if
     /// transforming a major triad, then the resulting triad will be minor (and vice versa).
-    pub fn transform<X, Y, E>(&self, step: X) -> Result<Y, E>
+    pub fn transform<X, Y>(&self, step: X) -> Y
     where
-        Self: TryTransform<X, Output = Y, Error = E>,
+        Self: Transform<X, Output = Y>,
     {
-        self.try_transform(step)
+        <Self as Transform<X>>::transform(self, step)
     }
     /// apply the [`Leading`](LPR::Leading) transformation to the triad
-    pub fn leading<Y, E>(&self) -> Result<Y, E>
+    pub fn leading<Y>(&self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y, Error = E>,
+        Self: Transform<LPR, Output = Y>,
     {
-        self.try_transform(LPR::Leading)
+        self.transform(LPR::Leading)
     }
     /// apply the [`Parallel`](LPR::Parallel) transformation to the triad
-    pub fn parallel<Y, E>(&self) -> Result<Y, E>
+    pub fn parallel<Y>(&self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y, Error = E>,
+        Self: Transform<LPR, Output = Y>,
     {
-        self.try_transform(LPR::Parallel)
+        self.transform(LPR::Parallel)
     }
     /// apply the [`Relative`](LPR::Relative) transformation to the triad
-    pub fn relative<Y, E>(&self) -> Result<Y, E>
+    pub fn relative<Y>(&self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y, Error = E>,
+        Self: Transform<LPR, Output = Y>,
     {
-        self.try_transform(LPR::Relative)
+        self.transform(LPR::Relative)
     }
 }

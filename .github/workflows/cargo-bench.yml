@@ -9,45 +9,55 @@ concurrency:
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: full
+
 on:
   pull_request:
     branches: [main, master]
     types: [closed]
-  release:
-    types: [published]
+  push:
+    tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
     types: [cargo-bench]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  checks: write
+
 jobs:
-  benchmark:
+  cargo-bench:
+    name: Benchmark
     runs-on: ubuntu-latest
-    env:
-      CARGO_TERM_COLOR: always
-      RUST_BACKTRACE: full
+    strategy:
+      fail-fast: false
+      matrix:
+        features: [full]
+        target: [x86_64-unknown-linux-gnu]
     outputs:
       id: ${{ steps.artifacts.outputs.artifact-id }}
       digest: ${{ steps.artifacts.outputs.artifact-digest }}
       url: ${{ steps.artifacts.outputs.artifact-url }}
-    permissions:
-      contents: write
-      checks: write
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [x86_64-unknown-linux-gnu]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.client_payload.ref }}
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Benchmark (${{ matrix.target }})
-        run: cargo bench --locked --verbose --workspace --features full --target ${{ matrix.target }} --
-      - name: Upload the benchmarks
+          target: ${{ matrix.target }}
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-criterion
+      - name: Benchmark the workspace (${{ matrix.target }})
+        run: cargo criterion -v --benches --locked --workspace --features ${{ matrix.features }} --target ${{ matrix.target }}
+      - name: Upload the results
         id: artifacts
         uses: actions/upload-artifact@v6
         with:

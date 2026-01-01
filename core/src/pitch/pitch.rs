@@ -3,17 +3,7 @@
     Created At: 2025.12.20:10:02:21
     Contrib: @FL03
 */
-
-/// A trait for converting a reference into a [`Pitch`].
-pub trait AsPitch<T> {
-    fn as_pitch(&self) -> Pitch<T>;
-}
-/// [`IntoPitch`] defines a consuming conversion from some type into a [`Pitch`].
-pub trait IntoPitch<T> {
-    fn into_pitch(self) -> Pitch<T>;
-
-    private! {}
-}
+use rstmt_traits::Numerical;
 
 /// The [`Pitch`] implementation is a generic wrapper used to represent a musical pitch. A
 /// pitch is defined to be a perceptual property of sounds that enables one to define the
@@ -28,12 +18,50 @@ pub trait IntoPitch<T> {
 #[repr(transparent)]
 pub struct Pitch<T = f64>(pub T);
 
+/// [`RawPitch`] defines an interface for all raw pitch types.
+///
+/// **note:** This trait is sealed and cannot be implemented outside of this crate.
+pub trait RawPitch
+where
+    Self: Send + Sync + core::fmt::Debug + core::fmt::Display + PartialEq + PartialOrd,
+{
+    private! {}
+}
+/// [`NumPitch`] extends the `RawPitch` trait with additional capabilities for numerical types.
+/// The trait is automatically implemented for all
+pub trait NumPitch: RawPitch + Numerical {}
+
+/// A trait for converting a reference into a [`Pitch`].
+pub trait AsPitch<T>
+where
+    T: RawPitch,
+{
+    fn as_pitch(&self) -> Pitch<T>;
+}
+/// [`IntoPitch`] defines a consuming conversion from some type into a [`Pitch`].
+pub trait IntoPitch<T>
+where
+    T: RawPitch,
+{
+    fn into_pitch(self) -> Pitch<T>;
+
+    private! {}
+}
+/// The [`Pitched`] trait provides a method for viewing the pitch of the implementor.
+pub trait Pitched<T>
+where
+    T: RawPitch,
+{
+    fn pitch(&self) -> Pitch<&T>;
+}
+
 /*
  ************* Implementations *************
 */
 impl<U, T> AsPitch<T> for U
 where
     U: Clone + IntoPitch<T>,
+    T: RawPitch,
 {
     fn as_pitch(&self) -> Pitch<T> {
         self.clone().into_pitch()
@@ -43,10 +71,54 @@ where
 impl<U, T> IntoPitch<T> for U
 where
     U: Into<Pitch<T>>,
+    T: RawPitch,
 {
     fn into_pitch(self) -> Pitch<T> {
         self.into()
     }
 
     seal! {}
+}
+
+impl<T> RawPitch for &T
+where
+    T: RawPitch,
+{
+    seal! {}
+}
+
+impl<T> RawPitch for &mut T
+where
+    T: RawPitch,
+{
+    seal! {}
+}
+
+impl<T> NumPitch for T where T: RawPitch + Numerical {}
+
+macro_rules! impl_raw_pitch {
+    ($($tgt:ty),* $(,)?) => {
+        $(
+            impl RawPitch for $tgt {
+                seal! {}
+            }
+        )*
+    };
+}
+
+impl_raw_pitch! {
+    u8, u16, u32, u64, u128, usize,
+    i8, i16, i32, i64, i128, isize,
+    f32, f64
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pitch_creation() {
+        let a4 = Pitch(440f64);
+        assert_eq!(a4, 440.0);
+    }
 }

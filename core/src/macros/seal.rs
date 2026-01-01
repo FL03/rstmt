@@ -21,11 +21,21 @@ macro_rules! private {
         fn __private__(&self) -> $crate::macros::seal::Seal;
     };
 }
-/// [`seal`] is a helper macro to streamline the implementation of _sealed_ traits.
+/// The [`seal`] implements the required method for any trait sealed using the [`private`] macro.
 macro_rules! seal {
     () => {
         fn __private__(&self) -> $crate::macros::seal::Seal {
             $crate::macros::seal::Seal
+        }
+    };
+}
+/// The [`marker`] macro wor
+macro_rules! marker {
+    (impl$(<$($I:ident),* $(,)?>)? $trait:ident for $T:ty $(where $($where:tt)+)? $({$($rest:tt)*})?) => {
+        impl$(<$($I),*>)? $trait for $T $(where $($where)+)? {
+            seal! {}
+
+            $($($rest)*)?
         }
     };
 }

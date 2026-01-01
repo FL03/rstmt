@@ -1,10 +1,10 @@
 /*
-    Appellation: motion <planner>
+    Appellation: impl_motion_planner <module>
+    Created At: 2025.12.29:20:34:56
     Contrib: @FL03
 */
-use super::types::{Path, PathFeatures, SearchNode};
-use super::{PathCache, PathFinderConfig};
-use crate::tonnetz::HyperTonnetz;
+use crate::motion::MotionPlanner;
+use crate::motion::types::{Path, PathFeatures, SearchNode};
 use crate::{LPR, Triad};
 
 use alloc::collections::{BinaryHeap, VecDeque};
@@ -12,95 +12,19 @@ use hashbrown::{HashMap, HashSet};
 use rshyper::EdgeId;
 use rstmt::PitchMod;
 
-/// The [`MotionPlanner`] is a pathfinding algorithm implementation for finding the chain of
-/// transformations between two triads along the surface of the hyper-tonnetz.
-pub struct MotionPlanner<'a> {
-    /// Cache for storing computed paths
-    pub(crate) cache: PathCache,
-    /// Reference to the tonnetz graph
-    pub(crate) tonnetz: &'a HyperTonnetz,
-    pub(crate) config: PathFinderConfig,
+/// a binary-like step heuristic for estimating distance to target pitch
+fn binary_heuristic(triad: &Triad, target: usize) -> usize {
+    // For voice-leading distance, we use max of 1 as estimate
+    // This ensures heuristic is admissible (never overestimates)
+    match triad.contains(&target) {
+        true => return 0,
+        false => 1,
+    }
 }
 
 impl<'a> MotionPlanner<'a> {
-    /// Create a new motion planner for the given tonnetz
-    pub fn new(tonnetz: &'a HyperTonnetz) -> Self {
-        let capacity = 1000; // Default cache capacity
-        MotionPlanner {
-            cache: PathCache::new(capacity),
-            tonnetz,
-            config: PathFinderConfig::default(),
-        }
-    }
-    /// returns an immutable reference to the cache
-    pub const fn cache(&self) -> &PathCache {
-        &self.cache
-    }
-    /// returns a mutable reference to the cache
-    pub const fn cache_mut(&mut self) -> &mut PathCache {
-        &mut self.cache
-    }
-    /// returns an immutable reference to the configuration of the planner
-    pub const fn config(&self) -> &PathFinderConfig {
-        &self.config
-    }
-    /// returns a mutable reference to the configuration of the planner
-    pub const fn config_mut(&mut self) -> &mut PathFinderConfig {
-        &mut self.config
-    }
-    /// returns the maximum depth for pathfinding
-    pub const fn max_depth(&self) -> usize {
-        self.config().max_depth()
-    }
-    /// returns the maximum number of paths to find
-    pub const fn max_paths(&self) -> usize {
-        self.config().max_paths()
-    }
-    /// returns an immutable reference to the tonnetz
-    pub const fn tonnetz(&self) -> &HyperTonnetz {
-        self.tonnetz
-    }
-    /// updates the current configuration and returns a mutable reference to the instance.
-    pub fn set_config(&mut self, config: PathFinderConfig) -> &mut Self {
-        self.config = config;
-        self
-    }
-    /// set the maximum depth for pathfinding
-    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
-        self.config_mut().set_max_depth(depth);
-        self
-    }
-    /// set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
-        self.config_mut().set_max_paths(paths);
-        self
-    }
-    /// consumes the current instance to create another with the given maximum depth
-    pub fn with_max_depth(self, depth: usize) -> Self {
-        Self {
-            config: self.config.with_max_depth(depth),
-            ..self
-        }
-    }
-    /// consumes the current instance to create another with the given maximum number of paths
-    pub fn with_max_paths(self, paths: usize) -> Self {
-        Self {
-            config: self.config.with_max_paths(paths),
-            ..self
-        }
-    }
     /// find a set of paths from one triad to one that contains the target pitch
     pub fn find_paths_to_pitch(&mut self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
-        // Better heuristic function that is admissible for A*
-        fn improved_heuristic(triad: &Triad, target: usize) -> usize {
-            if triad.contains(&target) {
-                return 0;
-            }
-
-            // For voice-leading distance, we use max of 1 as estimate
-            // This ensures heuristic is admissible (never overestimates)
-            1
-        }
         // Check cache first
         if let Some(paths) = self.cache.get(&[*start_edge, 0, 0], target_pitch).cloned() {
             return paths;
@@ -160,10 +84,7 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = node
-                    .triad
-                    .transform(transform)
-                    .expect("Transformation failed");
+                let next_triad = node.triad.transform(transform);
                 let new_cost = node.cost + 1;
 
                 // Skip if we've found a shorter path to this triad
@@ -225,7 +146,7 @@ impl<'a> MotionPlanner<'a> {
                 }
 
                 // Continue search - use admissible heuristic
-                let h = improved_heuristic(&next_triad, target_pitch);
+                let h = binary_heuristic(&next_triad, target_pitch);
                 let priority = -((new_cost as i32) + (h as i32)); // Negative for min-heap
 
                 let next_node = SearchNode {
@@ -354,9 +275,7 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = current_triad
-                    .transform(transform)
-                    .expect("Transformation failed");
+                let next_triad = current_triad.transform(transform);
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
@@ -490,9 +409,7 @@ impl<'a> MotionPlanner<'a> {
             // Try each transformation
             for transform in LPR::iter() {
                 // Apply transformation
-                let next_triad = current_triad
-                    .transform(transform)
-                    .expect("transformation failed");
+                let next_triad = current_triad.transform(transform);
                 let next_depth = depth + 1;
 
                 // Check if this triad+depth combination has been visited before
@@ -594,7 +511,7 @@ impl<'a> MotionPlanner<'a> {
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
-                match transform.try_apply(&start_triad) {
+                match transform.transform(&start_triad) {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {

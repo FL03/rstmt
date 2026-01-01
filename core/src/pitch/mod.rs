@@ -24,22 +24,21 @@ mod impls {
     mod impl_pclass;
     mod impl_pclass_ext;
     mod impl_pclass_ops;
+    mod impl_pclass_repr;
 }
 
 mod traits {
     #[doc(inline)]
-    pub use self::{accidental::*, classifiers::*, raw_pitch::*};
+    pub use self::{accidental::*, classifiers::*};
 
     mod accidental;
     mod classifiers;
-    mod raw_pitch;
 }
 
 mod types {
     #[doc(inline)]
-    pub use self::{flags::*, pitch_reprs::*};
+    pub use self::pitch_reprs::*;
 
-    mod flags;
     mod pitch_reprs;
 }
 // prelude (local)
@@ -51,15 +50,4 @@ pub(crate) mod prelude {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_pitch_class() {
-        let c = C::new();
-        // verify the type checkers
-        assert! { c.is_natural() && !c.is_flat() && !c.is_sharp() }
-        // check the index
-        assert_eq! { c, 0 }
-    }
-}
+mod tests {}

@@ -3,9 +3,12 @@
     Created At: 2025.12.20:09:08:56
     Contrib: @FL03
 */
-use crate::pitch::Pitch;
+use crate::pitch::{Pitch, RawPitch};
 
-impl<T> Pitch<&T> {
+impl<T> Pitch<&T>
+where
+    T: RawPitch,
+{
     /// returns a new instance of the [`Pitch`] containing a cloned inner value
     pub fn cloned(&self) -> Pitch<T>
     where
@@ -22,7 +25,10 @@ impl<T> Pitch<&T> {
     }
 }
 
-impl<T> Pitch<&mut T> {
+impl<T> Pitch<&mut T>
+where
+    T: RawPitch,
+{
     /// returns a new instance of the [`Pitch`] containing a cloned inner value
     pub fn cloned(&self) -> Pitch<T>
     where

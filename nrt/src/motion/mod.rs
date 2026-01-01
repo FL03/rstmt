@@ -14,6 +14,10 @@ pub mod navigator;
 #[cfg(feature = "tonnetz")]
 pub mod planner;
 
+mod impls {
+    mod impl_motion_planner;
+    mod impl_navigator;
+}
 #[cfg(feature = "alloc")]
 mod types {
     #[doc(inline)]
@@ -29,13 +33,13 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::config::*;
 
-    #[cfg(feature = "alloc")]
     #[doc(inline)]
+    #[cfg(feature = "alloc")]
     pub use super::navigator::*;
+    #[doc(inline)]
     #[cfg(feature = "tonnetz")]
-    #[doc(inline)]
     pub use super::planner::*;
-    #[cfg(feature = "alloc")]
     #[doc(inline)]
+    #[cfg(feature = "alloc")]
     pub use super::types::*;
 }

@@ -3,8 +3,10 @@
     authors: @FL03
 */
 use super::{Frequency, RawFrequency};
+use crate::consts::A4_FREQUENCY;
+use crate::pitch::{PitchClass, RawAccidental, RawPitchClass};
 use crate::utils::{classify_freq_with_scale, compute_freq_of_pitch};
-use num_traits::{Float, FromPrimitive};
+use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_traits::ClassifyBy;
 
 impl<T> Frequency<T>
@@ -20,13 +22,33 @@ where
     /// ```math
     /// F=\gamma\cdot{2^\frac{n}{12}}
     /// ```
-    pub fn from_pitch_class_with_scale(n: isize, root: Option<T>) -> Self
+    pub fn from_class_with_scale<N>(note: N, root: T) -> Self
     where
+        N: ToPrimitive,
         T: Float + FromPrimitive,
     {
-        let anchor = root.unwrap_or_else(|| T::from_u16(440).unwrap());
-        let res = compute_freq_of_pitch(n, anchor);
-        Self(res)
+        let class = note.to_isize().unwrap();
+        Self(compute_freq_of_pitch(class, root))
+    }
+    /// a shorthand method for creating a new frequency from the given pitch class using A4 as
+    /// the base frequency
+    pub fn from_class_on_a4<N>(note: N) -> Self
+    where
+        N: ToPrimitive,
+        T: Float + FromPrimitive,
+    {
+        let root = <T>::from_f64(A4_FREQUENCY).unwrap();
+        Self::from_class_with_scale(note, root)
+    }
+    /// a method for directly converting an instance of the [`PitchClass`] into a frequency
+    pub fn from_pitch_class<P, K>(class: PitchClass<P, K>, root: T) -> Self
+    where
+        P: RawPitchClass<Tag = K>,
+        K: RawAccidental,
+        T: RawFrequency + Float + FromPrimitive,
+    {
+        let semitones = class.get().index();
+        Self::from_class_with_scale(semitones, root)
     }
     /// initializes a new frequency by capturing the result of the given function
     pub fn init<F>(f: F) -> Self
@@ -136,11 +158,11 @@ where
     /// ```math
     /// n = 12\cdot\log_2(\frac{F}{\gamma})
     /// ```
-    pub fn classify_by(&self, base: T) -> Option<isize>
+    pub fn classify_by<Z>(&self, base: T) -> Z
     where
-        T: Float + FromPrimitive,
+        Self: ClassifyBy<T, Output = Z>,
     {
-        classify_freq_with_scale(self.value(), base)
+        ClassifyBy::classify_by(self, base)
     }
 }
 
@@ -148,9 +170,9 @@ impl<T> ClassifyBy<T> for Frequency<T>
 where
     T: RawFrequency + Float + FromPrimitive,
 {
-    type Output = Option<isize>;
+    type Output = isize;
 
     fn classify_by(&self, base: T) -> Self::Output {
-        self.classify_by(base)
+        classify_freq_with_scale(self.value(), base).expect("failed to classify frequency")
     }
 }

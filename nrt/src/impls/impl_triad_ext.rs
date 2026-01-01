@@ -5,14 +5,15 @@
 */
 use crate::triad::TriadBase;
 
-use crate::traits::{RawTriadMut, TriadRepr, TriadType};
+use crate::traits::{RawTriadMut, Relative, TriadRepr, TriadType};
 use crate::types::{Factors, LPR};
 use num_traits::{FromPrimitive, One};
-use rstmt_core::{PitchMod, TryTransform};
+use rstmt_core::{PitchMod, Transform};
 
-impl<S, T, K> TryTransform<LPR> for TriadBase<S, K, T>
+impl<S, T, K, R> Transform<LPR> for TriadBase<S, K, T>
 where
-    K: TriadType,
+    K: TriadType + Relative<Rel = R>,
+    R: TriadType + Relative<Rel = K>,
     S: TriadRepr<Elem = T>,
     T: Copy
         + FromPrimitive
@@ -21,11 +22,10 @@ where
         + core::ops::Add<Output = T>
         + core::ops::Sub<Output = T>,
 {
-    type Error = crate::TriadError;
-    type Output = TriadBase<S, K::Rel, T>;
+    type Output = TriadBase<S, R, T>;
 
-    fn try_transform(&self, transformation: LPR) -> Result<Self::Output, Self::Error> {
-        LPR::try_apply(&transformation, self)
+    fn transform(&self, transformation: LPR) -> Self::Output {
+        LPR::transform(&transformation, self).expect("transformation failed")
     }
 }
 

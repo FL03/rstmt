@@ -5,9 +5,11 @@
 mod impl_aspn;
 mod impl_aspn_ext;
 mod impl_note_base;
+mod impl_note_ext;
+mod impl_note_repr;
 
 use crate::octave::Octave;
-use crate::pitch::{self, Pitch, PitchClassRepr};
+use crate::pitch::{self, PitchClass, RawAccidental, RawPitchClass};
 
 /// The [`AsAspn`] trait is used to convert a reference into a [`Aspn`]
 pub trait AsAspn {
@@ -44,13 +46,13 @@ pub struct Aspn {
     serde(rename_all = "snake_case")
 )]
 #[repr(C)]
-pub struct NoteBase<P, K = pitch::C>
+pub struct NoteBase<P = pitch::CNote, K = <P as RawPitchClass>::Tag>
 where
-    K: PitchClassRepr,
+    P: RawPitchClass<Tag = K>,
+    K: RawAccidental,
 {
-    pub(crate) class: K,
+    pub(crate) class: PitchClass<P, K>,
     pub(crate) octave: Octave,
-    pub(crate) pitch: Pitch<P>,
 }
 
 /*
@@ -71,5 +73,23 @@ where
 {
     fn into_aspn(self) -> Aspn {
         self.into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::NoteBase;
+    use crate::octave::Octave;
+    use crate::pitch::{C, CNote};
+
+    #[test]
+    fn test_note_from_octave() {
+        assert_eq! { NoteBase::<CNote>::from_octave(Octave(4)), "C.4" }
+    }
+    #[test]
+    #[ignore = "need to fix"]
+    fn test_note_parse() {
+        let exp = NoteBase::new(C::new(), Octave(4));
+        assert_eq! { "C.4".parse::<NoteBase<_, _>>().unwrap(), exp }
     }
 }

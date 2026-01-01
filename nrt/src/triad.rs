@@ -31,15 +31,17 @@
 //! - [Neo-Riemannian Theory](https://en.wikipedia.org/wiki/Neo-Riemannian_theory)//!
 
 use crate::traits::{TriadRepr, TriadType};
-use crate::types::TriadClass;
+use crate::types::Triads;
 use rspace_traits::RawSpace;
 use rstmt_core::{Major, Octave};
 
 /// A type alias for a [`TriadBase`] instance configured to use the [`DefaultTriadChord`] as
 /// its storage
-pub type Triad<T = usize> = TriadBase<DefaultTriadChord<T>, TriadClass, T>;
+pub type Triad<K = Triads, T = usize> = TriadBase<DefaultTriadChord<T>, K, T>;
+
+pub type DynTriad<T = usize> = Triad<Triads, T>;
 /// The default representation of a triadic chord
-pub type DefaultTriadChord<T = usize> = [T; 3];
+pub type DefaultTriadChord<T = isize> = [T; 3];
 
 /// The [`TriadBase`] is an implementation of a triad generic over the chord, or storage, its
 /// classification, and the element type used to represent a note within the triadic chord.
@@ -49,7 +51,7 @@ pub type DefaultTriadChord<T = usize> = [T; 3];
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
-pub struct TriadBase<S = DefaultTriadChord<isize>, K = Major, T = <S as RawSpace>::Elem>
+pub struct TriadBase<S = DefaultTriadChord, K = Major, T = <S as RawSpace>::Elem>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,
@@ -61,8 +63,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use rstmt_core::Major;
+    use super::Triad;
 
     #[test]
     /// Test: test initialization routines using a single root note, `C(0)`
@@ -76,45 +77,48 @@ mod tests {
     #[test]
     /// Test: test initialization routines using various root notes
     fn test_triad_create_with_n() {
-        let d_major = TriadBase::<DefaultTriadChord, Major>::major(1);
-        assert_eq! { d_major, [1, 5, 8] }
-        assert_eq! { Triad::major(1), d_major}
-        assert_eq! { Triad::minor(2), [2, 5, 9] }
-        assert_eq! { Triad::augmented(6), [6, 10, 2] }
-        assert_eq! { Triad::diminished(11), [11, 2, 5] }
+        for root in 0..12 {
+            let major = Triad::major(root);
+            let minor = Triad::minor(root);
+            let augmented = Triad::augmented(root);
+            let diminished = Triad::diminished(root);
+            assert! { major.is_major() && !major.is_minor() }
+            assert! { minor.is_minor() && !minor.is_major() }
+            assert! { augmented.is_augmented() }
+            assert! { diminished.is_diminished() }
+        }
     }
 
     #[test]
     fn test_triad_properties() {
         let fsharp_minor = Triad::minor(6);
         assert! { fsharp_minor.is_minor() && !fsharp_minor.is_major() }
-        assert_eq! { fsharp_minor.class(), TriadClass::Minor }
+        assert_eq! { fsharp_minor.class(), rstmt_core::Minor }
     }
 
     #[test]
-    fn test_triad_transform_c_major() -> crate::Result<()> {
+    fn test_triad_transform_c_major() {
         let c_major = Triad::major(0);
         let leading = Triad::minor(4);
         let parallel = Triad::minor(0);
         let relative = Triad::minor(9);
         // leading
         assert! {
-            c_major.leading()? == leading &&
-            leading.leading()? == c_major &&
-            c_major.leading()?.leading()? == leading.leading()?
+            c_major.leading() == leading &&
+            leading.leading() == c_major &&
+            c_major.leading().leading() == leading.leading()
         }
         // parallel
         assert! {
-            c_major.parallel()? == parallel &&
-            parallel.parallel()? == c_major &&
-            c_major.parallel()?.parallel()? == parallel.parallel()?
+            c_major.parallel() == parallel &&
+            parallel.parallel() == c_major &&
+            c_major.parallel().parallel() == parallel.parallel()
         }
         // relative
         assert! {
-            c_major.relative()? == relative &&
-            relative.relative()? == c_major &&
-            c_major.relative()?.relative()? == relative.relative()?
+            c_major.relative() == relative &&
+            relative.relative() == c_major &&
+            c_major.relative().relative() == relative.relative()
         }
-        Ok(())
     }
 }

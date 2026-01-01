@@ -6,9 +6,10 @@
 use crate::triad::TriadBase;
 
 use crate::traits::TriadRepr;
-use crate::types::{LPR, TriadClass};
+use crate::types::{LPR, Triads};
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
-use rstmt_core::{Augmented, Diminished, Major, Minor, PitchMod};
+use rstmt_core::traits::{PitchMod, Transform};
+use rstmt_core::{Augmented, Diminished, Major, Minor};
 
 impl<S, T> TriadBase<S, Augmented, T>
 where
@@ -66,35 +67,35 @@ where
     }
 }
 
-impl<T> TriadBase<[T; 3], TriadClass, T>
+impl<T> TriadBase<[T; 3], Triads, T>
 where
     T: Copy + ToPrimitive + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
 {
-    /// creates a new augmented triad from the given root
-    pub fn augmented(root: T) -> Self {
-        Self::from_root_with_class(root, TriadClass::Augmented)
-    }
-    /// creates a new diminished triad from the given root
-    pub fn diminished(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Diminished)
-    }
-    /// Create a new major triad from the given root
-    pub fn major(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Major)
-    }
-    /// creates a new minor triad from the given root
-    pub fn minor(root: T) -> Self
-    where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
-    {
-        Self::from_root_with_class(root, TriadClass::Minor)
-    }
+    // /// creates a new augmented triad from the given root
+    // pub fn augmented(root: T) -> Self {
+    //     Self::from_root_with_class(root, TriadClass::Augmented)
+    // }
+    // /// creates a new diminished triad from the given root
+    // pub fn diminished(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Diminished)
+    // }
+    // /// Create a new major triad from the given root
+    // pub fn major(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Major)
+    // }
+    // /// creates a new minor triad from the given root
+    // pub fn minor(root: T) -> Self
+    // where
+    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    // {
+    //     Self::from_root_with_class(root, TriadClass::Minor)
+    // }
     /// return the barycentric coordinates of the given note w.r.t the current triad
     pub fn barycentric<N, U>(&self, p: N) -> [U; 3]
     where
@@ -136,15 +137,13 @@ where
     /// otherwise, returns [`None`](Option::None).
     pub fn is_neighbor(&self, other: &Self) -> Option<LPR>
     where
-        T: Num,
+        Self: Transform<LPR, Output = Self>,
+        T: PartialEq,
     {
-        LPR::iter().find(|&t| {
-            let result = self.transform(t).expect("transformation failed");
-            result == *other
-        })
+        LPR::iter().find(|&dirac| self.transform(dirac) == *other)
     }
 }
-impl<T> TriadBase<[T; 3], TriadClass, T>
+impl<T> TriadBase<[T; 3], Triads, T>
 where
     T: Copy + ToPrimitive + FromPrimitive + Num + PitchMod<Output = T>,
 {
@@ -154,8 +153,9 @@ where
     where
         I: IntoIterator<Item = LPR>,
     {
-        path.into_iter()
-            .fold(*self, |triad, transform| transform.apply(&triad))
+        path.into_iter().fold(*self, |triad, dirac| {
+            dirac.transform(triad).expect("transformation failed")
+        })
     }
     /// apply a chain of transformations to a triad in-place
     pub fn walk_inplace<I>(&mut self, path: I)
@@ -166,16 +166,14 @@ where
     }
 }
 
-impl TriadBase<[usize; 3], TriadClass> {
+impl TriadBase<[usize; 3], Triads> {
     #[cfg(feature = "alloc")]
     /// creates an instance of the transformer for the current triad
-    pub fn path_finder(
-        &self,
-    ) -> crate::transform::TriadNavigator<'_, [usize; 3], crate::TriadClass, usize> {
-        crate::transform::TriadNavigator::new(self)
+    pub fn path_finder(&self) -> crate::motion::Navigator<'_, [usize; 3], crate::Triads, usize> {
+        crate::motion::Navigator::new(self)
     }
     /// apply a single transformation to a triad in-place, mutating the current instance
     pub fn transform_inplace(&mut self, transform: LPR) {
-        *self = self.transform(transform).expect("transformation failed");
+        *self = self.transform(transform);
     }
 }

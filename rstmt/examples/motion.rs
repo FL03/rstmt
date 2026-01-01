@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use rstmt::Octave;
-use rstmt::nrt::transform::MotionPlanner;
+use rstmt::nrt::motion::MotionPlanner;
 use rstmt::nrt::{HyperTonnetz, Triad, TriadError};
 
 fn main() -> Result<(), TriadError> {
@@ -25,7 +25,7 @@ fn main() -> Result<(), TriadError> {
     // Add pitch classes (0-11)
     let _ = tonnetz.scaffold_layer(Octave(4))?;
 
-    let c_major = Triad::major(0); // C Major (0,4,7)
+    let c_major = Triad::major(0).dynamic(); // C Major (0,4,7)
     // Add some common triads to the Tonnetz
     let c_major_idx = tonnetz.add_triad(c_major)?; // C Major (0,4,7)
 

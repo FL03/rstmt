@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, synchronize, reopened]
+    types: [synchronize]
     paths:
       - ".github/workflows/rust.yml"
       - "Cargo.toml"
@@ -88,8 +88,7 @@ jobs:
           - no_std
           - "alloc,nightly"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

@@ -2,20 +2,15 @@
     appellation: impl_octave <module>
     authors: @FL03
 */
-use crate::octave::Octave;
+use crate::octave::{Octave, RawOctave};
 
-impl<T> Octave<T> {
-    #[allow(clippy::should_implement_trait)]
-    /// returns a new instance initialized using the default value of the type
-    pub fn default() -> Self
-    where
-        T: Default,
-    {
-        Octave::create(T::default)
-    }
-    /// returns a new instance of the [`Octave`] wrapping the given value
-    pub const fn new(index: T) -> Self {
-        Octave(index)
+impl<T> Octave<T>
+where
+    T: RawOctave,
+{
+    /// a functional constructor for [`Octave`], essentially wrapping the given value
+    pub const fn new(octave: T) -> Self {
+        Octave(octave)
     }
     /// returns a new [`Octave`] with the output of the given initializer function
     pub fn create<F>(f: F) -> Self
@@ -46,14 +41,8 @@ impl<T> Octave<T> {
     pub const fn as_mut_ptr(&mut self) -> *mut T {
         core::ptr::from_mut(&mut self.0)
     }
+    #[inline]
     /// consumes the index returning the inner value
-    pub fn into_inner(self) -> T {
-        self.0
-    }
-    #[deprecated(
-        since = "0.0.5",
-        note = "use `into_inner` instead; this method will be removed in the next major version."
-    )]
     pub fn value(self) -> T {
         self.0
     }
@@ -104,43 +93,5 @@ impl<T> Octave<T> {
     /// returns a new instance containing a mutable reference to the inner value
     pub fn view_mut(&mut self) -> Octave<&mut T> {
         Octave(self.get_mut())
-    }
-}
-
-impl<T> AsRef<T> for Octave<T> {
-    fn as_ref(&self) -> &T {
-        self.get()
-    }
-}
-
-impl<T> AsMut<T> for Octave<T> {
-    fn as_mut(&mut self) -> &mut T {
-        self.get_mut()
-    }
-}
-
-impl<T> core::borrow::Borrow<T> for Octave<T> {
-    fn borrow(&self) -> &T {
-        self.get()
-    }
-}
-
-impl<T> core::borrow::BorrowMut<T> for Octave<T> {
-    fn borrow_mut(&mut self) -> &mut T {
-        self.get_mut()
-    }
-}
-
-impl<T> core::ops::Deref for Octave<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        self.get()
-    }
-}
-
-impl<T> core::ops::DerefMut for Octave<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        self.get_mut()
     }
 }
