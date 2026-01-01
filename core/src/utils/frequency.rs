@@ -31,5 +31,7 @@ where
     let log_base = T::from_u8(2)?;
     let modulus = T::from_u8(12)?;
     // Calculate pitch class: round(12 * log2(frequency / 440))
-    (modulus * (freq.abs() / root).log(log_base)).round().to_isize()
+    (modulus * (freq.abs() / root).log(log_base))
+        .round()
+        .to_isize()
 }
