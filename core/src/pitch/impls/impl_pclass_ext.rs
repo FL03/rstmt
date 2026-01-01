@@ -39,7 +39,6 @@ impl<P, K> core::str::FromStr for PitchClass<P, K>
 where
     P: PitchClassRepr<Tag = K>,
     K: Accidental,
-    <P as core::str::FromStr>::Err: core::fmt::Debug,
 {
     type Err = Error;
 
@@ -54,10 +53,10 @@ where
             (s, "Natural")
         };
         let class = lex_class.parse::<P>()?;
-        let _kind = lex_kind.parse::<K>()?;
+        let kind = lex_kind.parse::<K>()?;
         Ok(Self {
             class,
-            kind: K::default(),
+            kind,
         })
     }
 }

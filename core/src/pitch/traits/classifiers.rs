@@ -26,7 +26,7 @@ where
     fn new() -> Self
     where
         Self: Sized;
-    /// returns the name of the pitch class
+    /// returns the name of the pitch class; i.e., "C", "D", "E", etc.
     fn name(&self) -> &str;
     /// returns the value associated with the pitch class
     fn index(&self) -> isize;
