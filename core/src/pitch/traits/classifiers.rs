@@ -36,7 +36,7 @@ where
 /// defaults, and other methods useful for pitch class representations.
 pub trait PitchClassRepr: RawPitchClass
 where
-    Self: Default + core::str::FromStr + TryFrom<isize>,
+    Self: Default + core::str::FromStr<Err = crate::error::Error> + TryFrom<isize>,
 {
     const IDX: isize;
 

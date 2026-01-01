@@ -4,6 +4,7 @@
     Contrib: @FL03
 */
 use crate::note::NoteBase;
+use crate::octave::Octave;
 use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawAccidental, RawPitchClass};
 
 impl<P, K> core::fmt::Debug for NoteBase<P, K>
@@ -45,7 +46,7 @@ where
         self.aspn() == *other
     }
 }
-
+#[cfg(feature = "alloc")]
 impl<P, K> core::str::FromStr for NoteBase<P, K>
 where
     P: PitchClassRepr<Tag = K>,
@@ -55,18 +56,16 @@ where
     type Err = crate::error::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split('.').collect();
+        let parts: alloc::vec::Vec<&str> = s.split('.').collect();
         if parts.len() != 2 {
-            return Err(anyhow::anyhow!("Invalid ASPN format: {}", s).into());
+            return Err(crate::error::Error::FromStrParseError);
         }
         let class_str = parts[0];
         let octave_str = parts[1];
         let class = class_str
             .parse::<PitchClass<P, K>>()
-            .map_err(|e| anyhow::anyhow!("Failed to parse pitch class: {:?}", e))?;
-        let octave = octave_str
-            .parse::<isize>()
-            .map_err(|e| anyhow::anyhow!("Failed to parse octave: {:?}", e))?;
-        Ok(Self::new(class, crate::octave::Octave(octave)))
+            .expect("Failed to parse pitch class");
+        let octave = octave_str.parse::<isize>().expect("Failed to parse octave");
+        Ok(Self::new(class, Octave(octave)))
     }
 }

@@ -18,7 +18,7 @@ pub trait RawAccidental:
 
 pub trait Accidental: RawAccidental
 where
-    Self: Default + core::str::FromStr,
+    Self: Default + core::str::FromStr<Err = crate::error::Error>,
 {
 }
 /*
@@ -188,7 +188,7 @@ impl core::str::FromStr for Natural {
     type Err = crate::error::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "Natural" || s == '♮'.to_string() || s.len() == 0 {
+        if s.to_lowercase() == "natural" || s == '♮'.to_string() || s == "" {
             Ok(Self::default())
         } else {
             Err(crate::error::Error::FromStrParseError)

@@ -50,10 +50,8 @@ where
         } else {
             (s, "Natural")
         };
-        let class = lex_class
-            .parse::<P>()
-            .map_err(|_e| Error::FromStrParseError)?;
-        let kind = K::from_str(lex_kind).map_err(|_e| Error::FromStrParseError)?;
+        let class = lex_class.parse::<P>()?;
+        let kind = lex_kind.parse::<K>()?;
         Ok(Self { class, kind })
     }
 }
