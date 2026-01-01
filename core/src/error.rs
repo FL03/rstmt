@@ -21,6 +21,10 @@ pub enum Error {
     MismatchedPitchClasses(isize, isize),
     #[error("Unable to parse the string into the configured type")]
     FromStrParseError,
+    #[error("Unable to parse the string into the desired pitch class: {0}")]
+    InvalidPitchClassParse(&'static str),
+    #[error("Mismatched symbols: expected {0}, found {1}")]
+    MismatchedSymbols(char, char),
     #[error("Invalid Chord")]
     InvalidChord,
     #[cfg(feature = "alloc")]

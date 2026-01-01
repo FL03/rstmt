@@ -111,10 +111,10 @@ macro_rules! pitch_repr {
             type Err = crate::error::Error;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                if s.eq_ignore_ascii_case(stringify!($name)) {
+                if s.eq_ignore_ascii_case($r) {
                     Ok(Self::new())
                 } else {
-                    Err(crate::error::Error::FromStrParseError)
+                    Err(anyhow::anyhow!("Invalid pitch class string: {}", s).into())
                 }
             }
         }
