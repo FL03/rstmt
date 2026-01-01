@@ -23,7 +23,7 @@ use rshyper::{EdgeId, HyperMap};
 use rspace_traits::RawSpace;
 use rstmt_core::Aspn;
 
-/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase `]
+/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase`]
 pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
     HashMap<EdgeId<Ix>, TriadBase<S, K, T>>;
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
