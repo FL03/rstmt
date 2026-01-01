@@ -4,12 +4,12 @@
     Contrib: @FL03
 */
 use crate::note::NoteBase;
-use crate::pitch::{Accidental, PitchClassRepr, RawPitchClass};
+use crate::pitch::{Accidental, PitchClassRepr, RawAccidental, RawPitchClass};
 
 impl<P, K> core::fmt::Debug for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.write_str(self.aspn().as_str())
@@ -19,7 +19,7 @@ where
 impl<P, K> core::fmt::Display for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.write_str(self.aspn().as_str())
@@ -29,7 +29,7 @@ where
 impl<P, K> PartialEq<str> for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     fn eq(&self, other: &str) -> bool {
         self.aspn() == other
@@ -39,7 +39,7 @@ where
 impl<P, K> PartialEq<&str> for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     fn eq(&self, other: &&str) -> bool {
         self.aspn() == *other

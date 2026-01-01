@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:31:05
     Contrib: @FL03
 */
-use crate::pitch::{Accidental, RawPitchClass};
+use crate::pitch::{RawAccidental, RawPitchClass};
 
 /// The [`PitchClass`] implementations works to generically define the structure for a pitch
 /// class. This is accomplished through the use of two type parameters: `N`, which defines the
@@ -22,7 +22,7 @@ use crate::pitch::{Accidental, RawPitchClass};
 pub struct PitchClass<P = super::CNote, K = <P as RawPitchClass>::Tag>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     pub(crate) class: P,
     pub(crate) kind: K,

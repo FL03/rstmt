@@ -4,7 +4,7 @@
 */
 use super::{Frequency, RawFrequency};
 use crate::consts::A4_FREQUENCY;
-use crate::pitch::{Accidental, PitchClass, RawPitchClass};
+use crate::pitch::{PitchClass, RawAccidental, RawPitchClass};
 use crate::utils::{classify_freq_with_scale, compute_freq_of_pitch};
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_traits::ClassifyBy;
@@ -44,7 +44,7 @@ where
     pub fn from_pitch_class<P, K>(class: PitchClass<P, K>, root: T) -> Self
     where
         P: RawPitchClass<Tag = K>,
-        K: Accidental,
+        K: RawAccidental,
         T: RawFrequency + Float + FromPrimitive,
     {
         let semitones = class.get().index();

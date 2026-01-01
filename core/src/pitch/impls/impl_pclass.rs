@@ -4,17 +4,18 @@
     Contrib: @FL03
 */
 use crate::freq::{Frequency, RawFrequency};
-use crate::pitch::{Accidental, Flat, Natural, PitchClass, RawPitchClass, Sharp};
+use crate::pitch::{Accidental, Flat, Natural, PitchClass, RawAccidental, RawPitchClass, Sharp};
 use num_traits::{Float, FromPrimitive};
 
 impl<P, K> PitchClass<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: Accidental,
+    K: RawAccidental,
 {
     pub fn new() -> Self
     where
         P: Default,
+        K: Accidental,
     {
         Self {
             class: P::default(),
@@ -32,7 +33,7 @@ where
     pub fn into_frequency<T>(&self) -> Frequency<T>
     where
         P: RawPitchClass<Tag = K>,
-        K: Accidental,
+        K: RawAccidental,
         T: RawFrequency + Float + FromPrimitive,
     {
         Frequency::from_class_on_a4(self.get().index())
@@ -65,33 +66,5 @@ where
         K: 'static,
     {
         Sharp::of::<K>()
-    }
-}
-
-impl<P, K> core::fmt::Debug for PitchClass<P, K>
-where
-    P: RawPitchClass<Tag = K>,
-    K: Accidental,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        if self.is_natural() {
-            write!(f, "{}", self.get())
-        } else {
-            write!(f, "{}{}", self.get(), self.kind.symbol())
-        }
-    }
-}
-
-impl<P, K> core::fmt::Display for PitchClass<P, K>
-where
-    P: RawPitchClass<Tag = K>,
-    K: Accidental,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        if self.is_natural() {
-            write!(f, "{}", self.get())
-        } else {
-            write!(f, "{}{}", self.get(), self.kind.symbol())
-        }
     }
 }

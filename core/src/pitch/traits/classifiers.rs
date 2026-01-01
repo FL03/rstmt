@@ -3,7 +3,7 @@
     Created At: 2025.12.21:09:08:08
     Contrib: @FL03
 */
-use crate::pitch::Accidental;
+use crate::pitch::RawAccidental;
 use rstmt_traits::PitchMod;
 
 /// The [`RawPitchClass`] is a sealed trait used to define raw pitch class types.
@@ -19,7 +19,7 @@ where
         + core::fmt::Debug
         + core::fmt::Display,
 {
-    type Tag: Accidental;
+    type Tag: RawAccidental;
 
     private! {}
 
