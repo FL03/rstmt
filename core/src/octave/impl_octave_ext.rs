@@ -76,6 +76,45 @@ where
     }
 }
 
+impl<T> AsRef<T> for Octave<T> {
+    fn as_ref(&self) -> &T {
+        &self.0
+    }
+}
+
+impl<T> AsMut<T> for Octave<T> {
+    fn as_mut(&mut self) -> &mut T {
+        &mut self.0
+    }
+}
+
+impl<T> core::borrow::Borrow<T> for Octave<T> {
+    fn borrow(&self) -> &T {
+        &self.0
+    }
+}
+
+impl<T> core::borrow::BorrowMut<T> for Octave<T> {
+    fn borrow_mut(&mut self) -> &mut T {
+        &mut self.0
+    }
+}
+
+impl<T> core::ops::Deref for Octave<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> core::ops::DerefMut for Octave<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+
 impl<T> From<T> for Octave<T>
 where
     T: RawOctave,
@@ -90,7 +129,7 @@ where
     T: PartialEq,
 {
     fn eq(&self, other: &T) -> bool {
-        self.get() == other
+        &self.0 == other
     }
 }
 
@@ -99,7 +138,7 @@ where
     T: PartialEq,
 {
     fn eq(&self, other: &&'a T) -> bool {
-        self.get() == *other
+        &self.0 == *other
     }
 }
 
@@ -108,7 +147,7 @@ where
     T: PartialEq,
 {
     fn eq(&self, other: &&'a mut T) -> bool {
-        self.get() == *other
+        &self.0 == *other
     }
 }
 
@@ -117,7 +156,7 @@ where
     T: PartialOrd,
 {
     fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
-        self.get().partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }
 
@@ -126,7 +165,7 @@ where
     T: PartialOrd,
 {
     fn partial_cmp(&self, other: &&'a T) -> Option<core::cmp::Ordering> {
-        self.get().partial_cmp(*other)
+        self.0.partial_cmp(*other)
     }
 }
 
@@ -135,6 +174,6 @@ where
     T: PartialOrd,
 {
     fn partial_cmp(&self, other: &&'a mut T) -> Option<core::cmp::Ordering> {
-        self.get().partial_cmp(*other)
+        self.0.partial_cmp(*other)
     }
 }

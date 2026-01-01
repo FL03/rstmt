@@ -17,17 +17,30 @@ where
     pub const fn new(index: T) -> Self {
         Frequency(index)
     }
+    /// calculate the frequency (in hertz) of a given pitch class, using the formula:
+    ///
+    /// ```math
+    /// F=\gamma\cdot{2^\frac{n}{12}}
+    /// ```
+    pub fn from_class_with_scale<N>(note: N, root: T) -> Self
+    where
+        N: ToPrimitive,
+        T: Float + FromPrimitive,
+    {
+        let class = note.to_isize().unwrap();
+        Self(compute_freq_of_pitch(class, root))
+    }
     /// a shorthand method for creating a new frequency from the given pitch class using A4 as
     /// the base frequency
-    pub fn from_pitch<N>(note: N) -> Self
+    pub fn from_class<N>(note: N) -> Self
     where
         N: ToPrimitive,
         T: Float + FromPrimitive,
     {
         let root = <T>::from_f32(A4_FREQUENCY).unwrap();
-        Self::from_pitch_class_with_scale(note, root)
+        Self::from_class_with_scale(note, root)
     }
-
+    /// a method for directly converting an instance of the [`PitchClass`] into a frequency
     pub fn from_pitch_class<P, K>(class: PitchClass<P, K>, root: T) -> Self
     where
         P: RawPitchClass<Tag = K>,
@@ -35,20 +48,7 @@ where
         T: RawFrequency + Float + FromPrimitive,
     {
         let semitones = class.get().index();
-        Self(compute_freq_of_pitch(semitones, root))
-    }
-    /// calculate the frequency (in hertz) of a given pitch class, using the formula:
-    ///
-    /// ```math
-    /// F=\gamma\cdot{2^\frac{n}{12}}
-    /// ```
-    pub fn from_pitch_class_with_scale<N>(note: N, root: T) -> Self
-    where
-        N: ToPrimitive,
-        T: Float + FromPrimitive,
-    {
-        let class = note.to_isize().unwrap();
-        Self(compute_freq_of_pitch(class, root))
+        Self::from_class_with_scale(semitones, root)
     }
     /// initializes a new frequency by capturing the result of the given function
     pub fn init<F>(f: F) -> Self

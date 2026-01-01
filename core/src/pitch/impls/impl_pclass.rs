@@ -35,7 +35,7 @@ where
         K: Accidental,
         T: RawFrequency + Float + FromPrimitive,
     {
-        Frequency::from_pitch(self.get().index())
+        Frequency::from_class(self.get().index())
     }
     /// returns a reference to the defined class
     pub const fn get(&self) -> &P {

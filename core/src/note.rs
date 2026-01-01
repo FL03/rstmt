@@ -5,6 +5,8 @@
 mod impl_aspn;
 mod impl_aspn_ext;
 mod impl_note_base;
+mod impl_note_repr;
+mod impl_note_ext;
 
 use crate::octave::Octave;
 use crate::pitch::{self, Accidental, PitchClass, RawPitchClass};
@@ -71,5 +73,18 @@ where
 {
     fn into_aspn(self) -> Aspn {
         self.into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::NoteBase;
+    use crate::pitch::C;
+    use crate::octave::Octave;
+
+    #[test]
+    fn test_note_base_debug() {
+        let note = NoteBase::new(C::new(), Octave(4));
+        assert_eq!(format!("{:?}", note), "C.4");
     }
 }

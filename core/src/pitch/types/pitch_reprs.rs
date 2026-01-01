@@ -5,25 +5,25 @@
 */
 
 macro_rules! pitch_repr {
-    [$vis:vis $i:ident {$( $(#[$meta:meta])* $name:ident<$tag:ty>: $c:literal),* $(,)?}] => {
-        $(pitch_repr! {@impl $(#[$meta])* $vis $i $name<$tag>($c) })*
+    [$vis:vis $i:ident {$( $(#[$meta:meta])* $name:ident($c:literal): $Tag:ty),* $(,)?}] => {
+        $(pitch_repr! {@impl $(#[$meta])* $vis $i $name($c): $Tag })*
     };
-    {@def $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>($c:literal)} => {
+    {@def $(#[$meta:meta])* $vis:vis struct $name:ident($c:literal): $Tag:ty} => {
         $(#[$meta])*
         $vis struct $name<const N: isize = $c>;
     };
-    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident<$tag:ty>($c:literal)) => {
+    (@impl $(#[$meta:meta])* $vis:vis struct $name:ident($c:literal): $Tag:ty) => {
         pitch_repr! { @def
             $(#[$meta])*
-            #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+            #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
             #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "UPPERCASE"))]
             #[repr(transparent)]
-            pub struct $name<$tag>($c)
+            pub struct $name($c): $Tag
         }
 
         impl<const N: isize> $name<N> {
             pub const C_MAJOR_ID: usize = $c;
-            /// returns a new instance of the pitch class
+
             pub const fn new() -> Self {
                 $name::<N>
             }
@@ -40,12 +40,17 @@ macro_rules! pitch_repr {
             pub const fn value(self) -> isize {
                 N
             }
+            /// returns the name of the pitch class
+            pub fn name(&self) -> &str {
+                stringify!($name)
+            }
         }
 
         impl $name<$c> {
-            /// returns a new instance of the pitch class
-            pub const fn new_c_major_scale() -> Self {
-                $name::<$c>
+            #[allow(clippy::should_implement_trait)]
+            /// a constructor for the pitch class that uses the default index for the target
+            pub const fn default() -> Self {
+                Self::new()
             }
         }
 
@@ -75,12 +80,6 @@ macro_rules! pitch_repr {
             }
         }
 
-        impl<const N: isize> Default for $name<N> {
-            fn default() -> Self {
-                Self::new()
-            }
-        }
-
         impl<const N: isize> ::core::fmt::Debug for $name<N> {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 f.write_str(self.as_ref())
@@ -94,7 +93,7 @@ macro_rules! pitch_repr {
         }
 
         impl<const N: isize> $crate::pitch::RawPitchClass for $name<N> {
-            type Tag = $tag;
+            type Tag = $Tag;
 
             seal! {}
 
@@ -114,6 +113,12 @@ macro_rules! pitch_repr {
 
             fn new() -> Self {
                 Self::new()
+            }
+        }
+
+        impl<const N: isize> PartialEq<str> for $name<N> {
+            fn eq(&self, other: &str) -> bool {
+                self.name().to_lowercase() == other.to_lowercase()
             }
         }
 
@@ -141,6 +146,18 @@ macro_rules! pitch_repr {
             }
         }
 
+        impl<const N: isize> core::str::FromStr for $name<N> {
+            type Err = crate::error::Error;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                if s.eq_ignore_ascii_case(stringify!($name)) {
+                    Ok(Self::new())
+                } else {
+                    Err(crate::error::Error::FromStrParseError)
+                }
+            }
+        }
+
         impl<const N: isize> TryFrom<isize> for $name<N> {
             type Error = crate::error::Error;
 
@@ -157,22 +174,22 @@ macro_rules! pitch_repr {
 
 pitch_repr! {
     pub struct {
-        CNote<crate::Natural>: 0,
-        CSharpNote<crate::Sharp>: 1,
-        DFlatNote<crate::Flat>: 1,
-        DNote<crate::Natural>: 2,
-        DSharpNote<crate::Sharp>: 3,
-        EFlatNote<crate::Flat>: 3,
-        ENote<crate::Natural>: 4,
-        FNote<crate::Natural>: 5,
-        FSharpNote<crate::Sharp>: 6,
-        GFlatNote<crate::Flat>: 6,
-        GNote<crate::Natural>: 7,
-        GSharpNote<crate::Sharp>: 8,
-        AFlatNote<crate::Flat>: 8,
-        ANote<crate::Natural>: 9,
-        ASharpNote<crate::Sharp>: 10,
-        BFlatNote<crate::Flat>: 10,
-        BNote<crate::Natural>: 11,
+        CNote(0): crate::Natural,
+        CSharpNote(1): crate::Sharp,
+        DFlatNote(1): crate::Flat,
+        DNote(2): crate::Natural,
+        DSharpNote(3): crate::Sharp,
+        EFlatNote(3): crate::Flat,
+        ENote(4): crate::Natural,
+        FNote(5): crate::Natural,
+        FSharpNote(6): crate::Sharp,
+        GFlatNote(6): crate::Flat,
+        GNote(7): crate::Natural,
+        GSharpNote(8): crate::Sharp,
+        AFlatNote(8): crate::Flat,
+        ANote(9): crate::Natural,
+        ASharpNote(10): crate::Sharp,
+        BFlatNote(10): crate::Flat,
+        BNote(11): crate::Natural,
     }
 }

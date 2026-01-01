@@ -6,9 +6,11 @@
 use crate::pitch::Accidental;
 use rstmt_traits::PitchMod;
 
-/// [`PitchClassRepr`] is a sealed trait used to define compatible pitch representations
-/// (a.k.a pitch classes).
-pub trait RawPitchClass {
+/// The [`RawPitchClass`] is a sealed trait used to define raw pitch class types.
+pub trait RawPitchClass
+where
+    Self: Send + Sync + PartialEq<isize> + PartialEq<str>  + core::borrow::Borrow<isize>  + core::fmt::Debug + core::fmt::Display
+{
     type Tag: Accidental;
 
     private! {}
@@ -19,17 +21,11 @@ pub trait RawPitchClass {
     fn index(&self) -> isize;
 }
 
-/// [`PitchClassRepr`] is a sealed trait used to define compatible pitch representations
-/// (a.k.a pitch classes).
+/// [`PitchClassRepr`] extends [`RawPitchClass`] with additional methods for constructing and
+/// identifying pitch class representations.
 pub trait PitchClassRepr: RawPitchClass
 where
-    Self: AsRef<str>
-        + AsRef<isize>
-        + Default
-        + core::fmt::Debug
-        + core::fmt::Display
-        + core::borrow::Borrow<isize>
-        + TryFrom<isize>,
+    Self: AsRef<str> + AsRef<isize> + Default + core::str::FromStr + TryFrom<isize>,
 {
     const IDX: isize;
 
