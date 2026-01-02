@@ -10,7 +10,5 @@ use syn::Ident;
 
 /// Procedural macro entry point
 pub fn impl_composition(input: CompositionAst) -> TokenStream {
-
-    quote! {
-    }
+    quote! {}
 }

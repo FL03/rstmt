@@ -1,6 +1,6 @@
 #![crate_name = "rstmt_macros"]
-//! Various procedural macros for the `rstmt` ecosystem focused on streamling the composition 
-//! of musical pieces, chords, notes, and more. 
+//! Various procedural macros for the `rstmt` ecosystem focused on streamling the composition
+//! of musical pieces, chords, notes, and more.
 extern crate proc_macro;
 
 mod ast {
@@ -24,7 +24,7 @@ use syn::parse_macro_input;
 ///
 /// ```rust
 /// use rstmt_macros::composition;
-/// 
+///
 /// composition! {}
 /// ```
 #[proc_macro]

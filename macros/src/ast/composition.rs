@@ -17,7 +17,7 @@ impl Parse for CompositionAst {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         // parse the `scale` keyword
         let scale = input.parse::<Ident>()?;
-        
+
         Ok(Self { scale })
     }
 }
