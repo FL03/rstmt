@@ -45,6 +45,7 @@ required-features = ["nrt", "std"]
 
 [dependencies]
 rstmt-core = { workspace = true }
+rstmt-macros = { optional = true, workspace = true }
 rstmt-nrt = { optional = true, workspace = true }
 
 [dev-dependencies]
@@ -57,6 +58,7 @@ tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
 
 [features]
 default = [
+  "macros",
   "nrt",
   "std",
 ]
@@ -72,15 +74,21 @@ full = [
 
 nightly = [
   "rstmt-core/nightly",
+  "rstmt-macros/nightly",
   "rstmt-nrt?/nightly",
 ]
 
 # ************* [FF:Features] *************
+macros = [
+  "dep:rstmt-macros",
+  "rstmt-core/macros",
+]
+
 motion = [
   "rstmt-nrt?/motion",
 ]
 
-nrt = ["rstmt_nrt"]
+nrt = ["dep:rstmt-nrt"]
 
 tonnetz = [
   "std",
@@ -142,8 +150,6 @@ rng = [
   "rstmt-core/rng",
   "rstmt-nrt?/rng",
 ]
-
-rstmt_nrt = ["dep:rstmt-nrt"]
 
 serde = [
   "rstmt-core/serde",

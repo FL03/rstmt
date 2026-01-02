@@ -1206,9 +1206,9 @@ dependencies = [
 
 [[package]]
 name = "rspace-traits"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62277c4d36d60ca20341efe8a26ae82436093ded079ebbc8f7dda39ae7ba980f"
+checksum = "e9a0ef5a8f6f27c6004e5be25e2cb1a16767e02826f0754ba5f0b9915f2b6082"
 dependencies = [
  "hashbrown 0.16.1",
  "num-complex",
@@ -1226,6 +1226,7 @@ dependencies = [
  "lazy_static",
  "num",
  "rstmt-core",
+ "rstmt-macros",
  "rstmt-nrt",
  "tracing",
  "tracing-subscriber",
@@ -1257,6 +1258,15 @@ dependencies = [
  "tracing",
  "variants",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "rstmt-macros"
+version = "0.0.12"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

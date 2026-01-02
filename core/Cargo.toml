@@ -75,6 +75,7 @@ full = [
   "default",
   "complex",
   "json",
+  "macros",
   "rand",
   "serde",
   "tracing",
@@ -91,7 +92,11 @@ nightly = [
   "rstmt-traits/nightly",
 ]
 
-# ************* [FF:Environments] *************
+# ********* [FF] Features *********
+
+macros = []
+
+# ********* [FF] Environments *********
 
 std = [
   "alloc",
@@ -125,7 +130,7 @@ wasm = [
   "rayon?/web_spin_lock",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
 
 alloc = [
   "rstmt-traits/alloc",

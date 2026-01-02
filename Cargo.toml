@@ -2,6 +2,7 @@
 default-members = ["rstmt"]
 members = [
   "core",
+  "macros",
   "nrt",
   "rstmt",
   "traits",
@@ -33,15 +34,16 @@ version = "0.0.12"
 [workspace.dependencies]
 rstmt = { default-features = false, path = "rstmt", version = "0.0.12" }
 rstmt-core = { default-features = false, path = "core", version = "0.0.12" }
+rstmt-macros = { path = "macros", version = "0.0.12" }
 rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.12" }
 rstmt-traits = { default-features = false, path = "traits", version = "0.0.12" }
 # custom
 contained = { default-features = false, features = ["macros"], version = "0.2.3" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.8" }
-rspace-traits = { default-features = false, version = "0.0.6" }
+rspace-traits = { default-features = false, version = "0.0.7" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # benchmarking & testing
-criterion = { default-features = false, features = ["plotters"], version = "0.8" }
+criterion = { default-features = false, version = "0.8" }
 # concurrency & parallelism
 rayon = { default-features = false, version = "1" }
 # data structures
