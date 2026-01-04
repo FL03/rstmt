@@ -4,9 +4,9 @@
     Contrib: @FL03
 */
 use syn::parse::{Parse, ParseStream};
-use syn::token::Impl;
-use syn::{AngleBracketedGenericArguments, Ident, Token, WhereClause, braced};
+use syn::Ident;
 
+#[allow(dead_code)]
 /// The abstract syntax tree for the `binary_wrapper` macro input;
 /// e.g. `impl A { Add.add, Sub.sub }` or `impl B.field { Add.add, Sub.sub }`
 pub struct CompositionAst {

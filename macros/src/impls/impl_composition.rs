@@ -5,10 +5,9 @@
 */
 use crate::ast::CompositionAst;
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
-use syn::Ident;
+use quote::quote;
 
 /// Procedural macro entry point
-pub fn impl_composition(input: CompositionAst) -> TokenStream {
+pub fn impl_composition(_input: CompositionAst) -> TokenStream {
     quote! {}
 }
