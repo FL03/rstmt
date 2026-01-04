@@ -31,6 +31,7 @@ jobs:
           - rstmt-traits
           - rstmt-core
           - rstmt-nrt
+          - rstmt-macros
           - rstmt
     steps:
       - uses: actions/checkout@v6
