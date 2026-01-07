@@ -1,8 +1,8 @@
 /*
-    Appellation: navigator <module>
+    Appellation: path_finder <module>
+    Created At: 2026.01.07:10:02:09
     Contrib: @FL03
 */
-
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use rspace_traits::RawSpace;

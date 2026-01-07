@@ -165,6 +165,8 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
 
     /// Analyze musical features of a transformation path using triads
     fn analyze_path_features(&self, triads: &[Triad]) -> ChainFeatures {
+        use LPR::*;
+
         let mut features = ChainFeatures::default();
 
         // Count transforms (infer from triad progression)
@@ -178,23 +180,32 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
             let prev = &triads[i - 1];
             let curr = &triads[i];
 
+            if prev.is_major() && curr.is_major() || prev.is_minor() && curr.is_minor() {
+                #[cfg(feature = "tracing")]
+                tracing::error!(
+                    "No classification change detected from {:?} to {:?}",
+                    prev,
+                    curr
+                );
+                continue; // No transform if modality is unchanged
+            }
+
             // Determine which transform was applied (approximate)
             let transform = if prev.is_major() != curr.is_major() {
                 // Parallel transform changes mode while preserving root
                 if prev.root() == curr.root() {
-                    LPR::Parallel
+                    Parallel
                 }
                 // Relative transform preserves two notes
                 else if prev.common_tones(curr).len() == 2 {
-                    LPR::Relative
+                    Relative
                 }
                 // Leading transform if no better match
                 else {
-                    LPR::Leading
+                    Leading
                 }
             } else {
-                // If mode is preserved, likely Leading transform
-                LPR::Leading
+                panic!("Unable to determine transform between triads")
             };
 
             *transform_counts.entry(transform).or_insert(0) += 1;
