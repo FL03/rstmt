@@ -3,8 +3,8 @@
     Created At: 2026.01.01:23:24:37
     Contrib: @FL03
 */
-use syn::parse::{Parse, ParseStream};
 use syn::Ident;
+use syn::parse::{Parse, ParseStream};
 
 #[allow(dead_code)]
 /// The abstract syntax tree for the `binary_wrapper` macro input;

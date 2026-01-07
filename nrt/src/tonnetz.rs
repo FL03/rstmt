@@ -21,7 +21,6 @@ use crate::{LPR, TriadRepr, TriadType, Triads};
 use hashbrown::HashMap;
 use rshyper::{EdgeId, HyperMap};
 use rspace_traits::RawSpace;
-use rstmt_core::Aspn;
 
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase`]
 pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
@@ -29,8 +28,6 @@ pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, 
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
 /// transformations.
 pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
-
-// pub(crate) type HyperTriadMap<N = Aspn, E = (), Ix = usize> = HyperMap<N, E, Ix>;
 
 /// The [`HyperTonnetz`] implementation relies on a _hypergraph_ to define the relationships
 /// between various notes and triads within the tonal space. Hypergraphs generalize the concept
@@ -42,8 +39,8 @@ where
     K: TriadType,
     S: TriadRepr<Elem = T>,
 {
-    /// The underlying hypergraph structure
-    pub(crate) graph: HyperMap<Aspn>,
+    /// a hypergraph representing the tonal space
+    pub(crate) graph: HyperMap<T>,
     /// Maps EdgeIds to Triad for efficient access
     pub(crate) triads: TriadMap<S, K, T, Ix>,
     /// Tracks adjacency between triads via transformations

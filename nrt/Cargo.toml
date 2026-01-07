@@ -42,7 +42,7 @@ required-features = ["motion"]
 [dependencies]
 rstmt-core = { workspace = true }
 # custom
-rshyper = { workspace = true }
+rshyper = { features = ["hyper_map"], workspace = true }
 rspace-traits = { workspace = true }
 variants = { workspace = true }
 # data structures
@@ -60,7 +60,7 @@ getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # serialization
-serde = { features = ["derive"], optional = true, workspace = true }
+serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # logging
@@ -89,12 +89,6 @@ full = [
   "tracing",
 ]
 
-nightly = [
-  "hashbrown?/nightly",
-  "rshyper/nightly",
-  "rstmt-core/nightly",
-]
-
 # ********* [FF] Flags *********
 
 motion = [
@@ -103,12 +97,19 @@ motion = [
 ]
 
 tonnetz = [
+  "alloc",
   "hashbrown",
-  "std",
   "rshyper/hyper_map",
 ]
 
-# ************* [FF:Environments] *************
+# ********* [FF] Environments *********
+
+nightly = [
+  "hashbrown?/nightly",
+  "rshyper/nightly",
+  "rstmt-core/nightly",
+]
+
 std = [
   "alloc",
   "anyhow/std",
@@ -139,7 +140,9 @@ wasm = [
   "rspace-traits/wasm",
   "rstmt-core/wasm",
 ]
-# ************* [FF:Dependencies] *************
+
+# ********* [FF] Dependencies *********
+
 alloc = [
   "hashbrown?/alloc",
   "itertools/use_alloc",
@@ -200,6 +203,7 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "serde?/derive",
   "hashbrown?/serde",
   "num-complex?/serde",
   "rand?/serde",
@@ -207,11 +211,11 @@ serde = [
   "rspace-traits/serde",
   "rshyper/serde",
   "rstmt-core/serde",
-  "serde?/derive",
 ]
 
 serde_json = [
   "dep:serde_json",
+  "rshyper/serde_json",
   "rstmt-core/serde_json",
 ]
 
@@ -222,6 +226,7 @@ tracing = [
 
 wasm_bindgen = [
   "dep:wasm-bindgen",
+  "rshyper/wasm_bindgen",
   "rspace-traits/wasm_bindgen",
   "rstmt-core/wasm_bindgen",
 ]
