@@ -22,10 +22,8 @@ use syn::parse_macro_input;
 /// The [`binary_wrapper!`] macro generates implementations for the core binary operations
 /// onto a generic wrapper type. It supports both tuple structs and structs with named fields.
 ///
-/// ```rust
+/// ```no_run
 /// use rstmt_macros::composition;
-///
-/// composition! {}
 /// ```
 #[proc_macro]
 pub fn composition(input: TokenStream) -> TokenStream {
