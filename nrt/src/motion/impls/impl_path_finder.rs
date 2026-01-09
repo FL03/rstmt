@@ -3,7 +3,8 @@
     Created At: 2026.01.01:09:17:02
     Contrib: @FL03
 */
-use crate::motion::path_finder::{PathFinder, PathFinderConfig};
+use crate::motion::config::PathFinderConfig;
+use crate::motion::path_finder::PathFinder;
 use crate::motion::types::{Chain, ChainFeatures, VisitedChain};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{DynTriad, TriadBase};
@@ -119,28 +120,28 @@ where
         let mut visited_triads = HashSet::new();
         visited_triads.insert(start_triad.chord);
 
-        while let Some((current_triad, transforms, triads)) = queue.pop_front() {
+        while let Some((current_triad, tchain, triads)) = queue.pop_front() {
             // Don't exceed maximum depth
-            if transforms.len() >= self.max_depth() {
+            if tchain.len() >= self.max_depth() {
                 continue;
             }
 
             // Try each transformation: Leading, Parallel, Relative
-            for transform in LPR::iter() {
+            for dirac in LPR::iter() {
                 // Apply the transformation to get a new triad
-                let next_triad = current_triad.transform(transform);
+                let next_triad = current_triad.transform(dirac);
 
                 // Skip if we've already visited this triad
-                if visited_triads.contains(&next_triad.chord) {
+                if visited_triads.contains(next_triad.chord()) {
                     continue;
                 }
 
                 // Mark as visited
-                visited_triads.insert(next_triad.chord);
+                visited_triads.insert(*next_triad.chord());
 
                 // Build new path
-                let mut new_transforms = transforms.clone();
-                new_transforms.push(transform);
+                let mut new_transforms = tchain.clone();
+                new_transforms.push(dirac);
 
                 let mut new_triads = triads.clone();
                 new_triads.push(next_triad);
