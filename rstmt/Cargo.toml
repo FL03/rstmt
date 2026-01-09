@@ -25,6 +25,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = true
+crate-type = ["lib"]
 doc = true
 doctest = true
 path = "lib.rs"
@@ -52,15 +53,16 @@ rstmt-nrt = { optional = true, workspace = true }
 anyhow = { features = ["std"], workspace = true }
 criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
-num = { features = ["std"], version = "0.4" }
 tracing = { features = ["attributes", "std"], workspace = true }
 tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
 
 [features]
 default = [
   "macros",
+  "motion",
   "nrt",
   "std",
+  "tonnetz",
 ]
 
 full = [
@@ -69,7 +71,6 @@ full = [
   "json",
   "rand",
   "serde",
-  "tonnetz",
 ]
 
 nightly = [
@@ -132,6 +133,7 @@ hashbrown = [
 json = [
   "alloc",
   "serde",
+  "serde_json",
   "rstmt-core/json",
   "rstmt-nrt?/json",
 ]
