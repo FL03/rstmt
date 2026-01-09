@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use crate::motion::path_finder::{PathFinder, PathFinderConfig};
-use crate::motion::types::{ChainFeatures, TransformationChain};
+use crate::motion::types::{Chain, ChainFeatures, VisitedChain};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{DynTriad, TriadBase};
 use crate::types::LPR;
@@ -88,7 +88,7 @@ where
         + core::ops::AddAssign,
 {
     /// find all possible chains that are capable of transforming the given instance to the target symbol
-    pub fn find_paths_to_target(&self, target: T) -> crate::Result<Vec<TransformationChain<T>>> {
+    pub fn find_paths_to_target(&self, target: T) -> crate::Result<Vec<VisitedChain<T>>> {
         let mut result_paths = Vec::new();
 
         let start_triad = *self.triad();
@@ -101,12 +101,10 @@ where
                 distance: 0,
             };
 
-            result_paths.push(TransformationChain::<T> {
-                cost: 0,
+            result_paths.push(VisitedChain::<T> {
                 edges: Vec::new(),
-                features,
-                path: Vec::new(),
                 visited: vec![start_triad],
+                chain: Chain::from_features(features),
             });
 
             return Ok(result_paths);
@@ -154,12 +152,14 @@ where
                     let cost = features.distance + new_transforms.len();
 
                     // Found a path
-                    result_paths.push(TransformationChain {
-                        path: new_transforms.clone(),
+                    result_paths.push(VisitedChain {
                         visited: new_triads.clone(),
-                        cost,
                         edges: Vec::new(),
-                        features,
+                        chain: Chain {
+                            cost,
+                            features,
+                            path: new_transforms.clone(),
+                        },
                     });
 
                     // Check if we've found enough paths

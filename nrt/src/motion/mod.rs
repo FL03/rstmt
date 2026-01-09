@@ -26,7 +26,9 @@ mod types {
     pub use self::config::*;
     #[doc(inline)]
     #[cfg(feature = "alloc")]
-    pub use self::{cache::*, chain::*, chain_features::*, path::*, search_node::*};
+    pub use self::{
+        cache::*, chain::*, chain_features::*, path::*, search_node::*, transform_set::*,
+    };
 
     mod cache;
     mod chain;
@@ -34,6 +36,7 @@ mod types {
     mod config;
     mod path;
     mod search_node;
+    mod transform_set;
 }
 
 pub(crate) mod prelude {
