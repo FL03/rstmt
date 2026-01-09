@@ -5,39 +5,46 @@
 */
 use crate::tonnetz::{HyperTonnetz, LprMap, TriadMap};
 use crate::traits::{TriadRepr, TriadType};
-use crate::triad::{Triad, TriadBase};
+use crate::triad::TriadBase;
+use core::hash::Hash;
 use hashbrown::HashMap;
-use rshyper::{EdgeId, HyperMap, VertexId, Weight};
-use rstmt_core::Octave;
+use rshyper::{AddStep, EdgeId, RawIndex, UnHyperMap, VertexId, Weight};
 
 impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,
+    Ix: RawIndex,
 {
     /// initialize a new, empty instance of the [`HyperTonnetz`]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    where
+        Ix: Default,
+    {
         HyperTonnetz {
-            graph: HyperMap::new(),
+            graph: UnHyperMap::new(),
             triads: TriadMap::new(),
             transformations: LprMap::new(),
         }
     }
-    /// returns a new instance of the [`Tonnetz`] with a specified capacity
-    pub fn with_capacity(capacity: usize) -> Self {
+    /// returns a new instance of the [`HyperTonnetz`] with a specified capacity
+    pub fn with_capacity(capacity: usize) -> Self
+    where
+        Ix: Default,
+    {
         // each edge has n vertices meaning we need to reserve space for n^2 edges
         HyperTonnetz {
-            graph: HyperMap::with_capacity(capacity * capacity, capacity),
+            graph: UnHyperMap::with_capacity(capacity * capacity, capacity),
             triads: HashMap::with_capacity(capacity),
             transformations: HashMap::new(),
         }
     }
     /// returns a reference to the underlying graph
-    pub const fn graph(&self) -> &HyperMap<T> {
+    pub const fn graph(&self) -> &UnHyperMap<T, (), Ix> {
         &self.graph
     }
     /// returns a mutable reference to the underlying graph
-    pub const fn graph_mut(&mut self) -> &mut HyperMap<T> {
+    pub const fn graph_mut(&mut self) -> &mut UnHyperMap<T, (), Ix> {
         &mut self.graph
     }
     /// returns a reference to the triads map
@@ -58,7 +65,7 @@ where
     }
     #[inline]
     /// overwrite the current graph and return a mutable reference to the instance
-    pub fn set_graph(&mut self, graph: HyperMap<T>) {
+    pub fn set_graph(&mut self, graph: UnHyperMap<T, (), Ix>) {
         self.graph = graph
     }
     #[inline]
@@ -72,15 +79,19 @@ where
         self.transformations = transformations
     }
     /// add a new note class vertex to the Tonnetz
-    pub fn add_note(&mut self, note: T) -> crate::Result<VertexId> {
+    pub fn add_note(&mut self, note: T) -> crate::Result<VertexId<Ix>>
+    where
+        Ix: Copy + Eq + Hash + AddStep<Output = Ix>,
+    {
         self.graph_mut()
             .add_node(Weight(note))
             .map_err(|e| e.into())
     }
     /// adds each note within the iterator to the Tonnetz
-    pub fn add_notes<I>(&mut self, notes: I) -> Vec<VertexId>
+    pub fn add_notes<I>(&mut self, notes: I) -> Vec<VertexId<Ix>>
     where
         I: IntoIterator<Item = T>,
+        Ix: Copy + Eq + Hash + AddStep<Output = Ix>,
     {
         notes
             .into_iter()
@@ -90,8 +101,8 @@ where
     /// returns a reference to the triad associated with the given edge index
     pub fn get_triad<Q>(&self, key: &Q) -> Option<&TriadBase<S, K, T>>
     where
-        Q: Eq + core::hash::Hash,
-        Ix: Eq + core::hash::Hash,
+        Q: Eq + Hash,
+        Ix: Eq + Hash,
         EdgeId<Ix>: core::borrow::Borrow<Q>,
     {
         self.triads().get(key)
@@ -99,8 +110,8 @@ where
     /// returns a mutable reference to the triad associated with the given edge index
     pub fn get_triad_mut<Q>(&mut self, key: &Q) -> Option<&mut TriadBase<S, K, T>>
     where
-        Q: Eq + core::hash::Hash,
-        Ix: Eq + core::hash::Hash,
+        Q: Eq + Hash,
+        Ix: Eq + Hash,
         EdgeId<Ix>: core::borrow::Borrow<Q>,
     {
         self.triads_mut().get_mut(key)
@@ -111,27 +122,20 @@ impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,
+    T: Eq + Hash,
+    Ix: Copy + Eq + Hash + RawIndex,
+    for<'b> &'b S: IntoIterator<Item = &'b T>,
 {
-    /// Find a vertex by its associated pitch class
-    pub(crate) fn find_vertex_by_note<Q>(&self, note: Q) -> Option<VertexId>
-    where
-        Weight<T>: PartialEq<Q>,
-    {
-        self.graph
-            .nodes()
-            .iter()
-            .find(|(_, node)| *node.weight() == note)
-            .map(|(id, _)| *id)
-    }
-}
-
-impl HyperTonnetz {
     /// Add a new triad to the Tonnetz
-    pub fn add_triad(&mut self, triad: Triad) -> crate::Result<EdgeId> {
+    pub fn add_triad(&mut self, triad: TriadBase<S, K, T>) -> crate::Result<EdgeId<Ix>>
+    where
+        Ix: AddStep<Output = Ix>,
+        T: Copy,
+    {
         // Ensure we have vertices for all Note classes
-        let vertices: Vec<VertexId> = triad
+        let vertices: Vec<VertexId<Ix>> = triad
             .chord()
-            .iter()
+            .into_iter()
             .map(|&p| {
                 // Try to find existing vertex with this Note class
                 if let Some(v) = self.find_vertex_by_note(p) {
@@ -145,7 +149,7 @@ impl HyperTonnetz {
 
         // Add the hyperedge representing this triad
         let edge_id = self
-            .graph
+            .graph_mut()
             .add_link(vertices)
             .expect("Failed to add hyperedge");
         // Store the triad data
@@ -153,6 +157,20 @@ impl HyperTonnetz {
 
         Ok(edge_id)
     }
+    /// Find a vertex by its associated pitch class
+    pub(crate) fn find_vertex_by_note<Q>(&self, note: Q) -> Option<VertexId<Ix>>
+    where
+        Weight<T>: PartialEq<Q>,
+    {
+        self.graph
+            .nodes()
+            .iter()
+            .find(|(_, node)| *node.weight() == note)
+            .map(|(id, _)| *id)
+    }
+}
+
+impl HyperTonnetz {
     /// Compute and store all possible transformations between triads
     pub fn compute_transformations(&mut self) {
         // Clear existing transformations
@@ -182,16 +200,6 @@ impl HyperTonnetz {
                 }
             }
         }
-    }
-    /// initialize a complete layer of the Tonnetz at the given octave
-    pub fn scaffold_layer(&mut self, octave: Octave) -> crate::Result<Vec<VertexId>> {
-        let octave = octave.value() as usize;
-        // create an iterator over all 12 notes within the given octave
-        let iter = (0..12).map(|i| i + (octave * 12));
-        // use the iterator to insert all the notes into the Tonnetz
-        let res = self.add_notes(iter);
-        // return the result
-        Ok(res)
     }
 }
 

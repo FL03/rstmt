@@ -134,6 +134,8 @@ where
         if rhs.is_augmented() || rhs.is_diminished() {
             return Err(TriadError::InvalidTriadClass);
         }
+        let two = T::from_u8(2).unwrap();
+
         let &x = rhs.chord().root();
         let &y = rhs.chord().third();
         let &z = rhs.chord().fifth();
@@ -142,13 +144,13 @@ where
             match self {
                 LPR::Leading => [y, z, (x - T::one()).pmod()],
                 LPR::Parallel => [x, (y - T::one()).pmod(), z],
-                LPR::Relative => [(z + T::from_u8(2).unwrap()).pmod(), x, y],
+                LPR::Relative => [(z + two).pmod(), x, y],
             }
         } else {
             match self {
                 LPR::Leading => [(z + T::one()).pmod(), x, y],
                 LPR::Parallel => [x, (y + T::one()).pmod(), z],
-                LPR::Relative => [y, z, (x - T::from_u8(2).unwrap()).pmod()],
+                LPR::Relative => [y, z, (x - two).pmod()],
             }
         };
 
