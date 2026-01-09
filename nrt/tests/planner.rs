@@ -8,10 +8,9 @@ use rstmt_nrt::{HyperTonnetz, Triad, TriadError};
 
 #[test]
 fn test_motion_planner() -> Result<(), TriadError> {
-    // Create a new tonnetz
+    // initialize an empty tonnetz
     let mut tonnetz = HyperTonnetz::new();
-
-    // Add pitch classes (0-11)
+    // scaffold a layer for the 4th octave
     let _ = tonnetz.scaffold_layer(Octave(4))?;
 
     let c_major = Triad::major(0).dynamic(); // C Major (0,4,7)

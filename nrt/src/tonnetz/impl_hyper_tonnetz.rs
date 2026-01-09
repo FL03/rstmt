@@ -8,7 +8,9 @@ use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use core::hash::Hash;
 use hashbrown::HashMap;
+use num_traits::FromPrimitive;
 use rshyper::{AddStep, EdgeId, RawIndex, UnHyperMap, VertexId, Weight};
+use rstmt_core::Octave;
 
 impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
 where
@@ -124,19 +126,32 @@ where
     S: TriadRepr<Elem = T>,
     T: Eq + Hash,
     Ix: Copy + Eq + Hash + RawIndex,
-    for<'b> &'b S: IntoIterator<Item = &'b T>,
 {
+    /// initialize a complete layer of the Tonnetz at the given octave
+    pub fn scaffold_layer(&mut self, octave: Octave) -> crate::Result<Vec<VertexId<Ix>>>
+    where
+        Ix: AddStep<Output = Ix>,
+        T: Copy + FromPrimitive + core::ops::Add<Output = T>,
+    {
+        let octave = T::from_isize(octave.value()).unwrap();
+        // create an iterator over all 12 notes within the given octave
+        let iter = (0..12).map(|i| T::from_usize(i).unwrap() + octave);
+        // use the iterator to insert all the notes into the Tonnetz
+        Ok(self.add_notes(iter))
+    }
     /// Add a new triad to the Tonnetz
     pub fn add_triad(&mut self, triad: TriadBase<S, K, T>) -> crate::Result<EdgeId<Ix>>
     where
         Ix: AddStep<Output = Ix>,
         T: Copy,
+        S: Clone + IntoIterator<Item = T>,
     {
         // Ensure we have vertices for all Note classes
         let vertices: Vec<VertexId<Ix>> = triad
             .chord()
+            .clone()
             .into_iter()
-            .map(|&p| {
+            .map(|p| {
                 // Try to find existing vertex with this Note class
                 if let Some(v) = self.find_vertex_by_note(p) {
                     v
