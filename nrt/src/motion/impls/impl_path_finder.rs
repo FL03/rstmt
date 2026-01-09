@@ -6,10 +6,12 @@
 use crate::motion::path_finder::{PathFinder, PathFinderConfig};
 use crate::motion::types::{ChainFeatures, TransformationChain};
 use crate::traits::{TriadRepr, TriadType};
-use crate::triad::{Triad, TriadBase};
+use crate::triad::{DynTriad, TriadBase};
 use crate::types::LPR;
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
+use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
+use rstmt_core::PitchMod;
 
 impl<'a, S, K, T> PathFinder<'a, S, K, T>
 where
@@ -69,9 +71,24 @@ where
     }
 }
 
-impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
+impl<'a, T> PathFinder<'a, [T; 3], crate::Triads, T>
+where
+    T: Copy
+        + Eq
+        + Ord
+        + FromPrimitive
+        + ToPrimitive
+        + One
+        + Zero
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>
+        + core::hash::Hash
+        + core::fmt::Debug
+        + core::ops::AddAssign,
+{
     /// find all possible chains that are capable of transforming the given instance to the target symbol
-    pub fn find_paths_to_target(&self, target: usize) -> crate::Result<Vec<TransformationChain>> {
+    pub fn find_paths_to_target(&self, target: T) -> crate::Result<Vec<TransformationChain<T>>> {
         let mut result_paths = Vec::new();
 
         let start_triad = *self.triad();
@@ -79,12 +96,12 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
         // Check if the starting triad already contains the target pitch
         if start_triad.contains(&target) {
             let features = ChainFeatures {
-                transform_counts: HashMap::new(),
+                transformations: HashMap::new(),
                 modality_changes: 0,
                 distance: 0,
             };
 
-            result_paths.push(TransformationChain {
+            result_paths.push(TransformationChain::<T> {
                 cost: 0,
                 edges: Vec::new(),
                 features,
@@ -164,9 +181,9 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
     }
 
     /// Analyze musical features of a transformation path using triads
-    fn analyze_path_features(&self, triads: &[Triad]) -> ChainFeatures {
+    fn analyze_path_features(&self, triads: &[DynTriad<T>]) -> ChainFeatures {
         use LPR::*;
-
+        let two = T::from_u8(2).unwrap();
         let mut features = ChainFeatures::default();
 
         // Count transforms (infer from triad progression)
@@ -182,29 +199,29 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
 
             if prev.is_major() && curr.is_major() || prev.is_minor() && curr.is_minor() {
                 #[cfg(feature = "tracing")]
-                tracing::error!(
-                    "No classification change detected from {:?} to {:?}",
-                    prev,
-                    curr
-                );
+                tracing::error!("No modality change between {:?} and {:?}", prev, curr);
                 continue; // No transform if modality is unchanged
             }
 
             // Determine which transform was applied (approximate)
             let transform = if prev.is_major() != curr.is_major() {
-                // Parallel transform changes mode while preserving root
+                // Parallel transform affects the "third" chord factor
                 if prev.root() == curr.root() {
                     Parallel
-                }
-                // Relative transform preserves two notes
-                else if prev.common_tones(curr).len() == 2 {
+                } else if prev.is_major() && (*curr.root() - two).pmod() == *prev.fifth()
+                    || prev.is_minor() && (*curr.fifth() + two).pmod() == *prev.root()
+                {
                     Relative
-                }
-                // Leading transform if no better match
-                else {
+                } else {
                     Leading
                 }
             } else {
+                #[cfg(feature = "tracing")]
+                tracing::error!(
+                    "Unable to resolve transform between {:?} and {:?}",
+                    prev,
+                    curr
+                );
                 panic!("Unable to determine transform between triads")
             };
 
@@ -222,8 +239,10 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
                     .chord
                     .iter()
                     .map(|&curr_note| {
-                        let dist = (curr_note as isize - prev_note as isize).abs() % 12;
-                        std::cmp::min(dist, 12 - dist) as usize
+                        let dist = (curr_note - prev_note).pmod();
+                        core::cmp::min(dist, T::from_u8(12).unwrap() - dist)
+                            .to_usize()
+                            .unwrap()
                     })
                     .min()
                     .unwrap_or(0);
@@ -232,9 +251,9 @@ impl<'a> PathFinder<'a, [usize; 3], crate::Triads, usize> {
             }
         }
 
-        features.transform_counts = transform_counts;
-        features.modality_changes = modality_changes;
-        features.distance = voice_leading_distance;
+        features.set_transform_counts(transform_counts);
+        features.set_modality_changes(modality_changes);
+        features.set_distance(voice_leading_distance);
 
         features
     }

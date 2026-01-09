@@ -5,8 +5,12 @@
 //! this module focuses on implementing the motion planning algorithm for finding paths along
 //! the surface of the tonnetz.
 
+#[cfg(feature = "std")]
+pub use self::path_finder::PathFinder;
+#[cfg(feature = "tonnetz")]
+pub use self::planner::MotionPlanner;
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::types::*;
 
 #[cfg(feature = "std")]
 pub mod path_finder;
@@ -17,26 +21,25 @@ mod impls {
     mod impl_motion_planner;
     mod impl_path_finder;
 }
-#[cfg(feature = "alloc")]
 mod types {
     #[doc(inline)]
-    pub use self::{cache::*, chain::*, path::*, search_node::*};
+    pub use self::config::*;
+    #[doc(inline)]
+    #[cfg(feature = "alloc")]
+    pub use self::{cache::*, chain::*, chain_features::*, path::*, search_node::*};
 
     mod cache;
     mod chain;
+    mod chain_features;
+    mod config;
     mod path;
     mod search_node;
 }
 
 pub(crate) mod prelude {
-
-    #[doc(inline)]
     #[cfg(feature = "alloc")]
     pub use super::path_finder::*;
-    #[doc(inline)]
     #[cfg(feature = "tonnetz")]
     pub use super::planner::*;
-    #[doc(inline)]
-    #[cfg(feature = "alloc")]
     pub use super::types::*;
 }

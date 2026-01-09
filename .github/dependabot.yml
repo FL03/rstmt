@@ -1,20 +1,20 @@
 version: 2
 
 updates:
-- package-ecosystem: cargo
-  directories:
-  - /
-  - /core
-  - /nrt
-  - /rstmt
-  - /traits
-  schedule:
-    interval: monthly
-- package-ecosystem: devcontainers
+- package-ecosystem: rust-toolchain
   directory: /
   schedule:
     interval: monthly
 - package-ecosystem: github-actions
   directory: /
   schedule:
+    interval: weekly
+- package-ecosystem: cargo
+  schedule:
     interval: monthly
+  directories:
+  - /
+  - /core
+  - /nrt
+  - /rstmt
+  - /traits

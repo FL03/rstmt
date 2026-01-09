@@ -2,84 +2,52 @@
     Appellation: path <module>
     Contrib: @FL03
 */
-use crate::motion::SearchNode;
-use crate::{LPR, Triad};
-use hashbrown::HashMap;
+use super::{ChainFeatures, SearchNode};
+use crate::triad::Triad;
+use crate::types::{LPR, Triads};
 use rshyper::EdgeId;
 
 /// Represents a sequence of transformations from one triad to another
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Path {
+pub struct Path<T = usize> {
     /// Musical cost or distance metric (lower is better)
     pub(crate) cost: usize,
     /// Edge IDs in the tonnetz (if available)
-    pub(crate) edge_ids: Vec<Option<EdgeId>>,
+    pub(crate) edges: Vec<Option<EdgeId>>,
     /// Path features for musical analysis
-    pub(crate) features: PathFeatures,
+    pub(crate) features: ChainFeatures,
     /// The sequence of transformations to apply
     pub(crate) transforms: Vec<LPR>,
     /// The sequence of triads visited
-    pub(crate) triads: Vec<Triad>,
+    pub(crate) triads: Vec<Triad<Triads, T>>,
 }
-
-/// Features describing musical characteristics of a transformation path
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct PathFeatures {
-    /// Smoothness of voice leading (sum of semitone movements)
-    pub distance: usize,
-    /// Changes in modality (i.e. major/minor or any other changes in classification)
-    pub modality_changes: usize,
-    /// Count of each transformation type in the path
-    pub transform_counts: HashMap<LPR, usize>,
-}
-
-impl PathFeatures {
-    /// Creates a new, empty `PathFeatures` instance
-    pub fn new() -> Self {
-        Self {
-            distance: 0,
-            modality_changes: 0,
-            transform_counts: HashMap::new(),
-        }
-    }
-    /// Returns the total distance of the path
-    pub const fn distance(&self) -> usize {
-        self.distance
-    }
-    /// Returns the number of modality changes in the path
-    pub const fn modality_changes(&self) -> usize {
-        self.modality_changes
-    }
-    /// Returns a reference to the transformation counts
-    pub const fn transform_counts(&self) -> &HashMap<LPR, usize> {
-        &self.transform_counts
-    }
-}
-
-impl Path {
-    pub fn new(transforms: Vec<LPR>, triads: Vec<Triad>, edge_ids: Vec<Option<EdgeId>>) -> Self {
+impl<T> Path<T> {
+    pub fn new(
+        transforms: Vec<LPR>,
+        triads: Vec<Triad<Triads, T>>,
+        edges: Vec<Option<EdgeId>>,
+    ) -> Self {
         Path {
             transforms,
             triads,
-            edge_ids,
+            edges,
             cost: 0,
-            features: PathFeatures::default(),
+            features: ChainFeatures::default(),
         }
     }
 
-    pub fn from_triads(triads: Vec<Triad>) -> Self {
+    pub fn from_triads(triads: Vec<Triad<Triads, T>>) -> Self {
         Path {
             transforms: Vec::new(),
             triads,
-            edge_ids: Vec::new(),
+            edges: Vec::new(),
             cost: 0,
-            features: PathFeatures::default(),
+            features: ChainFeatures::default(),
         }
     }
 
-    pub fn from_node_with_features(node: SearchNode, features: PathFeatures) -> Self {
+    pub fn from_node_with_features(node: SearchNode<T>, features: ChainFeatures) -> Self {
         let SearchNode {
             cost,
             edges: edge_ids,
@@ -90,7 +58,7 @@ impl Path {
         Path {
             transforms,
             triads,
-            edge_ids,
+            edges: edge_ids,
             cost,
             features,
         }
@@ -99,53 +67,52 @@ impl Path {
     pub const fn cost(&self) -> usize {
         self.cost
     }
-    #[inline]
-    pub fn cost_mut(&mut self) -> &mut usize {
+    /// returns a mutable reference to the path's cost
+    pub const fn cost_mut(&mut self) -> &mut usize {
         &mut self.cost
     }
     /// returns a reference to the path's edge IDs
     pub const fn edges(&self) -> &Vec<Option<EdgeId>> {
-        &self.edge_ids
+        &self.edges
     }
-    #[inline]
-    pub fn edges_mut(&mut self) -> &mut Vec<Option<EdgeId>> {
-        &mut self.edge_ids
+    /// returns a mutable reference to the path's edge IDs
+    pub const fn edges_mut(&mut self) -> &mut Vec<Option<EdgeId>> {
+        &mut self.edges
     }
     /// returns a reference to the path's features
-    pub const fn features(&self) -> &PathFeatures {
+    pub const fn features(&self) -> &ChainFeatures {
         &self.features
     }
-    #[inline]
-    pub fn features_mut(&mut self) -> &mut PathFeatures {
+    /// returns a mutable reference to the path's features
+    pub const fn features_mut(&mut self) -> &mut ChainFeatures {
         &mut self.features
     }
-
+    /// returns a reference to the path's transformations
     pub const fn transforms(&self) -> &Vec<LPR> {
         &self.transforms
     }
-    #[inline]
-    pub fn transforms_mut(&mut self) -> &mut Vec<LPR> {
+    /// returns a mutable reference to the path's transformations
+    pub const fn transforms_mut(&mut self) -> &mut Vec<LPR> {
         &mut self.transforms
     }
-
-    pub const fn triads(&self) -> &Vec<Triad> {
+    /// returns a reference to the triads in the path
+    pub const fn triads(&self) -> &Vec<Triad<Triads, T>> {
         &self.triads
     }
-
-    #[inline]
-    pub fn triads_mut(&mut self) -> &mut Vec<Triad> {
+    /// returns a mutable reference to the triads in the path
+    pub const fn triads_mut(&mut self) -> &mut Vec<Triad<Triads, T>> {
         &mut self.triads
     }
 
     pub fn get_edge(&self, index: usize) -> Option<EdgeId> {
-        self.edge_ids.get(index).cloned().flatten()
+        self.edges.get(index).cloned().flatten()
     }
 
     pub fn push_transform(&mut self, transform: LPR) {
         self.transforms.push(transform);
     }
 
-    pub fn push_triad(&mut self, triad: Triad) {
+    pub fn push_triad(&mut self, triad: Triad<Triads, T>) {
         self.triads.push(triad);
     }
 }

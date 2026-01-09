@@ -1,6 +1,7 @@
 {
-  "rust-analyzer.check.features": ["default", "full"],
-  "github-actions.workflows.pinned.workflows": [
-    ".github/workflows/rust.yml"
-  ]
+  "rust-analyzer.check.features": [
+    "default",
+    "full"
+  ],
+  "github-actions.workflows.pinned.workflows": []
 }

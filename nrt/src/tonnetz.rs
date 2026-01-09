@@ -29,6 +29,10 @@ pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, 
 /// transformations.
 pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
 
+/// A type alias for the tonnetz using triads represented by `[T; 3]` and dynamic triad type
+/// [`Triads`].
+pub type StdHyperTonnetz<T = usize, Ix = usize> = HyperTonnetz<[T; 3], Triads, T, Ix>;
+
 /// The [`HyperTonnetz`] implementation relies on a _hypergraph_ to define the relationships
 /// between various notes and triads within the tonal space. Hypergraphs generalize the concept
 /// of a graph by allowing edges to connect any number of vertices, making them well-suited

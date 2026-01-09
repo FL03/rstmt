@@ -7,7 +7,10 @@ use rspace_traits::RawSpace;
 
 /// [`TriadRepr`] is a sealed trait extending the [`RawSpace`] trait to establish basic
 /// behaviors of compatible representations of a triad.
-pub trait TriadRepr: RawSpace {
+pub trait TriadRepr
+where
+    Self: RawSpace,
+{
     private! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self
