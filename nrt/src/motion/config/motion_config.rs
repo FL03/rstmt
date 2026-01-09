@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 
-/// The [`MotionConfig`] object provides a standard interface for configuring various
+/// The [`MotionPlannerConfig`] object provides a standard interface for configuring various
 /// implemented transformers.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -12,27 +12,27 @@
     derive(serde::Serialize, serde::Deserialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct MotionConfig {
+pub struct MotionPlannerConfig {
     /// Maximum search depth for pathfinding
     pub max_depth: usize,
     /// Maximum number of paths to find
     pub max_paths: usize,
 }
 
-impl MotionConfig {
+impl MotionPlannerConfig {
     /// the default maximum search depth for pathfinding
     pub const DEFAULT_MAX_DEPTH: usize = 5;
     /// the default maximum number of paths to find
     pub const DEFAULT_MAX_PATHS: usize = 5;
 
-    /// returns a new instance of the [`MotionConfig`] with the given values
+    /// returns a new instance of the [`MotionPlannerConfig`] with the given values
     pub const fn new(depth: usize, paths: usize) -> Self {
         Self {
             max_depth: depth, // Default search depth
             max_paths: paths, // default number of paths to find
         }
     }
-    /// returns a new instance of the [`MotionConfig`] with the given depth and default
+    /// returns a new instance of the [`MotionPlannerConfig`] with the given depth and default
     /// [`paths`](Self::DEFAULT_MAX_PATHS)
     pub const fn from_depth(depth: usize) -> Self {
         Self {
@@ -40,7 +40,7 @@ impl MotionConfig {
             max_paths: Self::DEFAULT_MAX_PATHS, // default number of paths to find
         }
     }
-    /// returns a new instance of the [`MotionConfig`] with the given paths and default
+    /// returns a new instance of the [`MotionPlannerConfig`] with the given paths and default
     /// [`depth`](Self::DEFAULT_MAX_DEPTH)
     pub const fn from_paths(paths: usize) -> Self {
         Self {
@@ -102,7 +102,7 @@ impl MotionConfig {
     }
 }
 
-impl Default for MotionConfig {
+impl Default for MotionPlannerConfig {
     fn default() -> Self {
         Self {
             max_depth: Self::DEFAULT_MAX_DEPTH,
@@ -111,7 +111,7 @@ impl Default for MotionConfig {
     }
 }
 
-impl core::fmt::Display for MotionConfig {
+impl core::fmt::Display for MotionPlannerConfig {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,

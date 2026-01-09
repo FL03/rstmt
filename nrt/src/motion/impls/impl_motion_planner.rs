@@ -5,8 +5,8 @@
 */
 #![cfg(feature = "alloc")]
 
-use crate::motion::planner::{MotionPlanner, MotionPlannerConfig};
 use crate::motion::types::{ChainFeatures, Path, PathCache, SearchNode};
+use crate::motion::{MotionPlanner, MotionPlannerConfig};
 use crate::tonnetz::StdHyperTonnetz;
 use crate::triad::DynTriad;
 use crate::types::LPR;
