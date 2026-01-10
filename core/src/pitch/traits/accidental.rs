@@ -23,6 +23,7 @@ where
     {
         s.parse::<Self>()
     }
+
     fn name(&self) -> &str;
 
     fn symbol(&self) -> char;
