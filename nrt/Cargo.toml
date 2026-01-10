@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["default", "motion", "tonnetz"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -30,14 +30,6 @@ crate-type = ["lib"]
 doc = true
 doctest = true
 test = true
-
-[[test]]
-name = "pathfinder"
-required-features = ["motion"]
-
-[[test]]
-name = "planner"
-required-features = ["motion"]
 
 [dependencies]
 rstmt-core = { workspace = true }
@@ -75,6 +67,7 @@ wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
+  "motion",
   "std",
   "tonnetz",
 ]

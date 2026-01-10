@@ -5,7 +5,7 @@
 */
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
-use crate::{DefaultTriadChord, LPR, Triads};
+use crate::{LPR, TriChord, Triads};
 use core::cmp::Ordering;
 use rshyper::EdgeId;
 use rspace_traits::RawSpace;
@@ -15,11 +15,11 @@ use alloc::vec::Vec;
 
 /// A type alias for a [`SearchNodeBase`] equipped with standard triad chord representation
 /// (`[T; 3]`) and a dynamic triad type, [`Triads`].
-pub type SearchNode<T = isize> = SearchNodeBase<DefaultTriadChord<T>, Triads, T>;
+pub type SearchNode<T = isize> = SearchNodeBase<TriChord<T>, Triads, T>;
 
 /// A* search node with priority
 #[derive(Clone, Debug)]
-pub struct SearchNodeBase<S = crate::DefaultTriadChord, K = Triads, T = <S as RawSpace>::Elem>
+pub struct SearchNodeBase<S = crate::TriChord, K = Triads, T = <S as RawSpace>::Elem>
 where
     S: TriadRepr<Elem = T>,
     K: TriadType,
