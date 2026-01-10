@@ -131,7 +131,7 @@ mod tests {
     fn test_triad_properties() {
         let fsharp_minor = Triad::minor(6);
         assert! { fsharp_minor.is_minor() && !fsharp_minor.is_major() }
-        assert_eq! { fsharp_minor.class(), rstmt_core::Minor }
+        assert_eq! { fsharp_minor.class(), &rstmt_core::Minor }
     }
 
     #[test]

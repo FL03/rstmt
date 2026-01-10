@@ -16,18 +16,15 @@ pub trait Relative {
 
 /// The [`TriadType`] trait is used to represent the various classifications of a triad
 /// considered by the Neo-Riemannian theory.
-pub trait TriadType: Relative
+pub trait TriadType
 where
-    Self: 'static + Copy + Default + Relative + Send + Sync + core::fmt::Debug + core::fmt::Display,
+    Self: 'static + Copy + Relative + Send + Sync + core::fmt::Debug + core::fmt::Display,
 {
     private! {}
 
     fn new() -> Self
     where
-        Self: Sized,
-    {
-        Self::default()
-    }
+        Self: Sized;
 
     fn root(&self) -> usize;
 
@@ -35,8 +32,18 @@ where
 
     fn third(&self) -> usize;
     /// consumes the instance, returning a variant of the [`TriadClass`] enum
-    fn dynamic(self) -> crate::Triads {
-        crate::Triads::from_class(self)
+    fn dynamic(&self) -> crate::Triads {
+        if self.is_major() {
+            Triads::Major
+        } else if self.is_minor() {
+            Triads::Minor
+        } else if self.is_augmented() {
+            Triads::Augmented
+        } else if self.is_diminished() {
+            Triads::Diminished
+        } else {
+            unreachable!("invalid triad type")
+        }
     }
 
     fn is_major(&self) -> bool {
@@ -56,9 +63,30 @@ where
     }
 }
 
+pub trait RelTriad: TriadType + Relative
+where
+    Self::Rel: TriadType,
+{
+    private! {}
+
+    fn relative(&self) -> Self::Rel;
+}
+
 /*
  ************* Implementations *************
 */
+
+impl<A, B> RelTriad for A
+where
+    A: TriadType + Relative<Rel = B>,
+    B: TriadType,
+{
+    seal! {}
+
+    fn relative(&self) -> B {
+        <B>::new()
+    }
+}
 
 impl Relative for Triads {
     type Rel = Triads;
@@ -115,6 +143,10 @@ macro_rules! triad_kind {
             // type Rel = $rel;
 
             seal! {}
+
+            fn new() -> Self {
+                Self::default()
+            }
 
             fn root(&self) -> usize {
                 $r

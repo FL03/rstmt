@@ -60,9 +60,9 @@ where
     pub const fn chord_mut(&mut self) -> &mut S {
         &mut self.chord
     }
-    /// returns a copy of the class of the triad.
-    pub const fn class(&self) -> K {
-        self.class
+    /// returns a reference of the class of the triad.
+    pub const fn class(&self) -> &K {
+        &self.class
     }
     /// returns a mutable reference to the class of the triad.
     pub const fn class_mut(&mut self) -> &mut K {

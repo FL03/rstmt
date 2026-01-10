@@ -74,13 +74,13 @@ classes! {
 impl<P, K> IntoPitchClass<P, K> for isize
 where
     P: PitchClassRepr<Tag = K>,
-    K: Accidental + Default,
+    K: Accidental,
 {
     seal! {}
 
     fn into_pitch_class(self) -> PitchClass<P, K> {
         match self.pmod() {
-            x if x == P::IDX => PitchClass::from_class(P::new()),
+            x if x == P::IDX => PitchClass::new(),
             _ => panic!("cannot convert {self} into pitch class"),
         }
     }

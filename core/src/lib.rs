@@ -44,7 +44,7 @@ pub(crate) mod macros {
 extern crate alloc;
 
 pub mod chord;
-pub mod comp;
+pub mod compose;
 pub mod consts;
 pub mod error;
 pub mod freq;
@@ -75,7 +75,7 @@ pub mod utils {
 #[doc(inline)]
 pub use self::{
     chord::{RawChord, RawChordMut},
-    comp::Scale,
+    compose::Scale,
     consts::*,
     error::*,
     freq::*,
@@ -96,7 +96,7 @@ pub mod prelude {
     pub use rstmt_traits::prelude::*;
 
     pub use crate::chord::prelude::*;
-    pub use crate::comp::prelude::*;
+    pub use crate::compose::prelude::*;
     pub use crate::consts::*;
     pub use crate::freq::*;
     pub use crate::intervals::prelude::*;

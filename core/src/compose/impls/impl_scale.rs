@@ -3,7 +3,7 @@
     Created At: 2025.12.21:08:58:02
     Contrib: @FL03
 */
-use crate::comp::Scale;
+use crate::compose::Scale;
 use crate::freq::{Frequency, IntoFrequency, RawFrequency};
 use num_traits::{Float, FromPrimitive};
 
