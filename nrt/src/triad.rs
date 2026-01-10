@@ -12,29 +12,29 @@
 //! intervallic relationships with one another. More specifically, the distance between the
 //! first and second as well as the second and third notes is defined to be a major or minor
 //! third, whilst the distance between the first and third notes is some variant of a _fifth_.
-//! 
-//! These compositional contraints lead to four possible triadic chord types, namely: major, 
+//!
+//! These compositional contraints lead to four possible triadic chord types, namely: major,
 //! minor, augmented, and diminished. Each of these chord types can be represented as a 3-tuple
-//! containing the pitch classes of each note within the chord. For example, a C-major triad 
-//! can be represented as the tuple (0, 4, 7), where `0` represents the root note C, `4` the 
+//! containing the pitch classes of each note within the chord. For example, a C-major triad
+//! can be represented as the tuple (0, 4, 7), where `0` represents the root note C, `4` the
 //! major third E, and `7` as the perfect fifth G.
-//! 
-//! Additionally, triads may be transformed using any one of three transformations defined as: 
+//!
+//! Additionally, triads may be transformed using any one of three transformations defined as:
 //! leading, parallel, and relative. The behavior of these transformations is determined by the
-//! interval between the first two notes of the triad, i.e. a major or minor third. Each of 
-//! these transformations is capable of being chained together into discrete and continuous 
+//! interval between the first two notes of the triad, i.e. a major or minor third. Each of
+//! these transformations is capable of being chained together into discrete and continuous
 //! sequences or spaces and is its own inverse. This means that any consecutive applications of
-//! any one particular transformation simply reverts the object back into its original state. 
-//! 
-//! That being said, augmented and diminished traids _can_ be transformed, however, the exact 
+//! any one particular transformation simply reverts the object back into its original state.
+//!
+//! That being said, augmented and diminished traids _can_ be transformed, however, the exact
 //! nature of their responses is not as predictable as with major / minor triads.  
-//! 
+//!
 //! ## Examples
 //!
 //! ### _Basic Usage_
-//! 
+//!
 //! Initialize a C-major triad and verify its composition
-//! 
+//!
 //! ```rust
 //! use rstmt_nrt::Triad;
 //! // create new triad
@@ -42,11 +42,11 @@
 //! // verify the composition
 //! assert_eq! { c_major, [0, 4, 7] }
 //! ```
-//! 
+//!
 //! ### _Transformations_
-//! 
+//!
 //! Initialize a C-major triad before applying each of the three transformations:
-//! 
+//!
 //! ```rust
 //! use rstmt_nrt::Triad;
 //! // create new triad

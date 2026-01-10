@@ -4,8 +4,7 @@
 */
 use crate::octave::Octave;
 
-impl<T> Octave<&T>
-{
+impl<T> Octave<&T> {
     /// returns a new instance of the [`Octave`] with a cloned instance of the current value.alloc
     pub fn cloned(&self) -> Octave<T>
     where
@@ -22,8 +21,7 @@ impl<T> Octave<&T>
     }
 }
 
-impl<T> Octave<&mut T>
-{
+impl<T> Octave<&mut T> {
     /// returns a new instance of the [`Octave`] with a cloned instance of the current value.alloc
     pub fn cloned(&self) -> Octave<T>
     where
@@ -40,8 +38,7 @@ impl<T> Octave<&mut T>
     }
 }
 
-impl<T> Octave<*const T>
-{
+impl<T> Octave<*const T> {
     /// returns a new instance of the [`Octave`] with a copied instance of the current value
     pub const fn copied(&self) -> Octave<T>
     where

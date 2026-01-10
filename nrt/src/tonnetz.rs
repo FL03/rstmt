@@ -4,16 +4,17 @@
     Contrib: @FL03
 */
 //! The tonnetz is a conceptual lattice representation of tonal space first proposed in 1739 by
-//! Leonhard Euler as a means of visualizing relationships between triads
+//! Leonhard Euler as a means of visualizing relationships between triads. Over the centuries,
+//! researchers have expanded upon Euler's initial concept, eventually culminating in the
+//! development of the long-awaited _**generalized tonnetz**_.
 //!
-//! ## Resources
+//! # Resources
 //!
-//! Listed below are some useful resources for understanding the tonnetz and its potential
-//! applications in both music theroy as well as computer science:
+//! Listed below are some useful resources for understanding the tonnetz, its history, and its
+//! applications in music theory and beyond.
 //!
 //! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 //! - [Wikipedia: Tonnetz](https://en.wikipedia.org/wiki/Tonnetz)
-//!
 mod impl_hyper_tonnetz;
 
 use crate::triad::TriadBase;
@@ -23,7 +24,7 @@ use rshyper::{EdgeId, RawIndex, UnHyperMap};
 use rspace_traits::RawSpace;
 
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase`]
-pub(crate) type TriadMap<S = TriChord, K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
+pub(crate) type EdgeMap<S = TriChord, K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
     HashMap<EdgeId<Ix>, TriadBase<S, K, T>>;
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
 /// transformations.
@@ -49,7 +50,7 @@ where
     /// a hypergraph representing the tonal space
     pub(crate) graph: NoteGraph<T, (), Ix>,
     /// Maps EdgeIds to Triad for efficient access
-    pub(crate) triads: TriadMap<S, K, T, Ix>,
+    pub(crate) triads: EdgeMap<S, K, T, Ix>,
     /// Tracks adjacency between triads via transformations
     pub(crate) transformations: LprMap<Ix>,
 }

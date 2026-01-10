@@ -16,7 +16,10 @@ where
     S: TriadRepr<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
-    pub fn new(chord: S, class: K) -> Self where T: Zero {
+    pub fn new(chord: S, class: K) -> Self
+    where
+        T: Zero,
+    {
         Self {
             chord,
             class,

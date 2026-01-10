@@ -4,32 +4,32 @@
     Contrib: @FL03
 */
 use crate::freq::{Frequency, RawFrequency};
-use crate::pitch::{Flat, Natural, PitchClass, RawAccidental, RawPitchClass, Sharp};
+use crate::pitch::{Accidental, Flat, Natural, PitchClass, RawPitchClass, Sharp};
 use num_traits::{Float, FromPrimitive};
 
 impl<P, K> PitchClass<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
-    pub fn new() -> Self
-    where
-        P: Default,
-        K: Default,
-    {
+    pub fn new() -> Self {
         Self {
-            class: P::default(),
-            kind: K::default(),
+            class: P::new(),
+            kind: K::new(),
         }
     }
 
-    pub fn from_class(class: P) -> Self
-    where
-        K: Default,
-    {
+    pub fn from_class(class: P) -> Self {
         Self {
             class,
-            kind: K::default(),
+            kind: K::new(),
+        }
+    }
+
+    pub fn from_kind(kind: K) -> Self {
+        Self {
+            class: P::new(),
+            kind,
         }
     }
     /// returns a pointer to the class
@@ -44,7 +44,7 @@ where
     pub fn as_frequency<T>(&self) -> Frequency<T>
     where
         P: RawPitchClass<Tag = K>,
-        K: RawAccidental,
+        K: Accidental,
         T: RawFrequency + Float + FromPrimitive,
     {
         Frequency::from_class_on_a4(self.get().index())

@@ -5,12 +5,12 @@
 */
 use crate::note::NoteBase;
 use crate::octave::Octave;
-use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawAccidental, RawPitchClass};
+use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawPitchClass};
 
 impl<P, K> core::fmt::Debug for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.write_str(self.aspn().as_str())
@@ -20,7 +20,7 @@ where
 impl<P, K> core::fmt::Display for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.write_str(self.aspn().as_str())
@@ -30,7 +30,7 @@ where
 impl<P, K> PartialEq<str> for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     fn eq(&self, other: &str) -> bool {
         self.aspn() == other
@@ -40,7 +40,7 @@ where
 impl<P, K> PartialEq<&str> for NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     fn eq(&self, other: &&str) -> bool {
         self.aspn() == *other
@@ -50,7 +50,7 @@ where
 impl<P, K> core::str::FromStr for NoteBase<P, K>
 where
     P: PitchClassRepr<Tag = K>,
-    K: Accidental,
+    K: Accidental + core::str::FromStr<Err = crate::error::Error>,
     <P as core::str::FromStr>::Err: core::fmt::Debug,
 {
     type Err = crate::error::Error;

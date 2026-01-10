@@ -1,7 +1,19 @@
-#![crate_name = "rstmt_core"]
 //! This crate provides the core functionality for the `rstmt` library, including [`Aspn`],
 //! [`NoteBase`], [`Pitch`], and [`Octave`]. Additionally, the crate provides a host of
 //! other primitives and utilities designed to manifest and manipulate musical concepts.
+//!
+//! ## Overview
+//!
+//! The core modules focus on establishing the basic primitives and interfaces needed to
+//! represent musical notes, pitches, octaves, and related concepts. These modules
+//! provide the foundational building blocks for more complex musical structures and
+//! operations.
+//!
+//! These modules are designed to be efficient, flexible, and correct, ensuring conversions
+//! between different representations are handled seamlessly. For example, _any_ [`PitchClass`]
+//! is able to be converted directly into a [`Frequency`].
+#![crate_name = "rstmt_core"]
+#![crate_type = "lib"]
 #![allow(
     clippy::derivable_impls,
     clippy::len_without_is_empty,
@@ -15,7 +27,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }

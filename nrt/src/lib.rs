@@ -8,11 +8,6 @@
 //!
 //! ## Background
 //!
-//! Before diving into the implementation details, it is important to understand the concepts
-//! at hand and the theory behind them.
-//!
-//! ### Neo-Riemannian Theory
-//!
 //! The neo-riemannian theory is a loose collection of musical theories focused on the triad.
 //! Research in the field has been ongoing for over a century, culminating in the successful
 //! generalization of the tonnetz, a geometric representation of the triad and its
@@ -35,10 +30,6 @@
 //! // chain together two parallel transformations to confirm inversion
 //! assert_eq! { triad.parallel().parallel(), triad }
 //! ```
-//!
-//! ## Resources
-//!
-//! - [The Generalized Tonnetz](https://dmitri.mycpanel.princeton.edu/tonnetzes.pdf)
 #![allow(
     clippy::derivable_impls,
     clippy::len_without_is_empty,
@@ -52,6 +43,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
