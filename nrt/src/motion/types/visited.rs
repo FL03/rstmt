@@ -11,7 +11,7 @@ use rshyper::EdgeId;
 /// An extended transformation chain that records the visited triads and path features
 #[derive(Clone, Debug, Default, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct VisitedChain<T = isize, Ix = usize> {
+pub struct Visited<T = isize, Ix = usize> {
     pub(crate) chain: Chain,
     pub(crate) edges: Vec<EdgeId<Ix>>,
     /// The sequence of triads visited
@@ -22,9 +22,9 @@ pub struct VisitedChain<T = isize, Ix = usize> {
  ************* Implementations *************
 */
 
-impl<T, Ix> VisitedChain<T, Ix> {
+impl<T, Ix> Visited<T, Ix> {
     pub fn new(path: Vec<LPR>, visited: Vec<DynTriad<T>>) -> Self {
-        VisitedChain {
+        Visited {
             chain: Chain::from_path(path),
             edges: Vec::new(),
             visited,
@@ -36,7 +36,7 @@ impl<T, Ix> VisitedChain<T, Ix> {
         I: IntoIterator<Item = DynTriad<T>>,
     {
         let visited = Vec::from_iter(visited);
-        VisitedChain::new(Vec::new(), visited)
+        Visited::new(Vec::new(), visited)
     }
     /// returns a reference to the chain
     pub const fn chain(&self) -> &Chain {
@@ -72,31 +72,31 @@ impl<T, Ix> VisitedChain<T, Ix> {
     }
 }
 
-impl<T, Ix> AsRef<Chain> for VisitedChain<T, Ix> {
+impl<T, Ix> AsRef<Chain> for Visited<T, Ix> {
     fn as_ref(&self) -> &Chain {
         self.chain()
     }
 }
 
-impl<T, Ix> AsMut<Chain> for VisitedChain<T, Ix> {
+impl<T, Ix> AsMut<Chain> for Visited<T, Ix> {
     fn as_mut(&mut self) -> &mut Chain {
         self.chain_mut()
     }
 }
 
-impl<T, Ix> core::borrow::Borrow<Chain> for VisitedChain<T, Ix> {
+impl<T, Ix> core::borrow::Borrow<Chain> for Visited<T, Ix> {
     fn borrow(&self) -> &Chain {
         self.chain()
     }
 }
 
-impl<T, Ix> core::borrow::BorrowMut<Chain> for VisitedChain<T, Ix> {
+impl<T, Ix> core::borrow::BorrowMut<Chain> for Visited<T, Ix> {
     fn borrow_mut(&mut self) -> &mut Chain {
         self.chain_mut()
     }
 }
 
-impl<T, Ix> core::ops::Deref for VisitedChain<T, Ix> {
+impl<T, Ix> core::ops::Deref for Visited<T, Ix> {
     type Target = Chain;
 
     fn deref(&self) -> &Self::Target {
@@ -104,13 +104,13 @@ impl<T, Ix> core::ops::Deref for VisitedChain<T, Ix> {
     }
 }
 
-impl<T, Ix> core::ops::DerefMut for VisitedChain<T, Ix> {
+impl<T, Ix> core::ops::DerefMut for Visited<T, Ix> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.chain_mut()
     }
 }
 
-impl<T, Ix> IntoIterator for VisitedChain<T, Ix> {
+impl<T, Ix> IntoIterator for Visited<T, Ix> {
     type Item = LPR;
     type IntoIter = alloc::vec::IntoIter<LPR>;
 
@@ -119,7 +119,7 @@ impl<T, Ix> IntoIterator for VisitedChain<T, Ix> {
     }
 }
 
-impl<'a, T, Ix> IntoIterator for &'a VisitedChain<T, Ix> {
+impl<'a, T, Ix> IntoIterator for &'a Visited<T, Ix> {
     type Item = &'a LPR;
     type IntoIter = core::slice::Iter<'a, LPR>;
 

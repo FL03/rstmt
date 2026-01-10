@@ -28,6 +28,8 @@ pub(crate) type TriadMap<S = TriChord, K = Triads, T = <S as RawSpace>::Elem, Ix
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
 /// transformations.
 pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
+/// a type alias for the underlying hypergraph structure used in the tonnetz
+pub(crate) type NoteGraph<T = isize, E = (), Ix = usize> = UnHyperMap<T, E, Ix>;
 
 /// A type alias for the tonnetz using triads represented by `[T; 3]` and dynamic triad type
 /// [`Triads`].
@@ -45,7 +47,7 @@ where
     Ix: RawIndex,
 {
     /// a hypergraph representing the tonal space
-    pub(crate) graph: UnHyperMap<T, (), Ix>,
+    pub(crate) graph: NoteGraph<T, (), Ix>,
     /// Maps EdgeIds to Triad for efficient access
     pub(crate) triads: TriadMap<S, K, T, Ix>,
     /// Tracks adjacency between triads via transformations

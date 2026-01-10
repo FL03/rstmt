@@ -3,13 +3,13 @@
     Created At: 2025.12.28:10:45:40
     Contrib: @FL03
 */
-use crate::tonnetz::{HyperTonnetz, LprMap, TriadMap};
+use crate::tonnetz::{HyperTonnetz, LprMap, NoteGraph, TriadMap};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use core::hash::Hash;
 use hashbrown::HashMap;
 use num_traits::FromPrimitive;
-use rshyper::{AddStep, EdgeId, RawIndex, UnHyperMap, VertexId, Weight};
+use rshyper::{AddStep, EdgeId, RawIndex, VertexId, Weight};
 use rstmt_core::Octave;
 
 impl<S, K, T, Ix> HyperTonnetz<S, K, T, Ix>
@@ -24,7 +24,7 @@ where
         Ix: Default,
     {
         HyperTonnetz {
-            graph: UnHyperMap::new(),
+            graph: NoteGraph::new(),
             triads: TriadMap::new(),
             transformations: LprMap::new(),
         }
@@ -36,17 +36,17 @@ where
     {
         // each edge has n vertices meaning we need to reserve space for n^2 edges
         HyperTonnetz {
-            graph: UnHyperMap::with_capacity(capacity * capacity, capacity),
+            graph: NoteGraph::with_capacity(capacity * capacity, capacity),
             triads: HashMap::with_capacity(capacity),
             transformations: HashMap::new(),
         }
     }
     /// returns a reference to the underlying graph
-    pub const fn graph(&self) -> &UnHyperMap<T, (), Ix> {
+    pub const fn graph(&self) -> &NoteGraph<T, (), Ix> {
         &self.graph
     }
     /// returns a mutable reference to the underlying graph
-    pub const fn graph_mut(&mut self) -> &mut UnHyperMap<T, (), Ix> {
+    pub const fn graph_mut(&mut self) -> &mut NoteGraph<T, (), Ix> {
         &mut self.graph
     }
     /// returns a reference to the triads map
@@ -66,12 +66,21 @@ where
         &mut self.transformations
     }
     #[inline]
-    /// overwrite the current graph and return a mutable reference to the instance
-    pub fn set_graph(&mut self, graph: UnHyperMap<T, (), Ix>) {
+    /// clears the current instance, removing any existing data
+    pub fn clear(&mut self)
+    where
+        Ix: Default + Eq + Hash,
+    {
+        self.graph_mut().clear();
+        self.triads_mut().clear();
+        self.transformations_mut().clear();
+    }
+    /// update the current graph with the given instance
+    pub fn set_graph(&mut self, graph: NoteGraph<T, (), Ix>) {
         self.graph = graph
     }
     #[inline]
-    /// overwrite the current triads and return a mutable reference to the instance
+    /// update the triad map
     pub fn set_triads(&mut self, triads: TriadMap<S, K, T, Ix>) {
         self.triads = triads
     }

@@ -36,16 +36,14 @@ mod impls {
 #[cfg(feature = "alloc")]
 mod types {
     #[doc(inline)]
-    pub use self::{
-        cache::*, chain::*, chain_features::*, path::*, search_node::*, transform_set::*,
-    };
+    pub use self::{cache::*, chain::*, chain_features::*, path::*, search_node::*, visited::*};
 
     mod cache;
     mod chain;
     mod chain_features;
     mod path;
     mod search_node;
-    mod transform_set;
+    mod visited;
 }
 
 pub(crate) mod prelude {

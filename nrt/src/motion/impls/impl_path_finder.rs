@@ -5,7 +5,7 @@
 */
 use crate::motion::config::PathFinderConfig;
 use crate::motion::path_finder::PathFinder;
-use crate::motion::types::{Chain, ChainFeatures, VisitedChain};
+use crate::motion::types::{Chain, ChainFeatures, Visited};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::{DynTriad, TriadBase};
 use crate::types::LPR;
@@ -89,57 +89,49 @@ where
         + core::ops::AddAssign,
 {
     /// find all possible chains that are capable of transforming the given instance to the target symbol
-    pub fn find_paths_to_target(&self, target: T) -> crate::Result<Vec<VisitedChain<T>>> {
+    pub fn find_paths_to_target(&self, target: T) -> crate::Result<Vec<Visited<T>>> {
+        // initialize an empty vector to hold the result paths
         let mut result_paths = Vec::new();
-
-        let start_triad = *self.triad();
+        // get a copy of the starting point
+        let source = *self.triad();
 
         // Check if the starting triad already contains the target pitch
-        if start_triad.contains(&target) {
-            let features = ChainFeatures {
-                transformations: HashMap::new(),
-                modality_changes: 0,
-                distance: 0,
-            };
-
-            result_paths.push(VisitedChain::<T> {
+        if source.contains(&target) {
+            result_paths.push(Visited::<T> {
                 edges: Vec::new(),
-                visited: vec![start_triad],
-                chain: Chain::from_features(features),
+                visited: vec![source],
+                chain: Chain::new(),
             });
 
             return Ok(result_paths);
         }
 
-        // For BFS: (current_triad, transforms_so_far, triads_so_far, edge_ids_so_far)
+        // For BFS: (current_triad, transforms_so_far, triads_so_far)
         let mut queue = VecDeque::new();
-        queue.push_back((start_triad, Vec::new(), vec![start_triad]));
+        queue.push_back((source, Vec::new(), vec![source]));
 
         // Use a hash set to track visited triads and avoid cycles
         // We'll hash based on the triad's notes, not its edge ID, since we might explore virtual triads
-        let mut visited_triads = HashSet::new();
-        visited_triads.insert(start_triad.chord);
+        let mut visited = HashSet::new();
+        // make sure the source chord is included
+        visited.insert(*source.chord());
 
         while let Some((current_triad, tchain, triads)) = queue.pop_front() {
-            // Don't exceed maximum depth
-            if tchain.len() >= self.max_depth() {
-                continue;
+            // ensure the depth and path limits are not exceeded
+            if tchain.len() >= self.max_depth() || result_paths.len() >= self.max_paths() {
+                break;
             }
-
-            // Try each transformation: Leading, Parallel, Relative
+            // iter over the LPR variants (leading / parallel / relative)
             for dirac in LPR::iter() {
-                // Apply the transformation to get a new triad
+                // apply the transformation
                 let next_triad = current_triad.transform(dirac);
-
-                // Skip if we've already visited this triad
-                if visited_triads.contains(next_triad.chord()) {
+                // check that we haven't already visited this triad
+                if visited.contains(next_triad.chord()) {
                     continue;
                 }
-
-                // Mark as visited
-                visited_triads.insert(*next_triad.chord());
-
-                // Build new path
+                // mark the triad as visited
+                visited.insert(*next_triad.chord());
+                // append the new transformation and triad to the respective chains
                 let mut new_transforms = tchain.clone();
                 new_transforms.push(dirac);
 
@@ -151,9 +143,8 @@ where
                     // Calculate path features
                     let features = self.analyze_path_features(&new_triads);
                     let cost = features.distance + new_transforms.len();
-
                     // Found a path
-                    result_paths.push(VisitedChain {
+                    result_paths.push(Visited {
                         visited: new_triads.clone(),
                         edges: Vec::new(),
                         chain: Chain {
@@ -162,15 +153,11 @@ where
                             path: new_transforms.clone(),
                         },
                     });
-
                     // Check if we've found enough paths
                     if result_paths.len() >= self.max_paths() {
-                        // Sort paths by cost (lower is better)
-                        result_paths.sort_by_key(|p| p.cost);
-                        return Ok(result_paths);
+                        break;
                     }
                 }
-
                 // Continue the search
                 queue.push_back((next_triad, new_transforms, new_triads));
             }
