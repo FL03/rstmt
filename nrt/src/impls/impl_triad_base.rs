@@ -7,7 +7,7 @@ use crate::triad::TriadBase;
 
 use crate::traits::{TriadRepr, TriadReprMut, TriadType};
 use crate::types::LPR;
-use num_traits::{Float, FromPrimitive, ToPrimitive};
+use num_traits::{Float, FromPrimitive, ToPrimitive, Zero};
 use rstmt_core::{Octave, PitchMod, Transform};
 
 impl<S, T, K> TriadBase<S, K, T>
@@ -16,17 +16,17 @@ where
     S: TriadRepr<Elem = T>,
 {
     /// Returns a new instance of the [`TriadBase`] with the given chord and kind.
-    pub const fn new(chord: S, class: K) -> Self {
+    pub fn new(chord: S, class: K) -> Self where T: Zero {
         Self {
             chord,
             class,
-            octave: Octave(0),
+            octave: Octave::zero(),
         }
     }
     /// Create a new triad from a root pitch and class
     pub fn from_root_with_class(root: T, class: K) -> Self
     where
-        T: Copy + FromPrimitive + PitchMod<Output = T> + core::ops::Add<Output = T>,
+        T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     {
         // generate the chord factors from the root and class
         let chord = [
@@ -37,7 +37,7 @@ where
         Self {
             class,
             chord: S::from_arr(chord),
-            octave: rstmt_core::Octave(0),
+            octave: Octave::zero(),
         }
     }
     #[inline]
@@ -65,10 +65,11 @@ where
     pub const fn class_mut(&mut self) -> &mut K {
         &mut self.class
     }
-    pub const fn octave(&self) -> Octave {
-        self.octave
+    /// returns a reference to the octave of the triad.
+    pub const fn octave(&self) -> &Octave<T> {
+        &self.octave
     }
-    pub const fn octave_mut(&mut self) -> &mut Octave {
+    pub const fn octave_mut(&mut self) -> &mut Octave<T> {
         &mut self.octave
     }
     /// returns a reference to the root note of the triad.
@@ -149,7 +150,7 @@ where
         }
     }
     #[inline]
-    pub fn with_octave(self, octave: Octave) -> Self {
+    pub fn with_octave(self, octave: Octave<T>) -> Self {
         Self { octave, ..self }
     }
     /// consumes the triad and returns the chord and class
@@ -175,10 +176,11 @@ where
     /// computes the centroid of the triad
     pub fn centroid<U>(&self) -> Option<[U; 2]>
     where
+        T: Copy + ToPrimitive,
         U: Float + FromPrimitive + ToPrimitive + core::iter::Sum<T>,
         S: Clone + IntoIterator<Item = T>,
     {
-        let y = U::from_isize(*self.octave)?;
+        let y = U::from(*self.octave().get())?;
         let x = self.chord().clone().into_iter().sum::<U>() / U::from_u8(3)?;
         Some([x, y])
     }

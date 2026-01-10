@@ -7,7 +7,7 @@ use crate::triad::TriadBase;
 
 use crate::traits::{Relative, TriadRepr, TriadReprMut, TriadType};
 use crate::types::{Factors, LPR};
-use num_traits::{FromPrimitive, One};
+use num_traits::{FromPrimitive, One, Zero};
 use rstmt_core::{PitchMod, Transform};
 
 impl<S, T, K, R> Transform<LPR> for TriadBase<S, K, T>
@@ -44,6 +44,7 @@ impl<T, S, K> core::fmt::Display for TriadBase<S, K, T>
 where
     S: TriadRepr<Elem = T> + core::fmt::Debug,
     K: TriadType + core::fmt::Display,
+    T: core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
@@ -215,6 +216,7 @@ where
 impl<T, S, K> From<(S, K)> for TriadBase<S, K, T>
 where
     S: TriadRepr<Elem = T>,
+    T: Zero,
     K: TriadType,
 {
     fn from((chord, class): (S, K)) -> Self {

@@ -2,12 +2,9 @@
     appellation: impl_octave <module>
     authors: @FL03
 */
-use crate::octave::{Octave, RawOctave};
+use crate::octave::Octave;
 
-impl<T> Octave<T>
-where
-    T: RawOctave,
-{
+impl<T> Octave<T> {
     /// a functional constructor for [`Octave`], essentially wrapping the given value
     pub const fn new(octave: T) -> Self {
         Octave(octave)
