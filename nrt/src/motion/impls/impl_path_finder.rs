@@ -7,8 +7,8 @@ use crate::motion::config::PathFinderConfig;
 use crate::motion::path_finder::PathFinder;
 use crate::motion::types::{Chain, ChainFeatures, Visited};
 use crate::traits::{TriadRepr, TriadType};
-use crate::triad::{DynTriad, TriadBase};
-use crate::types::LPR;
+use crate::triad::{DynTriad, TriChord, TriadBase};
+use crate::types::{LPR, Triads};
 use alloc::collections::VecDeque;
 use hashbrown::{HashMap, HashSet};
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
@@ -28,10 +28,11 @@ where
             config: PathFinderConfig::new(Self::DEFAULT_MAX_DEPTH, Self::DEFAULT_MAX_PATHS),
         }
     }
+    /// returns a reference to the pathfinder configuration
     pub const fn config(&self) -> &PathFinderConfig {
         &self.config
     }
-    /// returns a mutable reference to the configuration of the navigator
+    /// returns a mutable reference to the pathfinder configuration
     pub const fn config_mut(&mut self) -> &mut PathFinderConfig {
         &mut self.config
     }
@@ -72,7 +73,7 @@ where
     }
 }
 
-impl<'a, T> PathFinder<'a, [T; 3], crate::Triads, T>
+impl<'a, T> PathFinder<'a, TriChord<T>, Triads, T>
 where
     T: Copy
         + Eq
