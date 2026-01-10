@@ -143,8 +143,8 @@ where
                     // Calculate path features
                     let features = self.analyze_path_features(&new_triads);
                     let cost = features.distance + new_transforms.len();
-                    // Found a path
-                    result_paths.push(Visited {
+                    // create the chain
+                    let visited = Visited {
                         visited: new_triads.clone(),
                         edges: Vec::new(),
                         chain: Chain {
@@ -152,7 +152,9 @@ where
                             features,
                             path: new_transforms.clone(),
                         },
-                    });
+                    };
+                    // Found a path
+                    result_paths.push(visited);
                     // Check if we've found enough paths
                     if result_paths.len() >= self.max_paths() {
                         break;
