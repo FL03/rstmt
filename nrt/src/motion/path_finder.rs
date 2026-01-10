@@ -26,33 +26,34 @@ mod tests {
 
     #[test]
     fn test_triad_path_finder() -> crate::Result<()> {
-        let triad = Triad::major(0).dynamic(); // C Major (0,4,7)
         // set the target note to 1 (C#)
-        let target_note: isize = 1;
+        let tgt: isize = 1;
+        // initialize a new, c-major triad: [0, 4, 7]
+        let c_major = Triad::major(0).dynamic();
         // use the transformer to find all paths between the current instance the target note
-        let paths = triad.path_finder().find_paths_to_target(target_note)?;
+        let paths = c_major.path_finder().find_paths_to_target(tgt)?;
         // verify each path results in an instance containing the target note.
-        paths.iter().for_each(|chain| {
-            let p = chain.path().clone();
-            assert! { triad.walk(p).contains(&target_note) }
-        });
+        for chain in paths {
+            let p = chain.path().iter().copied();
+            assert! { c_major.walk(p).contains(&tgt) }
+        }
         Ok(())
     }
 
     #[test]
     #[cfg(feature = "rand")]
     fn test_triad_path_finder_rand() -> crate::Result<()> {
-        let rand_root: usize = rand::random_range(0..12);
-        let rand_tgt: usize = rand::random_range(0..12);
-        let target_note = rand_tgt as isize;
+        let root: usize = rand::random_range(0..12);
+        let rtgt: usize = rand::random_range(1..12);
+        let target = rtgt as isize;
         // initialize a random major triad
-        let triad = Triad::major(rand_root as isize).dynamic();
+        let triad = Triad::major(root as isize).dynamic();
         // use the transformer to find all paths between the current instance the target note
-        let paths = triad.path_finder().find_paths_to_target(target_note)?;
+        let paths = triad.path_finder().find_paths_to_target(target)?;
         // verify that all of the paths result in an instance containing the target note.
         for chain in paths {
             let p = chain.path().clone();
-            assert! { triad.walk(p).contains(&target_note) }
+            assert! { triad.walk(p).contains(&target) }
         }
         Ok(())
     }
