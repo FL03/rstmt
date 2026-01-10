@@ -7,19 +7,27 @@ use rspace_traits::RawSpace;
 
 /// [`TriadRepr`] is a sealed trait extending the [`RawSpace`] trait to establish basic
 /// behaviors of compatible representations of a triad.
-pub trait TriadRepr: RawSpace {
+pub trait TriadRepr
+where
+    Self: RawSpace,
+{
     private! {}
 
     fn from_arr(arr: [Self::Elem; 3]) -> Self
     where
         Self: Sized;
 
-    fn from_iter<I>(iter: I) -> Option<Self>
+    fn from_iter<I>(iter: impl IntoIterator<Item = Self::Elem, IntoIter = I>) -> Option<Self>
     where
-        I: IntoIterator<Item = Self::Elem>,
+        I: ExactSizeIterator<Item = Self::Elem>,
         Self: Sized,
     {
         let mut it = iter.into_iter();
+        if it.len() != 3 {
+            #[cfg(feature = "tracing")]
+            tracing::error! { "expected an iterator of length 3, found {}", it.len() }
+            return None;
+        }
         let a = it.next()?;
         let b = it.next()?;
         let c = it.next()?;
@@ -36,9 +44,9 @@ pub trait TriadRepr: RawSpace {
     /// returns a reference to the fifth note of the triad.
     fn fifth(&self) -> &Self::Elem;
 }
-/// The [`RawTriadMut`] trait is used to extend the [`RawTriad`] trait to provide mutable access
+/// The [`TriadReprMut`] trait is used to extend the [`TriadRepr`] trait to provide mutable access
 /// to the elements of a triad.
-pub trait RawTriadMut: TriadRepr
+pub trait TriadReprMut: TriadRepr
 where
     Self::Elem: Sized,
 {
@@ -92,7 +100,7 @@ impl<T> TriadRepr for (T, T, T) {
     }
 }
 
-impl<T> RawTriadMut for (T, T, T) {
+impl<T> TriadReprMut for (T, T, T) {
     fn root_mut(&mut self) -> &mut T {
         &mut self.0
     }
@@ -128,7 +136,7 @@ impl<T> TriadRepr for [T; 3] {
     }
 }
 
-impl<T> RawTriadMut for [T; 3] {
+impl<T> TriadReprMut for [T; 3] {
     fn root_mut(&mut self) -> &mut T {
         &mut self[0]
     }

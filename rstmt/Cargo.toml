@@ -25,7 +25,9 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib", "staticlib"]
+crate-type = ["lib"]
+doc = true
+doctest = true
 path = "lib.rs"
 test = true
 
@@ -36,7 +38,7 @@ required-features = ["nrt", "std"]
 
 [[example]]
 name = "motion"
-required-features = ["hashbrown", "std", "tonnetz"]
+required-features = ["motion", "std", "tonnetz"]
 
 [[example]]
 name = "triads"
@@ -44,20 +46,23 @@ required-features = ["nrt", "std"]
 
 [dependencies]
 rstmt-core = { workspace = true }
+rstmt-macros = { optional = true, workspace = true }
 rstmt-nrt = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
-criterion = { features = ["plotters"], version = "0.8" }
+criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
-num = { features = ["std"], version = "0.4" }
-tracing = { features = ["attributes", "std"], version = "0.1" }
-tracing-subscriber = { features = ["ansi", "serde", "std"], version = "0.3" }
+tracing = { features = ["attributes", "std"], workspace = true }
+tracing-subscriber = { features = ["ansi", "serde", "std"], workspace = true }
 
 [features]
 default = [
+  "macros",
+  "motion",
   "nrt",
   "std",
+  "tonnetz",
 ]
 
 full = [
@@ -66,23 +71,30 @@ full = [
   "json",
   "rand",
   "serde",
-  "tonnetz",
 ]
 
 nightly = [
   "rstmt-core/nightly",
+  "rstmt-macros/nightly",
   "rstmt-nrt?/nightly",
 ]
 
 # ************* [FF:Features] *************
-nrt = [
-  "alloc",
-  "rstmt_nrt",
+macros = [
+  "dep:rstmt-macros",
+  "rstmt-core/macros",
 ]
 
+motion = [
+  "rstmt-nrt?/motion",
+]
+
+nrt = ["dep:rstmt-nrt"]
+
 tonnetz = [
-  "alloc",
+  "std",
   "hashbrown",
+  "motion",
   "nrt",
   "rstmt-nrt?/tonnetz",
 ]
@@ -121,6 +133,7 @@ hashbrown = [
 json = [
   "alloc",
   "serde",
+  "serde_json",
   "rstmt-core/json",
   "rstmt-nrt?/json",
 ]
@@ -139,8 +152,6 @@ rng = [
   "rstmt-core/rng",
   "rstmt-nrt?/rng",
 ]
-
-rstmt_nrt = ["dep:rstmt-nrt"]
 
 serde = [
   "rstmt-core/serde",

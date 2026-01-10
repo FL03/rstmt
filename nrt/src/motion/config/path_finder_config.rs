@@ -1,23 +1,8 @@
 /*
-    Appellation: navigator <module>
+    Appellation: config <module>
+    Created At: 2026.01.09:11:31:54
     Contrib: @FL03
 */
-
-use crate::traits::{TriadRepr, TriadType};
-use crate::triad::TriadBase;
-use rspace_traits::RawSpace;
-
-/// The transformer allows one triad to find valid transformation chains capable of taking the
-/// instance to another based on some critieria.
-#[derive(Debug)]
-pub struct Navigator<'a, S, K, T = <S as RawSpace>::Elem>
-where
-    K: TriadType,
-    S: TriadRepr<Elem = T>,
-{
-    pub(crate) triad: &'a TriadBase<S, K, T>,
-    pub(crate) config: NavigatorConfig,
-}
 
 /// The [`PathFinderConfig`] object provides a standard interface for configuring various
 /// implemented transformers.
@@ -27,14 +12,14 @@ where
     derive(serde::Serialize, serde::Deserialize),
     serde(default, rename_all = "snake_case")
 )]
-pub struct NavigatorConfig {
+pub struct PathFinderConfig {
     /// Maximum search depth for pathfinding
     pub max_depth: usize,
     /// Maximum number of paths to find
     pub max_paths: usize,
 }
 
-impl NavigatorConfig {
+impl PathFinderConfig {
     /// the default maximum search depth for pathfinding
     pub const DEFAULT_MAX_DEPTH: usize = 5;
     /// the default maximum number of paths to find
@@ -117,7 +102,7 @@ impl NavigatorConfig {
     }
 }
 
-impl Default for NavigatorConfig {
+impl Default for PathFinderConfig {
     fn default() -> Self {
         Self {
             max_depth: Self::DEFAULT_MAX_DEPTH,
@@ -126,7 +111,7 @@ impl Default for NavigatorConfig {
     }
 }
 
-impl core::fmt::Display for NavigatorConfig {
+impl core::fmt::Display for PathFinderConfig {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,

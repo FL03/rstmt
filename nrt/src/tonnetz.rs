@@ -17,33 +17,37 @@
 mod impl_hyper_tonnetz;
 
 use crate::triad::TriadBase;
-use crate::{LPR, TriadRepr, TriadType, Triads};
+use crate::{LPR, TriChord, TriadRepr, TriadType, Triads};
 use hashbrown::HashMap;
-use rshyper::{EdgeId, HyperMap};
+use rshyper::{EdgeId, RawIndex, UnHyperMap};
 use rspace_traits::RawSpace;
-use rstmt_core::Aspn;
 
-/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase `]
-pub(crate) type TriadMap<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
+/// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`TriadBase`]
+pub(crate) type TriadMap<S = TriChord, K = Triads, T = <S as RawSpace>::Elem, Ix = usize> =
     HashMap<EdgeId<Ix>, TriadBase<S, K, T>>;
 /// a type alias for a [`HashMap`] that maps an [`EdgeId`] to a [`HashMap`] of [`LPR`]
 /// transformations.
 pub(crate) type LprMap<I = usize> = HashMap<EdgeId<I>, HashMap<LPR, EdgeId<I>>>;
+/// a type alias for the underlying hypergraph structure used in the tonnetz
+pub(crate) type NoteGraph<T = isize, E = (), Ix = usize> = UnHyperMap<T, E, Ix>;
 
-// pub(crate) type HyperTriadMap<N = Aspn, E = (), Ix = usize> = HyperMap<N, E, Ix>;
+/// A type alias for the tonnetz using triads represented by `[T; 3]` and dynamic triad type
+/// [`Triads`].
+pub type StdHyperTonnetz<T = isize, Ix = usize> = HyperTonnetz<[T; 3], Triads, T, Ix>;
 
 /// The [`HyperTonnetz`] implementation relies on a _hypergraph_ to define the relationships
 /// between various notes and triads within the tonal space. Hypergraphs generalize the concept
 /// of a graph by allowing edges to connect any number of vertices, making them well-suited
 /// for modeling complex relationships and topologies such as those found in music theory.
 #[derive(Clone, Debug)]
-pub struct HyperTonnetz<S = [usize; 3], K = Triads, T = <S as RawSpace>::Elem, Ix = usize>
+pub struct HyperTonnetz<S = TriChord, K = Triads, T = <S as RawSpace>::Elem, Ix = usize>
 where
     K: TriadType,
     S: TriadRepr<Elem = T>,
+    Ix: RawIndex,
 {
-    /// The underlying hypergraph structure
-    pub(crate) graph: HyperMap<Aspn>,
+    /// a hypergraph representing the tonal space
+    pub(crate) graph: NoteGraph<T, (), Ix>,
     /// Maps EdgeIds to Triad for efficient access
     pub(crate) triads: TriadMap<S, K, T, Ix>,
     /// Tracks adjacency between triads via transformations

@@ -2,85 +2,54 @@
     Appellation: motion <planner>
     Contrib: @FL03
 */
-use crate::motion::config::PathfinderConfig;
+use crate::motion::config::MotionPlannerConfig;
 use crate::motion::types::PathCache;
-use crate::tonnetz::HyperTonnetz;
+use crate::tonnetz::StdHyperTonnetz;
+use core::hash::Hash;
 
 /// The [`MotionPlanner`] is a pathfinding algorithm implementation for finding the chain of
 /// transformations between two triads along the surface of the hyper-tonnetz.
-pub struct MotionPlanner<'a> {
+pub struct MotionPlanner<'a, T = usize>
+where
+    T: Eq + Hash,
+{
     /// Cache for storing computed paths
-    pub(crate) cache: PathCache,
+    pub(crate) cache: PathCache<T>,
     /// Reference to the tonnetz graph
-    pub(crate) tonnetz: &'a HyperTonnetz,
-    pub(crate) config: PathfinderConfig,
+    pub(crate) tonnetz: &'a StdHyperTonnetz<T>,
+    pub(crate) config: MotionPlannerConfig,
 }
 
-impl<'a> MotionPlanner<'a> {
-    /// Create a new motion planner for the given tonnetz
-    pub fn new(tonnetz: &'a HyperTonnetz) -> Self {
-        let capacity = 1000; // Default cache capacity
-        MotionPlanner {
-            cache: PathCache::new(capacity),
-            tonnetz,
-            config: PathfinderConfig::default(),
+#[cfg(test)]
+mod tests {
+    use super::MotionPlanner;
+    use crate::tonnetz::HyperTonnetz;
+    use crate::triad::Triad;
+    use rstmt_core::Octave;
+
+    #[test]
+    fn test_motion_planner() -> crate::Result<()> {
+        // initialize an empty tonnetz
+        let mut tonnetz = HyperTonnetz::new();
+        // scaffold a layer for the 4th octave
+        let _ = tonnetz.scaffold_layer(Octave(4))?;
+
+        let c_major = Triad::major(0).dynamic(); // C Major (0,4,7)
+        // Add some common triads to the Tonnetz
+        let c_major_idx = tonnetz.add_triad(c_major)?; // C Major (0,4,7)
+
+        // Create a motion planner
+        let mut planner = MotionPlanner::new(&tonnetz).with_max_depth(4);
+
+        // Find paths from C Major to triads containing C# (1)
+        let target_note = 1; // C#
+        let paths = planner.find_paths_to_pitch(c_major_idx, target_note);
+
+        assert!(!paths.is_empty());
+        for path in paths {
+            assert!(path.triads().last().unwrap().contains(&target_note));
         }
-    }
-    /// returns an immutable reference to the cache
-    pub const fn cache(&self) -> &PathCache {
-        &self.cache
-    }
-    /// returns a mutable reference to the cache
-    pub const fn cache_mut(&mut self) -> &mut PathCache {
-        &mut self.cache
-    }
-    /// returns an immutable reference to the configuration of the planner
-    pub const fn config(&self) -> &PathfinderConfig {
-        &self.config
-    }
-    /// returns a mutable reference to the configuration of the planner
-    pub const fn config_mut(&mut self) -> &mut PathfinderConfig {
-        &mut self.config
-    }
-    /// returns the maximum depth for pathfinding
-    pub const fn max_depth(&self) -> usize {
-        self.config().max_depth()
-    }
-    /// returns the maximum number of paths to find
-    pub const fn max_paths(&self) -> usize {
-        self.config().max_paths()
-    }
-    /// returns an immutable reference to the tonnetz
-    pub const fn tonnetz(&self) -> &HyperTonnetz {
-        self.tonnetz
-    }
-    /// updates the current configuration and returns a mutable reference to the instance.
-    pub fn set_config(&mut self, config: PathfinderConfig) -> &mut Self {
-        self.config = config;
-        self
-    }
-    /// set the maximum depth for pathfinding
-    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
-        self.config_mut().set_max_depth(depth);
-        self
-    }
-    /// set the maximum number of paths to find
-    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
-        self.config_mut().set_max_paths(paths);
-        self
-    }
-    /// consumes the current instance to create another with the given maximum depth
-    pub fn with_max_depth(self, depth: usize) -> Self {
-        Self {
-            config: self.config.with_max_depth(depth),
-            ..self
-        }
-    }
-    /// consumes the current instance to create another with the given maximum number of paths
-    pub fn with_max_paths(self, paths: usize) -> Self {
-        Self {
-            config: self.config.with_max_paths(paths),
-            ..self
-        }
+
+        Ok(())
     }
 }

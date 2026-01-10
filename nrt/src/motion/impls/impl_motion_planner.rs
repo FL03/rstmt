@@ -3,30 +3,130 @@
     Created At: 2025.12.29:20:34:56
     Contrib: @FL03
 */
-use crate::motion::MotionPlanner;
-use crate::motion::types::{Path, PathFeatures, SearchNode};
-use crate::{LPR, Triad};
+#![cfg(feature = "alloc")]
+
+use crate::motion::types::{ChainFeatures, Path, PathCache, SearchNode};
+use crate::motion::{MotionPlanner, MotionPlannerConfig};
+use crate::tonnetz::StdHyperTonnetz;
+use crate::triad::DynTriad;
+use crate::types::LPR;
 
 use alloc::collections::{BinaryHeap, VecDeque};
+use core::hash::Hash;
 use hashbrown::{HashMap, HashSet};
+use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 use rshyper::EdgeId;
 use rstmt::PitchMod;
 
 /// a binary-like step heuristic for estimating distance to target pitch
-fn binary_heuristic(triad: &Triad, target: usize) -> usize {
+fn binary_heuristic<T>(triad: &DynTriad<T>, target: T) -> T
+where
+    T: PartialEq + One + Zero,
+{
     // For voice-leading distance, we use max of 1 as estimate
     // This ensures heuristic is admissible (never overestimates)
     match triad.contains(&target) {
-        true => return 0,
-        false => 1,
+        true => return T::zero(),
+        false => T::one(),
     }
 }
 
-impl<'a> MotionPlanner<'a> {
+impl<'a, T> MotionPlanner<'a, T>
+where
+    T: Eq + Hash,
+{
+    /// Create a new motion planner for the given tonnetz
+    pub fn new(tonnetz: &'a StdHyperTonnetz<T>) -> Self {
+        let capacity = 1000; // Default cache capacity
+        MotionPlanner {
+            cache: PathCache::new(capacity),
+            tonnetz,
+            config: MotionPlannerConfig::default(),
+        }
+    }
+    /// returns an immutable reference to the cache
+    pub const fn cache(&self) -> &PathCache<T> {
+        &self.cache
+    }
+    /// returns a mutable reference to the cache
+    pub const fn cache_mut(&mut self) -> &mut PathCache<T> {
+        &mut self.cache
+    }
+    /// returns an immutable reference to the configuration of the planner
+    pub const fn config(&self) -> &MotionPlannerConfig {
+        &self.config
+    }
+    /// returns a mutable reference to the configuration of the planner
+    pub const fn config_mut(&mut self) -> &mut MotionPlannerConfig {
+        &mut self.config
+    }
+    /// returns the maximum depth for pathfinding
+    pub const fn max_depth(&self) -> usize {
+        self.config().max_depth()
+    }
+    /// returns the maximum number of paths to find
+    pub const fn max_paths(&self) -> usize {
+        self.config().max_paths()
+    }
+    /// returns an immutable reference to the tonnetz
+    pub const fn tonnetz(&self) -> &StdHyperTonnetz<T> {
+        self.tonnetz
+    }
+    /// updates the current configuration and returns a mutable reference to the instance.
+    pub fn set_config(&mut self, config: MotionPlannerConfig) -> &mut Self {
+        self.config = config;
+        self
+    }
+    /// set the maximum depth for pathfinding
+    pub fn set_max_depth(&mut self, depth: usize) -> &mut Self {
+        self.config_mut().set_max_depth(depth);
+        self
+    }
+    /// set the maximum number of paths to find
+    pub fn set_max_paths(&mut self, paths: usize) -> &mut Self {
+        self.config_mut().set_max_paths(paths);
+        self
+    }
+    /// consumes the current instance to create another with the given maximum depth
+    pub fn with_max_depth(self, depth: usize) -> Self {
+        Self {
+            config: self.config.with_max_depth(depth),
+            ..self
+        }
+    }
+    /// consumes the current instance to create another with the given maximum number of paths
+    pub fn with_max_paths(self, paths: usize) -> Self {
+        Self {
+            config: self.config.with_max_paths(paths),
+            ..self
+        }
+    }
+}
+
+impl<'a, T> MotionPlanner<'a, T>
+where
+    T: Copy
+        + Eq
+        + Hash
+        + Ord
+        + FromPrimitive
+        + ToPrimitive
+        + One
+        + Zero
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>
+        + core::ops::AddAssign,
+{
     /// find a set of paths from one triad to one that contains the target pitch
-    pub fn find_paths_to_pitch(&mut self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
+    pub fn find_paths_to_pitch(&mut self, start_edge: EdgeId, target_pitch: T) -> Vec<Path<T>> {
+        let start_edge_t = <T>::from_usize(*start_edge).unwrap();
         // Check cache first
-        if let Some(paths) = self.cache.get(&[*start_edge, 0, 0], target_pitch).cloned() {
+        if let Some(paths) = self
+            .cache
+            .get(&[start_edge_t, T::zero(), T::zero()], target_pitch)
+            .cloned()
+        {
             return paths;
         }
 
@@ -38,23 +138,26 @@ impl<'a> MotionPlanner<'a> {
 
         // Check if the starting triad already contains the target pitch
         if start_triad.contains(&target_pitch) {
-            let features = PathFeatures::default();
-            let path = Path {
+            let features = ChainFeatures::default();
+            let path = Path::<T> {
                 transforms: Vec::new(),
                 triads: vec![start_triad],
-                edge_ids: vec![Some(start_edge)],
+                edges: vec![Some(start_edge)],
                 cost: 0,
                 features,
             };
 
-            self.cache
-                .insert([*start_edge, 0, 0], target_pitch, vec![path.clone()]);
+            self.cache.insert(
+                [start_edge_t, T::zero(), T::zero()],
+                target_pitch,
+                vec![path.clone()],
+            );
             return vec![path];
         }
 
         let mut result_paths = Vec::new();
         let mut open_set = BinaryHeap::new();
-        let mut visited = HashMap::<[usize; 3], usize>::new(); // Track visited triads with their path length
+        let mut visited = HashMap::<[T; 3], usize>::new(); // Track visited triads with their path length
 
         // Start with initial node
         open_set.push(SearchNode {
@@ -125,7 +228,7 @@ impl<'a> MotionPlanner<'a> {
                     let path = Path {
                         transforms: new_transforms.clone(),
                         triads: new_triads.clone(),
-                        edge_ids: new_edge_ids.clone(),
+                        edges: new_edge_ids.clone(),
                         cost: new_cost,
                         features,
                     };
@@ -138,8 +241,11 @@ impl<'a> MotionPlanner<'a> {
                         result_paths.sort_by_key(|p| p.cost);
 
                         // Cache the result
-                        self.cache
-                            .insert([*start_edge, 0, 0], target_pitch, result_paths.clone());
+                        self.cache.insert(
+                            [start_edge_t, T::zero(), T::zero()],
+                            target_pitch,
+                            result_paths.clone(),
+                        );
 
                         return result_paths;
                     }
@@ -147,7 +253,7 @@ impl<'a> MotionPlanner<'a> {
 
                 // Continue search - use admissible heuristic
                 let h = binary_heuristic(&next_triad, target_pitch);
-                let priority = -((new_cost as i32) + (h as i32)); // Negative for min-heap
+                let priority = -((new_cost as i32) + h.to_i32().unwrap()); // Negative for min-heap
 
                 let next_node = SearchNode {
                     priority,
@@ -166,17 +272,26 @@ impl<'a> MotionPlanner<'a> {
         result_paths.sort_by_key(|p| p.cost);
 
         // Cache results
-        self.cache
-            .insert([*start_edge, 0, 0], target_pitch, result_paths.clone());
+        self.cache.insert(
+            [start_edge_t, T::zero(), T::zero()],
+            target_pitch,
+            result_paths.clone(),
+        );
 
         result_paths
     }
     /// Search for paths between two specific edges in the tonnetz
-    pub fn find_paths_between_edges(&mut self, start_edge: EdgeId, goal_edge: EdgeId) -> Vec<Path> {
+    pub fn find_paths_between_edges(
+        &mut self,
+        start_edge: EdgeId,
+        goal_edge: EdgeId,
+    ) -> Vec<Path<T>> {
+        let start_edge_t = <T>::from_usize(*start_edge).unwrap();
+        let goal_edge_t = <T>::from_usize(*goal_edge).unwrap();
         // Check cache first
         if let Some(paths) = self
             .cache_mut()
-            .get(&[*start_edge, *goal_edge, 1], 0)
+            .get(&[start_edge_t, goal_edge_t, T::one()], T::zero())
             .cloned()
         {
             return paths;
@@ -195,18 +310,21 @@ impl<'a> MotionPlanner<'a> {
 
         // Check if start and goal are the same
         if start_edge == goal_edge {
-            let features = PathFeatures::default();
-            let path = Path {
+            let features = ChainFeatures::default();
+            let path = Path::<T> {
                 transforms: Vec::new(),
                 triads: vec![start_triad],
-                edge_ids: vec![Some(start_edge)],
+                edges: vec![Some(start_edge)],
                 cost: 0,
                 features,
             };
 
             // Cache the result
-            self.cache
-                .insert([*start_edge, *goal_edge, 1], 0, vec![path.clone()]);
+            self.cache_mut().insert(
+                [start_edge_t, goal_edge_t, T::one()],
+                T::zero(),
+                vec![path.clone()],
+            );
 
             return vec![path];
         }
@@ -231,8 +349,11 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Cache the result
-        self.cache
-            .insert([*start_edge, *goal_edge, 1], 0, all_paths.clone());
+        self.cache_mut().insert(
+            [start_edge_t, goal_edge_t, T::one()],
+            T::zero(),
+            all_paths.clone(),
+        );
 
         all_paths
     }
@@ -243,7 +364,7 @@ impl<'a> MotionPlanner<'a> {
         start_edge: EdgeId,
         goal_edge: EdgeId,
         max_depth: usize,
-    ) -> Vec<Path> {
+    ) -> Vec<Path<T>> {
         let mut result_paths = Vec::new();
 
         // Get the starting triad
@@ -263,8 +384,11 @@ impl<'a> MotionPlanner<'a> {
         ));
 
         // Track visited triads at each depth
-        let mut visited = HashMap::<[usize; 3], HashSet<usize>>::new();
-        visited.entry(*start_triad.chord()).or_default().insert(0);
+        let mut visited = HashMap::<[T; 3], HashSet<T>>::new();
+        visited
+            .entry(*start_triad.chord())
+            .or_default()
+            .insert(T::zero());
 
         while let Some((current_triad, transforms, triads, edge_ids, depth)) = queue.pop_front() {
             // If we've reached max depth, skip this path
@@ -277,15 +401,16 @@ impl<'a> MotionPlanner<'a> {
                 // Apply transformation
                 let next_triad = current_triad.transform(transform);
                 let next_depth = depth + 1;
+                let next_depth_t = T::from_usize(next_depth).unwrap();
 
                 // Check if this triad+depth combination has been visited before
                 let depths = visited.entry(*next_triad.chord()).or_default();
-                if depths.contains(&next_depth) {
+                if depths.contains(&next_depth_t) {
                     continue;
                 }
 
                 // Mark as visited at this depth
-                depths.insert(next_depth);
+                depths.insert(next_depth_t);
 
                 // Find edge ID if this triad exists in the tonnetz
                 let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
@@ -313,10 +438,10 @@ impl<'a> MotionPlanner<'a> {
                     let cost = features.distance + new_transforms.len();
 
                     // Create path
-                    let path = Path {
+                    let path = Path::<T> {
                         transforms: new_transforms,
                         triads: new_triads,
-                        edge_ids: new_edge_ids,
+                        edges: new_edge_ids,
                         cost,
                         features,
                     };
@@ -348,14 +473,14 @@ impl<'a> MotionPlanner<'a> {
     /// Used for parallel search implementations
     pub fn search_from(
         &self,
-        start_triad: Triad,
-        target_pitch: usize,
+        start_triad: DynTriad<T>,
+        target_pitch: T,
         transforms: Vec<LPR>,
-        triads: Vec<Triad>,
+        triads: Vec<DynTriad<T>>,
         edge_ids: Vec<Option<EdgeId>>,
         max_paths: usize,
         remaining_depth: usize,
-    ) -> Vec<Path> {
+    ) -> Vec<Path<T>> {
         let mut result_paths = Vec::new();
 
         // Check if we're already at a triad containing the target pitch
@@ -366,7 +491,7 @@ impl<'a> MotionPlanner<'a> {
             result_paths.push(Path {
                 transforms,
                 triads,
-                edge_ids,
+                edges: edge_ids,
                 cost,
                 features,
             });
@@ -390,8 +515,11 @@ impl<'a> MotionPlanner<'a> {
         ));
 
         // Track visited triads at each depth
-        let mut visited = HashMap::<[usize; 3], HashSet<usize>>::new();
-        visited.entry(*start_triad.chord()).or_default().insert(0);
+        let mut visited = HashMap::<[T; 3], HashSet<T>>::new();
+        visited
+            .entry(*start_triad.chord())
+            .or_default()
+            .insert(T::zero());
 
         while let Some((
             current_triad,
@@ -411,15 +539,16 @@ impl<'a> MotionPlanner<'a> {
                 // Apply transformation
                 let next_triad = current_triad.transform(transform);
                 let next_depth = depth + 1;
+                let next_depth_t = T::from_usize(next_depth).unwrap();
 
                 // Check if this triad+depth combination has been visited before
                 let depths = visited.entry(*next_triad.chord()).or_default();
-                if depths.contains(&next_depth) {
+                if depths.contains(&next_depth_t) {
                     continue;
                 }
 
                 // Mark as visited at this depth
-                depths.insert(next_depth);
+                depths.insert(next_depth_t);
 
                 // Find edge ID if this triad exists in the tonnetz
                 let next_edge_id = self.tonnetz().triads().iter().find_map(|(&id, facet)| {
@@ -447,10 +576,10 @@ impl<'a> MotionPlanner<'a> {
                     let cost = features.distance() + new_transforms.len();
 
                     // Create path
-                    let path = Path {
+                    let path = Path::<T> {
                         transforms: new_transforms,
                         triads: new_triads,
-                        edge_ids: new_edge_ids,
+                        edges: new_edge_ids,
                         cost,
                         features,
                     };
@@ -483,7 +612,7 @@ impl<'a> MotionPlanner<'a> {
 
     /// Run searches in parallel from initial transformations
     #[cfg(feature = "rayon")]
-    pub fn find_paths_parallel(&self, start_edge: EdgeId, target_pitch: usize) -> Vec<Path> {
+    pub fn find_paths_parallel(&self, start_edge: EdgeId, target_pitch: T) -> Vec<Path<T>> {
         use rayon::iter::{ParallelBridge, ParallelIterator};
 
         // Get the starting triad
@@ -494,11 +623,11 @@ impl<'a> MotionPlanner<'a> {
 
         // Check if starting triad already contains the target pitch
         if start_triad.contains(&target_pitch) {
-            let features = PathFeatures::default();
+            let features = ChainFeatures::default();
             let path = Path {
                 transforms: Vec::new(),
                 triads: vec![start_triad],
-                edge_ids: vec![Some(start_edge)],
+                edges: vec![Some(start_edge)],
                 cost: 0,
                 features,
             };
@@ -507,7 +636,7 @@ impl<'a> MotionPlanner<'a> {
         }
 
         // Initial transformations for parallel searches
-        let results: Vec<Vec<Path>> = LPR::iter()
+        let results: Vec<Vec<Path<T>>> = LPR::iter()
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
@@ -558,8 +687,8 @@ impl<'a> MotionPlanner<'a> {
     }
 
     /// Analyze musical features of a transformation path
-    fn analyze_path_features(&self, triads: &[Triad]) -> PathFeatures {
-        let mut features = PathFeatures::default();
+    fn analyze_path_features(&self, triads: &[DynTriad<T>]) -> ChainFeatures {
+        let mut features = ChainFeatures::default();
 
         // Count transforms (infer from triad progression)
         let mut transform_counts = HashMap::new();
@@ -604,20 +733,20 @@ impl<'a> MotionPlanner<'a> {
                     .chord()
                     .iter()
                     .map(|&curr_note| {
-                        let dist = (curr_note as isize - prev_note as isize).abs().pmod();
-                        std::cmp::min(dist, 12 - dist) as usize
+                        let dist = (curr_note - prev_note).pmod();
+                        core::cmp::min(dist, T::from_usize(12).unwrap() - dist)
                     })
                     .min()
-                    .unwrap_or(0);
+                    .unwrap_or(T::zero());
 
-                voice_leading_distance += min_distance;
+                voice_leading_distance += min_distance.to_usize().unwrap();
             }
         }
 
-        features.transform_counts = transform_counts;
-        features.modality_changes = modality_changes;
-        features.distance = voice_leading_distance;
-
+        features
+            .set_transform_counts(transform_counts)
+            .set_modality_changes(modality_changes)
+            .set_distance(voice_leading_distance);
         features
     }
 }

@@ -117,23 +117,23 @@ where
         f(self.get_mut());
         self
     }
-    /// replaces the inner value with the given one and returns the old value
+    /// [`replace`](core::mem::replace) the inner value with the given index, returning the
+    /// previous frequency value
     pub const fn replace(&mut self, index: T) -> T {
         core::mem::replace(self.get_mut(), index)
     }
     #[inline]
-    /// set the index to the given value
-    pub fn set(&mut self, index: T) -> &mut Self {
-        *self.get_mut() = index;
-        self
+    /// update the current frequency
+    pub fn set(&mut self, index: T) {
+        *self.get_mut() = index
     }
-    /// swap the values of two indices
+    /// [`swap`](core::mem::swap) the values of two instances of the [`Frequency`] wrapper
     pub const fn swap(&mut self, other: &mut Self) {
         core::mem::swap(self.get_mut(), other.get_mut());
     }
     #[inline]
-    /// takes and returns the inner value, replacing it with the logical [`default`](Default)
-    /// of the type `T`
+    /// [`take`](core::mem::take) and return the current frequency, leaving the logical default
+    /// in its place.
     pub fn take(&mut self) -> T
     where
         T: Default,
@@ -163,6 +163,21 @@ where
         Self: ClassifyBy<T, Output = Z>,
     {
         ClassifyBy::classify_by(self, base)
+    }
+    /// calculates the octave number of the frequency with respect to the given anchor
+    pub fn get_octave_with(&self, base: T) -> isize
+    where
+        T: Float + FromPrimitive,
+    {
+        self.classify_by(base) / 12
+    }
+    /// calculates the octave of the current frequency assuming A4 (440 Hz) as the reference.
+    pub fn get_octave(&self) -> isize
+    where
+        T: Float + FromPrimitive,
+    {
+        let root = <T>::from_f64(A4_FREQUENCY).unwrap();
+        self.get_octave_with(root)
     }
 }
 

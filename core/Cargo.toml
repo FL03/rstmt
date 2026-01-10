@@ -26,7 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib", "staticlib"]
+crate-type = ["lib"]
 doc = true
 doctest = true
 test = true
@@ -56,6 +56,8 @@ rand_distr = { optional = true, workspace = true }
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
 # macros & utilities
 paste = { workspace = true }
 smart-default = { workspace = true }
@@ -64,15 +66,19 @@ strum = { features = ["derive"], workspace = true }
 wasm-bindgen = { optional = true, workspace = true }
 
 [features]
-default = ["std"]
+default = [
+  "hashbrown",
+  "std",
+]
 
 full = [
   "default",
   "complex",
-  "hashbrown",
   "json",
+  "macros",
   "rand",
   "serde",
+  "tracing",
 ]
 
 json = [
@@ -86,7 +92,11 @@ nightly = [
   "rstmt-traits/nightly",
 ]
 
-# ************* [FF:Environments] *************
+# ********* [FF] Features *********
+
+macros = []
+
+# ********* [FF] Environments *********
 
 std = [
   "alloc",
@@ -103,6 +113,7 @@ std = [
   "serde?/std",
   "serde_json?/std",
   "strum/std",
+  "tracing?/std",
   "variants/std",
 ]
 
@@ -119,7 +130,7 @@ wasm = [
   "rayon?/web_spin_lock",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
 
 alloc = [
   "rstmt-traits/alloc",
@@ -178,6 +189,8 @@ serde = [
 ]
 
 serde_json = ["dep:serde_json"]
+
+tracing = ["dep:tracing"]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",

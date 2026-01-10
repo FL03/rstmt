@@ -6,40 +6,52 @@
 //! the surface of the tonnetz.
 
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::config::*;
+#[cfg(feature = "alloc")]
+pub use self::path_finder::PathFinder;
+#[cfg(feature = "tonnetz")]
+pub use self::planner::MotionPlanner;
+#[cfg(feature = "alloc")]
+#[doc(inline)]
+pub use self::types::*;
 
-pub mod config;
 #[cfg(feature = "std")]
-pub mod navigator;
+pub mod path_finder;
 #[cfg(feature = "tonnetz")]
 pub mod planner;
 
+mod config {
+    #[doc(inline)]
+    pub use self::{motion_config::*, path_finder_config::*};
+
+    mod motion_config;
+    mod path_finder_config;
+}
+
 mod impls {
     mod impl_motion_planner;
-    mod impl_navigator;
+    mod impl_path_finder;
 }
+
 #[cfg(feature = "alloc")]
 mod types {
     #[doc(inline)]
-    pub use self::{cache::*, chain::*, path::*, search_node::*};
+    pub use self::{cache::*, chain::*, chain_features::*, path::*, search_node::*, visited::*};
 
     mod cache;
     mod chain;
+    mod chain_features;
     mod path;
     mod search_node;
+    mod visited;
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
     pub use super::config::*;
-
-    #[doc(inline)]
     #[cfg(feature = "alloc")]
-    pub use super::navigator::*;
-    #[doc(inline)]
+    pub use super::path_finder::*;
     #[cfg(feature = "tonnetz")]
     pub use super::planner::*;
-    #[doc(inline)]
     #[cfg(feature = "alloc")]
     pub use super::types::*;
 }

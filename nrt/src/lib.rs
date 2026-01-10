@@ -68,6 +68,7 @@ pub(crate) mod macros {
 }
 /// this module defines the standard error type, [`TriadError`], for the crate
 pub mod error;
+#[cfg(feature = "motion")]
 pub mod motion;
 #[cfg(feature = "tonnetz")]
 pub mod tonnetz;
@@ -118,18 +119,15 @@ mod types {
 }
 // re-exports
 #[doc(inline)]
-#[cfg(feature = "std")]
-pub use self::motion::Navigator;
+#[cfg(feature = "tonnetz")]
+pub use self::tonnetz::HyperTonnetz;
 #[doc(inline)]
 pub use self::{error::*, iter::prelude::*, traits::*, triad::*, types::*};
-#[doc(inline)]
-#[cfg(feature = "tonnetz")]
-pub use self::{motion::MotionPlanner, tonnetz::HyperTonnetz};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::iter::prelude::*;
-    #[cfg(feature = "alloc")]
+    #[cfg(feature = "motion")]
     pub use crate::motion::prelude::*;
     #[cfg(feature = "tonnetz")]
     pub use crate::tonnetz::*;

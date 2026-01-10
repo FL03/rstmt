@@ -119,6 +119,6 @@ mod tests {
     #[test]
     fn test_pitch_creation() {
         let a4 = Pitch(440f64);
-        assert_eq!(a4, 440.0);
+        assert_eq! { a4, 440.0 }
     }
 }

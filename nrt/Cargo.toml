@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["default", "tonnetz"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
 
@@ -26,7 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib", "staticlib"]
+crate-type = ["lib"]
 doc = true
 doctest = true
 test = true
@@ -34,7 +34,7 @@ test = true
 [dependencies]
 rstmt-core = { workspace = true }
 # custom
-rshyper = { workspace = true }
+rshyper = { features = ["hyper_map"], workspace = true }
 rspace-traits = { workspace = true }
 variants = { workspace = true }
 # data structures
@@ -52,9 +52,11 @@ getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # serialization
-serde = { features = ["derive"], optional = true, workspace = true }
+serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
 # macros & utilities
 itertools = { workspace = true }
 paste = { workspace = true }
@@ -65,6 +67,7 @@ wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
+  "motion",
   "std",
   "tonnetz",
 ]
@@ -72,18 +75,19 @@ default = [
 full = [
   "default",
   "complex",
+  "motion",
   "json",
   "rand",
   "serde",
-]
-
-nightly = [
-  "hashbrown?/nightly",
-  "rshyper/nightly",
-  "rstmt-core/nightly",
+  "tracing",
 ]
 
 # ********* [FF] Flags *********
+
+motion = [
+  "alloc",
+  "hashbrown",
+]
 
 tonnetz = [
   "alloc",
@@ -91,7 +95,14 @@ tonnetz = [
   "rshyper/hyper_map",
 ]
 
-# ************* [FF:Environments] *************
+# ********* [FF] Environments *********
+
+nightly = [
+  "hashbrown?/nightly",
+  "rshyper/nightly",
+  "rstmt-core/nightly",
+]
+
 std = [
   "alloc",
   "anyhow/std",
@@ -122,7 +133,9 @@ wasm = [
   "rspace-traits/wasm",
   "rstmt-core/wasm",
 ]
-# ************* [FF:Dependencies] *************
+
+# ********* [FF] Dependencies *********
+
 alloc = [
   "hashbrown?/alloc",
   "itertools/use_alloc",
@@ -183,6 +196,7 @@ rng = [
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "serde?/derive",
   "hashbrown?/serde",
   "num-complex?/serde",
   "rand?/serde",
@@ -190,16 +204,22 @@ serde = [
   "rspace-traits/serde",
   "rshyper/serde",
   "rstmt-core/serde",
-  "serde?/derive",
 ]
 
 serde_json = [
   "dep:serde_json",
+  "rshyper/serde_json",
   "rstmt-core/serde_json",
+]
+
+tracing = [
+  "dep:tracing",
+  "rstmt-core/tracing",
 ]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",
+  "rshyper/wasm_bindgen",
   "rspace-traits/wasm_bindgen",
   "rstmt-core/wasm_bindgen",
 ]

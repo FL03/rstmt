@@ -1,62 +1,51 @@
 /*
-    Appellation: path <module>
+    Appellation: chain <module>
+    Created At: 2026.01.09:11:04:36
     Contrib: @FL03
 */
+use super::ChainFeatures;
 use crate::LPR;
-use crate::triad::Triad;
-use rshyper::EdgeId;
+use alloc::vec::Vec;
 
-use hashbrown::HashMap;
-
-/// Represents a sequence of transformations from one triad to another
 #[derive(Clone, Debug, Default, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct TransformationChain {
+pub struct Chain {
     /// Musical cost or distance metric (lower is better)
     pub(crate) cost: usize,
-    /// The edge id of the path
-    pub(crate) edges: Vec<Option<EdgeId>>,
     /// Path features for musical analysis
     pub(crate) features: ChainFeatures,
     /// The sequence of transformations to apply
     pub(crate) path: Vec<LPR>,
-    /// The sequence of triads visited
-    pub(crate) visited: Vec<Triad>,
 }
 
-/// Features describing musical characteristics of a transformation path
-#[derive(Clone, Debug, Default, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct ChainFeatures {
-    /// Count of each transformation type in the path
-    pub(crate) transform_counts: HashMap<LPR, usize>,
-    /// Changes in modality (major to minor or vice versa)
-    pub(crate) modality_changes: usize,
-    /// Smoothness of voice leading (sum of semitone movements)
-    pub(crate) distance: usize,
-}
-
-/*
- ************* Implementations *************
-*/
-
-impl TransformationChain {
-    pub fn new(path: Vec<LPR>, visited: Vec<Triad>) -> Self {
-        TransformationChain {
+impl Chain {
+    /// initialize a new, empty transformation [`Chain`]
+    pub fn new() -> Self {
+        Chain {
             cost: 0,
-            edges: Vec::new(),
-            features: ChainFeatures::default(),
-            path,
-            visited,
+            features: ChainFeatures::new(),
+            path: Vec::new(),
         }
     }
-
-    pub fn from_visited<I>(visited: I) -> Self
+    /// returns a new instance of the [`Chain`] using the given features
+    pub fn from_features(features: ChainFeatures) -> Self {
+        Chain {
+            cost: 0,
+            features,
+            path: Vec::new(),
+        }
+    }
+    /// returns a new instance of the [`Chain`] from an iterator over transformations
+    pub fn from_path<I>(path: I) -> Self
     where
-        I: IntoIterator<Item = Triad>,
+        I: IntoIterator<Item = LPR>,
     {
-        let visited = Vec::from_iter(visited);
-        TransformationChain::new(Vec::new(), visited)
+        let path = Vec::from_iter(path);
+        Chain {
+            cost: 0,
+            features: ChainFeatures::new(),
+            path,
+        }
     }
     /// returns a copy of the cost of the transformation chain
     pub const fn cost(&self) -> usize {
@@ -70,8 +59,51 @@ impl TransformationChain {
     pub const fn path(&self) -> &Vec<LPR> {
         &self.path
     }
-    /// returns an immutable reference to the visited triads
-    pub const fn visited(&self) -> &Vec<Triad> {
-        &self.visited
+    /// update the cost of the chain
+    pub fn set_cost(&mut self, cost: usize) {
+        self.cost = cost;
+    }
+    /// update the features of the chain
+    pub fn set_features(&mut self, features: ChainFeatures) {
+        self.features = features
+    }
+
+    /// consumes the instance to create another with the given features
+    pub fn with_features(self, features: ChainFeatures) -> Self {
+        Self { features, ..self }
+    }
+    /// consumes the instance to create another with the given cost
+    pub fn with_cost(self, cost: usize) -> Self {
+        Self { cost, ..self }
+    }
+    /// consumes the instance to create another with the given path
+    pub fn with_path<I>(self, path: I) -> Self
+    where
+        I: IntoIterator<Item = LPR>,
+    {
+        let path = Vec::from_iter(path);
+        Self { path, ..self }
+    }
+    /// returns an iterator over the transformations in the chain
+    pub fn iter(&self) -> impl Iterator<Item = &LPR> {
+        self.path.iter()
+    }
+}
+
+impl IntoIterator for Chain {
+    type Item = LPR;
+    type IntoIter = alloc::vec::IntoIter<LPR>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.path.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a Chain {
+    type Item = &'a LPR;
+    type IntoIter = core::slice::Iter<'a, LPR>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.path.iter()
     }
 }

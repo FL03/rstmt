@@ -36,8 +36,9 @@ pub mod num;
 pub mod ops {
     //! This module provides various operations traits and implementations for musical concepts
     #[doc(inline)]
-    pub use self::{pymod::*, transform::*};
+    pub use self::{precision::*, pymod::*, transform::*};
 
+    mod precision;
     mod pymod;
     mod transform;
 }
