@@ -86,7 +86,7 @@ opt-level = 2
 overflow-checks = true
 panic = "abort"
 rpath = true
-strip = "symbols"
+strip = false
 
 [profile.release]
 codegen-units = 16
