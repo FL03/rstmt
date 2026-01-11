@@ -106,6 +106,7 @@ nightly = [
 std = [
   "alloc",
   "anyhow/std",
+  "getrandom?/std",
   "hashbrown?/default",
   "itertools/use_std",
   "num-complex?/std",

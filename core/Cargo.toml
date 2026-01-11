@@ -103,6 +103,7 @@ std = [
   "anyhow/std",
   "contained/std",
   "hashbrown?/default",
+  "getrandom?/std",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
