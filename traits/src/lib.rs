@@ -1,7 +1,7 @@
-#![crate_name = "rstmt_traits"]
 //! A collection of useful traits focused on musical abstractions, composition, and operations.
 //!
 //!
+#![crate_type = "lib"]
 #![allow(
     clippy::derivable_impls,
     clippy::len_without_is_empty,
@@ -15,10 +15,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
-// compiler check
-#[cfg(not(any(feature = "std", feature = "alloc")))]
-compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
 // macros
 #[macro_use]
 pub(crate) mod macros {

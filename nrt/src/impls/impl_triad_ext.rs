@@ -8,9 +8,9 @@ use crate::triad::TriadBase;
 use crate::traits::{Relative, TriadRepr, TriadReprMut, TriadType};
 use crate::types::{Factors, LPR};
 use num_traits::{FromPrimitive, One, Zero};
-use rstmt_core::{PitchMod, Transform};
+use rstmt_core::{PitchMod, TryTransform};
 
-impl<S, T, K, R> Transform<LPR> for TriadBase<S, K, T>
+impl<S, T, K, R> TryTransform<LPR> for TriadBase<S, K, T>
 where
     K: TriadType + Relative<Rel = R>,
     R: TriadType + Relative<Rel = K>,
@@ -22,10 +22,11 @@ where
         + core::ops::Add<Output = T>
         + core::ops::Sub<Output = T>,
 {
+    type Error = crate::TriadError;
     type Output = TriadBase<S, R, T>;
 
-    fn transform(&self, transformation: LPR) -> Self::Output {
-        LPR::transform(&transformation, self).expect("transformation failed")
+    fn try_transform(&self, transformation: LPR) -> Result<Self::Output, Self::Error> {
+        LPR::try_transform(&transformation, self)
     }
 }
 

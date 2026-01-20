@@ -87,11 +87,11 @@ impl LPR {
         <LPR as IntoEnumIterator>::iter()
     }
     /// Apply a transformation to a triad
-    pub fn transform<X, Y, E>(&self, triad: X) -> Result<Y, E>
+    pub fn transform<X, Y>(&self, triad: X) -> Y
     where
-        Self: TryTransform<X, Error = E, Output = Y>,
+        Self: TryTransform<X, Output = Y>,
     {
-        <Self as TryTransform<X>>::try_transform(self, triad)
+        <Self as TryTransform<X>>::try_transform(self, triad).expect("transformation failed")
     }
 }
 
