@@ -180,6 +180,7 @@ dependencies = [
  "rand 0.9.2",
  "rand_distr",
  "serde",
+ "serde_derive",
  "serde_json",
  "thiserror",
 ]

@@ -9,6 +9,8 @@ env:
   RUST_BACKTRACE: full
 
 on:
+  release:
+    types: [published]
   repository_dispatch:
     types: [crates-io, cargo-publish]
   workflow_dispatch:
@@ -34,12 +36,13 @@ jobs:
           - rstmt-macros
           - rstmt
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           repository: ${{ github.repository }}
           ref: ${{ github.event.client_payload.ref || github.ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

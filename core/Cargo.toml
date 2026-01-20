@@ -26,10 +26,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["lib"]
-doc = true
-doctest = true
-test = true
 
 [dependencies]
 rstmt-traits = { workspace = true }
@@ -181,6 +177,7 @@ serde = [
   "dep:serde",
   "dep:serde_derive",
   "serde?/derive",
+  "contained/serde",
   "hashbrown?/serde",
   "num-complex?/serde",
   "rand?/serde",
