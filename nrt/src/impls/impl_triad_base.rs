@@ -8,7 +8,7 @@ use crate::triad::TriadBase;
 use crate::traits::{TriadRepr, TriadReprMut, TriadType};
 use crate::types::LPR;
 use num_traits::{Float, FromPrimitive, ToPrimitive, Zero};
-use rstmt_core::{Octave, PitchMod, TryTransform};
+use rstmt_core::{Octave, PitchMod, Transform};
 
 impl<S, T, K> TriadBase<S, K, T>
 where
@@ -212,30 +212,30 @@ where
     /// apply the given [`LPR`] transformation onto the triad, returning a new triad classified
     /// under `Q` where `Q` and `K` are related via the `Rel` associated type. For example, if
     /// transforming a major triad, then the resulting triad will be minor (and vice versa).
-    pub fn transform<X, Y>(&self, step: X) -> Y
+    pub fn transform<X, Y>(self, step: X) -> Y
     where
-        Self: TryTransform<X, Output = Y>,
+        Self: Transform<X, Output = Y>,
     {
-        <Self as TryTransform<X>>::try_transform(self, step).expect("transformation failed")
+        <Self as Transform<X>>::transform(self, step)
     }
     /// apply the [`Leading`](LPR::Leading) transformation to the triad
-    pub fn leading<Y>(&self) -> Y
+    pub fn leading<Y>(self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y>,
+        Self: Transform<LPR, Output = Y>,
     {
         self.transform(LPR::Leading)
     }
     /// apply the [`Parallel`](LPR::Parallel) transformation to the triad
-    pub fn parallel<Y>(&self) -> Y
+    pub fn parallel<Y>(self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y>,
+        Self: Transform<LPR, Output = Y>,
     {
         self.transform(LPR::Parallel)
     }
     /// apply the [`Relative`](LPR::Relative) transformation to the triad
-    pub fn relative<Y>(&self) -> Y
+    pub fn relative<Y>(self) -> Y
     where
-        Self: TryTransform<LPR, Output = Y>,
+        Self: Transform<LPR, Output = Y>,
     {
         self.transform(LPR::Relative)
     }

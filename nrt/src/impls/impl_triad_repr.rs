@@ -8,7 +8,7 @@ use crate::triad::TriadBase;
 use crate::traits::TriadRepr;
 use crate::types::{LPR, Triads};
 use num_traits::{Float, FromPrimitive, Num, ToPrimitive, Zero};
-use rstmt_core::traits::{PitchMod, TryTransform};
+use rstmt_core::traits::{PitchMod, Transform};
 use rstmt_core::{Augmented, Diminished, Major, Minor};
 
 impl<S, T> TriadBase<S, Augmented, T>
@@ -137,10 +137,10 @@ where
     /// otherwise, returns [`None`](Option::None).
     pub fn is_neighbor(&self, other: &Self) -> Option<LPR>
     where
-        Self: TryTransform<LPR, Output = Self>,
+        Self: Transform<LPR, Output = Self>,
         T: PartialEq,
     {
-        LPR::iter().find(|&dirac| self.try_transform(dirac).ok() == Some(*other))
+        LPR::iter().find(|&dirac| self.transform(dirac) == *other)
     }
 }
 impl<T> TriadBase<[T; 3], Triads, T>
@@ -154,7 +154,7 @@ where
         I: IntoIterator<Item = LPR>,
     {
         path.into_iter()
-            .fold(*self, |triad, dirac| dirac.transform(triad))
+            .fold(*self, |triad, dirac| dirac.apply(triad))
     }
     /// apply a chain of transformations to a triad in-place
     pub fn walk_inplace<I>(&mut self, path: I)
