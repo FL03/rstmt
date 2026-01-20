@@ -52,6 +52,17 @@ pub enum Error {
     Unknown(String),
 }
 
+impl Error {
+    /// creates a boxed error from the provided error
+    #[cfg(feature = "alloc")]
+    pub fn boxed<E>(err: E) -> Self
+    where
+        E: core::error::Error + Send + Sync + 'static,
+    {
+        Error::BoxError(Box::new(err))
+    }
+}
+
 #[cfg(feature = "alloc")]
 impl From<&str> for Error {
     fn from(s: &str) -> Self {
