@@ -32,21 +32,29 @@ pub enum Error {
     IncompatibleIntervals(String),
     #[error("Invalid Note")]
     InvalidNote,
+    // external errors
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
+    #[error(transparent)]
+    #[cfg(feature = "serde_json")]
+    JsonError(#[from] serde_json::Error),
+    // core errors
+    #[error(transparent)]
+    AddrParseError(#[from] core::net::AddrParseError),
     #[error("The impossible has occurred")]
     Infallible(#[from] core::convert::Infallible),
     #[error(transparent)]
     FmtError(#[from] core::fmt::Error),
-    #[cfg(feature = "alloc")]
     #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
+    Utf8Error(#[from] core::str::Utf8Error),
+    // std-based errors
     #[cfg(feature = "std")]
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+    // alloc-based errors
+    #[cfg(feature = "alloc")]
     #[error(transparent)]
-    #[cfg(feature = "serde_json")]
-    JsonError(#[from] serde_json::Error),
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]
     Unknown(String),
@@ -61,12 +69,20 @@ impl Error {
     {
         Error::BoxError(Box::new(err))
     }
+    /// creates a boxed error from the provided error
+    #[cfg(feature = "alloc")]
+    pub fn unknown<E>(err: E) -> Self
+    where
+        E: alloc::string::ToString,
+    {
+        Error::Unknown(err.to_string())
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl From<&str> for Error {
     fn from(s: &str) -> Self {
-        Error::Unknown(String::from(s))
+        Error::unknown(s)
     }
 }
 

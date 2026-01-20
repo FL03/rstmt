@@ -3,8 +3,8 @@
     Created At: 2025.12.29:17:36:58
     Contrib: @FL03
 */
-use super::Frequency;
-use crate::RawFrequency;
+use crate::freq::RawFrequency;
+use crate::freq::frequency::Frequency;
 use num_traits::{Num, One, Zero};
 
 contained::fmt_wrapper! {

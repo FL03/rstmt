@@ -7,7 +7,13 @@
 //! to generalize their behavior across various representations.
 //!
 #[doc(inline)]
-pub use self::traits::*;
+pub use self::{chord_base::*, traits::*};
+
+mod chord_base;
+
+mod impls {
+    mod impl_chord_base;
+}
 
 mod traits {
     #[doc(inline)]
@@ -18,6 +24,6 @@ mod traits {
 // prelude (local)
 #[doc(hidden)]
 pub(crate) mod prelude {
-    #[doc(inline)]
+    pub use super::chord_base::*;
     pub use super::traits::*;
 }

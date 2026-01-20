@@ -43,48 +43,37 @@ pub(crate) mod macros {
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-pub mod chord;
+pub mod chords;
 pub mod compose;
 pub mod consts;
 pub mod error;
 pub mod freq;
 pub mod intervals;
-pub mod note;
+pub mod notes;
 pub mod octave;
 pub mod pitch;
 
 pub mod types {
     //! this module imimplements various types and other primitives used throughout the library
     #[doc(inline)]
-    pub use self::{accents::*, harmonic_funcs::*, notes::*};
+    pub use self::harmonic_funcs::*;
 
-    mod accents;
     mod harmonic_funcs;
-    mod notes;
 }
 
-pub mod utils {
-    //! useful utilities for musical primitives for converting between different
-    //! representations, classification routines, and more.
-    #[doc(inline)]
-    pub use self::frequency::*;
-
-    mod frequency;
-}
 // re-exports
 #[doc(inline)]
 pub use self::{
-    chord::{RawChord, RawChordMut},
+    chords::{RawChord, RawChordMut},
     compose::Scale,
     consts::*,
     error::*,
-    freq::*,
+    freq::{Frequency, RawFrequency},
     intervals::*,
-    note::*,
+    notes::*,
     octave::*,
     pitch::*,
     types::*,
-    utils::*,
 };
 #[doc(inline)]
 pub use rstmt_traits as traits;
@@ -95,14 +84,13 @@ pub use rstmt_traits::prelude::*;
 pub mod prelude {
     pub use rstmt_traits::prelude::*;
 
-    pub use crate::chord::prelude::*;
+    pub use crate::chords::prelude::*;
     pub use crate::compose::prelude::*;
     pub use crate::consts::*;
-    pub use crate::freq::*;
+    pub use crate::freq::prelude::*;
     pub use crate::intervals::prelude::*;
-    pub use crate::note::*;
+    pub use crate::notes::prelude::*;
     pub use crate::octave::*;
     pub use crate::pitch::prelude::*;
     pub use crate::types::*;
-    pub use crate::utils::*;
 }

@@ -4,7 +4,9 @@
     Contrib: @FL03
 */
 use crate::compose::Scale;
-use crate::freq::{Frequency, IntoFrequency, RawFrequency};
+use crate::freq::{
+    Frequency, IntoFrequency, RawFrequency, classify_freq_with_scale, get_frequency_of_pitch,
+};
 use num_traits::{Float, FromPrimitive};
 
 impl<T> Scale<T> {
@@ -38,7 +40,7 @@ impl<T> Scale<T> {
         if freq <= T::zero() {
             return None;
         }
-        crate::classify_freq_with_scale(freq, self.root().value())
+        classify_freq_with_scale(freq, self.root().value())
     }
     /// returns the frequency [Hz] of the given pitch class `n`, using the formula:
     ///
@@ -49,6 +51,6 @@ impl<T> Scale<T> {
     where
         T: RawFrequency + Float + FromPrimitive,
     {
-        crate::compute_freq_of_pitch(n, self.root().value()).into_frequency()
+        get_frequency_of_pitch(n, self.root().value()).into_frequency()
     }
 }

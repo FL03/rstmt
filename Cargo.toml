@@ -40,7 +40,7 @@ rstmt-traits = { default-features = false, path = "traits", version = "0.0.13" }
 # custom
 contained = { default-features = false, features = ["macros"], version = "0.2.3" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.9" }
-rspace-traits = { default-features = false, version = "0.0.7" }
+rspace-traits = { default-features = false, version = "0.0.9" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # benchmarking & testing
 criterion = { default-features = false, version = "0.8" }

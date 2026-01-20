@@ -3,7 +3,7 @@
     Created At: 2025.12.20:09:35:09
     Contrib: @FL03
 */
-use super::NoteBase;
+use crate::notes::note_base::NoteBase;
 use crate::octave::Octave;
 use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawPitchClass};
 
