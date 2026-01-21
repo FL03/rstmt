@@ -6,12 +6,12 @@ Checkout the current and supported packages below:
 
 |  Version        |     Supported?     |
 |:----------------|:-------------------|
-| 0.0.12 (latest) | :white_check_mark: |
-| >0.0.7,<=0.0.9  | :white_check_mark: |
-| <=0.0.6         | :x:                |
+| 0.1.0 (latest)  | :white_check_mark: |
+| 0.0.9,<=0.0.13  | :white_check_mark: |
+| <=0.0.8         | :x:                |
 
 ## Reporting a Vulnerability
 
-- Email our [support team](mailto:support@scsys.io)
+- Email our [support team](mailto:support@pzzld.org)
 - Open an issue in our [GitHub repository](https://github.com/FL03/rstmt/issues)
-- Visit our [website](https://scsys.io) for more information
+- Visit our [website](https://pzzld.org) for more information

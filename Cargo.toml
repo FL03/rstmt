@@ -12,7 +12,6 @@ resolver = "3"
 [workspace.package]
 authors = [
   "FL03 <joe@pzzld.org> (https://github.com/FL03)",
-  "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)",
 ]
 categories = ["mathematics"]
 description = "A complete framework for computational music theory and composition based on topological and categorical methods."
@@ -29,14 +28,14 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/rstmt.git"
 rust-version = "1.86.0"
-version = "0.0.13"
+version = "0.1.0"
 
 [workspace.dependencies]
-rstmt = { default-features = false, path = "rstmt", version = "0.0.13" }
-rstmt-core = { default-features = false, path = "core", version = "0.0.13" }
-rstmt-macros = { path = "macros", version = "0.0.13" }
-rstmt-nrt = { default-features = false, path = "nrt", version = "0.0.13" }
-rstmt-traits = { default-features = false, path = "traits", version = "0.0.13" }
+rstmt = { default-features = false, path = "rstmt", version = "0.1.0" }
+rstmt-core = { default-features = false, path = "core", version = "0.1.0" }
+rstmt-macros = { path = "macros", version = "0.1.0" }
+rstmt-nrt = { default-features = false, path = "nrt", version = "0.1.0" }
+rstmt-traits = { default-features = false, path = "traits", version = "0.1.0" }
 # custom
 contained = { default-features = false, features = ["derive", "macros"], version = "0.2.4" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.9" }
