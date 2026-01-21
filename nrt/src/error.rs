@@ -4,9 +4,6 @@
 */
 //! custom error types for the `nrt` crate
 
-#[cfg(feature = "alloc")]
-use alloc::boxed::Box;
-
 /// a type alias for a [`Result`](core::result::Result) with [`TriadError`] as its error type.
 pub(crate) type Result<T = ()> = core::result::Result<T, TriadError>;
 
@@ -35,7 +32,7 @@ impl From<TriadError> for rstmt::Error {
         match err {
             TriadError::CoreError(e) => e,
             #[cfg(feature = "alloc")]
-            _ => rstmt::Error::BoxError(Box::new(err)),
+            _ => rstmt_core::Error::boxed(err),
         }
     }
 }

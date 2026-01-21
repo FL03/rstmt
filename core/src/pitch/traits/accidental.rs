@@ -6,21 +6,29 @@
 
 /// [`Accidental`] is a sealed marker trait used to designate various _kinds_ of musical notes,
 /// i.e., sharp, flat, natural, etc.
-pub trait RawAccidental:
-    'static + AsRef<str> + Send + Sync + core::fmt::Debug + core::fmt::Display
+pub trait Accidental
+where
+    Self: 'static + AsRef<str> + Send + Sync + core::fmt::Debug + core::fmt::Display,
 {
     private! {}
+
+    fn new() -> Self
+    where
+        Self: Sized;
+
+    #[allow(clippy::should_implement_trait)]
+    fn from_str(s: &str) -> Result<Self, crate::error::Error>
+    where
+        Self: Sized + core::str::FromStr<Err = crate::error::Error>,
+    {
+        s.parse::<Self>()
+    }
 
     fn name(&self) -> &str;
 
     fn symbol(&self) -> char;
 }
 
-pub trait Accidental: RawAccidental
-where
-    Self: Default + core::str::FromStr<Err = crate::error::Error>,
-{
-}
 /*
  ************* Implementations *************
 */
@@ -51,8 +59,12 @@ macro_rules! accidental {
             }
         }
 
-        impl $crate::pitch::RawAccidental for $name {
+        impl $crate::pitch::Accidental for $name {
             seal! {}
+
+            fn new() -> Self {
+                Self
+            }
 
             fn name(&self) -> &str {
                 self.name()
@@ -61,11 +73,6 @@ macro_rules! accidental {
             fn symbol(&self) -> char {
                 self.symbol()
             }
-        }
-
-        impl $crate::pitch::Accidental for $name {
-
-
         }
 
         impl AsRef<str> for $name {
@@ -126,8 +133,12 @@ impl Natural {
     }
 }
 
-impl crate::pitch::RawAccidental for Natural {
+impl Accidental for Natural {
     seal! {}
+
+    fn new() -> Self {
+        Self::new()
+    }
 
     fn name(&self) -> &str {
         self.name()
@@ -137,8 +148,6 @@ impl crate::pitch::RawAccidental for Natural {
         self.symbol()
     }
 }
-
-impl crate::pitch::Accidental for Natural {}
 
 impl AsRef<str> for Natural {
     fn as_ref(&self) -> &str {

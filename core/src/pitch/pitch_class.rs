@@ -3,7 +3,18 @@
     Created At: 2025.12.20:09:31:05
     Contrib: @FL03
 */
-use crate::pitch::{RawAccidental, RawPitchClass};
+use crate::pitch::{Accidental, PitchClassRepr, RawPitchClass};
+use rstmt_traits::PitchMod;
+
+pub trait IntoPitchClass<P, K>
+where
+    P: RawPitchClass<Tag = K>,
+    K: Accidental,
+{
+    fn into_pitch_class(self) -> PitchClass<P, K>;
+
+    private! {}
+}
 
 /// The [`PitchClass`] implementations works to generically define the structure for a pitch
 /// class. This is accomplished through the use of two type parameters: `N`, which defines the
@@ -22,7 +33,7 @@ use crate::pitch::{RawAccidental, RawPitchClass};
 pub struct PitchClass<P = super::CNote, K = <P as RawPitchClass>::Tag>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     pub(crate) class: P,
     pub(crate) kind: K,
@@ -58,4 +69,19 @@ classes! {
     G::<Flat, Sharp>,
     A::<Flat, Sharp>,
     B::<Flat>,
+}
+
+impl<P, K> IntoPitchClass<P, K> for isize
+where
+    P: PitchClassRepr<Tag = K>,
+    K: Accidental,
+{
+    seal! {}
+
+    fn into_pitch_class(self) -> PitchClass<P, K> {
+        match self.pmod() {
+            x if x == P::IDX => PitchClass::new(),
+            _ => panic!("cannot convert {self} into pitch class"),
+        }
+    }
 }

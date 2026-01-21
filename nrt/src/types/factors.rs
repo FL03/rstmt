@@ -37,7 +37,6 @@ use strum::IntoEnumIterator;
         Hash,
         Ord,
         PartialOrd,
-        variants::VariantConstructors,
         strum::AsRefStr,
         strum::Display,
         strum::EnumCount,
@@ -45,9 +44,11 @@ use strum::IntoEnumIterator;
         strum::EnumString,
         strum::VariantArray,
         strum::VariantNames
-    )
+    ),
+    strum(serialize_all = "lowercase")
 )]
 #[repr(usize)]
+#[strum(serialize_all = "lowercase")]
 pub enum ChordFactor<T = usize> {
     #[strum(serialize = "r", serialize = "root")]
     Root(T) = 0,
@@ -55,6 +56,31 @@ pub enum ChordFactor<T = usize> {
     Third(T) = 1,
     #[strum(serialize = "f", serialize = "fifth")]
     Fifth(T) = 2,
+}
+
+impl Factors {
+    /// a functional constructor for the [`Root`](Self::Root) variant
+    pub const fn root() -> Self {
+        Self::Root
+    }
+    /// a functional constructor for the [`Third`](Self::Third) variant
+    pub const fn third() -> Self {
+        Self::Third
+    }
+    /// a functional constructor for the [`Fifth`](Self::Fifth) variant
+    pub const fn fifth() -> Self {
+        Self::Fifth
+    }
+    /// returns an array of the possible [`Factors`] variants
+    pub fn factors_as_slice() -> [Self; 3] {
+        use Factors::*;
+        [Root, Third, Fifth]
+    }
+    #[cfg(feature = "alloc")]
+    /// returns a collection of all the other variants except the one that is called on
+    pub fn others(&self) -> alloc::vec::Vec<Self> {
+        Self::iter().filter(|x| x != self).collect()
+    }
 }
 
 impl<T> ChordFactor<T> {
@@ -112,45 +138,39 @@ impl<T> ChordFactor<T> {
     }
 }
 
-mod impl_factors {
-    use super::*;
-
-    impl Factors {
-        /// returns an array of the possible [`Factors`] variants
-        pub fn factors_as_slice() -> [Self; 3] {
-            use Factors::*;
-            [Root, Third, Fifth]
-        }
-        #[cfg(feature = "alloc")]
-        /// returns a collection of all the other variants except the one that is called on
-        pub fn others(&self) -> alloc::vec::Vec<Self> {
-            Self::iter().filter(|x| x != self).collect()
-        }
-    }
-
-    impl Default for Factors {
-        fn default() -> Self {
-            Factors::Root
-        }
-    }
-
-    impl From<usize> for Factors {
-        fn from(x: usize) -> Self {
-            use strum::EnumCount;
-            match x % Self::COUNT {
-                0 => Factors::Root,
-                1 => Factors::Third,
-                _ => Factors::Fifth,
-            }
-        }
-    }
-
-    impl From<Factors> for usize {
-        fn from(x: Factors) -> Self {
-            x as usize
-        }
+impl Default for Factors {
+    fn default() -> Self {
+        Factors::Root
     }
 }
+
+macro_rules! impl_from_factor {
+    (@impl $T:ty) => {
+        impl From<$T> for Factors {
+            fn from(x: $T) -> Self {
+                use strum::EnumCount;
+                match x % Self::COUNT as $T {
+                    0 => Factors::Root,
+                    1 => Factors::Third,
+                    2 => Factors::Fifth,
+                    _ => unreachable!("Modular arithmetic error"), 
+                }
+            }
+        }
+
+        impl From<Factors> for $T {
+            fn from(x: Factors) -> Self {
+                x as $T
+            }
+        }
+    };
+    ($($T:ty),* $(,)?) => {
+        $(impl_from_factor! { @impl $T })*
+    }
+}
+
+impl_from_factor! { u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize }
+
 
 #[cfg(test)]
 mod tests {
@@ -167,9 +187,6 @@ mod tests {
         use Factors::*;
 
         let factors = Factors::factors_as_slice();
-        assert_eq!(factors.len(), 3);
-        assert_eq!(factors[0], Root);
-        assert_eq!(factors[1], Third);
-        assert_eq!(factors[2], Fifth);
+        assert_eq! { factors, [Root, Third, Fifth] }
     }
 }

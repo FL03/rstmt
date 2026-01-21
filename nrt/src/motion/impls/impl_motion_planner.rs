@@ -640,7 +640,7 @@ where
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
-                match transform.transform(&start_triad) {
+                match transform.apply(&start_triad) {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {

@@ -7,9 +7,9 @@ title: 'Tracking Issue for '
 type: feature
 ---
 
-<!-- a concise summary that provides critical insight and context into the proposal and its purpose -->
+<!-- A succinct summary providing insight into the proposal, its purpose, and any other information critical to the proposal -->
 
-_**Goals**_
+## Goals
 
 The goals of this proposal:
 

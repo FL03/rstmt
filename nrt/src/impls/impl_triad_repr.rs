@@ -7,7 +7,7 @@ use crate::triad::TriadBase;
 
 use crate::traits::TriadRepr;
 use crate::types::{LPR, Triads};
-use num_traits::{Float, FromPrimitive, Num, ToPrimitive};
+use num_traits::{Float, FromPrimitive, Num, ToPrimitive, Zero};
 use rstmt_core::traits::{PitchMod, Transform};
 use rstmt_core::{Augmented, Diminished, Major, Minor};
 
@@ -19,7 +19,7 @@ where
     /// augmented triad.
     pub fn augmented(root: T) -> Self
     where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+        T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     {
         TriadBase::from_root_with_class(root, Augmented)
     }
@@ -33,7 +33,7 @@ where
     /// diminished triad.
     pub fn diminished(root: T) -> Self
     where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+        T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     {
         TriadBase::from_root_with_class(root, Diminished)
     }
@@ -47,7 +47,7 @@ where
     /// triad.
     pub fn major(root: T) -> Self
     where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+        T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     {
         TriadBase::from_root_with_class(root, Major)
     }
@@ -61,7 +61,7 @@ where
     /// triad.
     pub fn minor(root: T) -> Self
     where
-        T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+        T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     {
         TriadBase::from_root_with_class(root, Minor)
     }
@@ -78,21 +78,21 @@ where
     // /// creates a new diminished triad from the given root
     // pub fn diminished(root: T) -> Self
     // where
-    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    //     T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     // {
     //     Self::from_root_with_class(root, TriadClass::Diminished)
     // }
     // /// Create a new major triad from the given root
     // pub fn major(root: T) -> Self
     // where
-    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    //     T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     // {
     //     Self::from_root_with_class(root, TriadClass::Major)
     // }
     // /// creates a new minor triad from the given root
     // pub fn minor(root: T) -> Self
     // where
-    //     T: Copy + FromPrimitive + core::ops::Add<Output = T> + PitchMod<Output = T>,
+    //     T: Copy + FromPrimitive + Zero + PitchMod<Output = T> + core::ops::Add<Output = T>,
     // {
     //     Self::from_root_with_class(root, TriadClass::Minor)
     // }
@@ -106,7 +106,7 @@ where
         let note = p.into_aspn();
         let px = U::from_usize(note.class().pmod()).unwrap();
         let py = U::from_isize(*note.octave()).unwrap();
-        let y = U::from_isize(*self.octave).unwrap();
+        let y = U::from(*self.octave).unwrap();
         let [v0, v1, v2] = self.chord().map(|n| U::from(n).unwrap());
 
         let d00 = v0 * v0 + y * y;
@@ -153,9 +153,8 @@ where
     where
         I: IntoIterator<Item = LPR>,
     {
-        path.into_iter().fold(*self, |triad, dirac| {
-            dirac.transform(triad).expect("transformation failed")
-        })
+        path.into_iter()
+            .fold(*self, |triad, dirac| dirac.apply(triad))
     }
     /// apply a chain of transformations to a triad in-place
     pub fn walk_inplace<I>(&mut self, path: I)

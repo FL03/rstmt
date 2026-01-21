@@ -1,4 +1,9 @@
-use crate::note::NoteBase;
+/*
+    Appellation: impl_note_repr <module>
+    Created At: 2026.01.20:08:59:53
+    Contrib: @FL03
+*/
+use crate::notes::note_base::NoteBase;
 use crate::octave::Octave;
 use crate::pitch::{Flat, Natural, PitchClass, RawPitchClass, Sharp};
 

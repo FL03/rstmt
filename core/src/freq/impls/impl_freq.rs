@@ -2,10 +2,10 @@
     appellation: impl_freq <module>
     authors: @FL03
 */
-use super::{Frequency, RawFrequency};
 use crate::consts::A4_FREQUENCY;
-use crate::pitch::{PitchClass, RawAccidental, RawPitchClass};
-use crate::utils::{classify_freq_with_scale, compute_freq_of_pitch};
+use crate::freq::frequency::Frequency;
+use crate::freq::{RawFrequency, classify_freq_with_scale, get_frequency_of_pitch};
+use crate::pitch::{Accidental, PitchClass, RawPitchClass};
 use num_traits::{Float, FromPrimitive, ToPrimitive};
 use rstmt_traits::ClassifyBy;
 
@@ -28,7 +28,7 @@ where
         T: Float + FromPrimitive,
     {
         let class = note.to_isize().unwrap();
-        Self(compute_freq_of_pitch(class, root))
+        Self(get_frequency_of_pitch(class, root))
     }
     /// a shorthand method for creating a new frequency from the given pitch class using A4 as
     /// the base frequency
@@ -44,7 +44,7 @@ where
     pub fn from_pitch_class<P, K>(class: PitchClass<P, K>, root: T) -> Self
     where
         P: RawPitchClass<Tag = K>,
-        K: RawAccidental,
+        K: Accidental,
         T: RawFrequency + Float + FromPrimitive,
     {
         let semitones = class.get().index();
@@ -103,9 +103,9 @@ where
     #[inline]
     /// apply a function to a reference of the current frequency, capturing the result in a
     /// new instance
-    pub fn apply<U, F>(&self, mut f: F) -> Frequency<U>
+    pub fn apply<U, F>(&self, f: F) -> Frequency<U>
     where
-        F: FnMut(&T) -> U,
+        F: FnOnce(&T) -> U,
     {
         Frequency(f(self.get()))
     }

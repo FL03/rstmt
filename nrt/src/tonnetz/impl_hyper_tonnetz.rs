@@ -3,7 +3,7 @@
     Created At: 2025.12.28:10:45:40
     Contrib: @FL03
 */
-use crate::tonnetz::{HyperTonnetz, LprMap, NoteGraph, TriadMap};
+use crate::tonnetz::{EdgeMap, HyperTonnetz, LprMap, NoteGraph};
 use crate::traits::{TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use core::hash::Hash;
@@ -25,7 +25,7 @@ where
     {
         HyperTonnetz {
             graph: NoteGraph::new(),
-            triads: TriadMap::new(),
+            triads: EdgeMap::new(),
             transformations: LprMap::new(),
         }
     }
@@ -50,11 +50,11 @@ where
         &mut self.graph
     }
     /// returns a reference to the triads map
-    pub const fn triads(&self) -> &TriadMap<S, K, T, Ix> {
+    pub const fn triads(&self) -> &EdgeMap<S, K, T, Ix> {
         &self.triads
     }
     /// returns a mutable reference to the triads map
-    pub const fn triads_mut(&mut self) -> &mut TriadMap<S, K, T, Ix> {
+    pub const fn triads_mut(&mut self) -> &mut EdgeMap<S, K, T, Ix> {
         &mut self.triads
     }
     /// returns a reference to the transformations map
@@ -81,7 +81,7 @@ where
     }
     #[inline]
     /// update the triad map
-    pub fn set_triads(&mut self, triads: TriadMap<S, K, T, Ix>) {
+    pub fn set_triads(&mut self, triads: EdgeMap<S, K, T, Ix>) {
         self.triads = triads
     }
     #[inline]

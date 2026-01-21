@@ -26,10 +26,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["lib"]
-doc = true
-doctest = true
-test = true
 
 [dependencies]
 rstmt-traits = { workspace = true }
@@ -103,6 +99,7 @@ std = [
   "anyhow/std",
   "contained/std",
   "hashbrown?/default",
+  "getrandom?/std",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
@@ -115,6 +112,7 @@ std = [
   "strum/std",
   "tracing?/std",
   "variants/std",
+  "wasm-bindgen?/std",
 ]
 
 wasi = [
@@ -142,6 +140,7 @@ alloc = [
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
+  "wasm-bindgen?/gg-alloc",
 ]
 
 complex = [
@@ -180,15 +179,20 @@ serde = [
   "dep:serde",
   "dep:serde_derive",
   "serde?/derive",
+  "contained/serde",
   "hashbrown?/serde",
   "num-complex?/serde",
   "rand?/serde",
   "rand_distr?/serde",
   "rspace-traits/serde",
   "rstmt-traits/serde",
+  "wasm-bindgen?/serde",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "wasm-bindgen?/serde_json",
+]
 
 tracing = ["dep:tracing"]
 

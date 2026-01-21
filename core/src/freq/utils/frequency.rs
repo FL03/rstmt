@@ -11,7 +11,7 @@ use num_traits::{Float, FromPrimitive};
 /// ```math
 /// F=\beta\cdot{2^{\frac{n}{12}}}
 /// ```
-pub fn compute_freq_of_pitch<T>(n: isize, root: T) -> T
+pub fn get_frequency_of_pitch<T>(n: isize, root: T) -> T
 where
     T: Float + FromPrimitive,
 {

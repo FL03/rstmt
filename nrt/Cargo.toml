@@ -36,7 +36,6 @@ rstmt-core = { workspace = true }
 # custom
 rshyper = { features = ["hyper_map"], workspace = true }
 rspace-traits = { workspace = true }
-variants = { workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 # concurrency & parallelism
@@ -106,6 +105,7 @@ nightly = [
 std = [
   "alloc",
   "anyhow/std",
+  "getrandom?/std",
   "hashbrown?/default",
   "itertools/use_std",
   "num-complex?/std",
@@ -119,7 +119,7 @@ std = [
   "serde?/std",
   "serde_json?/std",
   "strum/std",
-  "variants/std",
+  "wasm-bindgen?/std",
 ]
 
 wasi = [
@@ -146,7 +146,7 @@ alloc = [
   "rstmt-core/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
-  "variants/alloc",
+  "wasm-bindgen?/gg-alloc",
 ]
 
 complex = [
@@ -204,12 +204,14 @@ serde = [
   "rspace-traits/serde",
   "rshyper/serde",
   "rstmt-core/serde",
+  "wasm-bindgen?/serde",
 ]
 
 serde_json = [
   "dep:serde_json",
   "rshyper/serde_json",
   "rstmt-core/serde_json",
+  "wasm-bindgen?/serde_json",
 ]
 
 tracing = [

@@ -1,7 +1,19 @@
-#![crate_name = "rstmt_core"]
 //! This crate provides the core functionality for the `rstmt` library, including [`Aspn`],
 //! [`NoteBase`], [`Pitch`], and [`Octave`]. Additionally, the crate provides a host of
 //! other primitives and utilities designed to manifest and manipulate musical concepts.
+//!
+//! ## Overview
+//!
+//! The core modules focus on establishing the basic primitives and interfaces needed to
+//! represent musical notes, pitches, octaves, and related concepts. These modules
+//! provide the foundational building blocks for more complex musical structures and
+//! operations.
+//!
+//! These modules are designed to be efficient, flexible, and correct, ensuring conversions
+//! between different representations are handled seamlessly. For example, _any_ [`PitchClass`]
+//! is able to be converted directly into a [`Frequency`].
+#![crate_name = "rstmt_core"]
+#![crate_type = "lib"]
 #![allow(
     clippy::derivable_impls,
     clippy::len_without_is_empty,
@@ -15,7 +27,7 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
 // compiler check
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! { "either the \"std\" or \"alloc\" feature must be enabled" }
@@ -31,48 +43,37 @@ pub(crate) mod macros {
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-pub mod chord;
-pub mod comp;
+pub mod chords;
+pub mod compose;
 pub mod consts;
 pub mod error;
 pub mod freq;
 pub mod intervals;
-pub mod note;
+pub mod notes;
 pub mod octave;
 pub mod pitch;
 
 pub mod types {
     //! this module imimplements various types and other primitives used throughout the library
     #[doc(inline)]
-    pub use self::{accents::*, harmonic_funcs::*, notes::*};
+    pub use self::harmonic_funcs::*;
 
-    mod accents;
     mod harmonic_funcs;
-    mod notes;
 }
 
-pub mod utils {
-    //! useful utilities for musical primitives for converting between different
-    //! representations, classification routines, and more.
-    #[doc(inline)]
-    pub use self::frequency::*;
-
-    mod frequency;
-}
 // re-exports
 #[doc(inline)]
 pub use self::{
-    chord::{RawChord, RawChordMut},
-    comp::Scale,
+    chords::{RawChord, RawChordMut},
+    compose::Scale,
     consts::*,
     error::*,
-    freq::*,
+    freq::{Frequency, RawFrequency},
     intervals::*,
-    note::*,
+    notes::*,
     octave::*,
     pitch::*,
     types::*,
-    utils::*,
 };
 #[doc(inline)]
 pub use rstmt_traits as traits;
@@ -83,14 +84,13 @@ pub use rstmt_traits::prelude::*;
 pub mod prelude {
     pub use rstmt_traits::prelude::*;
 
-    pub use crate::chord::prelude::*;
-    pub use crate::comp::prelude::*;
+    pub use crate::chords::prelude::*;
+    pub use crate::compose::prelude::*;
     pub use crate::consts::*;
-    pub use crate::freq::*;
+    pub use crate::freq::prelude::*;
     pub use crate::intervals::prelude::*;
-    pub use crate::note::*;
+    pub use crate::notes::prelude::*;
     pub use crate::octave::*;
     pub use crate::pitch::prelude::*;
     pub use crate::types::*;
-    pub use crate::utils::*;
 }

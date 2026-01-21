@@ -7,7 +7,7 @@ use crate::error::TriadError;
 use crate::traits::{Relative, TriadRepr, TriadType};
 use crate::triad::TriadBase;
 use num_traits::{FromPrimitive, One};
-use rstmt_core::{PitchMod, TryTransform};
+use rstmt_core::{Dirac, PitchMod};
 
 /// The [`LPR`] implementation enumerates the primary transformations considered within the
 /// Neo-Riemannian theory. Each transformation is its own inverse (meaning consecutive
@@ -20,14 +20,14 @@ use rstmt_core::{PitchMod, TryTransform};
 /// With The transformations are:
 ///
 /// - Leading (L):
-///   - [Major] subtract a semitone from the root and move it to the fifth
-///   - [Minor] add a semitone to the fifth and move it to the root
+///   - [Major] decrement the root by a semitone; move to the fifth
+///   - [Minor] increment the fifth by a semitone; move to the root
 /// - Parallel (P):
-///   - [Major] subtract a semitone from the third
-///   - [Minor] add a semitone to the third
+///   - [Major] decrement the third by a semitone
+///   - [Minor] increment the third by a semitone
 /// - Relative (R):
-///   - [Major] add a tone to the fifth and move it to the root
-///   - [Minor] subtract a tone from the root and move it to the fifth
+///   - [Major] add a whole tone to the fifth; move to the root
+///   - [Minor] subtract a whole tone from the root; move to the fifth
 ///
 /// Using category theory we could define these transformations to be contravariant functors
 /// mapping between _categories_ of triads.
@@ -86,61 +86,34 @@ impl LPR {
         use strum::IntoEnumIterator;
         <LPR as IntoEnumIterator>::iter()
     }
-    /// Apply a transformation to a triad
-    pub fn transform<X, Y, E>(&self, triad: X) -> Result<Y, E>
+    /// a convenience method for applying a transformation onto a triad, panicking on failure.
+    pub fn apply<X, Y>(self, triad: X) -> Y
     where
-        Self: TryTransform<X, Error = E, Output = Y>,
+        Self: Dirac<X, Output = Y>,
     {
-        <Self as TryTransform<X>>::try_transform(self, triad)
+        <Self as Dirac<X>>::apply(self, triad)
     }
-}
 
-impl<S, T, K> TryTransform<TriadBase<S, K, T>> for LPR
-where
-    K: TriadType,
-    K::Rel: TriadType<Rel = K>,
-    S: TriadRepr<Elem = T>,
-    T: Copy
-        + FromPrimitive
-        + One
-        + PitchMod<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Sub<Output = T>,
-{
-    type Output = TriadBase<S, K::Rel, T>;
-    type Error = TriadError;
-
-    fn try_transform(&self, rhs: TriadBase<S, K, T>) -> Result<Self::Output, Self::Error> {
-        self.try_transform(&rhs)
-    }
-}
-
-impl<S, T, K> TryTransform<&TriadBase<S, K, T>> for LPR
-where
-    K::Rel: TriadType<Rel = K>,
-    K: TriadType,
-    S: TriadRepr<Elem = T>,
-    T: Copy
-        + FromPrimitive
-        + One
-        + PitchMod<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Sub<Output = T>,
-{
-    type Output = TriadBase<S, K::Rel, T>;
-    type Error = TriadError;
-
-    fn try_transform(&self, rhs: &TriadBase<S, K, T>) -> Result<Self::Output, Self::Error> {
-        if rhs.is_augmented() || rhs.is_diminished() {
-            return Err(TriadError::InvalidTriadClass);
-        }
+    fn dirac<S, T, K, R>(self, rhs: &TriadBase<S, K, T>) -> TriadBase<S, R, T>
+    where
+        K: TriadType<Rel = R>,
+        R: TriadType,
+        S: TriadRepr<Elem = T>,
+        T: Copy
+            + FromPrimitive
+            + One
+            + PitchMod<Output = T>
+            + core::ops::Add<Output = T>
+            + core::ops::Sub<Output = T>,
+    {
+        let major = rhs.class().root() == 4;
         let two = T::from_u8(2).unwrap();
 
         let &x = rhs.chord().root();
         let &y = rhs.chord().third();
         let &z = rhs.chord().fifth();
 
-        let notes: [T; 3] = if rhs.is_major() {
+        let notes: [T; 3] = if major {
             match self {
                 LPR::Leading => [y, z, (x - T::one()).pmod()],
                 LPR::Parallel => [x, (y - T::one()).pmod(), z],
@@ -154,11 +127,125 @@ where
             }
         };
 
-        Ok(TriadBase {
+        TriadBase {
             chord: S::from_arr(notes),
             class: <K as Relative>::rel(&rhs.class()),
-            octave: rhs.octave(),
-        })
+            octave: *rhs.octave(),
+        }
+    }
+}
+
+impl<S, T, K> Dirac<TriadBase<S, K, T>> for LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(&rhs)
+    }
+}
+
+impl<S, T, K> Dirac<TriadBase<S, K, T>> for &LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(&rhs)
+    }
+}
+
+impl<S, T, K> Dirac<TriadBase<S, K, T>> for &mut LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(&rhs)
+    }
+}
+
+impl<S, T, K> Dirac<&TriadBase<S, K, T>> for LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: &TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(rhs)
+    }
+}
+
+impl<S, T, K> Dirac<&TriadBase<S, K, T>> for &LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: &TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(rhs)
+    }
+}
+
+impl<S, T, K> Dirac<&mut TriadBase<S, K, T>> for LPR
+where
+    K: TriadType,
+    K::Rel: TriadType,
+    S: TriadRepr<Elem = T>,
+    T: Copy
+        + FromPrimitive
+        + One
+        + PitchMod<Output = T>
+        + core::ops::Add<Output = T>
+        + core::ops::Sub<Output = T>,
+{
+    type Output = TriadBase<S, K::Rel, T>;
+
+    fn apply(self, rhs: &mut TriadBase<S, K, T>) -> Self::Output {
+        self.dirac(rhs)
     }
 }
 

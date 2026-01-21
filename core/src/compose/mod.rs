@@ -13,6 +13,7 @@ pub mod scale;
 
 mod impls {
     mod impl_scale;
+    mod impl_scale_repr;
 }
 
 #[doc(hidden)]

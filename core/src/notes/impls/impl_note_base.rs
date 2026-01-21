@@ -3,14 +3,14 @@
     Created At: 2025.12.20:09:35:09
     Contrib: @FL03
 */
-use super::NoteBase;
+use crate::notes::note_base::NoteBase;
 use crate::octave::Octave;
-use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawAccidental, RawPitchClass};
+use crate::pitch::{Accidental, PitchClass, PitchClassRepr, RawPitchClass};
 
 impl<P, K> NoteBase<P, K>
 where
     P: RawPitchClass<Tag = K>,
-    K: RawAccidental,
+    K: Accidental,
 {
     /// constructs a new [`NoteBase`] instance
     pub const fn new(class: PitchClass<P, K>, octave: Octave) -> Self {
@@ -20,7 +20,6 @@ where
     pub fn from_octave(octave: Octave) -> Self
     where
         P: PitchClassRepr,
-        K: Accidental,
     {
         Self {
             class: PitchClass::new(),
