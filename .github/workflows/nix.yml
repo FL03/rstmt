@@ -22,11 +22,14 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Setup Nix
         uses: cachix/install-nix-action@v31
         with:
-          github_access_token: ${{ github.token }}
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: nix build
       - name: Check the flake

@@ -70,6 +70,7 @@ std = [
   "num-complex?/std",
   "num-traits/std",
   "serde?/std",
+  "wasm-bindgen?/std",
 ]
 
 wasi = [
@@ -85,6 +86,7 @@ alloc = [
   "hashbrown?/alloc",
   "rspace-traits/alloc",
   "serde?/alloc",
+  "wasm-bindgen?/gg-alloc",
 ]
 
 complex = [
@@ -112,6 +114,7 @@ serde = [
   "hashbrown?/serde",
   "rspace-traits/serde",
   "num-complex/serde",
+  "wasm-bindgen?/serde",
 ]
 
 wasm_bindgen = ["dep:wasm-bindgen"]

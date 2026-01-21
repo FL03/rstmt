@@ -112,6 +112,7 @@ std = [
   "strum/std",
   "tracing?/std",
   "variants/std",
+  "wasm-bindgen?/std",
 ]
 
 wasi = [
@@ -139,6 +140,7 @@ alloc = [
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
+  "wasm-bindgen?/gg-alloc",
 ]
 
 complex = [
@@ -184,9 +186,13 @@ serde = [
   "rand_distr?/serde",
   "rspace-traits/serde",
   "rstmt-traits/serde",
+  "wasm-bindgen?/serde",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "wasm-bindgen?/serde_json",
+]
 
 tracing = ["dep:tracing"]
 
