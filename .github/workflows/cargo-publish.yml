@@ -23,8 +23,6 @@ jobs:
   crates-io:
     environment: crates-io
     runs-on: ubuntu-latest
-    env:
-      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -49,3 +47,5 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Publish (${{ matrix.package }})
         run: cargo publish --locked --package ${{ matrix.package }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
