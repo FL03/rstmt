@@ -17,7 +17,7 @@ use rstmt_core::{Dirac, PitchMod};
 /// the first and second notes (i.e., the root and third chord factors) meaning the effect of
 /// the transformation is dictated by whether the triad starts with a major or minor third.
 ///
-/// With The transformations are:
+/// The effects of each transformation can be described as follows:
 ///
 /// - Leading (L):
 ///   - [Major] decrement the root by a semitone; move to the fifth
