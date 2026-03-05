@@ -129,7 +129,7 @@ impl LPR {
 
         TriadBase {
             chord: S::from_arr(notes),
-            class: <K as Relative>::rel(&rhs.class()),
+            class: <K as Relative>::rel(rhs.class()),
             octave: *rhs.octave(),
         }
     }

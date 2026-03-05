@@ -3,7 +3,7 @@
     authors: @FL03
 */
 use crate::octave::Octave;
-use rand::RngCore;
+use rand::{Rng, RngExt};
 use rand_distr::uniform::{SampleRange, SampleUniform};
 use rand_distr::{Distribution, StandardNormal, StandardUniform};
 
@@ -18,19 +18,17 @@ impl<T> Octave<T> {
     /// generates a random octave using the provided random number generator.
     pub fn random_in<R>(rng: &mut R) -> Self
     where
-        R: ?Sized + RngCore,
+        R: ?Sized + Rng,
         StandardUniform: Distribution<T>,
     {
-        use rand::Rng;
         Octave(rng.random())
     }
     /// generates a random octave using the provided random number generator.
     pub fn random_with<R, Distr>(rng: &mut R, distr: Distr) -> Self
     where
-        R: ?Sized + RngCore,
+        R: ?Sized + Rng,
         Distr: Distribution<T>,
     {
-        use rand::Rng;
         Octave(rng.sample(distr))
     }
     /// generates a random octave within the specified range.

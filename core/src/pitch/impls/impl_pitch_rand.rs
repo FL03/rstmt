@@ -6,18 +6,19 @@
 #![cfg(feature = "rand")]
 use crate::pitch::Pitch;
 
-use rand::Rng;
+use rand::{Rng, RngExt};
 use rand_distr::{Distribution, StandardUniform};
 
 impl<T> Pitch<T>
 where
     StandardUniform: Distribution<T>,
 {
+    /// initialize a new pitch with a random value
     pub fn random() -> Self {
-        Pitch::random_in(&mut rand::rng())
+        Pitch::rand_from_rng(&mut rand::rng())
     }
     /// initialize a new pitch using the given random number generator
-    pub fn random_in<R: Rng + ?Sized>(rng: &mut R) -> Self {
+    pub fn rand_from_rng<R: Rng + ?Sized>(rng: &mut R) -> Self {
         Pitch(rng.random())
     }
 }

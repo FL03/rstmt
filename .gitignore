@@ -1,152 +1,140 @@
 # General
-**/.artifacts/tmp/
-**/.docker/data
-
-**/.cache/
-**/.DS_Store
-
 *.bk
 *.bk.*
-
-*.bak
-*.bak.*
-
-*.csv
-*.csv.*
 
 *.db
 *.db.*
 
-*.db-*.*
+*.log
+*.log.*
 
-*.error
-*.error.*
+*.pem
+*.pem.*
 
 *.gz
 *.gz.*
 
-*.log
-*.log.*
-
 *.sqlite
 *.sqlite.*
+
+*.sqlite3
+*.sqlite3.*
 
 *.zip
 *.zip.*
 
-## Development Environments
+## Directories
+**/.artifacts/cache/
+**/.artifacts/temp/
+**/.artifacts/uploads/
 
-### IntelliJ Idea
+!**/.artifacts/docs
+!**/.artifacts/.gitkeep
+
+**/.cache/
+**/coverage/
+**/build/
+**/coverage/
+**/dist/
+**/out/
+**/logs/
+**/tmp/
+
+## Development
+
+### Config Files
+**/.config/*.config.*
+
+!**/.config/default.config.*
+!**/.config/docker.config.*
+!**/.config/xtask.config.*
+
+### dotenv
+*.env
+*.env.*
+
+!*default.env*
+!*.env.default
+
+!*example.env*
+!*.env.example
+
+### IDEs
+
+#### Atom
+**/.atom
+
+#### JetBrains
 **/.idea/
 
-**/*.iml
-**/*.iml.*
+*.iml
+*.ipr
+*.iws
 
-**/*.iws
-**/*.iws.*
-
-### Visual Studio Code
+#### Visual Studio Code
 **/.vscode/
 
-!.vscode/settings.*
-!.vscode/launch.*
+!**/.vscode/settings.json
 
 ## Operating Systems
 
-### Nix
-!flake.lock
+### Linux
 
-### Windows (WSL2)
-**/*:Zone.Identifier
+#### NixOS
+!**/flake.lock
 
-**/.artifacts/data/
-**/.docker/data/
+**/.nix-channels
+**/.nix
+
+### Windows
+
+#### Windows Subsystem for Linux (WSL)
+*:Zone.Identifier
 
 # Language Specific
 
-## Rust
-**/debug
-**/target/
-
-*.bk
-*.bk.*
-
-*-clippy-results.*
-
-!Cargo.lock
-
 ## Python
 **/__pycache__/
-**/.pytest_cache/
 **/venv/
 
-**/*.egg
-**/*.egg.*
+*.pyc
+*.pyc.*
 
-**/*.egg-info
+*.pyo
+*.pyd
 
-**/*.pyc
-**/*.pyc.*
+## Rust
+**/target
 
-**/*.pyo
-**/*.pyo.*
+!.cargo/config.toml
+!**/Cargo.lock
 
-**/*.pyz
-**/*.pyz.*
+*.rs.bk
 
-**/*.pyzw
-**/*.pyzw.*
+# *.lock
+*-lock.json
 
-**/*.whl
-**/*.whl.*
-
-## Node.js
+## Node.JS
 **/.DS_STORE
-**/.pnp
-**/.pnp.*
-**/.vercel
 **/build
-**/debug
-**/dist
 **/node_modules
 
-### TypeScript
-**/*.tsbuildinfo
+*.tsbuildinfo
 
-### npm
-!**/package-lock.json
-**/npm-debug.log
+**/.pnp
+**/.pnp.*
 
-### yarn
 **/.yarn/install-state.gz
-**/yarn-error.log
-**/yarn-debug.log
 
-### SvelteKit
-**/__sapper__/
-**/.svelte-kit/
+### Frameworks
 
-### Deno
-**/deno.json
-**/deno.jsonc
-
-### Next.js
+#### Next.js
 **/.next
 **/out
 
 **/next-env.d.ts
 
-### Jest
-**/.swc
-**/coverage
+# Services
 
-### OpenNext (Cloudflare)
-**/.open-next
-**/.wrangler
-**/.vercel
-
-### Supabase
-**/supabase/temp
-
-### Vercel
+## Vercel
 **/.vercel

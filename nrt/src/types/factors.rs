@@ -153,7 +153,7 @@ macro_rules! impl_from_factor {
                     0 => Factors::Root,
                     1 => Factors::Third,
                     2 => Factors::Fifth,
-                    _ => unreachable!("Modular arithmetic error"), 
+                    _ => unreachable!("Modular arithmetic error"),
                 }
             }
         }
@@ -170,7 +170,6 @@ macro_rules! impl_from_factor {
 }
 
 impl_from_factor! { u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize }
-
 
 #[cfg(test)]
 mod tests {

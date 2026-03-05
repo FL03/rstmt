@@ -77,12 +77,13 @@ where
         let key = (from_triad, to_pitch);
 
         // If we're at capacity, evict the least used entry
-        if self.paths().len() >= self.capacity() && !self.paths().contains_key(&key) {
-            if let Some((lru_key, _)) = self.usage().iter().min_by_key(|(_, count)| **count) {
-                let lru_key = *lru_key;
-                self.paths_mut().remove(&lru_key);
-                self.usage_mut().remove(&lru_key);
-            }
+        if self.paths().len() >= self.capacity()
+            && !self.paths().contains_key(&key)
+            && let Some((lru_key, _)) = self.usage().iter().min_by_key(|(_, count)| **count)
+        {
+            let lru_key = *lru_key;
+            self.paths_mut().remove(&lru_key);
+            self.usage_mut().remove(&lru_key);
         }
 
         self.paths_mut().insert(key, Vec::from_iter(paths));

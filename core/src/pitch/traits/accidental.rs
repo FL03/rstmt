@@ -211,7 +211,7 @@ impl ::core::str::FromStr for Flat {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.to_lowercase() == "flat" || s == "♭" || s == "b" {
-            Ok(Self::default())
+            Ok(Self)
         } else {
             Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
         }
@@ -224,7 +224,7 @@ impl ::core::str::FromStr for Sharp {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.to_lowercase() == "sharp" || s == "♯" || s == "#" {
-            Ok(Self::default())
+            Ok(Self)
         } else {
             Err(anyhow::anyhow!("Invalid accidental string: {}", s).into())
         }
