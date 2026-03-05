@@ -28,14 +28,14 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/rstmt.git"
 rust-version = "1.91.0"
-version = "0.1.0"
+version = "0.1.1"
 
 [workspace.dependencies]
-rstmt = { default-features = false, path = "rstmt", version = "0.1.0" }
-rstmt-core = { default-features = false, path = "core", version = "0.1.0" }
-rstmt-macros = { path = "macros", version = "0.1.0" }
-rstmt-nrt = { default-features = false, path = "nrt", version = "0.1.0" }
-rstmt-traits = { default-features = false, path = "traits", version = "0.1.0" }
+rstmt = { default-features = false, path = "rstmt", version = "0.1.1" }
+rstmt-core = { default-features = false, path = "core", version = "0.1.1" }
+rstmt-macros = { path = "macros", version = "0.1.1" }
+rstmt-nrt = { default-features = false, path = "nrt", version = "0.1.1" }
+rstmt-traits = { default-features = false, path = "traits", version = "0.1.1" }
 # custom
 contained = { default-features = false, features = ["derive", "macros"], version = "0.2.4" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.9" }
