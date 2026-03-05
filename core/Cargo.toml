@@ -103,7 +103,7 @@ std = [
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rand?/std",
+  "rand?/default",
   "rand_distr?/std",
   "rspace-traits/std",
   "rstmt-traits/std",
@@ -171,8 +171,8 @@ rayon = [
 
 rng = [
   "dep:getrandom",
-  "rand?/os_rng",
-  "rand?/small_rng",
+  "getrandom?/sys_rng",
+  "rand?/sys_rng",
 ]
 
 serde = [

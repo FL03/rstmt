@@ -4,6 +4,7 @@
 */
 #![cfg(feature = "rand")]
 use crate::freq::Frequency;
+use rand::{Rng, RngExt};
 use rand_distr::uniform::{SampleRange, SampleUniform};
 use rand_distr::{Distribution, StandardUniform};
 
@@ -22,10 +23,15 @@ impl<T> Frequency<T>
 where
     StandardUniform: Distribution<T>,
 {
+    /// generates a random frequency.
     pub fn random() -> Self {
-        Frequency(rand::random())
+        Frequency::random_with(&mut rand::rng())
     }
-    pub fn random_in<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
+    /// generates a random frequency using the provided random number generator.
+    pub fn random_with<R>(rng: &mut R) -> Self
+    where
+        R: ?Sized + Rng,
+    {
         Frequency(rng.random())
     }
 }
@@ -34,7 +40,10 @@ impl<T> Distribution<Frequency<T>> for StandardUniform
 where
     StandardUniform: Distribution<T>,
 {
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Frequency<T> {
+    fn sample<R>(&self, rng: &mut R) -> Frequency<T>
+    where
+        R: ?Sized + Rng,
+    {
         Frequency(rng.random())
     }
 }

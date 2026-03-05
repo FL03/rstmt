@@ -187,8 +187,8 @@ rayon = [
 
 rng = [
   "dep:getrandom",
-  "rand/small_rng",
-  "rand/thread_rng",
+  "getrandom?/sys_rng",
+  "rand?/sys_rng",
   "rshyper/rng",
   "rstmt-core/rng",
 ]

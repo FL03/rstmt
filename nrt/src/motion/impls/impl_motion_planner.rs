@@ -26,7 +26,7 @@ where
     // For voice-leading distance, we use max of 1 as estimate
     // This ensures heuristic is admissible (never overestimates)
     match triad.contains(&target) {
-        true => return T::zero(),
+        true => T::zero(),
         false => T::one(),
     }
 }
@@ -173,10 +173,10 @@ where
 
         while let Some(node) = open_set.pop() {
             // Skip if we've found a shorter path to this triad
-            if let Some(&prev_cost) = visited.get(node.triad.chord()) {
-                if prev_cost < node.cost {
-                    continue;
-                }
+            if let Some(&prev_cost) = visited.get(node.triad.chord())
+                && prev_cost < node.cost
+            {
+                continue;
             }
 
             // Check depth limit
@@ -191,10 +191,10 @@ where
                 let new_cost = node.cost + 1;
 
                 // Skip if we've found a shorter path to this triad
-                if let Some(&prev_cost) = visited.get(next_triad.chord()) {
-                    if prev_cost <= new_cost {
-                        continue;
-                    }
+                if let Some(&prev_cost) = visited.get(next_triad.chord())
+                    && prev_cost <= new_cost
+                {
+                    continue;
                 }
 
                 // Update visited with this triad's path length
@@ -640,7 +640,7 @@ where
             .par_bridge()
             .filter_map(|transform| {
                 // Try applying the transformation
-                match transform.apply(&start_triad) {
+                match transform.try_apply(&start_triad) {
                     Ok(next_triad) => {
                         // Find edge ID if it exists
                         let next_edge_id = self.tonnetz.triads.iter().find_map(|(&id, facet)| {
