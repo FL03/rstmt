@@ -1,0 +1,90 @@
+name: cargo-build
+
+concurrency:
+  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [ synchronize ]
+    paths:
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+  push:
+    tags: [latest, "v[0-9]*.[0-9]*.[0-9]*"]
+  repository_dispatch:
+    types: [cargo-build]
+  workflow_dispatch:
+    inputs:
+      runner:
+        default: self-hosted
+        description: What type of runner should the action leverage?
+        type: choice
+        options: [macos-latest, ubuntu-latest, windows-latest, self-hosted]
+      target:
+        default: x86_64-unknown-linux-gnu
+        description: "Select the target to compile for"
+        required: false
+      toolchain:
+        default: stable
+        description: "Select a toolchain to test (stable, nightly)"
+        required: true
+        type: choice
+        options: [stable, nightly]
+
+jobs:
+  workspace:
+    name: Build the workspace
+    runs-on: ${{ github.event.inputs.runner || 'ubuntu-latest' }}
+    env:
+      CACHE_ON_FAILURE: true
+      CARGO_TERM_COLOR: always
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: true
+    permissions:
+      actions: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        features: [full, default]
+        include:
+          - target: ${{ github.event.inputs.target || 'x86_64-unknown-linux-gnu' }}
+            toolchain: ${{ github.event.inputs.toolchain || 'stable' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          fetch-tags: true
+          ref: ${{ github.event.client_payload.ref  || github.ref }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare the workflow
+        run: |
+          if [[ "${{ matrix.toolchain }}" == "nightly" ]]; then
+            echo "RUSTFLAGS=-C panic=abort -Z panic_abort_tests" >> $GITHUB_ENV
+          fi
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.10
+      - name: Setup rust-cache
+        uses: swatinem/rust-cache@v2
+        with:
+          key: cargo-${{ matrix.toolchain }}-${{ matrix.target }}-${{ matrix.features }}
+          cache-targets: false
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          target: ${{ matrix.target }}
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+      - name: cargo build (${{ matrix.features }})
+        run: |
+          cargo build --release --lib --locked --workspace \
+            --features ${{ matrix.features }} \
+            --target ${{ matrix.target }}

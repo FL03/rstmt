@@ -14,7 +14,4 @@ updates:
     interval: monthly
   directories:
   - /
-  - /core
-  - /nrt
-  - /rstmt
-  - /traits
+  - /crates/*

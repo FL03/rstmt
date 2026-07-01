@@ -1,4 +1,4 @@
-name: clippy
+name: cargo-clippy
 
 concurrency:
   cancel-in-progress: false
@@ -6,31 +6,57 @@ concurrency:
 
 on:
   pull_request:
-    types: [auto_merge_enabled, opened, ready_for_review, reopened]
+    types: [synchronize]
+    paths:
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
   push:
-    branches: [main, master]
-    tags: [latest, v*.*.*, "*-nightly"]
+    tags:
+      - latest
+      - "v[0-9]*.[0-9]*.[0-9]*"
   repository_dispatch:
     types: [clippy, cargo-clippy]
   workflow_dispatch:
+    inputs:
+      runner:
+        default: self-hosted
+        description: What type of runner should the action leverage?
+        type: choice
+        options: [macos-latest, ubuntu-latest, windows-latest, self-hosted]
 
 jobs:
   clippy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.runner || 'ubuntu-latest' }}
+    env:
+      CACHE_ON_FAILURE: true
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: full
     permissions:
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
       contents: read
       security-events: write
       statuses: write
+    strategy:
+      fail-fast: false
+      matrix:
+        features: [default, full]
+        include:
+          - target: stable
+            toolchain: x86_64-unknown-linux-gnu
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: true
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-key: cargo-${{ matrix.toolchain }}-${{ matrix.target }}-${{ matrix.features }}
           components: clippy,rustfmt
       - name: Install SARIF tools
         uses: taiki-e/install-action@v2
@@ -38,10 +64,12 @@ jobs:
           tool: clippy-sarif sarif-fmt
       - name: Run cargo clippy
         run: |
-          cargo clippy \
-            --features full \
-            --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
+          cargo clippy --all-targets --locked --workspace \
+            --message-format=json \
+            --features ${{ matrix.features }} \
+            -- -D warnings | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
       - name: Upload the results
+        if: github.event.repository.public
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: rust-clippy-results.sarif

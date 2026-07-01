@@ -1,20 +1,17 @@
-name: cleanup
+name: clean
 
 on:
   pull_request:
-    types: [closed]
+    types: [ closed ]
 
 jobs:
-  pr_cache_cleanup:
-    if: github.event.pull_request.merged == true
-    name: Cleanup Pull Request Caches
+  cache_cleanup:
+    name: "Cleanup: Pull-Request Cache"
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GH_REPO: ${{ github.repository }}
-      BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
     permissions:
       actions: write
+      contents: read
+      pull-requests: read
     steps:
       - name: Cleanup
         run: |
@@ -29,3 +26,7 @@ jobs:
               gh cache delete $cacheKey
           done
           echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
