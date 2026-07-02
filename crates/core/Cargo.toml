@@ -63,19 +63,20 @@ wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = [
+  "complex",
   "hashbrown",
   "std",
 ]
 
 full = [
   "default",
-  "complex",
   "json",
   "macros",
   "rand",
-  "serde",
   "tracing",
 ]
+
+# ********* [FF] Flags *********
 
 json = [
   "alloc",
@@ -83,16 +84,22 @@ json = [
   "serde_json",
 ]
 
-nightly = [
-  "hashbrown?/nightly",
-  "rstmt-traits/nightly",
-]
-
-# ********* [FF] Features *********
-
 macros = []
 
-# ********* [FF] Environments *********
+# ********* [FF] Standard Library *********
+
+alloc = [
+  "rstmt-traits/alloc",
+  "contained/alloc",
+  "hashbrown?/alloc",
+  "rand?/alloc",
+  "rand_distr?/alloc",
+  "rspace-traits/alloc",
+  "serde?/alloc",
+  "serde_json?/alloc",
+  "variants/alloc",
+  "wasm-bindgen?/gg-alloc",
+]
 
 std = [
   "alloc",
@@ -115,6 +122,12 @@ std = [
   "wasm-bindgen?/std",
 ]
 
+# ********* [FF] Targets *********
+nightly = [
+  "hashbrown?/nightly",
+  "rstmt-traits/nightly",
+]
+
 wasi = [
   "rspace-traits/wasi",
   "rstmt-traits/wasi",
@@ -128,21 +141,7 @@ wasm = [
   "rayon?/web_spin_lock",
 ]
 
-# ********* [FF] Dependencies *********
-
-alloc = [
-  "rstmt-traits/alloc",
-  "contained/alloc",
-  "hashbrown?/alloc",
-  "rand?/alloc",
-  "rand_distr?/alloc",
-  "rspace-traits/alloc",
-  "serde?/alloc",
-  "serde_json?/alloc",
-  "variants/alloc",
-  "wasm-bindgen?/gg-alloc",
-]
-
+# ********* [FF] Deps *********
 complex = [
   "dep:num-complex",
   "rspace-traits/complex",

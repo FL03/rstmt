@@ -30,7 +30,6 @@ jobs:
       max-parallel: 1
       matrix:
         package:
-          # sdk
           - rstmt-traits
           - rstmt-core
           - rstmt-nrt
