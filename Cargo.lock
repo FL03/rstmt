@@ -170,9 +170,9 @@ checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
 
 [[package]]
 name = "contained"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "171e57f4f9cf61380ad201fa1016ea5842440adff054c4314973bff1ebe0ae07"
+checksum = "3ac92d9b3246257adb2dedfbd9e69b9a4ee303a1f5763412bd5d9bac9deee257"
 dependencies = [
  "contained-core",
  "contained-derive",
@@ -181,16 +181,16 @@ dependencies = [
 
 [[package]]
 name = "contained-core"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e390113196f3af3198f351253848f9e3f08ecdfb1401556ec9cbc21c0a2f25dd"
+checksum = "3b64a2895a2f9e4d4781c54ee24b6e36d34796ab7d15d3ecfa8621ecad4d2dff"
 dependencies = [
- "getrandom 0.3.4",
- "hashbrown 0.16.1",
+ "getrandom 0.4.3",
+ "hashbrown 0.17.1",
  "num-complex",
  "num-traits",
- "rand 0.9.4",
- "rand_distr 0.5.1",
+ "rand 0.10.1",
+ "rand_distr 0.6.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -199,9 +199,9 @@ dependencies = [
 
 [[package]]
 name = "contained-derive"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "022e04851be80b860c3a70ab3baa7934dcc8291391f97eb0a63e97734afcd28e"
+checksum = "48ca5993340b85ecb6d5b6413521f4faa055e7eb00af36165f810a89d9109615"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -210,9 +210,9 @@ dependencies = [
 
 [[package]]
 name = "contained-macros"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c94f9f4d49568014c259c7ea8d29eaa19c68afc09e2dd92afe06953a784259f"
+checksum = "5fc7b7a1586f2b13183843bdffbd6bed8351a2e75639c00ce8d00112ad0c6988"
 dependencies = [
  "proc-macro2",
  "quote",

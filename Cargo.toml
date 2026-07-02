@@ -33,7 +33,7 @@ rstmt-macros = { path = "crates/macros", version = "0.1.1" }
 rstmt-nrt = { default-features = false, path = "crates/nrt", version = "0.1.1" }
 rstmt-traits = { default-features = false, path = "crates/traits", version = "0.1.1" }
 # custom
-contained = { default-features = false, features = ["derive", "macros"], version = "0.2.4" }
+contained = { default-features = false, features = ["derive", "macros"], version = "0.2.5" }
 rshyper = { default-features = false, features = ["macros"], version = "0.1.9" }
 rspace-traits = { default-features = false, version = "0.0.9" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
