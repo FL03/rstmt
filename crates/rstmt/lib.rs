@@ -1,5 +1,3 @@
-#![crate_name = "rstmt"]
-#![crate_type = "lib"]
 //! # rstmt
 //!
 //! [![crates.io](https://img.shields.io/crates/v/rstmt?style=for-the-badge&logo=rust)](https://crates.io/crates/rstmt)
@@ -68,10 +66,15 @@ pub use rstmt_nrt as nrt;
 // re-exports
 #[doc(inline)]
 pub use rstmt_core::*;
+#[doc(inline)]
+#[cfg(feature = "macros")]
+pub use rstmt_macros::*;
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use rstmt_core::prelude::*;
+    #[cfg(feature = "macros")]
+    pub use rstmt_macros::*;
     #[cfg(feature = "nrt")]
     pub use rstmt_nrt::prelude::*;
 }
