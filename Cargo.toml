@@ -63,7 +63,7 @@ serde = { default-features = false, features = ["derive"], version = "1" }
 serde_derive = { default-features = false, version = "1" }
 serde_json = { default-features = false, version = "1" }
 # macros
-itertools = { default-features = false, version = "0.14" }
+itertools = { default-features = false, version = "0.15" }
 lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = { version = "0.7" }
